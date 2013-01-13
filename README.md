@@ -30,4 +30,22 @@ echo $renderer(Array('name' => 'Peter', 'value' => 1000));
 file_put_contents($php_inc, $compiled)
 
 $renderer = include($php_inc);
-$renderer(Array('name' => 'John', 'value' => 10000));
+echo $renderer(Array('name' => 'John', 'value' => 10000));
+echo $renderer(Array('name' => 'Peter', 'value' => 1000));
+
+Sample output
+-------------
+
+Template is:
+Welcome {{name}} , You win ${{value}} dollars!!
+
+
+Rendered PHP code is:
+<?php return function ($in) {
+    return 'Welcome ' . $in['name'] . ' , You win $' . $in['value'] . ' dollars!!
+';
+}
+?>
+
+Welcome John , You win $10000 dollars!!
+Welcome Peter , You win $1000 dollars!!
