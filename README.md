@@ -27,7 +27,7 @@ echo $renderer(Array('name' => 'John', 'value' => 10000));
 echo $renderer(Array('name' => 'Peter', 'value' => 1000));
 
 // Usage 2: One time save compiled php, later run with include
-file_put_contents($php_inc, $compiled)
+file_put_contents($php_inc, $php)
 
 $renderer = include($php_inc);
 echo $renderer(Array('name' => 'John', 'value' => 10000));
