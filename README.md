@@ -12,7 +12,7 @@ Features
 
 Sample
 ------
-<code>
+<pre>
 require('src/lightncandy.inc');
 $template = "Welcome {{name}} , You win \${{value}} dollars!!\n";
 $php = LightnCandy::compile($template);
@@ -32,11 +32,11 @@ file_put_contents($php_inc, $compiled)
 $renderer = include($php_inc);
 echo $renderer(Array('name' => 'John', 'value' => 10000));
 echo $renderer(Array('name' => 'Peter', 'value' => 1000));
-</code>
+</pre>
 
 Sample output
 -------------
-<code>
+<pre>
 Template is:
 Welcome {{name}} , You win ${{value}} dollars!!
 
@@ -50,4 +50,4 @@ Rendered PHP code is:
 
 Welcome John , You win $10000 dollars!!
 Welcome Peter , You win $1000 dollars!!
-</code>
+</pre>
