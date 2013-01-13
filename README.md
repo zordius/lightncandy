@@ -42,11 +42,11 @@ Welcome {{name}} , You win ${{value}} dollars!!
 
 
 Rendered PHP code is:
-<?php return function ($in) {
+&lt;?php return function ($in) {
     return 'Welcome ' . $in['name'] . ' , You win $' . $in['value'] . ' dollars!!
 ';
 }
-?>
+?&gt;
 
 Welcome John , You win $10000 dollars!!
 Welcome Peter , You win $1000 dollars!!
