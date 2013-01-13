@@ -12,7 +12,7 @@ class LightnCandy {
             'error' => false
         );
 
-        $code = preg_replace_callback('/\\{\\{(.+?)\\}\\}/', function ($matches) use ($context) {
+        $code = preg_replace_callback('/\\{\\{(.+?)\\}\\}/', function ($matches) use (&$context) {
             return '\'' . LightnCandy::tokens($matches, $context) . '\'';
         }, $template);
 
@@ -32,55 +32,79 @@ class LightnCandy {
     }
 
     protected static function _scope($scopes) {
-        return count($scopes) ? '[\'' . join('\'][\'', $scopes) . '\']' : '';
+        return count($scopes) ? '[' . implode('][', $scopes) . ']' : '';
+    }
+
+    protected static function _qscope($list) {
+        return self::_scope(array_map(function ($v) {return "'$v'";}, $list));
+    }
+
+    protected static function _vn($vn) {
+        return self::_qscope(explode('.', $vn));
     }
 
     public static function tokens($token, &$context) {
         $act = substr($token[1], 1);
-        $ret = '';
 
         switch (substr($token[1], 0, 1)) {
         case '^':
-            $vn = self::_scope(explode('.', $act));
+            $vn = self::_vn($act);
             $context['stack'][] = $act;
             $context['stack'][] = '^';
-            return "(!\$in{$context['scope']}$vn ? (''";
+            return ".(!\$in{$context['scope']}$vn ? (";
         case '/':
             switch ($act) {
             case 'if':
-                return '';
+                $pop = array_pop($context['stack']);
+                if ($pop == ':') {
+                    $pop = array_pop($context['stack']);
+                    return ')).';
+                }
+                return ') : \'\').';
             case 'each':
+                $act = substr($act, 5);
             default:
                 $context['level']--;
                 $pop = array_pop($context['stack']);
-                if ($pop == '^') {
-                    $pop = array_pop($context['stack']);
-                    if ($pop !== $act) {
-                        $context['error'] = "Except token name: /$pop !";
+                switch($pop) {
+                case '#':
+                case '^':
+                    $pop2 = array_pop($context['stack']);
+                    if ($pop2 !== $act) {
+                        $context['error'] = "Unexpect token $token[1] ! Previous token $pop$pop2 is not closed";
                         return;
                     }
-                    return "'') : '')";
-                } else {
+                    if ($pop == '^') {
+                        return ") : '').";
+                    }
                     array_pop($context['scopes']);
+                    array_pop($context['scopes']);
+                    $vn = self::_vn($act);
                     $context['scope'] = self::_scope($context['scopes']);
+                    return ";}, \$in{$context['scope']}$vn)).";
+                default:
+                    $context['error'] = "Unexpect token: $token[1] !";
+                    return;
                 }
-
-                return "";
             }
         case '#':
             switch ($act) {
             case 'if':
-                return '';
+                $vn = self::_vn($act);
+                return "(\$in{$context['scope']}$vn ? (";
             case 'else':
-                return '';
+                $context['stack'][] = ':';
+                return ') : (';
             case 'each':
-                $act = substr($act, 1);
+                $act = substr($act, 5);
             default:
                 $context['level']++;
-                $context['scopes'][] = $act;
+                $context['scopes'][] = "'$act'";
+                $context['scopes'][] = "\$k{$context['level']}";
                 $context['stack'][] = $act;
+                $context['stack'][] = '#';
                 $context['scope'] = self::_scope($context['scopes']);
-                return '.array_map(function($in';
+                return ".implode('', array_map(function(\$v, \$k{$context['level']}) use (\$in) {return ";
             }
         default:
             $vn = self::_scope(explode('.', $token[1]));
