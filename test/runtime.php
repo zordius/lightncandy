@@ -1,18 +1,4 @@
-lightncandy
-===========
-
-A PHP library to support subset feature of handlebars, target to run as fast as pure php.
-
-Features
---------
-
-* Logicless template: subset of mustache ( http://mustache.github.com/ ) or handlebars ( http://handlebarsjs.com/ ) .
-* Compile template to pure php code.
-* Fast!
-
-Sample
-------
-
+<?php
 require('src/lightncandy.inc');
 $template = "Welcome {{name}} , You win \${{value}} dollars!!\n";
 $php = LightnCandy::compile($template);
@@ -26,8 +12,4 @@ $renderer = LightnCandy::prepare($php);
 echo $renderer(Array('name' => 'John', 'value' => 10000));
 echo $renderer(Array('name' => 'Peter', 'value' => 1000));
 
-// Usage 2: One time save compiled php, later run with include
-file_put_contents($php_inc, $compiled)
-
-$renderer = include($php_inc);
-$renderer(Array('name' => 'John', 'value' => 10000));
+?>
