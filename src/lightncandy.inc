@@ -4,6 +4,7 @@ class LightnCandy {
     public static $flagThrowException = false;
     public static $flagStandalone = false;
     private static $lastContext;
+    const TOKEN_SEARCH = '/(\\{{2,3})(.+?)(\\}{2,3})/';
 
     public static function compile($template) {
         $context = Array(
@@ -22,10 +23,11 @@ class LightnCandy {
             )
         );
 
-        $code = preg_replace_callback('/(\\{{2,3})(.+?)(\\}{2,3})/', function ($matches) use (&$context) {
-            return '\'' . LightnCandy::tokens($matches, $context) . '\'';
-        }, $template);
-
+        if (preg_match_all(self::TOKEN_SEARCH, $template, $tokens, PREG_SET_ORDER) > 0) {
+            foreach ($tokens as $token) {
+                self::scan($token, $context);
+            }
+        }
         self::$lastContext = $context;
 
         if ($context['error']) {
@@ -37,6 +39,10 @@ class LightnCandy {
             }
             return false;
         }
+
+        $code = preg_replace_callback(self::TOKEN_SEARCH, function ($matches) use (&$context) {
+            return '\'' . LightnCandy::tokens($matches, $context) . '\'';
+        }, $template);
 
         return "<?php return function (\$in) {
     \$cx = Array(
@@ -52,7 +58,8 @@ class LightnCandy {
         return self::$lastContext;
     }
 
-    public static function tokens($token, &$context) {
+    protected static function scan($token, &$context) {
+print_r($token);
         $head = substr($token[2], 0, 1);
         $act = substr($token[2], 1);
         $raw = ($token[1] === '{{{');
@@ -68,10 +75,33 @@ class LightnCandy {
                 return;
             }
         }
+        switch ($head) {
+        case '^':
+            return $context['usedFeature']['isec'] ++;
+        case '#':
+            switch ($act) {
+            case 'if':
+                return $context['usedFeature']['if'] ++;
+            case 'else':
+                return $context['usedFeature']['else'] ++;
+            case 'each':
+                return $context['usedFeature']['each'] ++;
+            default:
+                return $context['usedFeature']['sec'] ++;
+            }
+        default:
+            $fn = $raw ? 'raw' : 'enc';
+            return $context['usedFeature'][$fn] ++;
+        }
+    }
+
+    public static function tokens($token, &$context) {
+        $head = substr($token[2], 0, 1);
+        $act = substr($token[2], 1);
+        $raw = ($token[1] === '{{{');
 
         switch ($head) {
         case '^':
-            $context['usedFeature']['isec'] ++;
             $context['stack'][] = $act;
             $context['stack'][] = '^';
             return ".({$context['obj']}isec('$act', \$in) ? (";
@@ -109,19 +139,15 @@ class LightnCandy {
         case '#':
             switch ($act) {
             case 'if':
-                $context['usedFeature']['if'] ++;
                 $act = substr($act, 3);
                 return ".({$context['obj']}ifvar('{$act}', \$in) ? (";
             case 'else':
-                $context['usedFeature']['else'] ++;
                 $context['stack'][] = ':';
                 return ') : (';
             case 'each':
-                $context['usedFeature']['each'] ++;
                 $act = substr($act, 5);
             default:
                 $each = ($act == 'each') ? 'true' : 'false';
-                $context['usedFeature']['sec'] ++;
                 $context['level']++;
                 $context['stack'][] = $act;
                 $context['stack'][] = '#';
@@ -129,7 +155,6 @@ class LightnCandy {
             }
         default:
             $fn = $raw ? 'raw' : 'enc';
-            $context['usedFeature'][$fn] ++;
             return ".{$context['obj']}{$fn}('{$token[2]}', \$cx, \$in).";
         }
     }
