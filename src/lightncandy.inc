@@ -181,15 +181,17 @@ class LightnCandy {
     }
 
     public static function sec($var, &$cx, $in, $each, $cb) {
-        if (!$each && is_array($var)) {
-            if (count(array_diff_key($var, array_keys(array_keys($var)))) == 0) {
+        if (!$each && is_array($in[$var])) {
+            if (count(array_diff_key($var, array_keys(array_keys($in[$var])))) == 0) {
                 $each = true;
             }
         }
         if ($each) {
-            return join('', array_map(function($v, $k) use ($in, $cx) {
-                $cb($cx, $v);
-            }, $in[$var]));
+            $ret = Array();
+            foreach ($in[$var] as $raw) {
+                $ret[] = $cb($cx, $raw);
+            }
+            return join('', $ret);
         }
         if (is_array($in[$var])) {
             return $cb($cx, $in[$var]);
