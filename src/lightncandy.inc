@@ -14,8 +14,8 @@ class LightnCandy {
             'usedFeature' => Array(
                 'enc' => 0,
                 'raw' => 0,
-                'section' => 0,
-                'invertsection' => 0,
+                'sec' => 0,
+                'isec' => 0,
                 'if' => 0,
                 'else' => 0,
                 'each' => 0,
@@ -71,10 +71,10 @@ class LightnCandy {
 
         switch ($head) {
         case '^':
-            $context['usedFeature']['invertsection'] ++;
+            $context['usedFeature']['isec'] ++;
             $context['stack'][] = $act;
             $context['stack'][] = '^';
-            return ".({$context['obj']}invert('$act') ? (";
+            return ".({$context['obj']}isec('$act') ? (";
         case '/':
             switch ($act) {
             case 'if':
@@ -100,7 +100,7 @@ class LightnCandy {
                     if ($pop == '^') {
                         return ") : '').";
                     }
-                    return ";}, \$in{$context['scope']}$vn)).";
+                    return ";}).";
                 default:
                     $context['error'] = "Unexpect token: {$token[2]} !";
                     return;
@@ -110,7 +110,7 @@ class LightnCandy {
             switch ($act) {
             case 'if':
                 $context['usedFeature']['if'] ++;
-                return ".({$context['obj']}if('$act') ? (";
+                return ".({$context['obj']}ifvar('{$token[2]}') ? (";
             case 'else':
                 $context['usedFeature']['else'] ++;
                 $context['stack'][] = ':';
@@ -119,17 +119,22 @@ class LightnCandy {
                 $context['usedFeature']['each'] ++;
                 $act = substr($act, 5);
             default:
-                $context['usedFeature']['section'] ++;
+                $each = ($act == 'each');
+                $context['usedFeature']['sec'] ++;
                 $context['level']++;
                 $context['stack'][] = $act;
                 $context['stack'][] = '#';
-                return ".{$context['obj']}section('$act', function(\$v) use (\$in) {return ";
+                return ".{$context['obj']}sec('$act', \$cx, \$in, $each, function(\$cx, \$in) {return ";
             }
         default:
             $fn = $raw ? 'raw' : 'enc';
             $context['usedFeature'][$fn] ++;
             return ".{$context['obj']}{$fn}('{$token[2]}', \$cx, \$in).";
         }
+    }
+
+    public static function ifvar($var, $cx, $in) {
+        return $in[$var];
     }
 
     public static function raw($var, $cx, $in) {
@@ -140,19 +145,24 @@ class LightnCandy {
         return htmlentities($in[$var], ENT_QUOTES);
     }
 
-    public static function section($var, $cb) {
-        $each = false;
-        if (is_array($var)) {
+    public static function sec($var, &$cx, $in, $each, $cb) {
+        if (!$each && is_array($var)) {
             if (count(array_diff_key($var, array_keys(array_keys($var)))) == 0) {
                 $each = true;
             }
         }
         if ($each) {
-            return join('', array_map($cb, $var));
-        } else {
-            //$in
-            return $cb();
+            return join('', array_map(function($v, $k) use ($in, $cx) {
+                $cb($cx, $v);
+            }, $in[$var]));
         }
+        if (is_array($in[$var])) {
+            return $cb($cx, $in[$var]);
+        }
+        if ($in[$var]) {
+            return $cb($cx, $in);
+        }
+        return '';
     }
 
     public static function prepare($php) {
