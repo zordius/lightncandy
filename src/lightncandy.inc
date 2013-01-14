@@ -12,6 +12,7 @@ class LightnCandy {
             'scope' => '',
             'stack' => Array(),
             'error' => false,
+            'obj' => self::$flagStandalone ? 'LightnCandy::' : '$',
             'usedFeature' => Array(
                 'var' => 0,
                 'raw' => 0,
@@ -30,10 +31,10 @@ class LightnCandy {
         self::$lastContext = $context;
 
         if ($context['error']) {
-            if (self::flagErrorlog) {
+            if (self::$flagErrorlog) {
                 error_log($context['error']);
             }
-            if (self::flagThrowException) {
+            if (self::$flagThrowException) {
                 throw new Exception($context['error']);
             }
             return false;
@@ -62,9 +63,23 @@ class LightnCandy {
     }
 
     public static function tokens($token, &$context) {
+        $head = substr($token[2], 0, 1);
         $act = substr($token[2], 1);
+        $raw = ($token[1] === '{{{');
 
-        switch (substr($token[2], 0, 1)) {
+        if (count($token[1]) !== count($token[3])) {
+            $context['error'] = "Bad token {$token[1]}{$token[2]}{$token[3]} ! Do you mean {{}} or {{{}}}?";
+            return;
+        }
+
+        if ($raw) {
+            if (preg_match('/\\^|\\/|#/', $head)) {
+                $context['error'] = "Bad token {$token[1]}{$token[2]}{$token[3]} ! Do you mean \{\{{$token[2]}\}\}?";
+                return;
+            }
+        }
+
+        switch ($head) {
         case '^':
             $context['usedFeature']['invertsection'] ++;
             $vn = self::_vn($act);
@@ -90,7 +105,7 @@ class LightnCandy {
                 case '^':
                     $pop2 = array_pop($context['stack']);
                     if ($pop2 !== $act) {
-                        $context['error'] = "Unexpect token $token[2] ! Previous token $pop$pop2 is not closed";
+                        $context['error'] = "Unexpect token {$token[2]} ! Previous token $pop$pop2 is not closed";
                         return;
                     }
                     if ($pop == '^') {
@@ -102,7 +117,7 @@ class LightnCandy {
                     $context['scope'] = self::_scope($context['scopes']);
                     return ";}, \$in{$context['scope']}$vn)).";
                 default:
-                    $context['error'] = "Unexpect token: $token[2] !";
+                    $context['error'] = "Unexpect token: {$token[2]} !";
                     return;
                 }
             }
@@ -132,7 +147,7 @@ class LightnCandy {
         default:
             $context['usedFeature']['var'] ++;
             $vn = self::_vn($token[2]);
-            return ".\$in{$context['scope']}$vn.";
+            return $raw ? ".\$in{$context['scope']}$vn." : ".htmlentities(\$in{$context['scope']}$vn, ENT_QUOTES).";
         }
     }
 
