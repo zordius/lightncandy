@@ -119,7 +119,7 @@ class LightnCandy {
                 $context['usedFeature']['each'] ++;
                 $act = substr($act, 5);
             default:
-                $each = ($act == 'each');
+                $each = ($act == 'each') ? 'true' : 'false';
                 $context['usedFeature']['sec'] ++;
                 $context['level']++;
                 $context['stack'][] = $act;
@@ -138,11 +138,11 @@ class LightnCandy {
     }
 
     public static function raw($var, $cx, $in) {
-        return $in[$var];
+        return ($in[$var] === true) ? 'true' : $in[$var];
     }
 
     public static function enc($var, $cx, $in) {
-        return htmlentities($in[$var], ENT_QUOTES);
+        return htmlentities(($in[$var] === true) ? 'true' : $in[$var], ENT_QUOTES);
     }
 
     public static function sec($var, &$cx, $in, $each, $cb) {
