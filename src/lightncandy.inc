@@ -74,7 +74,7 @@ class LightnCandy {
             $context['usedFeature']['isec'] ++;
             $context['stack'][] = $act;
             $context['stack'][] = '^';
-            return ".({$context['obj']}isec('$act') ? (";
+            return ".({$context['obj']}isec('$act', \$in) ? (";
         case '/':
             switch ($act) {
             case 'if':
@@ -110,7 +110,8 @@ class LightnCandy {
             switch ($act) {
             case 'if':
                 $context['usedFeature']['if'] ++;
-                return ".({$context['obj']}ifvar('{$token[2]}') ? (";
+                $act = substr($act, 3);
+                return ".({$context['obj']}ifvar('{$act}', \$in) ? (";
             case 'else':
                 $context['usedFeature']['else'] ++;
                 $context['stack'][] = ':';
@@ -133,7 +134,7 @@ class LightnCandy {
         }
     }
 
-    public static function ifvar($var, $cx, $in) {
+    public static function ifvar($var, $in) {
         return $in[$var];
     }
 
@@ -163,6 +164,10 @@ class LightnCandy {
             return $cb($cx, $in);
         }
         return '';
+    }
+
+    public static function isec($var, $in) {
+        return !self::ifvar($var, $in);
     }
 
     public static function prepare($php) {
