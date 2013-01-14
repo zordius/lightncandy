@@ -8,13 +8,11 @@ class LightnCandy {
     public static function compile($template) {
         $context = Array(
             'level' => 0,
-            'scopes' => Array(),
-            'scope' => '',
             'stack' => Array(),
             'error' => false,
-            'obj' => self::$flagStandalone ? 'LightnCandy::' : '$',
+            'obj' => self::$flagStandalone ? '$' : 'LightnCandy::',
             'usedFeature' => Array(
-                'var' => 0,
+                'enc' => 0,
                 'raw' => 0,
                 'section' => 0,
                 'invertsection' => 0,
@@ -41,6 +39,10 @@ class LightnCandy {
         }
 
         return "<?php return function (\$in) {
+    \$cx = Array(
+        'path' => Array(),
+        'parents' => Array()
+    );
     return '$code';
 }
 ?>";
@@ -48,18 +50,6 @@ class LightnCandy {
 
     public static function getContext() {
         return self::$lastContext;
-    }
-
-    protected static function _scope($scopes) {
-        return count($scopes) ? '[' . implode('][', $scopes) . ']' : '';
-    }
-
-    protected static function _qscope($list) {
-        return self::_scope(array_map(function ($v) {return "'$v'";}, $list));
-    }
-
-    protected static function _vn($vn) {
-        return self::_qscope(explode('.', $vn));
     }
 
     public static function tokens($token, &$context) {
@@ -82,10 +72,9 @@ class LightnCandy {
         switch ($head) {
         case '^':
             $context['usedFeature']['invertsection'] ++;
-            $vn = self::_vn($act);
             $context['stack'][] = $act;
             $context['stack'][] = '^';
-            return ".(!\$in{$context['scope']}$vn ? (";
+            return ".({$context['obj']}invert('$act') ? (";
         case '/':
             switch ($act) {
             case 'if':
@@ -111,10 +100,6 @@ class LightnCandy {
                     if ($pop == '^') {
                         return ") : '').";
                     }
-                    array_pop($context['scopes']);
-                    array_pop($context['scopes']);
-                    $vn = self::_vn($act);
-                    $context['scope'] = self::_scope($context['scopes']);
                     return ";}, \$in{$context['scope']}$vn)).";
                 default:
                     $context['error'] = "Unexpect token: {$token[2]} !";
@@ -125,8 +110,7 @@ class LightnCandy {
             switch ($act) {
             case 'if':
                 $context['usedFeature']['if'] ++;
-                $vn = self::_vn($act);
-                return "(\$in{$context['scope']}$vn ? (";
+                return ".({$context['obj']}if('$act') ? (";
             case 'else':
                 $context['usedFeature']['else'] ++;
                 $context['stack'][] = ':';
@@ -137,17 +121,37 @@ class LightnCandy {
             default:
                 $context['usedFeature']['section'] ++;
                 $context['level']++;
-                $context['scopes'][] = "'$act'";
-                $context['scopes'][] = "\$k{$context['level']}";
                 $context['stack'][] = $act;
                 $context['stack'][] = '#';
-                $context['scope'] = self::_scope($context['scopes']);
-                return ".implode('', array_map(function(\$v, \$k{$context['level']}) use (\$in) {return ";
+                return ".{$context['obj']}section('$act', function(\$v) use (\$in) {return ";
             }
         default:
-            $context['usedFeature']['var'] ++;
-            $vn = self::_vn($token[2]);
-            return $raw ? ".\$in{$context['scope']}$vn." : ".htmlentities(\$in{$context['scope']}$vn, ENT_QUOTES).";
+            $fn = $raw ? 'raw' : 'enc';
+            $context['usedFeature'][$fn] ++;
+            return ".{$context['obj']}{$fn}('{$token[2]}', \$cx, \$in).";
+        }
+    }
+
+    public static function raw($var, $cx, $in) {
+        return $in[$var];
+    }
+
+    public static function enc($var, $cx, $in) {
+        return htmlentities($in[$var], ENT_QUOTES);
+    }
+
+    public static function section($var, $cb) {
+        $each = false;
+        if (is_array($var)) {
+            if (count(array_diff_key($var, array_keys(array_keys($var)))) == 0) {
+                $each = true;
+            }
+        }
+        if ($each) {
+            return join('', array_map($cb, $var));
+        } else {
+            //$in
+            return $cb();
         }
     }
 
