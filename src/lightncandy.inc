@@ -11,6 +11,7 @@ class LightnCandy {
             'level' => 0,
             'stack' => Array(),
             'error' => false,
+            'useVar' => false,
             'obj' => self::$flagStandalone ? '$' : 'LightnCandy::',
             'usedFeature' => Array(
                 'enc' => 0,
@@ -39,7 +40,10 @@ class LightnCandy {
             }
             return false;
         }
-
+        if ($context['usedFeature']['sec'] < 1) {
+            $context['useVar'] = Array();
+        }
+        
         $code = preg_replace_callback(self::TOKEN_SEARCH, function ($matches) use (&$context) {
             return '\'' . LightnCandy::tokens($matches, $context) . '\'';
         }, $template);
@@ -59,7 +63,6 @@ class LightnCandy {
     }
 
     protected static function scan($token, &$context) {
-print_r($token);
         $head = substr($token[2], 0, 1);
         $act = substr($token[2], 1);
         $raw = ($token[1] === '{{{');
