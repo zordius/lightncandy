@@ -2,6 +2,8 @@
 class LightnCandy {
     public static $flagErrorlog = false;
     public static $flagThrowException = false;
+    public static $flagStandalone = false;
+    private static $lastContext;
 
     public static function compile($template) {
         $context = Array(
@@ -9,12 +11,23 @@ class LightnCandy {
             'scopes' => Array(),
             'scope' => '',
             'stack' => Array(),
-            'error' => false
+            'error' => false,
+            'usedFeature' => Array(
+                'var' => 0,
+                'raw' => 0,
+                'section' => 0,
+                'invertsection' => 0,
+                'if' => 0,
+                'else' => 0,
+                'each' => 0,
+            )
         );
 
-        $code = preg_replace_callback('/\\{\\{(.+?)\\}\\}/', function ($matches) use (&$context) {
+        $code = preg_replace_callback('/(\\{{2,3})(.+?)(\\}{2,3})/', function ($matches) use (&$context) {
             return '\'' . LightnCandy::tokens($matches, $context) . '\'';
         }, $template);
+
+        self::$lastContext = $context;
 
         if ($context['error']) {
             if (self::flagErrorlog) {
@@ -25,10 +38,15 @@ class LightnCandy {
             }
             return false;
         }
+
         return "<?php return function (\$in) {
     return '$code';
 }
 ?>";
+    }
+
+    public static function getContext() {
+        return self::$lastContext;
     }
 
     protected static function _scope($scopes) {
@@ -44,10 +62,11 @@ class LightnCandy {
     }
 
     public static function tokens($token, &$context) {
-        $act = substr($token[1], 1);
+        $act = substr($token[2], 1);
 
-        switch (substr($token[1], 0, 1)) {
+        switch (substr($token[2], 0, 1)) {
         case '^':
+            $context['usedFeature']['invertsection'] ++;
             $vn = self::_vn($act);
             $context['stack'][] = $act;
             $context['stack'][] = '^';
@@ -71,7 +90,7 @@ class LightnCandy {
                 case '^':
                     $pop2 = array_pop($context['stack']);
                     if ($pop2 !== $act) {
-                        $context['error'] = "Unexpect token $token[1] ! Previous token $pop$pop2 is not closed";
+                        $context['error'] = "Unexpect token $token[2] ! Previous token $pop$pop2 is not closed";
                         return;
                     }
                     if ($pop == '^') {
@@ -83,21 +102,25 @@ class LightnCandy {
                     $context['scope'] = self::_scope($context['scopes']);
                     return ";}, \$in{$context['scope']}$vn)).";
                 default:
-                    $context['error'] = "Unexpect token: $token[1] !";
+                    $context['error'] = "Unexpect token: $token[2] !";
                     return;
                 }
             }
         case '#':
             switch ($act) {
             case 'if':
+                $context['usedFeature']['if'] ++;
                 $vn = self::_vn($act);
                 return "(\$in{$context['scope']}$vn ? (";
             case 'else':
+                $context['usedFeature']['else'] ++;
                 $context['stack'][] = ':';
                 return ') : (';
             case 'each':
+                $context['usedFeature']['each'] ++;
                 $act = substr($act, 5);
             default:
+                $context['usedFeature']['section'] ++;
                 $context['level']++;
                 $context['scopes'][] = "'$act'";
                 $context['scopes'][] = "\$k{$context['level']}";
@@ -107,7 +130,8 @@ class LightnCandy {
                 return ".implode('', array_map(function(\$v, \$k{$context['level']}) use (\$in) {return ";
             }
         default:
-            $vn = self::_scope(explode('.', $token[1]));
+            $context['usedFeature']['var'] ++;
+            $vn = self::_vn($token[2]);
             return ".\$in{$context['scope']}$vn.";
         }
     }

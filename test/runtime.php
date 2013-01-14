@@ -7,6 +7,8 @@ $php = LightnCandy::compile($template);
 // Do not suggested this way, because it require php setting allow_url_fopen=1 , not secure.
 echo "Template is:\n$template\n\n";
 echo "Rendered PHP code is:\n$php\n\n";
+echo 'LightnCandy Context:';
+print_r(LightnCandy::getContext());
 $renderer = LightnCandy::prepare($php);
 
 echo $renderer(Array('name' => 'John', 'value' => 10000));
