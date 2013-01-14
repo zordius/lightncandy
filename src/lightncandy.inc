@@ -40,10 +40,11 @@ class LightnCandy {
             }
             return false;
         }
+
         if ($context['usedFeature']['sec'] < 1) {
-            $context['useVar'] = Array();
+            $context['useVar'] = Array('$in');
         }
-        
+
         $code = preg_replace_callback(self::TOKEN_SEARCH, function ($matches) use (&$context) {
             return '\'' . LightnCandy::tokens($matches, $context) . '\'';
         }, $template);
@@ -158,7 +159,12 @@ class LightnCandy {
             }
         default:
             $fn = $raw ? 'raw' : 'enc';
-            return ".{$context['obj']}{$fn}('{$token[2]}', \$cx, \$in).";
+            if ($context['useVar']) {
+                $v = end($context['useVar']) . "['{$token[2]}']";
+                return $raw ? ".(($v === true) ? 'true' : $v)." : ".(($v === true) ? 'true' : htmlentities($v, ENT_QUOTES)).";
+            } else {
+                return ".{$context['obj']}{$fn}('{$token[2]}', \$cx, \$in).";
+            }
         }
     }
 
