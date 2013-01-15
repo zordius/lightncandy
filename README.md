@@ -55,6 +55,7 @@ Welcome Peter , You win $1000 dollars!!
 Detail Feature list
 -------------------
 
+* Exact same CR/LF behavior with handlebars.js
 * {{{value}}} : raw variable
    * true as 'true'
    * false as ''
