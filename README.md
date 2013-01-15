@@ -64,6 +64,7 @@ Detail Feature list
    * false as ''
 * {{#value}} : section
    * false, undefined and null will skip the section
+   * true will run the section with original scope
    * All others will run the section with new scope (include 0, 1, -1, '', '1', '0', '-1', 'false', Array, ...)
 * {{/value}} : end section
 * {{^value}} : inverted section
