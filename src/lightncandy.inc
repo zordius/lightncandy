@@ -243,6 +243,14 @@ class LightnCandy {
     }
 
     public static function raw($var, $cx, $in) {
+        if (preg_match('/(.+?)\\.(.+)/', $var, $matched)) {
+            if (array_key_exists($matched[1], $in)) {
+                return self::enc($matched[2], $cx, $in[$matched[1]]);
+            } else {
+                return '';
+            }
+        }
+
         $v = ($var === '') ? $in : $in[$var];
         if ($v === true) {
             if ($cx['flags']['jstrue']) {
@@ -265,26 +273,7 @@ class LightnCandy {
     }
 
     public static function enc($var, $cx, $in) {
-        $v = ($var === '') ? $in : $in[$var];
-
-        if ($v === true) {
-            if ($cx['flags']['jstrue']) {
-                return 'true';
-            }
-        } elseif (is_array($v)) {
-            if ($cx['flags']['jsobj']) {
-                if (count(array_diff_key($v, array_keys(array_keys($v)))) > 0) {
-                    return '[object Object]';
-                } else {
-                    $ret = Array();
-                    foreach ($v as $k => $vv) {
-                        $ret[] = self::enc($k, $cx, $v);
-                    }
-                    return join(',', $ret);
-                }
-            }
-        }
-        return htmlentities($v, ENT_QUOTES);
+        return htmlentities(self::raw($var, $cx, $in), ENT_QUOTES);
     }
 
     public static function sec($var, &$cx, $in, $each, $cb) {
