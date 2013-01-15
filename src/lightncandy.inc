@@ -174,7 +174,7 @@ class LightnCandy {
     }
 
     public static function ifvar($var, $in) {
-        return (!is_null($var) && ($var !== false));
+        return (!is_null($in[$var]) && ($in[$var] !== false));
     }
 
     public static function raw($var, $cx, $in) {
