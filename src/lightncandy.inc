@@ -37,6 +37,8 @@ class LightnCandy {
                 'if' => 0,
                 'else' => 0,
                 'each' => 0,
+                'this' => 0,
+                'dot' => 0,
                 'comment' => 0
             )
         );
@@ -140,6 +142,12 @@ class LightnCandy {
         case '!':
             return $context['usedFeature']['comment'] ++;
         default:
+            switch ($token[2]) {
+                case 'this':
+                    return $context['usedFeature']['this'] ++;
+                case '.':
+                    return $context['usedFeature']['dot'] ++;
+            }
             $fn = $raw ? 'raw' : 'enc';
             return $context['usedFeature'][$fn] ++;
         }
