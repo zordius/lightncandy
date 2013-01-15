@@ -58,11 +58,14 @@ CONSTANTS
 You can apply more flags by running LightnCandy::prepare($php, $flags)
 for example:
 
-LightnCandy::prepare($php, LightnCandy::FLAG_ERROR_LOG | FLAG_STANDALONE);
+LightnCandy::prepare($php, LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_STANDALONE);
 
 * FLAG_ERROR_LOG : output error_log when found template any error
 * FLAG_ERROR_EXCEPTION : throw exception when found any template error
 * FLAG_STANDALONE : generate stand alone php codes which can be execute without include LightnCandy. It will contain scopped user function, somehow larger.
+* FLAG_JSTRUE: generate 'true' when value is true, this is handlebars.js behavior. Otherwise, true will generate ''.
+* FLAG_THIS: support {{this}} or {{.}} in template. Otherwise, {{this}} and {{.}} will cause template error.
+* FLAG_HANDLEBARSJS: align with handlebars.js behaviors, same as FLAG_JSTRUE + FLAG_THIS.
 
 Detail Feature list
 -------------------
