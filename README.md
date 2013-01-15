@@ -51,3 +51,18 @@ Rendered PHP code is:
 Welcome John , You win $10000 dollars!!
 Welcome Peter , You win $1000 dollars!!
 </pre>
+
+Detail Feature list
+-------------------
+
+* {{{value}}} : raw variable
+   * true as 'true'
+   * false as ''
+* {{value}} : html encoded variable
+   * true as 'true'
+   * false as ''
+* {{#value}} : section
+   * Array as loop with new scope
+   * all others as 'if' logic with original scope
+* {{/value}} : end section
+* {{^value}} : inverted section
