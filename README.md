@@ -78,6 +78,8 @@ Detail Feature list
    * true as 'true'
    * false as ''
 * {{path.to.value}} : dot notation
+* {{.}} : current context
+* {{this}} : current context
 * {{#value}} : section
    * false, undefined and null will skip the section
    * true will run the section with original scope
