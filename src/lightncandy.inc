@@ -255,7 +255,7 @@ class LightnCandy {
 
     public static function enc($var, $cx, $in) {
         $v = ($var === '') ? $in : $in[$var];
-m
+
         if ($v === true) {
             if ($cx['flags']['jstrue']) {
                 return 'true';
