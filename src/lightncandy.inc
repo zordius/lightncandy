@@ -204,6 +204,9 @@ class LightnCandy {
         if ($in[$var] === true) {
             return $cb($cx, $in);
         }
+        if (is_string($in[$var])) {
+            return $cb($cx, Array());
+        }
         if (!is_null($in[$var]) && ($in[$var] !== false)) {
             return $cb($cx, $in[$var]);
         }
