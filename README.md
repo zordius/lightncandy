@@ -63,7 +63,9 @@ Detail Feature list
    * true as 'true'
    * false as ''
 * {{#value}} : section
-   * Array as loop with new scope
-   * all others as 'if' logic with original scope
+   * false, undefined and null will skip the section
+   * All others will run the section with new scope (include 0, 1, -1, '', '1', '0', '-1', 'false', Array, ...)
 * {{/value}} : end section
 * {{^value}} : inverted section
+   * false, undefined and null will run the section with original scope
+   * All others will skip the section (include 0, 1, -1, '', '1', '0', '-1', 'false', ...)

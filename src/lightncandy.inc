@@ -108,7 +108,12 @@ class LightnCandy {
         case '^':
             $context['stack'][] = $act;
             $context['stack'][] = '^';
-            return ".({$context['obj']}isec('$act', \$in) ? (";
+            if ($context['useVar']) {
+                $v = end($context['useVar']) . "['{$act}']";
+                return ".((is_null($v) && ($v !== false)) ? ("; 
+            } else {
+                return ".({$context['obj']}isec('$act', \$in) ? (";
+            }
         case '/':
             switch ($act) {
             case 'if':
@@ -169,7 +174,7 @@ class LightnCandy {
     }
 
     public static function ifvar($var, $in) {
-        return $in[$var];
+        return (!is_null($var) && ($var !== false));
     }
 
     public static function raw($var, $cx, $in) {
@@ -196,8 +201,8 @@ class LightnCandy {
         if (is_array($in[$var])) {
             return $cb($cx, $in[$var]);
         }
-        if ($in[$var]) {
-            return $cb($cx, $in);
+        if (!is_null($in[$var]) && ($in[$var] !== false)) {
+            return $cb($cx, $in[$var]);
         }
         return '';
     }
