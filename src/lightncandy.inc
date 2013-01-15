@@ -70,6 +70,18 @@ class LightnCandy {
         return self::$lastContext;
     }
 
+    protected static function _scope($scopes) {
+        return count($scopes) ? '[' . implode('][', $scopes) . ']' : '';
+    }
+
+    protected static function _qscope($list) {
+        return self::_scope(array_map(function ($v) {return "'$v'";}, $list));
+    }
+
+    protected static function _vn($vn) {
+        return self::_qscope(explode('.', $vn));
+    }
+
     protected static function scan($token, &$context) {
         $head = substr($token[2], 0, 1);
         $act = substr($token[2], 1);
@@ -176,7 +188,7 @@ class LightnCandy {
         default:
             $fn = $raw ? 'raw' : 'enc';
             if ($context['useVar']) {
-                $v = end($context['useVar']) . "['{$token[2]}']";
+                $v = end($context['useVar']) . self::_vn($token[2]);
                 return $raw ? ".(($v === true) ? 'true' : $v)." : ".(($v === true) ? 'true' : htmlentities($v, ENT_QUOTES)).";
             } else {
                 return ".{$context['obj']}{$fn}('{$token[2]}', \$cx, \$in).";

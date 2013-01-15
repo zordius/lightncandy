@@ -74,6 +74,7 @@ Detail Feature list
 * {{value}} : html encoded variable
    * true as 'true'
    * false as ''
+* {{path.to.value}} : dot notation
 * {{#value}} : section
    * false, undefined and null will skip the section
    * true will run the section with original scope
