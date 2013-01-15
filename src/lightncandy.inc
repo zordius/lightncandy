@@ -66,8 +66,8 @@ class LightnCandy {
             return '\'' . LightnCandy::tokens($matches, $context) . '\'';
         }, $template);
 
-        $flagJStrue = self::_true($context['flags']['jstrue']);
-        $flagJSObj = self::_true($context['flags']['jsobj']);
+        $flagJStrue = self::_on($context['flags']['jstrue']);
+        $flagJSObj = self::_on($context['flags']['jsobj']);
 
         return "<?php return function (\$in) {
     \$cx = Array(
@@ -85,6 +85,10 @@ class LightnCandy {
 
     public static function getContext() {
         return self::$lastContext;
+    }
+
+    protected static function _on($v) {
+        return ($v > 0) ? 'true' : $v;
     }
 
     protected static function _true($v) {
