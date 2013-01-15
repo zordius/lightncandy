@@ -1,18 +1,24 @@
 <?php
 class LightnCandy {
-    public static $flagErrorlog = false;
-    public static $flagThrowException = false;
-    public static $flagStandalone = false;
-    private static $lastContext;
+    const FLAG_ERROR_LOG = 1;
+    const FLAG_ERROR_EXCEPTION = 2;
+    const FLAG_STANDALONE = 4;
     const TOKEN_SEARCH = '/(\\{{2,3})(.+?)(\\}{2,3})/';
 
-    public static function compile($template) {
+    private static $lastContext;
+
+    public static function compile($template, $flags = 0) {
         $context = Array(
+            'flags' => Array(
+                'errorlog' => $flags & self::FLAG_ERROR_LOG,
+                'exception' => $flags & self::FLAG_ERROR_EXCEPTION,
+                'standalong' => $flags & self::FLAG_STANDALONE,
+            ),
             'level' => 0,
             'stack' => Array(),
             'error' => false,
             'useVar' => false,
-            'obj' => self::$flagStandalone ? '$' : 'LightnCandy::',
+            'obj' => ($flags & self::FLAG_STANDALONE) ? '$' : 'LightnCandy::',
             'usedFeature' => Array(
                 'enc' => 0,
                 'raw' => 0,
@@ -21,6 +27,7 @@ class LightnCandy {
                 'if' => 0,
                 'else' => 0,
                 'each' => 0,
+                'comment' => 0
             )
         );
 
@@ -32,10 +39,10 @@ class LightnCandy {
         self::$lastContext = $context;
 
         if ($context['error']) {
-            if (self::$flagErrorlog) {
+            if ($context['flags']['errorlog']) {
                 error_log($context['error']);
             }
-            if (self::$flagThrowException) {
+            if ($context['flags']['exception']) {
                 throw new Exception($context['error']);
             }
             return false;
@@ -93,6 +100,8 @@ class LightnCandy {
             default:
                 return $context['usedFeature']['sec'] ++;
             }
+        case '!':
+            return $context['usedFeature']['comment'] ++;
         default:
             $fn = $raw ? 'raw' : 'enc';
             return $context['usedFeature'][$fn] ++;
@@ -162,6 +171,8 @@ class LightnCandy {
                 $context['stack'][] = '#';
                 return ".{$context['obj']}sec('$act', \$cx, \$in, $each, function(\$cx, \$in) {return ";
             }
+        case '!':
+            return '.';
         default:
             $fn = $raw ? 'raw' : 'enc';
             if ($context['useVar']) {

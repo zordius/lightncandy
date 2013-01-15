@@ -52,6 +52,18 @@ Welcome John , You win $10000 dollars!!
 Welcome Peter , You win $1000 dollars!!
 </pre>
 
+CONSTANTS
+---------
+
+You can apply more flags by running LightnCandy::prepare($php, $flags)
+for example:
+
+LightnCandy::prepare($php, LightnCandy::FLAG_ERROR_LOG | FLAG_STANDALONE);
+
+* FLAG_ERROR_LOG : output error_log when found template any error
+* FLAG_ERROR_EXCEPTION : throw exception when found any template error
+* FLAG_STANDALONE : generate stand alone php codes which can be execute without include LightnCandy. It will contain scopped user function, somehow larger.
+
 Detail Feature list
 -------------------
 
@@ -70,3 +82,4 @@ Detail Feature list
 * {{^value}} : inverted section
    * false, undefined and null will run the section with original scope
    * All others will skip the section (include 0, 1, -1, '', '1', '0', '-1', 'false', ...)
+* {{! comment}} : comment
