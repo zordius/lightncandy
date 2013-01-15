@@ -14,7 +14,7 @@ class LightnCandy {
 
     private static $lastContext;
 
-    public static function compile($template, $flags = self::FLAG_HANDLEBARSJS) {
+    public static function compile($template, $flags = self::FLAG_BESTPERFORMANCE) {
         $context = Array(
             'flags' => Array(
                 'errorlog' => $flags & self::FLAG_ERROR_LOG,
@@ -60,7 +60,7 @@ class LightnCandy {
             return false;
         }
 
-        if (($context['usedFeature']['sec'] < 1) || !$context['flags']['jsobj']) {
+        if (!$context['flags']['jsobj'] && (($context['usedFeature']['sec'] < 1) || !$context['flags']['jsobj'])) {
             $context['useVar'] = Array('$in');
         }
 
@@ -222,7 +222,6 @@ class LightnCandy {
             if (($token[2] == 'this') || $token[2] == '.') {
                 if ($context['flags']['this']) {
                     $token[2] = null;
-                } else {
                 }
             }
             $fn = $raw ? 'raw' : 'enc';

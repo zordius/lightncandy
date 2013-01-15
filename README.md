@@ -13,6 +13,7 @@ Features
 Sample
 ------
 <pre>
+// require the lib, compile template string
 require('src/lightncandy.inc');
 $template = "Welcome {{name}} , You win \${{value}} dollars!!\n";
 $php = LightnCandy::compile($template);
@@ -55,10 +56,12 @@ Welcome Peter , You win $1000 dollars!!
 CONSTANTS
 ---------
 
-You can apply more flags by running LightnCandy::prepare($php, $flags)
+You can apply more flags by running LightnCandy::compile($php, $flags)
 for example:
 
-LightnCandy::prepare($php, LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_STANDALONE);
+LightnCandy::compile($php, LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_STANDALONE);
+
+Default is to compile the template to php can be run as fast as possible, all flags are off.
 
 * FLAG_ERROR_LOG : output error_log when found template any error
 * FLAG_ERROR_EXCEPTION : throw exception when found any template error
