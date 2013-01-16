@@ -77,6 +77,7 @@ Detail Feature list
 * Exact same CR/LF behavior with handlebars.js
 * Exact same 'true' output with handlebars.js (require FLAG_JSTRUE)
 * Exact same '[object Object]' output or join(',' array) output with handlebars.js (require FLAG_JSOBJECT)
+* Can place heading/tailing space, tab, CR/LF inside {{ var }} or {{{ var }}}
 * {{{value}}} : raw variable
    * true as 'true'
    * false as ''

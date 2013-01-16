@@ -10,7 +10,7 @@ class LightnCandy {
     const FLAG_BESTPERFORMANCE = 0;
     const FLAG_HANDLEBARSJS = 56; // FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS 
 
-    const TOKEN_SEARCH = '/(\\{{2,3})(.+?)(\\}{2,3})/';
+    const TOKEN_SEARCH = '/(\\{{2,3})(.+?)(\\}{2,3})/s';
 
     private static $lastContext;
 
@@ -219,6 +219,7 @@ class LightnCandy {
         case '!':
             return '.';
         default:
+            $token[2] = trim($token[2]);
             if (($token[2] == 'this') || $token[2] == '.') {
                 if ($context['flags']['this']) {
                     $token[2] = null;
