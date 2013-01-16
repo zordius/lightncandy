@@ -69,7 +69,7 @@ Default is to compile the template as php which can be run as fast as possible, 
 * FLAG_JSTRUE: generate 'true' when value is true (handlebars.js behavior). Otherwise, true will generate ''.
 * FLAG_JSOBJECT: generate '[object Object]' for associated array, generate ',' seperated values for array (handlebars.js behavior). Otherwise, all php array will generate ''.
 * FLAG_THIS: support {{this}} or {{.}} in template. Otherwise, {{this}} and {{.}} will cause template error.
-* FLAG_HANDLEBARSJS: align with handlebars.js behaviors, same as FLAG_JSTRUE + FLAG_THIS.
+* FLAG_HANDLEBARSJS: align with handlebars.js behaviors, same as FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS.
 
 Detail Feature list
 -------------------
