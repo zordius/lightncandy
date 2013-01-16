@@ -61,7 +61,7 @@ for example:
 
 LightnCandy::compile($php, LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_STANDALONE);
 
-Default is to compile the template to php can be run as fast as possible, all flags are off.
+Default is to compile the template as php which can be run as fast as possible, all flags are off.
 
 * FLAG_ERROR_LOG : output error_log when found template any error
 * FLAG_ERROR_EXCEPTION : throw exception when found any template error
