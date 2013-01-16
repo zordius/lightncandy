@@ -312,17 +312,19 @@ class LightnCandy {
 
     public static function sec($var, &$cx, $in, $each, $cb) {
         $v = ($var === '') ? $in : $in[$var];
-        if (!$each && is_array($v)) {
-            if (count(array_diff_key($v, array_keys(array_keys($v)))) == 0) {
-                $each = true;
-            }
+        $loop = $each;
+        if (is_array($v)) {
+            $loop = (count(array_diff_key($v, array_keys(array_keys($v)))) == 0);
         }
-        if ($each) {
+        if ($loop) {
             $ret = Array();
             foreach ($v as $raw) {
                 $ret[] = $cb($cx, $raw);
             }
             return join('', $ret);
+        }
+        if ($each) {
+            return '';
         }
         if (is_array($v)) {
             return $cb($cx, $v);
