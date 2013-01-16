@@ -48,15 +48,8 @@ class LightnCandy {
                 self::scan($token, $context);
             }
         }
-        self::$lastContext = $context;
 
-        if ($context['error']) {
-            if ($context['flags']['errorlog']) {
-                error_log($context['error']);
-            }
-            if ($context['flags']['exception']) {
-                throw new Exception($context['error']);
-            }
+        if (self::_error($context)) {
             return false;
         }
 
@@ -67,6 +60,10 @@ class LightnCandy {
         $code = preg_replace_callback(self::TOKEN_SEARCH, function ($matches) use (&$context) {
             return '\'' . LightnCandy::tokens($matches, $context) . '\'';
         }, $template);
+
+        if (self::_error($context)) {
+            return false;
+        }
 
         $flagJStrue = self::_on($context['flags']['jstrue']);
         $flagJSObj = self::_on($context['flags']['jsobj']);
@@ -83,6 +80,20 @@ class LightnCandy {
     return '$code';
 }
 ?>";
+    }
+
+    protected static function _error($context) {
+        self::$lastContext = $context;
+        if ($context['error']) {
+            if ($context['flags']['errorlog']) {
+                error_log($context['error']);
+            }
+            if ($context['flags']['exception']) {
+                throw new Exception($context['error']);
+            }
+            return true;
+        }
+        return false;
     }
 
     public static function getContext() {
@@ -129,7 +140,8 @@ class LightnCandy {
         case '^':
             return $context['usedFeature']['isec'] ++;
         case '#':
-            switch ($act) {
+            $acts = explode(' ', $act);
+            switch ($acts[0]) {
             case 'if':
                 return $context['usedFeature']['if'] ++;
             case 'else':
@@ -169,6 +181,7 @@ class LightnCandy {
                 return ".({$context['obj']}isec('$act', \$in) ? (";
             }
         case '/':
+            $each = false;
             switch ($act) {
             case 'if':
                 $pop = array_pop($context['stack']);
@@ -178,7 +191,7 @@ class LightnCandy {
                 }
                 return ') : \'\').';
             case 'each':
-                $act = substr($act, 5);
+                $each = true;
             default:
                 $context['level']--;
                 $pop = array_pop($context['stack']);
@@ -186,7 +199,7 @@ class LightnCandy {
                 case '#':
                 case '^':
                     $pop2 = array_pop($context['stack']);
-                    if ($pop2 !== $act) {
+                    if (!$each && ($pop2 !== $act)) {
                         $context['error'] = "Unexpect token {$token[2]} ! Previous token $pop$pop2 is not closed";
                         return;
                     }
@@ -200,17 +213,18 @@ class LightnCandy {
                 }
             }
         case '#':
-            switch ($act) {
+            $each = 'false';
+            $acts = explode(' ', $act);
+            switch ($acts[0]) {
             case 'if':
-                $act = substr($act, 3);
-                return ".({$context['obj']}ifvar('{$act}', \$in) ? (";
+                return ".({$context['obj']}ifvar('{$acts[1]}', \$in) ? (";
             case 'else':
                 $context['stack'][] = ':';
                 return ') : (';
             case 'each':
-                $act = substr($act, 5);
+                $each = 'true';
+                $act = $acts[1];
             default:
-                $each = ($act == 'each') ? 'true' : 'false';
                 $context['level']++;
                 $context['stack'][] = $act;
                 $context['stack'][] = '#';
