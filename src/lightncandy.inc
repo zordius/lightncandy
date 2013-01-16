@@ -144,8 +144,6 @@ class LightnCandy {
             switch ($acts[0]) {
             case 'if':
                 return $context['usedFeature']['if'] ++;
-            case 'else':
-                return $context['usedFeature']['else'] ++;
             case 'each':
                 return $context['usedFeature']['each'] ++;
             default:
@@ -155,6 +153,8 @@ class LightnCandy {
             return $context['usedFeature']['comment'] ++;
         default:
             switch ($token[2]) {
+                case 'else':
+                    return $context['usedFeature']['else'] ++;
                 case 'this':
                     return $context['usedFeature']['this'] ++;
                 case '.':
@@ -218,9 +218,6 @@ class LightnCandy {
             switch ($acts[0]) {
             case 'if':
                 return ".({$context['obj']}ifvar('{$acts[1]}', \$in) ? (";
-            case 'else':
-                $context['stack'][] = ':';
-                return ') : (';
             case 'each':
                 $each = 'true';
                 $act = $acts[1];
@@ -234,6 +231,10 @@ class LightnCandy {
             return '.';
         default:
             $token[2] = trim($token[2]);
+            if ($token[2] ==='else') {
+                $context['stack'][] = ':';
+                return ') : (';
+            }
             if (($token[2] == 'this') || $token[2] == '.') {
                 if ($context['flags']['this']) {
                     $token[2] = null;

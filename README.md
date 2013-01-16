@@ -99,3 +99,8 @@ Detail Feature list
    * false, undefined and null will run the section with original scope
    * All others will skip the section (include 0, 1, -1, '', '1', '0', '-1', 'false', ...)
 * {{! comment}} : comment
+* {{#each var}} : each loop
+* {{/each}} : end loop
+* {{#if var}} : run if logic with original scope
+* {{/if}} : end if
+* {{else}} : run else logic, should between {{#if var}} and {{/if}}
