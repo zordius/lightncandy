@@ -245,7 +245,7 @@ class LightnCandy {
     public static function raw($var, $cx, $in) {
         if (preg_match('/(.+?)\\.(.+)/', $var, $matched)) {
             if (array_key_exists($matched[1], $in)) {
-                return self::enc($matched[2], $cx, $in[$matched[1]]);
+                return self::raw($matched[2], $cx, $in[$matched[1]]);
             } else {
                 return '';
             }
@@ -263,7 +263,7 @@ class LightnCandy {
                 } else {
                     $ret = Array();
                     foreach ($v as $k => $vv) {
-                        $ret[] = self::enc($k, $cx, $v);
+                        $ret[] = self::raw($k, $cx, $v);
                     }
                     return join(',', $ret);
                 }

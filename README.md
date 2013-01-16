@@ -80,7 +80,8 @@ Detail Feature list
 * {{value}} : html encoded variable
    * true as 'true'
    * false as ''
-* {{path.to.value}} : dot notation
+* {{{path.to.value}}} : dot notation, raw
+* {{path.to.value}} : dot notation, html encoded
 * {{.}} : current context
 * {{this}} : current context
 * {{#value}} : section
