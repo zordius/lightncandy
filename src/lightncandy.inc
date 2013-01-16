@@ -155,6 +155,7 @@ class LightnCandy {
         case '!':
             return $context['usedFeature']['comment'] ++;
         default:
+            $token[2] = trim($token[2]);
             switch ($token[2]) {
                 case 'else':
                     return $context['usedFeature']['else'] ++;
@@ -222,14 +223,23 @@ class LightnCandy {
             switch ($acts[0]) {
             case 'if':
                 $context['stack'][] = 'if';
+                if (($acts[1] == 'this') || $acts[1] == '.') {
+                    $acts[1] = null;
+                }
                 return ".({$context['obj']}ifvar('{$acts[1]}', \$in) ? (";
             case 'unless':
                 $context['stack'][] = 'unless';
+                if (($acts[1] == 'this') || $acts[1] == '.') {
+                    $acts[1] = null;
+                }
                 return ".(!{$context['obj']}ifvar('{$acts[1]}', \$in) ? (";
             case 'each':
                 $each = 'true';
                 $act = $acts[1];
             default:
+                if (($act == 'this') || $act == '.') {
+                    $act = null;
+                }
                 $context['level']++;
                 $context['stack'][] = $act;
                 $context['stack'][] = '#';
@@ -301,29 +311,30 @@ class LightnCandy {
     }
 
     public static function sec($var, &$cx, $in, $each, $cb) {
-        if (!$each && is_array($in[$var])) {
-            if (count(array_diff_key($in[$var], array_keys(array_keys($in[$var])))) == 0) {
+        $v = ($var === '') ? $in : $in[$var];
+        if (!$each && is_array($v)) {
+            if (count(array_diff_key($v, array_keys(array_keys($v)))) == 0) {
                 $each = true;
             }
         }
         if ($each) {
             $ret = Array();
-            foreach ($in[$var] as $raw) {
+            foreach ($v as $raw) {
                 $ret[] = $cb($cx, $raw);
             }
             return join('', $ret);
         }
-        if (is_array($in[$var])) {
-            return $cb($cx, $in[$var]);
+        if (is_array($v)) {
+            return $cb($cx, $v);
         }
-        if ($in[$var] === true) {
+        if ($v === true) {
             return $cb($cx, $in);
         }
-        if (is_string($in[$var])) {
+        if (is_string($v)) {
             return $cb($cx, Array());
         }
-        if (!is_null($in[$var]) && ($in[$var] !== false)) {
-            return $cb($cx, $in[$var]);
+        if (!is_null($v) && ($v !== false)) {
+            return $cb($cx, $v);
         }
         return '';
     }
