@@ -252,7 +252,7 @@ class LightnCandy {
             }
         }
 
-        $v = ($var === '') ? $in : $in[$var];
+        $v = ($var === '') ? $in : (is_array($in) ? $in[$var] : '');
         if ($v === true) {
             if ($cx['flags']['jstrue']) {
                 return 'true';
