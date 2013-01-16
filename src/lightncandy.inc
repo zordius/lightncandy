@@ -36,6 +36,7 @@ class LightnCandy {
                 'isec' => 0,
                 'if' => 0,
                 'else' => 0,
+                'unless' => 0,
                 'each' => 0,
                 'this' => 0,
                 'dot' => 0,
@@ -144,6 +145,8 @@ class LightnCandy {
             switch ($acts[0]) {
             case 'if':
                 return $context['usedFeature']['if'] ++;
+            case 'unless':
+                return $context['usedFeature']['unless'] ++;
             case 'each':
                 return $context['usedFeature']['each'] ++;
             default:
@@ -184,6 +187,7 @@ class LightnCandy {
             $each = false;
             switch ($act) {
             case 'if':
+            case 'unless':
                 $pop = array_pop($context['stack']);
                 if ($pop == ':') {
                     $pop = array_pop($context['stack']);
@@ -217,7 +221,11 @@ class LightnCandy {
             $acts = explode(' ', $act);
             switch ($acts[0]) {
             case 'if':
+                $context['stack'][] = 'if';
                 return ".({$context['obj']}ifvar('{$acts[1]}', \$in) ? (";
+            case 'unless':
+                $context['stack'][] = 'unless';
+                return ".(!{$context['obj']}ifvar('{$acts[1]}', \$in) ? (";
             case 'each':
                 $each = 'true';
                 $act = $acts[1];

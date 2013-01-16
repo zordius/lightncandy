@@ -104,3 +104,4 @@ Detail Feature list
 * {{#if var}} : run if logic with original scope
 * {{/if}} : end if
 * {{else}} : run else logic, should between {{#if var}} and {{/if}}
+* {{#unless var}} : run unless logic with original scope
