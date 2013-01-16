@@ -66,7 +66,8 @@ Default is to compile the template as php which can be run as fast as possible, 
 * FLAG_ERROR_LOG : output error_log when found template any error
 * FLAG_ERROR_EXCEPTION : throw exception when found any template error
 * FLAG_STANDALONE : generate stand alone php codes which can be execute without include LightnCandy. It will contain scopped user function, somehow larger.
-* FLAG_JSTRUE: generate 'true' when value is true, this is handlebars.js behavior. Otherwise, true will generate ''.
+* FLAG_JSTRUE: generate 'true' when value is true (handlebars.js behavior). Otherwise, true will generate ''.
+* FLAG_JSOBJECT: generate '[object Object]' for associated array, generate ',' seperated values for array (handlebars.js behavior). Otherwise, all php array will generate ''.
 * FLAG_THIS: support {{this}} or {{.}} in template. Otherwise, {{this}} and {{.}} will cause template error.
 * FLAG_HANDLEBARSJS: align with handlebars.js behaviors, same as FLAG_JSTRUE + FLAG_THIS.
 
@@ -74,6 +75,8 @@ Detail Feature list
 -------------------
 
 * Exact same CR/LF behavior with handlebars.js
+* Exact same 'true' output with handlebars.js (require FLAG_JSTRUE)
+* Exact same '[object Object]' output or join(',' array) output with handlebars.js (require FLAG_JSOBJECT)
 * {{{value}}} : raw variable
    * true as 'true'
    * false as ''
@@ -82,8 +85,10 @@ Detail Feature list
    * false as ''
 * {{{path.to.value}}} : dot notation, raw
 * {{path.to.value}} : dot notation, html encoded
-* {{.}} : current context
-* {{this}} : current context
+* {{.}} : current context, html encoded
+* {{this}} : current context, html encoded
+* {{.}} : current context, raw
+* {{this}} : current context, raw
 * {{#value}} : section
    * false, undefined and null will skip the section
    * true will run the section with original scope
