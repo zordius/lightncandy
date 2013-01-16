@@ -102,7 +102,7 @@ class LightnCandy {
     }
 
     protected static function _on($v) {
-        return ($v > 0) ? 'true' : $v;
+        return ($v > 0) ? 'true' : 'false';
     }
 
     protected static function _true($v) {
@@ -115,6 +115,15 @@ class LightnCandy {
 
     protected static function _qscope($list) {
         return self::_scope(array_map(function ($v) {return "'$v'";}, $list));
+    }
+
+    protected static function _v(&$v, $context) {
+        $v = trim($v);
+        if (($v == 'this') || $v == '.') {
+            if ($context['flags']['this']) {
+                $v = null;
+            }
+        }
     }
 
     protected static function _vn($vn) {
@@ -223,23 +232,17 @@ class LightnCandy {
             switch ($acts[0]) {
             case 'if':
                 $context['stack'][] = 'if';
-                if (($acts[1] == 'this') || $acts[1] == '.') {
-                    $acts[1] = null;
-                }
+                self::_v($acts[1], $context);
                 return ".({$context['obj']}ifvar('{$acts[1]}', \$in) ? (";
             case 'unless':
                 $context['stack'][] = 'unless';
-                if (($acts[1] == 'this') || $acts[1] == '.') {
-                    $acts[1] = null;
-                }
+                self::_v($acts[1], $context);
                 return ".(!{$context['obj']}ifvar('{$acts[1]}', \$in) ? (";
             case 'each':
                 $each = 'true';
                 $act = $acts[1];
             default:
-                if (($act == 'this') || $act == '.') {
-                    $act = null;
-                }
+                self::_v($act, $context);
                 $context['level']++;
                 $context['stack'][] = $act;
                 $context['stack'][] = '#';
@@ -248,15 +251,10 @@ class LightnCandy {
         case '!':
             return '.';
         default:
-            $token[2] = trim($token[2]);
+            self::_v($token[2], $context);
             if ($token[2] ==='else') {
                 $context['stack'][] = ':';
                 return ') : (';
-            }
-            if (($token[2] == 'this') || $token[2] == '.') {
-                if ($context['flags']['this']) {
-                    $token[2] = null;
-                }
             }
             $fn = $raw ? 'raw' : 'enc';
             if ($context['useVar']) {
