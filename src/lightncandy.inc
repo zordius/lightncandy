@@ -149,6 +149,8 @@ class LightnCandy {
         switch ($head) {
         case '^':
             return $context['usedFeature']['isec'] ++;
+        case '/':
+            return;
         case '#':
             $acts = explode(' ', $act);
             switch ($acts[0]) {
