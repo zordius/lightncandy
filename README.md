@@ -8,6 +8,12 @@ Features
 
 * Logicless template: subset of mustache ( http://mustache.github.com/ ) or handlebars ( http://handlebarsjs.com/ ) .
 * Compile template to pure php code.
+   * Examples:
+      * templateA: https://github.com/zordius/HandlebarsTest/blob/master/fixture/001-simple-vars.tmpl
+      * compile as phpA: https://github.com/zordius/HandlebarsTest/blob/master/fixture/001-simple-vars.php
+      * templateB: https://github.com/zordius/HandlebarsTest/blob/master/fixture/016-hb-eachthis.tmpl
+      * compile as phpB: https://github.com/zordius/HandlebarsTest/blob/master/fixture/016-hb-eachthis.php
+
 * Fast!
    * runs 4~6 times faster than https://github.com/bobthecow/mustache.php
    * runs 4~10 times faster than https://github.com/dingram/mustache-php
