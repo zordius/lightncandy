@@ -9,6 +9,9 @@ Features
 * Logicless template: subset of mustache ( http://mustache.github.com/ ) or handlebars ( http://handlebarsjs.com/ ) .
 * Compile template to pure php code.
 * Fast!
+   * runs 4~6 times faster than https://github.com/bobthecow/mustache.php
+   * runs 4~10 times faster than https://github.com/dingram/mustache-php
+   * runs 10~30 times faster than https://github.com/XaminProject/handlebars.php
 
 Sample
 ------
@@ -70,6 +73,12 @@ Default is to compile the template as php which can be run as fast as possible, 
 * FLAG_JSOBJECT: generate '[object Object]' for associated array, generate ',' seperated values for array (handlebars.js behavior). Otherwise, all php array will generate ''.
 * FLAG_THIS: support {{this}} or {{.}} in template. Otherwise, {{this}} and {{.}} will cause template error.
 * FLAG_HANDLEBARSJS: align with handlebars.js behaviors, same as FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS.
+
+Unsupported Feature (so far)
+----------------------------
+
+* partial (include another template inside a template)
+* set delimiter (change delimiter from {{ }} to custom string, for example <% then %>)
 
 Detail Feature list
 -------------------
