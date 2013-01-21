@@ -74,7 +74,7 @@ LightnCandy::compile($php, LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_STAND
 
 Default is to compile the template as php which can be run as fast as possible, all flags are off.
 
-* FLAG_ERROR_LOG : output error_log when found template any error
+* FLAG_ERROR_LOG : output error_log when found any template error
 * FLAG_ERROR_EXCEPTION : throw exception when found any template error
 * FLAG_STANDALONE : generate stand alone php codes which can be execute without include LightnCandy. It will contain scopped user function, somehow larger.
 * FLAG_JSTRUE: generate 'true' when value is true (handlebars.js behavior). Otherwise, true will generate ''.
@@ -105,8 +105,8 @@ Detail Feature list
 * {{path.to.value}} : dot notation, html encoded
 * {{.}} : current context, html encoded
 * {{this}} : current context, html encoded
-* {{.}} : current context, raw
-* {{this}} : current context, raw
+* {{{.}}} : current context, raw
+* {{{this}}} : current context, raw
 * {{#value}} : section
    * false, undefined and null will skip the section
    * true will run the section with original scope

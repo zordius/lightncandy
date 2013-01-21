@@ -178,8 +178,14 @@ class LightnCandy {
                 case 'else':
                     return $context['usedFeature']['else'] ++;
                 case 'this':
+                    if (!$context['flags']['this']) {
+                        $context['error'] = 'do not support {{this}}, you should do compile with LightnCandy::FLAG_THIS flag';
+                    }
                     return $context['usedFeature']['this'] ++;
                 case '.':
+                    if (!$context['flags']['this']) {
+                        $context['error'] = 'do not support {{.}}, you should do compile with LightnCandy::FLAG_THIS flag';
+                    }
                     return $context['usedFeature']['dot'] ++;
             }
             $fn = $raw ? 'raw' : 'enc';
