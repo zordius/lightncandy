@@ -67,7 +67,7 @@ class LightnCandy {
 
         $code = preg_replace_callback(self::TOKEN_SEARCH, function ($matches) use (&$context) {
             return '\'' . LightnCandy::tokens($matches, $context) . '\'';
-        }, $template);
+        }, addcslashes($template, "'"));
 
         if (self::_error($context)) {
             return false;
