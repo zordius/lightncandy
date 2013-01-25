@@ -41,7 +41,13 @@ class LightnCandy {
             'error' => false,
             'useVar' => false,
             'obj' => ($flags & self::FLAG_STANDALONE) ? '$' : 'LightnCandy::',
+            'jsonSchema' => Array(
+                '$schema' => 'http://json-schema.org/draft-03/schema',
+                'type' => Array('object', 'string', 'array')
+            ),
             'usedFeature' => Array(
+                'rootvar' => 0,
+                'rootthis' => 0,
                 'enc' => 0,
                 'raw' => 0,
                 'sec' => 0,
@@ -178,23 +184,32 @@ class LightnCandy {
         case '!':
             return $context['usedFeature']['comment'] ++;
         default:
+            $fn = $raw ? 'raw' : 'enc';
+            $context['usedFeature'][$fn] ++;
             $token[2] = trim($token[2]);
             switch ($token[2]) {
                 case 'else':
                     return $context['usedFeature']['else'] ++;
                 case 'this':
+                    if ($context['level'] == 0) {
+                        $context['usedFeature']['rootthis'] ++;
+                    }
                     if (!$context['flags']['this']) {
                         $context['error'] = 'do not support {{this}}, you should do compile with LightnCandy::FLAG_THIS flag';
                     }
                     return $context['usedFeature']['this'] ++;
                 case '.':
+                    if ($context['level'] == 0) {
+                        $context['usedFeature']['rootthis'] ++;
+                    }
                     if (!$context['flags']['this']) {
                         $context['error'] = 'do not support {{.}}, you should do compile with LightnCandy::FLAG_THIS flag';
                     }
                     return $context['usedFeature']['dot'] ++;
             }
-            $fn = $raw ? 'raw' : 'enc';
-            return $context['usedFeature'][$fn] ++;
+            if ($context['level'] == 0) {
+                $context['usedFeature']['rootvar'] ++;
+            }
         }
     }
 

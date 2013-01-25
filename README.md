@@ -18,8 +18,14 @@ Features
    * runs 4~6 times faster than https://github.com/bobthecow/mustache.php
    * runs 4~10 times faster than https://github.com/dingram/mustache-php
    * runs 10~30 times faster than https://github.com/XaminProject/handlebars.php
+   * NOTE: Detail performance test reports can be found here: https://github.com/zordius/HandlebarsTest
 
-NOTE: Detail performance test reports can be found here: https://github.com/zordius/HandlebarsTest
+* Context generation
+   * Analyze used feature from your template
+   * generate <B>Json Schema</B>
+      * Do LightnCandy::getContext() right after LightnCandy::compile() to get jsonSchema
+      * Know required data structure from your templates
+      * Verify input data, or find out missing variables
 
 Sample
 ------
