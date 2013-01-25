@@ -13,13 +13,11 @@ Features
       * compile as phpA: https://github.com/zordius/HandlebarsTest/blob/master/fixture/001-simple-vars.php
       * templateB: https://github.com/zordius/HandlebarsTest/blob/master/fixture/016-hb-eachthis.tmpl
       * compile as phpB: https://github.com/zordius/HandlebarsTest/blob/master/fixture/016-hb-eachthis.php
-
 * <B>Fast</B>!
    * runs 4~6 times faster than https://github.com/bobthecow/mustache.php
    * runs 4~10 times faster than https://github.com/dingram/mustache-php
    * runs 10~30 times faster than https://github.com/XaminProject/handlebars.php
    * NOTE: Detail performance test reports can be found here: https://github.com/zordius/HandlebarsTest
-
 * Context generation
    * Analyze used feature from your template
    * generate <B>Json Schema</B>
