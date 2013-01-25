@@ -40,10 +40,11 @@ class LightnCandy {
             'stack' => Array(),
             'error' => false,
             'useVar' => false,
+            'vars' => Array(),
             'obj' => ($flags & self::FLAG_STANDALONE) ? '$' : 'LightnCandy::',
             'jsonSchema' => Array(
                 '$schema' => 'http://json-schema.org/draft-03/schema',
-                'type' => Array('object', 'string', 'array')
+                'description' => 'Template Json Schema'
             ),
             'usedFeature' => Array(
                 'rootvar' => 0,
@@ -119,6 +120,10 @@ class LightnCandy {
         return self::$lastContext;
     }
 
+    public static function getJsonSchema() {
+        return self::$lastContext['jsonSchema'];
+    }
+
     protected static function _on($v) {
         return ($v > 0) ? 'true' : 'false';
     }
@@ -148,6 +153,54 @@ class LightnCandy {
         return $vn ? self::_qscope(explode('.', $vn)) : '';
     }
 
+    protected static function _vs($v) {
+        if ($v == '.') {
+            return Array('.');
+        }
+        return $v ? explode('.', $v) : null;
+    }
+
+    protected static function &_jsp(&$context) {
+        $target = &$context['jsonSchema'];
+        foreach ($context['vars'] as $var) {
+            if ($var) {
+                foreach ($var as $v) {
+                    $target = &self::_jst($target, $v);
+                }
+            }
+            $target = &self::_jst($target);
+        }
+        return $target;
+    }
+
+    protected static function _jsv(&$context, $var) {
+        $target = &self::_jsp($context);
+        foreach (self::_vs($var) as $v) {
+            $target = &self::_jst($target, $v);
+        }
+        $target['type'] = Array('string', 'number');
+        $target['required'] = true;
+    }
+
+    protected static function &_jst(&$target, $key = false) {
+        if ($key) {
+            if (!isset($target['properties'])) {
+                $target['type'] = 'object';
+                $target['properties'] = Array();
+            }
+            if (!isset($target['properties'][$key])) {
+                $target['properties'][$key] = Array();
+            }
+            return $target['properties'][$key];
+        } else {
+            if (!isset($target['items'])) {
+                $target['type'] = 'array';
+                $target['items'] = Array();
+            }
+            return $target['items'];
+        }
+    }
+
     protected static function scan($token, &$context) {
         $head = substr($token[2], 0, 1);
         $act = substr($token[2], 1);
@@ -168,6 +221,7 @@ class LightnCandy {
         case '^':
             return $context['usedFeature']['isec'] ++;
         case '/':
+            $context['level']--;
             return;
         case '#':
             $acts = explode(' ', $act);
@@ -177,8 +231,10 @@ class LightnCandy {
             case 'unless':
                 return $context['usedFeature']['unless'] ++;
             case 'each':
+                $context['level']++;
                 return $context['usedFeature']['each'] ++;
             default:
+                $context['level']++;
                 return $context['usedFeature']['sec'] ++;
             }
         case '!':
@@ -243,6 +299,7 @@ class LightnCandy {
                 $each = true;
             default:
                 $context['level']--;
+                array_pop($context['vars']);
                 $pop = array_pop($context['stack']);
                 switch($pop) {
                 case '#':
@@ -279,6 +336,8 @@ class LightnCandy {
             default:
                 self::_v($act, $context);
                 $context['level']++;
+                $context['vars'][] = self::_vs($act);
+                self::_jsp($context);
                 $context['stack'][] = $act;
                 $context['stack'][] = '#';
                 return ".{$context['obj']}sec('$act', \$cx, \$in, $each, function(\$cx, \$in) {return ";
@@ -291,6 +350,7 @@ class LightnCandy {
                 $context['stack'][] = ':';
                 return ') : (';
             }
+            self::_jsv($context, $token[2]);
             $fn = $raw ? 'raw' : 'enc';
             if ($context['useVar']) {
                 $v = end($context['useVar']) . self::_vn($token[2]);
