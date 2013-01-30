@@ -124,6 +124,31 @@ class LightnCandy {
         return self::$lastContext['jsonSchema'];
     }
 
+    public static function getJsonSchemaString($indent = '  ') {
+        $level = 0;
+        return preg_replace_callback('/\\{|\\[|,|\\]|\\}|:/', function ($matches) use (&$level) {
+            switch ($matches[0]) {
+                case '}':
+                case ']':
+                    $level--;
+                    $is = str_repeat('  ', $level);
+                    return "\n$is{$matches[0]}";
+                case ':':
+                    return ': ';
+            }
+            $br = '';
+            switch ($matches[0]) {
+                case '{':
+                case '[':
+                    $level++;
+                case ',':
+                    $br = "\n";
+            }
+            $is = str_repeat('  ', $level);
+            return "{$matches[0]}$br$is";
+        }, json_encode(self::getJsonSchema()));
+    }
+
     protected static function _on($v) {
         return ($v > 0) ? 'true' : 'false';
     }
