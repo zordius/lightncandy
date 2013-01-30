@@ -21,9 +21,9 @@ Features
 * Context generation
    * Analyze used feature from your template
    * generate <B>Json Schema</B>
-      * Do LightnCandy::getContext() right after LightnCandy::compile() to get jsonSchema
+      * Do LightnCandy::getJsonSchema() right after LightnCandy::compile() to get jsonSchema
       * Know required data structure from your templates
-      * Verify input data, or find out missing variables
+      * Verify input data, or find out missing variables with any jsonSchema validator
 
 Sample
 ------
