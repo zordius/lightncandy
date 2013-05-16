@@ -11,6 +11,17 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 origin: https://github.com/zordius/lightncandy 
 */
 
+/**
+ * This is abstract engine which defines must-have methods.
+ *
+ * @package    LightnCandy
+ * @subpackage Core
+ * @author     Zordius <zordius@yahoo-inc.com>
+ */
+
+/**
+* LightnCandy static core class.
+*/
 class LightnCandy {
     const FLAG_ERROR_LOG = 1;
     const FLAG_ERROR_EXCEPTION = 2;
@@ -27,6 +38,14 @@ class LightnCandy {
 
     private static $lastContext;
 
+    /**
+     * Compile handlebars template into PHP code
+     *
+     * @param string $template handlebars template string
+     * @param integer $flags LightnCandy compile time and run time flags, default is LightnCandy::FLAG_BESTPERFORMANCE
+     *
+     * @return string Compiled PHP code when successed. If error happened and compile failed, return false.
+     */
     public static function compile($template, $flags = self::FLAG_BESTPERFORMANCE) {
         $context = Array(
             'flags' => Array(
@@ -105,6 +124,13 @@ class LightnCandy {
 ?>";
     }
 
+    /**
+     * Internal method used by compile().
+     *
+     * @param array $context Current context of compiler progress.
+     *
+     * @return boolean True when error detected
+     */
     protected static function _error($context) {
         self::$lastContext = $context;
         if ($context['error']) {
@@ -119,14 +145,40 @@ class LightnCandy {
         return false;
     }
 
+    /**
+     * Internal method used by compile().
+     *
+     * @param mixed $v value
+     *
+     * @return boolean True when the value larger then 0
+     */
+    protected static function _on($v) {
+        return ($v > 0) ? 'true' : 'false';
+    }
+
+    /**
+     * get last compiler context.
+     *
+     * @return array Context data
+     */
     public static function getContext() {
         return self::$lastContext;
     }
 
+    /**
+     * get JsonSchema of last compiled handlebars template.
+     *
+     * @return array JsonSchema data
+     */
     public static function getJsonSchema() {
         return self::$lastContext['jsonSchema'];
     }
 
+    /**
+     * get JsonSchema of last compiled handlebars template as pretty printed string.
+     *
+     * @return string JsonSchema string
+     */
     public static function getJsonSchemaString($indent = '  ') {
         $level = 0;
         return preg_replace_callback('/\\{|\\[|,|\\]|\\}|:/', function ($matches) use (&$level) {
@@ -150,10 +202,6 @@ class LightnCandy {
             $is = str_repeat('  ', $level);
             return "{$matches[0]}$br$is";
         }, json_encode(self::getJsonSchema()));
-    }
-
-    protected static function _on($v) {
-        return ($v > 0) ? 'true' : 'false';
     }
 
     protected static function _true($v) {
