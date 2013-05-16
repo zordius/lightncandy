@@ -18,9 +18,10 @@ class LightnCandy {
     const FLAG_JSTRUE = 8;
     const FLAG_JSOBJECT = 16;
     const FLAG_THIS = 32;
+    const FLAG_WITH = 64;
 
     const FLAG_BESTPERFORMANCE = 0;
-    const FLAG_HANDLEBARSJS = 56; // FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS 
+    const FLAG_HANDLEBARSJS = 120; // FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS + FLAG_WITH
 
     const TOKEN_SEARCH = '/(\\{{2,3})(.+?)(\\}{2,3})/s';
 
@@ -34,7 +35,8 @@ class LightnCandy {
                 'standalong' => $flags & self::FLAG_STANDALONE,
                 'jstrue' => $flags & self::FLAG_JSTRUE,
                 'jsobj' => $flags & self::FLAG_JSOBJECT,
-                'this' => $flags & self::FLAG_THIS
+                'this' => $flags & self::FLAG_THIS,
+                'with' => $flags & self::FLAG_WITH,
             ),
             'level' => 0,
             'stack' => Array(),
@@ -58,6 +60,7 @@ class LightnCandy {
                 'unless' => 0,
                 'each' => 0,
                 'this' => 0,
+                'with' => 0,
                 'dot' => 0,
                 'comment' => 0
             )
