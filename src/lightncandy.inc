@@ -233,9 +233,9 @@ class LightnCandy {
     }
 
     /**
-     * Internal method used by compile().
+     * Internal method used by compile(). Get variable names translated array, Ex: a.b.c => ["'a'", "'b'", "'c'"]
      *
-     * @param array $scopes an array of variable names with single quote. ex: ["'a'", "'b'", "'c'", ...]
+     * @param array $scopes an array of variable names with single quote
      *
      * @return string PHP array names string
      */
@@ -244,14 +244,25 @@ class LightnCandy {
     }
 
     /**
-     * Internal method used by compile().
+     * Internal method used by compile(). Get variable names translated string, Ex: a.b.c => "['a']['b']['c']"
      *
      * @param array $scopes an array of variable names. ex: ['a', 'b', 'c', ...]
      *
-     * @return string PHP quoted array names string
+     * @return string Translated variable name as input array notation.
      */
     protected static function _qscope($list) {
         return self::_scope(array_map(function ($v) {return "'$v'";}, $list));
+    }
+
+    /**
+     * Internal method used by compile(). Get variable names translated string, Ex: a.b.c => "['a']['b']['c']"
+     *
+     * @param string $vn variable name.
+     *
+     * @return string Translated variable name as input array notation.
+     */
+    protected static function _vn($vn) {
+        return $vn ? self::_qscope(explode('.', $vn)) : '';
     }
 
     /**
@@ -272,14 +283,10 @@ class LightnCandy {
     /**
      * Internal method used by compile().
      *
-     * @param string $vn variable name.
+     * @param string $v variable name.
      *
-     * @return string compiled variable name as input array notation.
+     * @return mixed Variable names array or null.
      */
-    protected static function _vn($vn) {
-        return $vn ? self::_qscope(explode('.', $vn)) : '';
-    }
-
     protected static function _vs($v) {
         if ($v == '.') {
             return Array('.');
@@ -287,28 +294,14 @@ class LightnCandy {
         return $v ? explode('.', $v) : null;
     }
 
-    protected static function &_jsp(&$context) {
-        $target = &$context['jsonSchema'];
-        foreach ($context['vars'] as $var) {
-            if ($var) {
-                foreach ($var as $v) {
-                    $target = &self::_jst($target, $v);
-                }
-            }
-            $target = &self::_jst($target);
-        }
-        return $target;
-    }
-
-    protected static function _jsv(&$context, $var) {
-        $target = &self::_jsp($context);
-        foreach (self::_vs($var) as $v) {
-            $target = &self::_jst($target, $v);
-        }
-        $target['type'] = Array('string', 'number');
-        $target['required'] = true;
-    }
-
+    /**
+     * Internal method used by compile(). Find current json schema target, return childrens.
+     *
+     * @param array $target current json schema target
+     * @param mixed $key move target to child specified with the key
+     *
+     * @return array children of new json schema target 
+     */
     protected static function &_jst(&$target, $key = false) {
         if ($key) {
             if (!isset($target['properties'])) {
@@ -326,6 +319,40 @@ class LightnCandy {
             }
             return $target['items'];
         }
+    }
+
+    /**
+     * Internal method used by compile(). Find current json schema target, prepare target parent.
+     *
+     * @param array $context current compile context
+     * @param string $var current variable name
+     */
+    protected static function &_jsp(&$context) {
+        $target = &$context['jsonSchema'];
+        foreach ($context['vars'] as $var) {
+            if ($var) {
+                foreach ($var as $v) {
+                    $target = &self::_jst($target, $v);
+                }
+            }
+            $target = &self::_jst($target);
+        }
+        return $target;
+    }
+
+    /**
+     * Internal method used by compile(). Define a json schema string/number with the variable name.
+     *
+     * @param array $context current compile context
+     * @param string $var current variable name
+     */
+    protected static function _jsv(&$context, $var) {
+        $target = &self::_jsp($context);
+        foreach (self::_vs($var) as $v) {
+            $target = &self::_jst($target, $v);
+        }
+        $target['type'] = Array('string', 'number');
+        $target['required'] = true;
     }
 
     protected static function scan($token, &$context) {
