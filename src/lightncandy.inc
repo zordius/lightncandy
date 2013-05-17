@@ -200,7 +200,7 @@ class LightnCandy {
             switch ($matches[0]) {
                 case '{':
                 case '[':
-                    $level++;
+                    $level ++;
                 case ',':
                     $br = "\n";
             }
@@ -389,15 +389,18 @@ class LightnCandy {
         case '#':
             $acts = explode(' ', $act);
             switch ($acts[0]) {
-            case 'if':
-                return $context['usedFeature']['if'] ++;
-            case 'unless':
-                return $context['usedFeature']['unless'] ++;
+            case 'with':
+                if (isset($acts[1]) && !$context['flags']['with']) {
+                    $context['error'] = 'do not support {{#with var}}, you should do compile with LightnCandy::FLAG_WITH flag';
+                }
             case 'each':
-                $context['level']++;
-                return $context['usedFeature']['each'] ++;
+                $context['level'] ++;
+            case 'unless':
+            case 'if':
+                return $context['usedFeature'][$acts[0]] ++;
+
             default:
-                $context['level']++;
+                $context['level'] ++;
                 return $context['usedFeature']['sec'] ++;
             }
 
@@ -468,6 +471,13 @@ class LightnCandy {
                     return ')).';
                 }
                 return ') : \'\').';
+            case 'with':
+                $pop = array_pop($context['stack']);
+                if ($pop !== 'with') {
+                   $context['error'] = 'Unexpect token /with !';
+                   return;
+                }
+                return ';}).';
             case 'each':
                 $each = true;
             default:
@@ -485,7 +495,7 @@ class LightnCandy {
                     if ($pop == '^') {
                         return ") : '').";
                     }
-                    return ";}).";
+                    return ';}).';
                 default:
                     $context['error'] = "Unexpect token: {$token[2]} !";
                     return;
@@ -495,6 +505,10 @@ class LightnCandy {
             $each = 'false';
             $acts = explode(' ', $act);
             switch ($acts[0]) {
+            case 'with':
+                $context['stack'][] = 'with';
+                self::_vx($acts[1], $context);
+                return ".{$context['obj']}wi('{$acts[1]}', \$in, function(\$cx, \$in) {return ";
             case 'if':
                 $context['stack'][] = 'if';
                 self::_vx($acts[1], $context);
@@ -508,7 +522,7 @@ class LightnCandy {
                 $act = $acts[1];
             default:
                 self::_vx($act, $context);
-                $context['level']++;
+                $context['level'] ++;
                 $context['vars'][] = self::_vs($act);
                 self::_jsp($context);
                 $context['stack'][] = $act;
@@ -569,7 +583,7 @@ class LCRun {
      * LightnCandy runtime method for {{{var}}}
      *
      * @param string $var variable name to get the raw value
-     * @param array $cx rendering time context
+     * @param array $cx render time context
      * @param array $in input data with current scope
      *
      * @return mixed The raw value of the specified variable
@@ -608,7 +622,7 @@ class LCRun {
      * LightnCandy runtime method for {{var}}
      *
      * @param string $var variable name to get the htmlencoded value
-     * @param array $cx rendering time context
+     * @param array $cx render time context
      * @param array $in input data with current scope
      *
      * @return mixed The htmlencoded value of the specified variable
@@ -621,7 +635,7 @@ class LCRun {
      * LightnCandy runtime method for {{#var}} section
      *
      * @param string $var variable name for section
-     * @param array $cx rendering time context
+     * @param array $cx render time context
      * @param array $in input data with current scope
      * @param boolean $each true when rendering #each
      * @param function $cb callback function to render child context
@@ -657,6 +671,20 @@ class LCRun {
             return $cb($cx, $v);
         }
         return '';
+    }
+
+    /**
+     * LightnCandy runtime method for {{#with var}}
+     *
+     * @param string $var variable name for section
+     * @param array $cx render time context
+     * @param array $in input data with current scope
+     * @param function $cb callback function to render child context
+     *
+     * @return string The rendered string of the token
+     */
+    public static function wi($var, &$cx, $in, $cb) {
+        return $cb($cx, $in[$var]);
     }
 }
 ?>
