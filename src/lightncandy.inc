@@ -508,7 +508,7 @@ class LightnCandy {
             case 'with':
                 $context['stack'][] = 'with';
                 self::_vx($acts[1], $context);
-                return ".{$context['obj']}wi('{$acts[1]}', \$in, function(\$cx, \$in) {return ";
+                return ".{$context['obj']}wi('{$acts[1]}', \$cx, \$in, function(\$cx, \$in) {return ";
             case 'if':
                 $context['stack'][] = 'if';
                 self::_vx($acts[1], $context);
