@@ -62,7 +62,7 @@ class LightnCandy {
             'error' => false,
             'useVar' => false,
             'vars' => Array(),
-            'obj' => ($flags & self::FLAG_STANDALONE) ? '$' : 'LightnCandy::',
+            'obj' => ($flags & self::FLAG_STANDALONE) ? '$' : 'LCRun::',
             'jsonSchema' => Array(
                 '$schema' => 'http://json-schema.org/draft-03/schema',
                 'description' => 'Template Json Schema'
@@ -204,18 +204,57 @@ class LightnCandy {
         }, json_encode(self::getJsonSchema()));
     }
 
-    protected static function _true($v) {
-        return ($v === true) ? 'true' : $v;
+    /**
+     * include a string as php codes. this method requires php setting allow_url_include=1
+     *
+     * @param string $php php codes
+     *
+     * @return mixed result of include()
+     */
+    public static function prepare($php) {
+        return include('data://text/plain,' . urlencode($php));
     }
 
+    /**
+     * include a compiled and saved template php file, then render with input data.
+     *
+     * @param string $compiled compiled template php file name
+     *
+     * @return string rendered result
+     */
+    public static function render($compiled, $data) {
+        $func = include($compiled);
+        return $func($data);
+    }
+
+    /**
+     * Internal method used by compile().
+     *
+     * @param array $scopes an array of variable names with single quote. ex: ["'a'", "'b'", "'c'", ...]
+     *
+     * @return string PHP array names string
+     */
     protected static function _scope($scopes) {
         return count($scopes) ? '[' . implode('][', $scopes) . ']' : '';
     }
 
+    /**
+     * Internal method used by compile().
+     *
+     * @param array $scopes an array of variable names. ex: ['a', 'b', 'c', ...]
+     *
+     * @return string PHP array names string
+     */
     protected static function _qscope($list) {
         return self::_scope(array_map(function ($v) {return "'$v'";}, $list));
     }
 
+    /**
+     * Internal method used by compile().
+     *
+     * @param mixed $v variable name to be fixed.
+     * @param array $context Current compile content.
+     */
     protected static function _v(&$v, $context) {
         $v = trim($v);
         if (($v == 'this') || $v == '.') {
@@ -440,7 +479,12 @@ class LightnCandy {
             }
         }
     }
+}
 
+/**
+* LightnCandy static class for compiled template runtime methods.
+*/
+class LCRun {
     public static function ifvar($var, $in) {
         return (!is_null($in[$var]) && ($in[$var] !== false));
     }
@@ -512,15 +556,6 @@ class LightnCandy {
 
     public static function isec($var, $in) {
         return !self::ifvar($var, $in);
-    }
-
-    public static function prepare($php) {
-        return include('data://text/plain,' . urlencode($php));
-    }
-
-    public static function render($prepared, $data) {
-        $func = include($prepared);
-        return $func($data);
     }
 }
 ?>
