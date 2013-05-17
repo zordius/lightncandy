@@ -8,7 +8,7 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-origin: https://github.com/zordius/lightncandy 
+Origin: https://github.com/zordius/lightncandy 
 */
 
 /**
@@ -20,8 +20,8 @@ origin: https://github.com/zordius/lightncandy
  */
 
 /**
-* LightnCandy static core class.
-*/
+ * LightnCandy static core class.
+ */
 class LightnCandy {
     const FLAG_ERROR_LOG = 1;
     const FLAG_ERROR_EXCEPTION = 2;
@@ -85,6 +85,7 @@ class LightnCandy {
             )
         );
 
+        // Do first time scan to find out used feature, generate json schema, detect template error.
         if (preg_match_all(self::TOKEN_SEARCH, $template, $tokens, PREG_SET_ORDER) > 0) {
             foreach ($tokens as $token) {
                 self::scan($token, $context);
@@ -95,10 +96,13 @@ class LightnCandy {
             return false;
         }
 
+        // Check used features and compile flags. If the template is simple enough,
+        // we can generate best performance code with enable 'useVar' internal flag.
         if (!$context['flags']['jsobj'] && (($context['usedFeature']['sec'] < 1) || !$context['flags']['jsobj'])) {
             $context['useVar'] = Array('$in');
         }
 
+        // Do PHP code generation
         $code = preg_replace_callback(self::TOKEN_SEARCH, function ($matches) use (&$context) {
             return '\'' . LightnCandy::tokens($matches, $context) . '\'';
         }, addcslashes($template, "'"));
@@ -110,6 +114,7 @@ class LightnCandy {
         $flagJStrue = self::_on($context['flags']['jstrue']);
         $flagJSObj = self::_on($context['flags']['jsobj']);
 
+        // return generated PHP code string
         return "<?php return function (\$in) {
     \$cx = Array(
         'flags' => Array(
@@ -243,7 +248,7 @@ class LightnCandy {
      *
      * @param array $scopes an array of variable names. ex: ['a', 'b', 'c', ...]
      *
-     * @return string PHP array names string
+     * @return string PHP quoted array names string
      */
     protected static function _qscope($list) {
         return self::_scope(array_map(function ($v) {return "'$v'";}, $list));
@@ -255,7 +260,7 @@ class LightnCandy {
      * @param mixed $v variable name to be fixed.
      * @param array $context Current compile content.
      */
-    protected static function _v(&$v, $context) {
+    protected static function _vx(&$v, $context) {
         $v = trim($v);
         if (($v == 'this') || $v == '.') {
             if ($context['flags']['this']) {
@@ -264,6 +269,13 @@ class LightnCandy {
         }
     }
 
+    /**
+     * Internal method used by compile().
+     *
+     * @param string $vn variable name.
+     *
+     * @return string compiled variable name as input array notation.
+     */
     protected static function _vn($vn) {
         return $vn ? self::_qscope(explode('.', $vn)) : '';
     }
@@ -439,17 +451,17 @@ class LightnCandy {
             switch ($acts[0]) {
             case 'if':
                 $context['stack'][] = 'if';
-                self::_v($acts[1], $context);
+                self::_vx($acts[1], $context);
                 return ".({$context['obj']}ifvar('{$acts[1]}', \$in) ? (";
             case 'unless':
                 $context['stack'][] = 'unless';
-                self::_v($acts[1], $context);
+                self::_vx($acts[1], $context);
                 return ".(!{$context['obj']}ifvar('{$acts[1]}', \$in) ? (";
             case 'each':
                 $each = 'true';
                 $act = $acts[1];
             default:
-                self::_v($act, $context);
+                self::_vx($act, $context);
                 $context['level']++;
                 $context['vars'][] = self::_vs($act);
                 self::_jsp($context);
@@ -460,7 +472,7 @@ class LightnCandy {
         case '!':
             return '.';
         default:
-            self::_v($token[2], $context);
+            self::_vx($token[2], $context);
             if ($token[2] ==='else') {
                 $context['stack'][] = ':';
                 return ') : (';
@@ -482,13 +494,40 @@ class LightnCandy {
 }
 
 /**
-* LightnCandy static class for compiled template runtime methods.
-*/
+ * LightnCandy static class for compiled template runtime methods.
+ */
 class LCRun {
+    /**
+     * LightnCandy runtime method for {{#if var}}
+     *
+     * @param string $var variable name to be tested
+     *
+     * @return boolean Return true when the value is not null nor false.
+     */
     public static function ifvar($var, $in) {
         return (!is_null($in[$var]) && ($in[$var] !== false));
     }
 
+    /**
+     * LightnCandy runtime method for {{^var}} inverted section
+     *
+     * @param string $var variable name to be tested
+     *
+     * @return boolean Return true when the value is not null nor false.
+     */
+    public static function isec($var, $in) {
+        return !self::ifvar($var, $in);
+    }
+
+    /**
+     * LightnCandy runtime method for {{{var}}}
+     *
+     * @param string $var variable name to get the raw value
+     * @param array $cx rendering time context
+     * @param array $in input data with current scope
+     *
+     * @return mixed The raw value of the specified variable
+     */
     public static function raw($var, $cx, $in) {
         if (preg_match('/(.+?)\\.(.+)/', $var, $matched)) {
             if (array_key_exists($matched[1], $in)) {
@@ -519,10 +558,30 @@ class LCRun {
         return $v;
     }
 
+    /**
+     * LightnCandy runtime method for {{var}}
+     *
+     * @param string $var variable name to get the htmlencoded value
+     * @param array $cx rendering time context
+     * @param array $in input data with current scope
+     *
+     * @return mixed The htmlencoded value of the specified variable
+     */
     public static function enc($var, $cx, $in) {
         return htmlentities(self::raw($var, $cx, $in), ENT_QUOTES);
     }
 
+    /**
+     * LightnCandy runtime method for {{#var}} section
+     *
+     * @param string $var variable name for section
+     * @param array $cx rendering time context
+     * @param array $in input data with current scope
+     * @param boolean $each true when rendering #each
+     * @param function $cb callback function to render child context
+     *
+     * @return string The rendered string of the section
+     */
     public static function sec($var, &$cx, $in, $each, $cb) {
         $v = ($var === '') ? $in : $in[$var];
         $loop = $each;
@@ -552,10 +611,6 @@ class LCRun {
             return $cb($cx, $v);
         }
         return '';
-    }
-
-    public static function isec($var, $in) {
-        return !self::ifvar($var, $in);
     }
 }
 ?>
