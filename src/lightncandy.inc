@@ -85,7 +85,7 @@ class LightnCandy {
             )
         );
 
-        // Do first time scan to find out used feature, generate json schema, detect template error.
+        // Do first time scan to find out used feature, detect template error.
         if (preg_match_all(self::TOKEN_SEARCH, $template, $tokens, PREG_SET_ORDER) > 0) {
             foreach ($tokens as $token) {
                 self::scan($token, $context);
@@ -102,7 +102,7 @@ class LightnCandy {
             $context['useVar'] = Array('$in');
         }
 
-        // Do PHP code generation
+        // Do PHP code and json schema generation.
         $code = preg_replace_callback(self::TOKEN_SEARCH, function ($matches) use (&$context) {
             return '\'' . LightnCandy::tokens($matches, $context) . '\'';
         }, addcslashes($template, "'"));
@@ -355,6 +355,12 @@ class LightnCandy {
         $target['required'] = true;
     }
 
+    /**
+     * Internal method used by compile(). Collect handlebars usage information, detect template error.
+     *
+     * @param string $token detected handlebars {{ }} token
+     * @param string $context current scaning context
+     */
     protected static function scan($token, &$context) {
         $head = substr($token[2], 0, 1);
         $act = substr($token[2], 1);
@@ -371,12 +377,15 @@ class LightnCandy {
                 return;
             }
         }
+
         switch ($head) {
         case '^':
             return $context['usedFeature']['isec'] ++;
-        case '/':
+
+            case '/':
             $context['level']--;
             return;
+
         case '#':
             $acts = explode(' ', $act);
             switch ($acts[0]) {
@@ -391,8 +400,10 @@ class LightnCandy {
                 $context['level']++;
                 return $context['usedFeature']['sec'] ++;
             }
+
         case '!':
             return $context['usedFeature']['comment'] ++;
+
         default:
             $fn = $raw ? 'raw' : 'enc';
             $context['usedFeature'][$fn] ++;
@@ -400,6 +411,7 @@ class LightnCandy {
             switch ($token[2]) {
                 case 'else':
                     return $context['usedFeature']['else'] ++;
+
                 case 'this':
                     if ($context['level'] == 0) {
                         $context['usedFeature']['rootthis'] ++;
@@ -408,6 +420,7 @@ class LightnCandy {
                         $context['error'] = 'do not support {{this}}, you should do compile with LightnCandy::FLAG_THIS flag';
                     }
                     return $context['usedFeature']['this'] ++;
+
                 case '.':
                     if ($context['level'] == 0) {
                         $context['usedFeature']['rootthis'] ++;
@@ -423,6 +436,12 @@ class LightnCandy {
         }
     }
 
+    /**
+     * Internal method used by compile(). Return compiled PHP code partial for a handlebars token.
+     *
+     * @param string $token detected handlebars {{ }} token
+     * @param string $context current scaning context
+     */
     public static function tokens($token, &$context) {
         $head = substr($token[2], 0, 1);
         $act = substr($token[2], 1);
