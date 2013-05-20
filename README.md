@@ -85,7 +85,8 @@ Default is to compile the template as php which can be run as fast as possible, 
 * FLAG_JSTRUE: generate 'true' when value is true (handlebars.js behavior). Otherwise, true will generate ''.
 * FLAG_JSOBJECT: generate '[object Object]' for associated array, generate ',' seperated values for array (handlebars.js behavior). Otherwise, all php array will generate ''.
 * FLAG_THIS: support {{this}} or {{.}} in template. Otherwise, {{this}} and {{.}} will cause template error.
-* FLAG_HANDLEBARSJS: align with handlebars.js behaviors, same as FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS.
+* FLAG_WITH: support {{#with var}} . Otherwise, {{#with var}} will cause template error.
+* FLAG_HANDLEBARSJS: align with handlebars.js behaviors, same as FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS + FLAG_WITH.
 
 Unsupported Feature (so far)
 ----------------------------
@@ -93,7 +94,6 @@ Unsupported Feature (so far)
 * partial (include another template inside a template)
 * set delimiter (change delimiter from {{ }} to custom string, for example <% then %>)
 * .. (parent template scope)
-* #with (change context scope)
 
 Detail Feature list
 -------------------
@@ -129,3 +129,4 @@ Detail Feature list
 * {{/if}} : end if
 * {{else}} : run else logic, should between {{#if var}} and {{/if}}
 * {{#unless var}} : run unless logic with original scope
+* {{#with var}} : change context scope
