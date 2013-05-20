@@ -34,7 +34,7 @@ $template = "Welcome {{name}} , You win \${{value}} dollars!!\n";
 $phpStr = LightnCandy::compile($template);
 
 // Usage 1: One time compile then runtime execute
-// Do not suggested this way, because it require php setting allow_url_fopen=1 , not secure.
+// Do not suggested this way, because it require php setting allow_url_fopen=1 and and allow_url_fopen=1, not secure.
 echo "Template is:\n$template\n\n";
 echo "Rendered PHP code is:\n$php\n\n";
 $renderer = LightnCandy::prepare($phpStr);

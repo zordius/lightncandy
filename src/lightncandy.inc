@@ -210,13 +210,31 @@ class LightnCandy {
     }
 
     /**
-     * include a string as php codes. this method requires php setting allow_url_include=1
+     * include a string as php codes. this method requires php setting allow_url_include=1 and allow_url_fopen=1
      *
      * @param string $php php codes
+     * @param string $tmp_dir optional, change temp directory for php include file saved by prepare() when can not include php code with data:// format.
      *
      * @return mixed result of include()
      */
-    public static function prepare($php) {
+    public static function prepare($php, $tmp_dir = false) {
+        if (!ini_get('allow_url_include') || !ini_get('allow_url_fopen')) {
+            if (!is_dir($tmp_dir)) {
+                $tmp_dir = sys_get_temp_dir();
+            }
+        }
+
+        if ($tmp_dir) {
+            $fn = tempnam($tmp_dir, 'lci_');
+            if (!$fn) {
+                die("Can not generate tmp file under $tmp_dir!!\n");
+            }
+            if (!file_put_contents($fn, $php)) {
+                die("Can not include saved temp php code from $fn, you should add $tmp_dir into open_basedir!!\n");
+            }
+            return include($fn);
+        }
+
         return include('data://text/plain,' . urlencode($php));
     }
 
@@ -505,10 +523,6 @@ class LightnCandy {
             $each = 'false';
             $acts = explode(' ', $act);
             switch ($acts[0]) {
-            case 'with':
-                $context['stack'][] = 'with';
-                self::_vx($acts[1], $context);
-                return ".{$context['obj']}wi('{$acts[1]}', \$cx, \$in, function(\$cx, \$in) {return ";
             case 'if':
                 $context['stack'][] = 'if';
                 self::_vx($acts[1], $context);
@@ -519,11 +533,16 @@ class LightnCandy {
                 return ".(!{$context['obj']}ifvar('{$acts[1]}', \$in) ? (";
             case 'each':
                 $each = 'true';
+            case 'with':
                 $act = $acts[1];
             default:
                 self::_vx($act, $context);
                 $context['level'] ++;
                 $context['vars'][] = self::_vs($act);
+                if (($acts[0] === 'with') && $context['flags']['with']) {
+                    $context['stack'][] = 'with';
+                    return ".{$context['obj']}wi('{$acts[1]}', \$cx, \$in, function(\$cx, \$in) {return ";
+                }
                 self::_jsp($context);
                 $context['stack'][] = $act;
                 $context['stack'][] = '#';

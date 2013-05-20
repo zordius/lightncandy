@@ -1,2 +1,2 @@
 #!/bin/sh
-php -dallow_url_fopen=1 -dallow_url_include=1 -dopen_basedir=. $1
+php -dopen_basedir=/ $1
