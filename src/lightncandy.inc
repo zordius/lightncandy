@@ -590,7 +590,7 @@ class LCRun {
      * @return boolean Return true when the value is not null nor false.
      */
     public static function ifvar($var, $in) {
-        return (!is_null($in[$var]) && ($in[$var] !== false));
+        return (is_array($in) && !is_null($in[$var]) && ($in[$var] !== false));
     }
 
     /**
@@ -668,6 +668,9 @@ class LCRun {
      * @return string The rendered string of the section
      */
     public static function sec($var, &$cx, $in, $each, $cb) {
+        if (($var !== '') && !is_array($in)) {
+            return '';
+        }
         $v = ($var === '') ? $in : $in[$var];
         $loop = $each;
         if (!$loop && is_array($v)) {
@@ -709,7 +712,7 @@ class LCRun {
      * @return string The rendered string of the token
      */
     public static function wi($var, &$cx, $in, $cb) {
-        return $in[$var] === false ? '' : $cb($cx, $in[$var]);
+        return ($in[$var] === false) ? '' : $cb($cx, $in[$var]);
     }
 }
 ?>
