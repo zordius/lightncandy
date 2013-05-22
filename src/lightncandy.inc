@@ -30,9 +30,10 @@ class LightnCandy {
     const FLAG_JSOBJECT = 16;
     const FLAG_THIS = 32;
     const FLAG_WITH = 64;
+    const FLAG_PARENT = 128;
 
     const FLAG_BESTPERFORMANCE = 0;
-    const FLAG_HANDLEBARSJS = 120; // FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS + FLAG_WITH
+    const FLAG_HANDLEBARSJS = 248; // FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS + FLAG_WITH + FLAG_PARENT
 
     const TOKEN_SEARCH = '/(\\{{2,3})(.+?)(\\}{2,3})/s';
 
@@ -56,6 +57,7 @@ class LightnCandy {
                 'jsobj' => $flags & self::FLAG_JSOBJECT,
                 'this' => $flags & self::FLAG_THIS,
                 'with' => $flags & self::FLAG_WITH,
+                'parent' => $flags & self::FLAG_PARENT,
             ),
             'level' => 0,
             'stack' => Array(),
@@ -454,6 +456,9 @@ class LightnCandy {
 
                 default:
                     if (preg_match('/\\.\\.(\\/.+)*/', $token[2])) {
+                        if (!$context['flags']['this']) {
+                            $context['error'] = 'do not support {{../var}}, you should do compile with LightnCandy::FLAG_PARENT flag';
+                        }
                         return $context['usedFeature']['parent'] ++;
                     }
             }
