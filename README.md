@@ -130,4 +130,4 @@ Detail Feature list
 * {{/if}} : end if
 * {{else}} : run else logic, should between {{#if var}} and {{/if}}
 * {{#unless var}} : run unless logic with original scope
-* {{#with var}} : change context scope (require FLAG_WITH)
+* {{#with var}} : change context scope. If the var is false, skip included section. (require FLAG_WITH)
