@@ -627,9 +627,21 @@ class LCRun {
      * @return mixed The raw value of the specified variable
      */
     public static function val($var, $cx, $in) {
-   //     while (substr($in, 2) === '../') {
-   //     }
+        $levels = 0;
+        $var = preg_replace_callback('/\\.\\.\\//', function($matches) {
+            $levels++;
+            return '';
+        }, $var);
 
+        if ($levels > 0) {
+            $pos = count($cx['scopes']) - $levels;
+            if ($pos >= 0) {
+                $in = $cx['scopes'][$pos];
+            } else {
+                return '';
+            }
+        }
+      
         if (preg_match('/(.+?)\\.(.+)/', $var, $matched)) {
             if (array_key_exists($matched[1], $in)) {
                 return self::val($matched[2], $cx, $in[$matched[1]]);
@@ -703,9 +715,11 @@ class LCRun {
         }
         if ($loop) {
             $ret = Array();
+            $cx['scopes'][] = $v;
             foreach ($v as $raw) {
                 $ret[] = $cb($cx, $raw);
             }
+            array_pop($cx['scopes']);
             return join('', $ret);
         }
         if ($each) {
