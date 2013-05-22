@@ -124,8 +124,9 @@ class LightnCandy {
     \$cx = Array(
         'flags' => Array(
             'jstrue' => $flagJStrue,
-            'jsobj' => $flagJSObj
+            'jsobj' => $flagJSObj,
         ),
+        'scopes' => Array(),
         'path' => Array(),
         'parents' => Array()
     );
@@ -489,7 +490,7 @@ class LightnCandy {
                 $v = end($context['useVar']) . "['{$act}']";
                 return ".((is_null($v) && ($v !== false)) ? ("; 
             } else {
-                return ".({$context['obj']}isec('$act', \$in) ? (";
+                return ".({$context['obj']}isec('$act', \$cx, \$in) ? (";
             }
         case '/':
             $each = false;
@@ -539,11 +540,11 @@ class LightnCandy {
             case 'if':
                 $context['stack'][] = 'if';
                 self::_vx($acts[1], $context);
-                return ".({$context['obj']}ifvar('{$acts[1]}', \$in) ? (";
+                return ".({$context['obj']}ifvar('{$acts[1]}', \$cx, \$in) ? (";
             case 'unless':
                 $context['stack'][] = 'unless';
                 self::_vx($acts[1], $context);
-                return ".(!{$context['obj']}ifvar('{$acts[1]}', \$in) ? (";
+                return ".(!{$context['obj']}ifvar('{$acts[1]}', \$cx, \$in) ? (";
             case 'each':
                 $each = 'true';
             case 'with':
@@ -593,11 +594,13 @@ class LCRun {
      * LightnCandy runtime method for {{#if var}}
      *
      * @param string $var variable name to be tested
+     * @param array $cx render time context
+     * @param array $in input data with current scope
      *
      * @return boolean Return true when the value is not null nor false.
      */
-    public static function ifvar($var, $in) {
-        $v = self::val($var, $in);
+    public static function ifvar($var, $cx, $in) {
+        $v = self::val($var, $cx, $in);
         return !is_null($v) && ($v !== false);
     }
 
@@ -605,25 +608,31 @@ class LCRun {
      * LightnCandy runtime method for {{^var}} inverted section
      *
      * @param string $var variable name to be tested
+     * @param array $cx render time context
+     * @param array $in input data with current scope
      *
      * @return boolean Return true when the value is not null nor false.
      */
-    public static function isec($var, $in) {
-        return !self::ifvar($var, $in);
+    public static function isec($var, $cx, $in) {
+        return !self::ifvar($var, $cx, $in);
     }
 
     /**
      * LightnCandy runtime method to get input value
      *
      * @param string $var variable name to get the raw value
+     * @param array $cx render time context
      * @param array $in input data with current scope
      *
      * @return mixed The raw value of the specified variable
      */
-    public static function val($var, $in) {
+    public static function val($var, $cx, $in) {
+   //     while (substr($in, 2) === '../') {
+   //     }
+
         if (preg_match('/(.+?)\\.(.+)/', $var, $matched)) {
             if (array_key_exists($matched[1], $in)) {
-                return self::val($matched[2], $in[$matched[1]]);
+                return self::val($matched[2], $cx, $in[$matched[1]]);
             } else {
                 return null;
             }
@@ -641,7 +650,7 @@ class LCRun {
      * @return mixed The raw value of the specified variable
      */
     public static function raw($var, $cx, $in) {
-        $v = self::val($var, $in);
+        $v = self::val($var, $cx, $in);
         if ($v === true) {
             if ($cx['flags']['jstrue']) {
                 return 'true';
@@ -687,7 +696,7 @@ class LCRun {
      * @return string The rendered string of the section
      */
     public static function sec($var, &$cx, $in, $each, $cb) {
-        $v = self::val($var, $in);
+        $v = self::val($var, $cx, $in);
         $loop = $each;
         if (!$loop && is_array($v)) {
             $loop = (count(array_diff_key($v, array_keys(array_keys($v)))) == 0);
@@ -728,7 +737,7 @@ class LCRun {
      * @return string The rendered string of the token
      */
     public static function wi($var, &$cx, $in, $cb) {
-        $v = self::val($var, $in);
+        $v = self::val($var, $cx, $in);
         if (($v === false) || ($v === null)) {
             return '';
         }
