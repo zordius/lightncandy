@@ -610,6 +610,25 @@ class LCRun {
     }
 
     /**
+     * LightnCandy runtime method to get input value
+     *
+     * @param string $var variable name to get the raw value
+     * @param array $in input data with current scope
+     *
+     * @return mixed The raw value of the specified variable
+     */
+    public static function val($var, $in) {
+        if (preg_match('/(.+?)\\.(.+)/', $var, $matched)) {
+            if (array_key_exists($matched[1], $in)) {
+                return self::val($matched[2], $in[$matched[1]]);
+            } else {
+                return '';
+            }
+        }
+        return ($var === '') ? $in : (is_array($in) ? $in[$var] : '');
+    }
+
+    /**
      * LightnCandy runtime method for {{{var}}}
      *
      * @param string $var variable name to get the raw value
@@ -619,15 +638,8 @@ class LCRun {
      * @return mixed The raw value of the specified variable
      */
     public static function raw($var, $cx, $in) {
-        if (preg_match('/(.+?)\\.(.+)/', $var, $matched)) {
-            if (array_key_exists($matched[1], $in)) {
-                return self::raw($matched[2], $cx, $in[$matched[1]]);
-            } else {
-                return '';
-            }
-        }
+        $v = self::val($var, $in);
 
-        $v = ($var === '') ? $in : (is_array($in) ? $in[$var] : '');
         if ($v === true) {
             if ($cx['flags']['jstrue']) {
                 return 'true';
