@@ -685,10 +685,8 @@ class LCRun {
      * @return string The rendered string of the section
      */
     public static function sec($var, &$cx, $in, $each, $cb) {
-        if (($var !== '') && !is_array($in)) {
-            return '';
-        }
-        $v = ($var === '') ? $in : $in[$var];
+        $v = self::val($var, $in);
+
         $loop = $each;
         if (!$loop && is_array($v)) {
             $loop = (count(array_diff_key($v, array_keys(array_keys($v)))) == 0);
