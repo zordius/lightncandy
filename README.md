@@ -73,10 +73,10 @@ Welcome Peter , You win $1000 dollars!!
 CONSTANTS
 ---------
 
-You can apply more flags by running LightnCandy::compile($php, $flags)
+You can apply more flags by running LightnCandy::compile($php, $options)
 for example:
 
-LightnCandy::compile($php, LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_STANDALONE);
+LightnCandy::compile($php, Array('flags' => LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_STANDALONE));
 
 Default is to compile the template as php which can be run as fast as possible, all flags are off.
 

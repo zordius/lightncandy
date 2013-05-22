@@ -43,11 +43,13 @@ class LightnCandy {
      * Compile handlebars template into PHP code
      *
      * @param string $template handlebars template string
-     * @param integer $flags LightnCandy compile time and run time flags, default is LightnCandy::FLAG_BESTPERFORMANCE
+     * @param array $options LightnCandy compile time and run time options, default is Array('flags' => LightnCandy::FLAG_BESTPERFORMANCE)
      *
      * @return string Compiled PHP code when successed. If error happened and compile failed, return false.
      */
-    public static function compile($template, $flags = self::FLAG_BESTPERFORMANCE) {
+    public static function compile($template, $options = 0) {
+        $flags = isset($options['flags']) ? $options['flags'] : self::FLAG_BESTPERFORMANCE;
+
         $context = Array(
             'flags' => Array(
                 'errorlog' => $flags & self::FLAG_ERROR_LOG,
@@ -686,7 +688,6 @@ class LCRun {
      */
     public static function sec($var, &$cx, $in, $each, $cb) {
         $v = self::val($var, $in);
-
         $loop = $each;
         if (!$loop && is_array($v)) {
             $loop = (count(array_diff_key($v, array_keys(array_keys($v)))) == 0);
