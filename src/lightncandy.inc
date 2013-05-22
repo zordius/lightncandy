@@ -709,7 +709,7 @@ class LCRun {
      * @return string The rendered string of the token
      */
     public static function wi($var, &$cx, $in, $cb) {
-        return $in[$var] ? $cb($cx, $in[$var]) : '';
+        return $in[$var] === false ? '' : $cb($cx, $in[$var]);
     }
 }
 ?>

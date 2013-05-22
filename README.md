@@ -94,7 +94,8 @@ Unsupported Feature (so far)
 
 * partial (include another template inside a template)
 * set delimiter (change delimiter from {{ }} to custom string, for example <% then %>)
-* .. (parent template scope)
+* ../ (parent template scope)
+* FLAG_STANDALONE (stand alone support for compiled php code, now FLAG_STANDALONE still depend on lightncandy.inc)
 
 Detail Feature list
 -------------------
