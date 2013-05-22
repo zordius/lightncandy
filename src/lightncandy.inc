@@ -670,7 +670,7 @@ class LCRun {
     public static function sec($var, &$cx, $in, $each, $cb) {
         $v = ($var === '') ? $in : $in[$var];
         $loop = $each;
-        if (is_array($v)) {
+        if (!$loop && is_array($v)) {
             $loop = (count(array_diff_key($v, array_keys(array_keys($v)))) == 0);
         }
         if ($loop) {
