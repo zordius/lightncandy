@@ -79,6 +79,7 @@ class LightnCandy {
                 'unless' => 0,
                 'each' => 0,
                 'this' => 0,
+                'parent' => 0,
                 'with' => 0,
                 'dot' => 0,
                 'comment' => 0
@@ -450,6 +451,11 @@ class LightnCandy {
                         $context['error'] = 'do not support {{.}}, you should do compile with LightnCandy::FLAG_THIS flag';
                     }
                     return $context['usedFeature']['dot'] ++;
+
+                default:
+                    if (preg_match('/\\.\\.(\\/.+)*/', $token[2])) {
+                        return $context['usedFeature']['parent'] ++;
+                    }
             }
             if ($context['level'] == 0) {
                 $context['usedFeature']['rootvar'] ++;

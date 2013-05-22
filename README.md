@@ -35,6 +35,7 @@ $phpStr = LightnCandy::compile($template);
 
 // Usage 1: One time compile then runtime execute
 // Do not suggested this way, because it require php setting allow_url_fopen=1 and and allow_url_fopen=1, not secure.
+// Or, prepare() will create tmp file then include it, you will need to add your tmp directory into open_basedir.
 echo "Template is:\n$template\n\n";
 echo "Rendered PHP code is:\n$php\n\n";
 $renderer = LightnCandy::prepare($phpStr);
@@ -103,17 +104,17 @@ Detail Feature list
 * Exact same '[object Object]' output or join(',' array) output with handlebars.js (require FLAG_JSOBJECT)
 * Can place heading/tailing space, tab, CR/LF inside {{ var }} or {{{ var }}}
 * {{{value}}} : raw variable
-   * true as 'true'
+   * true as 'true' (require FLAG_JSTRUE)
    * false as ''
 * {{value}} : html encoded variable
-   * true as 'true'
+   * true as 'true' (require FLAG_JSTRUE)
    * false as ''
 * {{{path.to.value}}} : dot notation, raw
 * {{path.to.value}} : dot notation, html encoded
 * {{.}} : current context, html encoded
-* {{this}} : current context, html encoded
-* {{{.}}} : current context, raw
-* {{{this}}} : current context, raw
+* {{this}} : current context, html encoded (require FLAG_THIS)
+* {{{.}}} : current context, raw (require FLAG_THIS)
+* {{{this}}} : current context, raw (require FLAG_THIS)
 * {{#value}} : section
    * false, undefined and null will skip the section
    * true will run the section with original scope
@@ -129,4 +130,4 @@ Detail Feature list
 * {{/if}} : end if
 * {{else}} : run else logic, should between {{#if var}} and {{/if}}
 * {{#unless var}} : run unless logic with original scope
-* {{#with var}} : change context scope
+* {{#with var}} : change context scope (require FLAG_WITH)
