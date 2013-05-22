@@ -595,7 +595,8 @@ class LCRun {
      * @return boolean Return true when the value is not null nor false.
      */
     public static function ifvar($var, $in) {
-        return (is_array($in) && !is_null($in[$var]) && ($in[$var] !== false));
+        $v = self::val($var, $in);
+        return !is_null($v) && ($in[$var] !== false);
     }
 
     /**
@@ -622,10 +623,10 @@ class LCRun {
             if (array_key_exists($matched[1], $in)) {
                 return self::val($matched[2], $in[$matched[1]]);
             } else {
-                return '';
+                return null;
             }
         }
-        return ($var === '') ? $in : (is_array($in) ? $in[$var] : '');
+        return ($var === '') ? $in : (is_array($in) ? $in[$var] : null);
     }
 
     /**
