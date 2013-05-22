@@ -640,7 +640,6 @@ class LCRun {
      */
     public static function raw($var, $cx, $in) {
         $v = self::val($var, $in);
-
         if ($v === true) {
             if ($cx['flags']['jstrue']) {
                 return 'true';
@@ -731,11 +730,9 @@ class LCRun {
      */
     public static function wi($var, &$cx, $in, $cb) {
         $v = self::val($var, $in);
-
         if (($v === false) || ($v === null)) {
             return '';
         }
-
         return $cb($cx, $v);
     }
 }
