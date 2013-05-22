@@ -730,7 +730,13 @@ class LCRun {
      * @return string The rendered string of the token
      */
     public static function wi($var, &$cx, $in, $cb) {
-        return ($in[$var] === false) ? '' : $cb($cx, $in[$var]);
+        $v = self::val($var, $in);
+
+        if (($v === false) || ($v === null)) {
+            return '';
+        }
+
+        return $cb($cx, $v);
     }
 }
 ?>
