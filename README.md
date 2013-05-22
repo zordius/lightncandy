@@ -1,7 +1,7 @@
 lightncandy
 ===========
 
-A PHP library to support almost all features of handlebars, target to run as fast as pure php.
+A PHP library to support almost all features of handlebars ( http://handlebarsjs.com/ ) , target to run as fast as pure php.
 
 Features
 --------
@@ -99,6 +99,8 @@ Unsupported Feature (so far)
 
 Detail Feature list
 -------------------
+
+Go http://handlebarsjs.com/ to see more feature description about handlebars.js. All features align with it.
 
 * Exact same CR/LF behavior with handlebars.js
 * Exact same 'true' output with handlebars.js (require FLAG_JSTRUE)
