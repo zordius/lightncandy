@@ -11,6 +11,7 @@ v0.7 curent trunk
    * 3f1014c fix {{#this}} and {{#.}} bug when used with {{../var}}
    * cbf0b28 fix {{#if}} logic error when using {{../}}
    * 2b20ef8 fix {{#with}} + {{../}} bug
+   * 540cd44 now support FLAG_STANDALONE
 
 v0.6 https://github.com/zordius/lightncandy/tree/v0.6
    * align with handlebarsjs 1.0.11
