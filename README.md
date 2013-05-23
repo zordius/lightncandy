@@ -96,7 +96,7 @@ Unsupported Feature (so far)
 ----------------------------
 
 * [Plan to support] partial (include another template inside a template)
-* [Never] set delimiter (change delimiter from {{ }} to custom string, for example <% then %>)
+* [Plan to support] set delimiter (change delimiter from {{ }} to custom string, for example <% then %>)
 * [Possible] input as Object and methods (now only accept associated array data structure)
 
 Lightncandy Design Concept
