@@ -98,6 +98,11 @@ Unsupported Feature (so far)
 * [Never] set delimiter (change delimiter from {{ }} to custom string, for example <% then %>)
 * [Possible] input as Object and methods (now only accept associated array data structure)
 
+Design Concept
+--------------
+
+* Do not OO everywhere. Single inc file, keep it simple and fast.
+
 Detail Feature list
 -------------------
 

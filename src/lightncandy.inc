@@ -500,9 +500,9 @@ class LightnCandy {
                 $pop = array_pop($context['stack']);
                 if ($pop == ':') {
                     $pop = array_pop($context['stack']);
-                    return ')).';
+                    return $context['usedFeature']['parent'] ? ';}).' : ')).';
                 }
-                return ') : \'\').';
+                return $context['usedFeature']['parent'] ? ';}).' : ') : \'\').';
             case 'with':
                 $pop = array_pop($context['stack']);
                 if ($pop !== 'with') {
@@ -526,7 +526,7 @@ class LightnCandy {
                         return;
                     }
                     if ($pop == '^') {
-                        return ") : '').";
+                        return $context['usedFeature']['parent'] ? ';}).' : ') : \'\').';
                     }
                     return ';}).';
                 default:
@@ -541,11 +541,15 @@ class LightnCandy {
             case 'if':
                 $context['stack'][] = 'if';
                 self::_vx($acts[1], $context);
-                return ".({$context['obj']}ifvar('{$acts[1]}', \$cx, \$in) ? (";
+                return $context['usedFeature']['parent'] 
+                       ? ".{$context['obj']}if('{$acts[1]}', \$cx, \$in, function(\$cx, \$in) {return "
+                       : ".({$context['obj']}ifvar('{$acts[1]}', \$cx, \$in) ? (";
             case 'unless':
                 $context['stack'][] = 'unless';
                 self::_vx($acts[1], $context);
-                return ".(!{$context['obj']}ifvar('{$acts[1]}', \$cx, \$in) ? (";
+                return $context['usedFeature']['parent']
+                       ? ".{$context['obj']}unl('{$acts[1]}', \$cx, \$in, function(\$cx, \$in) {return "
+                       : ".(!{$context['obj']}ifvar('{$acts[1]}', \$cx, \$in) ? (";
             case 'each':
                 $each = 'true';
             case 'with':
@@ -569,7 +573,7 @@ class LightnCandy {
             self::_vx($token[2], $context);
             if ($token[2] ==='else') {
                 $context['stack'][] = ':';
-                return ') : (';
+                return $context['usedFeature']['parent'] ? ';}, function($cx, $in) {return ' : ') : (';
             }
             self::_jsv($context, $token[2]);
             $fn = $raw ? 'raw' : 'enc';
