@@ -513,6 +513,7 @@ class LightnCandy {
             case 'each':
                 $each = true;
             default:
+                self::_vx($act, $context);
                 $context['level']--;
                 array_pop($context['vars']);
                 $pop = array_pop($context['stack']);
