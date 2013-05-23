@@ -542,7 +542,7 @@ class LightnCandy {
                 $context['stack'][] = 'if';
                 self::_vx($acts[1], $context);
                 return $context['usedFeature']['parent'] 
-                       ? ".{$context['obj']}if('{$acts[1]}', \$cx, \$in, function(\$cx, \$in) {return "
+                       ? ".{$context['obj']}ifv('{$acts[1]}', \$cx, \$in, function(\$cx, \$in) {return "
                        : ".({$context['obj']}ifvar('{$acts[1]}', \$cx, \$in) ? (";
             case 'unless':
                 $context['stack'][] = 'unless';
@@ -607,6 +607,43 @@ class LCRun {
     public static function ifvar($var, $cx, $in) {
         $v = self::val($var, $cx, $in);
         return !is_null($v) && ($v !== false);
+    }
+
+    /**
+     * LightnCandy runtime method for {{#if var}} when {{../var}} used
+     *
+     * @param string $var variable name to be tested
+     * @param array $cx render time context
+     * @param array $in input data with current scope
+     * @param function $truecb callback function when test result is true
+     * @param function $falsecb callback function when test result is false
+     *
+     * @return string The rendered string of the section
+     */
+    public static function ifv($var, $cx, $in, $truecb, $falsecb = null) {
+        if (is_null($v) || ($v === false)) {
+            if ($falsecb) {
+                return $falsecb($cx, $in);
+            }
+        } else {
+            if ($truecb) {
+                return $truecb($cx, $in);
+            }
+        }
+        return '';
+    }
+
+    /**
+     * LightnCandy runtime method for {{$unless var}} when {{../var}} used
+     *
+     * @param string $var variable name to be tested
+     * @param array $cx render time context
+     * @param array $in input data with current scope
+     *
+     * @return boolean Return true when the value is not null nor false.
+     */
+    public static function unl($var, $cx, $in, $truecb, $falsecb = null) {
+        return self::ifv($var, $cx, $in, $falsecb, $truecb);
     }
 
     /**
