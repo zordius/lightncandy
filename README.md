@@ -24,6 +24,8 @@ Features
       * Do LightnCandy::getJsonSchema() right after LightnCandy::compile() to get jsonSchema
       * Know required data structure from your templates
       * Verify input data, or find out missing variables with any jsonSchema validator
+* Standalone Template
+   * The compiled php template can run without any php library.
 
 Sample
 ------
@@ -82,7 +84,7 @@ Default is to compile the template as php which can be run as fast as possible, 
 
 * FLAG_ERROR_LOG : output error_log when found any template error
 * FLAG_ERROR_EXCEPTION : throw exception when found any template error
-* FLAG_STANDALONE : generate stand alone php codes which can be execute without include LightnCandy. It will contain scopped user function, somehow larger.
+* FLAG_STANDALONE : generate stand alone php codes which can be execute without include LightnCandy. The compiled php code will contain scopped user function, somehow larger.
 * FLAG_JSTRUE: generate 'true' when value is true (handlebars.js behavior). Otherwise, true will generate ''.
 * FLAG_JSOBJECT: generate '[object Object]' for associated array, generate ',' seperated values for array (handlebars.js behavior). Otherwise, all php array will generate ''.
 * FLAG_THIS: support {{this}} or {{.}} in template. Otherwise, {{this}} and {{.}} will cause template error.
@@ -94,14 +96,20 @@ Unsupported Feature (so far)
 ----------------------------
 
 * [Plan to support] partial (include another template inside a template)
-* [Plan to support] FLAG_STANDALONE (stand alone support for compiled php code, now FLAG_STANDALONE still depend on lightncandy.inc)
 * [Never] set delimiter (change delimiter from {{ }} to custom string, for example <% then %>)
 * [Possible] input as Object and methods (now only accept associated array data structure)
 
-Design Concept
---------------
+Lightncandy Design Concept
+--------------------------
 
 * Do not OO everywhere. Single inc file, keep it simple and fast.
+* Simulate all handlebars/javascript behavior, including true, false, Object, Array output behavior.
+
+Handlebars Template Practices
+-----------------------------
+
+* Prevent to use {{#with}} . I think {{path.to.val}} is more readable then {{#with path.to}}{{val}}{{/with}}, when using {{#with}} you will confusing on scope changing.
+* use {{{val}}} when you do not require urlencode. It is better performance, too.
 
 Detail Feature list
 -------------------

@@ -54,7 +54,7 @@ class LightnCandy {
             'flags' => Array(
                 'errorlog' => $flags & self::FLAG_ERROR_LOG,
                 'exception' => $flags & self::FLAG_ERROR_EXCEPTION,
-                'standalong' => $flags & self::FLAG_STANDALONE,
+                'standalone' => $flags & self::FLAG_STANDALONE,
                 'jstrue' => $flags & self::FLAG_JSTRUE,
                 'jsobj' => $flags & self::FLAG_JSOBJECT,
                 'this' => $flags & self::FLAG_THIS,
@@ -66,7 +66,6 @@ class LightnCandy {
             'error' => false,
             'useVar' => false,
             'vars' => Array(),
-            'obj' => ($flags & self::FLAG_STANDALONE) ? '$' : 'LCRun::',
             'jsonSchema' => Array(
                 '$schema' => 'http://json-schema.org/draft-03/schema',
                 'description' => 'Template Json Schema'
@@ -119,6 +118,8 @@ class LightnCandy {
         $flagJStrue = self::_on($context['flags']['jstrue']);
         $flagJSObj = self::_on($context['flags']['jsobj']);
 
+        $libstr = self::exportLCRun($context);
+
         // return generated PHP code string
         return "<?php return function (\$in) {
     \$cx = Array(
@@ -128,11 +129,39 @@ class LightnCandy {
         ),
         'scopes' => Array(),
         'path' => Array(),
-        'parents' => Array()
+        'parents' => Array(),
+$libstr
     );
     return '$code';
 }
 ?>";
+    }
+
+    /**
+     * Internal method used by compile(). export required standalone functions.
+     *
+     * @param string $context current scaning context
+     */
+    protected static function exportLCRun($context) {
+        if ($context['flags']['standalone'] == 0) {
+            return '';
+        }
+
+        $class = new ReflectionClass('LCRun');
+        $fname = $class->getFileName();
+        $lines = file_get_contents($fname);
+        $file = new SplFileObject($fname);
+        $ret = "'funcs' => Array(\n";
+
+        foreach ($class->getMethods() as $method) {
+            $file->seek($method->getStartLine() - 2);
+            $spos = $file->ftell();
+            $file->seek($method->getEndLine() - 2);
+            $epos = $file->ftell();
+            $ret .= preg_replace('/self::(.+)\(/', '\\$cx[\'funcs\'][\'$1\'](', preg_replace('/public static function (.+)\\(/', '\'$1\' => function (', substr($lines, $spos, $epos - $spos))) . "    },\n";
+        }
+        unset($file);
+        return "$ret)\n";
     }
 
     /**
@@ -254,6 +283,18 @@ class LightnCandy {
     public static function render($compiled, $data) {
         $func = include($compiled);
         return $func($data);
+    }
+
+    /**
+     * Internal method used by compile(). Get function name for standalone or none standalone tempalte.
+     *
+     * @param array $context Current context of compiler progress.
+     * @param string $name base function name
+     *
+     * @return string compiled Function name
+     */
+    protected static function _fn($context, $name) {
+        return $context['flags']['standalone'] ? "\$cx['funcs']['$name']" : "LCRun::$name";
     }
 
     /**
@@ -490,7 +531,7 @@ class LightnCandy {
                 $v = end($context['useVar']) . "['{$act}']";
                 return ".((is_null($v) && ($v !== false)) ? ("; 
             } else {
-                return ".({$context['obj']}isec('$act', \$cx, \$in) ? (";
+                return '.(' . self::_fn($context, 'isec') . "('$act', \$cx, \$in) ? (";
             }
         case '/':
             $each = false;
@@ -542,14 +583,14 @@ class LightnCandy {
                 $context['stack'][] = 'if';
                 self::_vx($acts[1], $context);
                 return $context['usedFeature']['parent'] 
-                       ? ".{$context['obj']}ifv('{$acts[1]}', \$cx, \$in, function(\$cx, \$in) {return "
-                       : ".({$context['obj']}ifvar('{$acts[1]}', \$cx, \$in) ? (";
+                       ? '.' . self::_fn($context, 'ifv') . "('{$acts[1]}', \$cx, \$in, function(\$cx, \$in) {return "
+                       : '.(' . self::_fn($context, 'ifvar') . "('{$acts[1]}', \$cx, \$in) ? (";
             case 'unless':
                 $context['stack'][] = 'unless';
                 self::_vx($acts[1], $context);
                 return $context['usedFeature']['parent']
-                       ? ".{$context['obj']}unl('{$acts[1]}', \$cx, \$in, function(\$cx, \$in) {return "
-                       : ".(!{$context['obj']}ifvar('{$acts[1]}', \$cx, \$in) ? (";
+                       ? '.' . self::_fn($context, 'unl') . "('{$acts[1]}', \$cx, \$in, function(\$cx, \$in) {return "
+                       : '.(!' . self::_fn($context, 'ifvar') . "('{$acts[1]}', \$cx, \$in) ? (";
             case 'each':
                 $each = 'true';
             case 'with':
@@ -560,12 +601,12 @@ class LightnCandy {
                 $context['vars'][] = self::_vs($act);
                 if (($acts[0] === 'with') && $context['flags']['with']) {
                     $context['stack'][] = 'with';
-                    return ".{$context['obj']}wi('{$acts[1]}', \$cx, \$in, function(\$cx, \$in) {return ";
+                    return '.' . self::_fn($context, 'wi') . "('{$acts[1]}', \$cx, \$in, function(\$cx, \$in) {return ";
                 }
                 self::_jsp($context);
                 $context['stack'][] = $act;
                 $context['stack'][] = '#';
-                return ".{$context['obj']}sec('$act', \$cx, \$in, $each, function(\$cx, \$in) {return ";
+                return '.' . self::_fn($context, 'sec') . "('$act', \$cx, \$in, $each, function(\$cx, \$in) {return ";
             }
         case '!':
             return '.';
@@ -585,7 +626,7 @@ class LightnCandy {
                     return $raw ? ".$v." : ".htmlentities($v, ENT_QUOTES).";
                 }
             } else {
-                return ".{$context['obj']}{$fn}('{$token[2]}', \$cx, \$in).";
+                return '.' . self::_fn($context, $fn) . "('{$token[2]}', \$cx, \$in).";
             }
         }
     }
