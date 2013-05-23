@@ -771,7 +771,10 @@ class LCRun {
             return '';
         }
         if (is_array($v)) {
-            return $cb($cx, $v);
+            $cx['scopes'][] = $v;
+            $ret = $cb($cx, $v);
+            array_pop($cx['scopes']);
+            return $ret;
         }
         if ($v === true) {
             return $cb($cx, $in);
