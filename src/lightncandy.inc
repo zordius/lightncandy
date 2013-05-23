@@ -103,7 +103,7 @@ class LightnCandy {
 
         // Check used features and compile flags. If the template is simple enough,
         // we can generate best performance code with enable 'useVar' internal flag.
-        if (!$context['flags']['jsobj'] && (($context['usedFeature']['sec'] < 1) || !$context['flags']['jsobj'])) {
+        if (!$context['flags']['jsobj'] && (($context['usedFeature']['sec'] + $context['usedFeature']['parent'] < 1) || !$context['flags']['jsobj'])) {
             $context['useVar'] = Array('$in');
         }
 
@@ -459,7 +459,7 @@ class LightnCandy {
 
                 default:
                     if (preg_match('/\\.\\.(\\/.+)*/', $token[2])) {
-                        if (!$context['flags']['this']) {
+                        if (!$context['flags']['parent']) {
                             $context['error'] = 'do not support {{../var}}, you should do compile with LightnCandy::FLAG_PARENT flag';
                         }
                         return $context['usedFeature']['parent'] ++;
@@ -628,7 +628,7 @@ class LCRun {
      */
     public static function val($var, $cx, $in) {
         $levels = 0;
-        $var = preg_replace_callback('/\\.\\.\\//', function($matches) {
+        $var = preg_replace_callback('/\\.\\.\\//', function($matches) use (&$levels) {
             $levels++;
             return '';
         }, $var);
