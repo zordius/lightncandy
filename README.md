@@ -87,15 +87,16 @@ Default is to compile the template as php which can be run as fast as possible, 
 * FLAG_JSOBJECT: generate '[object Object]' for associated array, generate ',' seperated values for array (handlebars.js behavior). Otherwise, all php array will generate ''.
 * FLAG_THIS: support {{this}} or {{.}} in template. Otherwise, {{this}} and {{.}} will cause template error.
 * FLAG_WITH: support {{#with var}} . Otherwise, {{#with var}} will cause template error.
-* FLAG_HANDLEBARSJS: align with handlebars.js behaviors, same as FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS + FLAG_WITH.
+* FLAG_PARENT: support {{../var}} . Otherwise, {{../var}} will cause template error.
+* FLAG_HANDLEBARSJS: align with handlebars.js behaviors, same as FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS + FLAG_WITH + FLAG_PARENT.
 
 Unsupported Feature (so far)
 ----------------------------
 
-* partial (include another template inside a template)
-* set delimiter (change delimiter from {{ }} to custom string, for example <% then %>)
-* ../ (parent template scope)
-* FLAG_STANDALONE (stand alone support for compiled php code, now FLAG_STANDALONE still depend on lightncandy.inc)
+* [Plan to support] partial (include another template inside a template)
+* [Plan to support] FLAG_STANDALONE (stand alone support for compiled php code, now FLAG_STANDALONE still depend on lightncandy.inc)
+* [Never] set delimiter (change delimiter from {{ }} to custom string, for example <% then %>)
+* [Possible] input as Object and methods (now only accept associated array data structure)
 
 Detail Feature list
 -------------------
@@ -134,3 +135,4 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * {{else}} : run else logic, should between {{#if var}} and {{/if}}
 * {{#unless var}} : run unless logic with original scope
 * {{#with var}} : change context scope. If the var is false, skip included section. (require FLAG_WITH)
+* {{../var}}: parent template scope. (require FLAG_PARENT)
