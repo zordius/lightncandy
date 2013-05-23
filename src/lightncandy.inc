@@ -804,7 +804,10 @@ class LCRun {
         if (($v === false) || ($v === null)) {
             return '';
         }
-        return $cb($cx, $v);
+        $cx['scopes'][] = $v;
+        $ret = $cb($cx, $v);
+        array_pop($cx['scopes']);
+        return $ret;
     }
 }
 ?>
