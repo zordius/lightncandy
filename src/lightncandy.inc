@@ -621,6 +621,7 @@ class LCRun {
      * @return string The rendered string of the section
      */
     public static function ifv($var, $cx, $in, $truecb, $falsecb = null) {
+        $v = self::val($var, $cx, $in);
         $ret = '';
         if (is_null($v) || ($v === false)) {
             if ($falsecb) {
