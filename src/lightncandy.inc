@@ -621,16 +621,21 @@ class LCRun {
      * @return string The rendered string of the section
      */
     public static function ifv($var, $cx, $in, $truecb, $falsecb = null) {
+        $ret = '';
         if (is_null($v) || ($v === false)) {
             if ($falsecb) {
-                return $falsecb($cx, $in);
+                $cx['scopes'][] = $in;
+                $ret = $falsecb($cx, $in);
+                array_pop($cx['scopes']);
             }
         } else {
             if ($truecb) {
-                return $truecb($cx, $in);
+                $cx['scopes'][] = $in;
+                $ret = $truecb($cx, $in);
+                array_pop($cx['scopes']);
             }
         }
-        return '';
+        return $ret;
     }
 
     /**
@@ -674,7 +679,6 @@ class LCRun {
             $levels++;
             return '';
         }, $var);
-
         if ($levels > 0) {
             $pos = count($cx['scopes']) - $levels;
             if ($pos >= 0) {
@@ -683,7 +687,6 @@ class LCRun {
                 return '';
             }
         }
-      
         if (preg_match('/(.+?)\\.(.+)/', $var, $matched)) {
             if (array_key_exists($matched[1], $in)) {
                 return self::val($matched[2], $cx, $in[$matched[1]]);
