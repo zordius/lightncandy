@@ -95,7 +95,7 @@ Default is to compile the template as php which can be run as fast as possible, 
 Unsupported Feature (so far)
 ----------------------------
 
-* [Plan to support] partial (include another template inside a template)
+* [Now Printing] partial (include another template inside a template)
 * [Plan to support] set delimiter (change delimiter from {{ }} to custom string, for example <% then %>)
 * [Possible] input as Object and methods (now only accept associated array data structure)
 
@@ -104,9 +104,10 @@ Lightncandy Design Concept
 
 * Do not OO everywhere. Single inc file, keep it simple and fast.
 * Simulate all handlebars/javascript behavior, including true, false, Object, Array output behavior.
+* Make almost everything happened in compile time, including 'partial' support.
 
-Handlebars Template Practices
------------------------------
+Suggested Handlebars Template Practices
+---------------------------------------
 
 * Prevent to use {{#with}} . I think {{path.to.val}} is more readable then {{#with path.to}}{{val}}{{/with}}, when using {{#with}} you will confusing on scope changing.
 * use {{{val}}} when you do not require urlencode. It is better performance, too.

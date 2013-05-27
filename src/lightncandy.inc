@@ -48,6 +48,18 @@ class LightnCandy {
      * @return string Compiled PHP code when successed. If error happened and compile failed, return false.
      */
     public static function compile($template, $options = 0) {
+        return self::compiledCode($template, $options);
+    }
+
+    /**
+     * Internal method used by compile(). Get compiled code from a template string
+     *
+     * @param string $template handlebars template string
+     * @param array $options LightnCandy compile time and run time options, default is Array('flags' => LightnCandy::FLAG_BESTPERFORMANCE)
+     *
+     * @return string Compiled PHP code when successed. If error happened and compile failed, return false.
+     */
+    protected static function compiledCode($template, $options) {
         $flags = isset($options['flags']) ? $options['flags'] : self::FLAG_BESTPERFORMANCE;
 
         $context = Array(
@@ -524,6 +536,8 @@ $libstr
         $raw = ($token[1] === '{{{');
 
         switch ($head) {
+        case '>':
+            return ''; // FIXME: support partial
         case '^':
             $context['stack'][] = $act;
             $context['stack'][] = '^';
