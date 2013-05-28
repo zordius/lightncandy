@@ -35,7 +35,7 @@ class LightnCandy {
     const FLAG_BESTPERFORMANCE = 0;
     const FLAG_HANDLEBARSJS = 248; // FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS + FLAG_WITH + FLAG_PARENT
 
-    const PARTIAL_SEARCH = '/\\{\\{> (.+?)\\}\\}/s';
+    const PARTIAL_SEARCH = '/\\{\\{>[ \\t]*(.+?)[ \\t]*\\}\\}/s';
     const TOKEN_SEARCH = '/(\\{{2,3})(.+?)(\\}{2,3})/s';
 
     private static $lastContext;
@@ -176,7 +176,6 @@ $libstr
         foreach ($context['basedir'] as $dir) {
             foreach ($context['fileext'] as $ext) {
                 $fn = "$dir/$name$ext";
-print "-------- $fn ----------\n";
                 if (file_exists($fn)) {
                     return file_get_contents($fn);
                 }
