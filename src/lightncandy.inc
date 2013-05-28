@@ -48,26 +48,7 @@ class LightnCandy {
      * @return string Compiled PHP code when successed. If error happened and compile failed, return false.
      */
     public static function compile($template, $options = 0) {
-        $code = self::compiledCode($template, $options);
-        $flagJStrue = self::_on(self::$lastContext['flags']['jstrue']);
-        $flagJSObj = self::_on(self::$lastContext['flags']['jsobj']);
-        $libstr = self::exportLCRun(self::$lastContext);
-
-        // return generated PHP code string
-        return "<?php return function (\$in) {
-    \$cx = Array(
-        'flags' => Array(
-            'jstrue' => $flagJStrue,
-            'jsobj' => $flagJSObj,
-        ),
-        'scopes' => Array(),
-        'path' => Array(),
-        'parents' => Array(),
-$libstr
-    );
-    return '$code';
-}
-?>";
+        return self::compiledCode($template, $options);
     }
 
     /**
@@ -146,7 +127,26 @@ $libstr
             return false;
         }
 
-        return $code;
+        $flagJStrue = self::_on($context['flags']['jstrue']);
+        $flagJSObj = self::_on($context['flags']['jsobj']);
+
+        $libstr = self::exportLCRun($context);
+
+        // return generated PHP code string
+        return "<?php return function (\$in) {
+    \$cx = Array(
+        'flags' => Array(
+            'jstrue' => $flagJStrue,
+            'jsobj' => $flagJSObj,
+        ),
+        'scopes' => Array(),
+        'path' => Array(),
+        'parents' => Array(),
+$libstr
+    );
+    return '$code';
+}
+?>";
     }
 
     /**
