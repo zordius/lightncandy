@@ -35,6 +35,7 @@ class LightnCandy {
     const FLAG_BESTPERFORMANCE = 0;
     const FLAG_HANDLEBARSJS = 248; // FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS + FLAG_WITH + FLAG_PARENT
 
+    const PARTIAL_SEARCH = '/\\{\\{> (.+?)\\}\\}/s';
     const TOKEN_SEARCH = '/(\\{{2,3})(.+?)(\\}{2,3})/s';
 
     private static $lastContext;
@@ -82,6 +83,9 @@ class LightnCandy {
                 '$schema' => 'http://json-schema.org/draft-03/schema',
                 'description' => 'Template Json Schema'
             ),
+            'basedir' => self::_basedir($options),
+            'fileext' => self::_fileext($options),
+            'usedPartial' => Array(),
             'usedFeature' => Array(
                 'rootvar' => 0,
                 'rootthis' => 0,
@@ -97,9 +101,19 @@ class LightnCandy {
                 'parent' => 0,
                 'with' => 0,
                 'dot' => 0,
-                'comment' => 0
+                'comment' => 0,
+                'partial' => 0,
             )
         );
+
+        // Scan for partial and replace partial with template
+        $template = preg_replace_callback(self::PARTIAL_SEARCH, function ($matches) use (&$context) {
+            return LightnCandy::readPartial($matches[1], $context);
+        }, $template);
+
+        if (self::_error($context)) {
+            return false;
+        }
 
         // Do first time scan to find out used feature, detect template error.
         if (preg_match_all(self::TOKEN_SEARCH, $template, $tokens, PREG_SET_ORDER) > 0) {
@@ -147,6 +161,64 @@ $libstr
     return '$code';
 }
 ?>";
+    }
+
+    /**
+     * read partial file content as string
+     *
+     * @param string $name partial file name
+     * @param array $context Current context of compiler progress.
+     *
+     * @return string partial file content
+     */
+    public static function readPartial($name, &$context) {
+        $context['usedFeature']['partial'] ++;
+        foreach ($context['basedir'] as $dir) {
+            foreach ($context['fileext'] as $ext) {
+                $fn = "$dir/$name$ext";
+print "-------- $fn ----------\n";
+                if (file_exists($fn)) {
+                    return file_get_contents($fn);
+                }
+            }
+        }
+        $context['error'] = "can not find partial file for '$name', you should set correct basedir and fileext in options";
+    }
+
+    /**
+     * Internal method used by compile(). check options and handle fileext 
+     *
+     * @param string $options current compile option
+     *
+     * @return array file extensions
+     */
+    protected static function _fileext($options) {
+        $exts = isset($options['fileext']) ? $options['fileext'] : '.tmpl';
+        return is_array($exts) ? $exts : Array($exts);
+    }
+
+    /**
+     * Internal method used by compile(). check options and handle basedir
+     *
+     * @param string $options current compile option
+     *
+     * @return array base directories
+     */
+    protected static function _basedir($options) {
+        $dirs = isset($options['basedir']) ? $options['basedir'] : 0;
+        $dirs = is_array($dirs) ? $dirs : Array($dirs);
+
+        foreach ($dirs as $index => $dir) {
+            if (!is_dir($dir)) {
+                unset($dirs[$index]);
+            }
+        }
+
+        if (count(array_keys($dirs)) === 0) {
+            $dirs[] = getcwd();
+        }
+
+        return $dirs;
     }
 
     /**
@@ -536,8 +608,6 @@ $libstr
         $raw = ($token[1] === '{{{');
 
         switch ($head) {
-        case '>':
-            return ''; // FIXME: support partial
         case '^':
             $context['stack'][] = $act;
             $context['stack'][] = '^';

@@ -95,7 +95,6 @@ Default is to compile the template as php which can be run as fast as possible, 
 Unsupported Feature (so far)
 ----------------------------
 
-* [Now Printing] partial (include another template inside a template)
 * [Plan to support] set delimiter (change delimiter from {{ }} to custom string, for example <% then %>)
 * [Possible] input as Object and methods (now only accept associated array data structure)
 
@@ -150,3 +149,4 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * {{#unless var}} : run unless logic with original scope
 * {{#with var}} : change context scope. If the var is false, skip included section. (require FLAG_WITH)
 * {{../var}}: parent template scope. (require FLAG_PARENT)
+* {{> file}}: partial; include another template inside a template.
