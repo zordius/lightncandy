@@ -78,7 +78,7 @@ CONSTANTS
 You can apply more flags by running LightnCandy::compile($php, $options)
 for example:
 
-LightnCandy::compile($php, Array('flags' => LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_STANDALONE));
+LightnCandy::compile($template, Array('flags' => LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_STANDALONE));
 
 Default is to compile the template as php which can be run as fast as possible, all flags are off.
 
@@ -91,6 +91,28 @@ Default is to compile the template as php which can be run as fast as possible, 
 * FLAG_WITH: support {{#with var}} . Otherwise, {{#with var}} will cause template error.
 * FLAG_PARENT: support {{../var}} . Otherwise, {{../var}} will cause template error.
 * FLAG_HANDLEBARSJS: align with handlebars.js behaviors, same as FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS + FLAG_WITH + FLAG_PARENT.
+
+Partial Support
+---------------
+
+LightnCandy supports partial when compile time. When compile(), LightnCandy will search template file in current directory by default. You can define more then 1 template directories with 'basedir' option. Default template file name is *.tmpl, you can change or add more template file extension with 'fileext' option. 
+
+for example:
+<pre>
+LightnCandy::compile($template, Array(
+    'flags' => LightnCandy::FLAG_STANDALONE,
+    'basedir' => Array(
+        '/usr/local/share/handlebars/templates',
+        '/usr/local/share/my_project/templates',
+        '/usr/local/share/my_project/partials',
+    ),
+    'fileext' => Array(
+        '.tmpl',
+        '.mustache',
+        '.handlebars',
+    )
+));
+</pre>
 
 Unsupported Feature (so far)
 ----------------------------
