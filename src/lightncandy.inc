@@ -730,7 +730,7 @@ class LCRun {
      */
     public static function ifvar($var, $cx, $in) {
         $v = self::val($var, $cx, $in);
-        return !is_null($v) && ($v !== false);
+        return !is_null($v) && ($v !== false) && ($v !== 0);
     }
 
     /**
