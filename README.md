@@ -95,7 +95,7 @@ Default is to compile the template as php which can be run as fast as possible, 
 Partial Support
 ---------------
 
-LightnCandy supports partial when compile time. When compile(), LightnCandy will search template file in current directory by default. You can define more then 1 template directories with 'basedir' option. Default template file name is *.tmpl, you can change or add more template file extension with 'fileext' option. 
+LightnCandy supports partial when compile time. When compile(), LightnCandy will search template file in current directory by default. You can define more then 1 template directories with 'basedir' option. Default template file name is *.tmpl, you can change or add more template file extensions with 'fileext' option. 
 
 for example:
 <pre>
