@@ -114,6 +114,8 @@ LightnCandy::compile($template, Array(
 ));
 </pre>
 
+LightnCandy supports parent context access in partial {{../vars}}, so far no other php/javascript library can handle this correctly.
+
 Unsupported Feature (so far)
 ----------------------------
 
@@ -130,7 +132,7 @@ Lightncandy Design Concept
 Suggested Handlebars Template Practices
 ---------------------------------------
 
-* Prevent to use {{#with}} . I think {{path.to.val}} is more readable then {{#with path.to}}{{val}}{{/with}}, when using {{#with}} you will confusing on scope changing.
+* Prevent to use {{#with}} . I think {{path.to.val}} is more readable then {{#with path.to}}{{val}}{{/with}}, when using {{#with}} you will confusing on scope changing. {{#with}} only save you very little time when you access many variables under same path, but cost you a lot time when you need to understand then maintain a template.
 * use {{{val}}} when you do not require urlencode. It is better performance, too.
 
 Detail Feature list
