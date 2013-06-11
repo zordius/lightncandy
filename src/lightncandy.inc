@@ -153,9 +153,8 @@ class LightnCandy {
             'jstrue' => $flagJStrue,
             'jsobj' => $flagJSObj,
         ),
-        'scopes' => Array(),
+        'scopes' => Array(\$in),
         'path' => Array(),
-        'parents' => Array(),
 $libstr
     );
     return '$code';
@@ -885,7 +884,7 @@ class LCRun {
         }
         if ($loop) {
             $ret = Array();
-            $cx['scopes'][] = $v;
+            $cx['scopes'][] = $in;
             foreach ($v as $raw) {
                 $ret[] = $cb($cx, $raw);
             }
