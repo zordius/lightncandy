@@ -171,7 +171,7 @@ $libstr
      * @return string partial file content
      */
     public static function readPartial($name, &$context) {
-        $context['usedFeature']['partial'] ++;
+        $context['usedFeature']['partial']++;
         foreach ($context['basedir'] as $dir) {
             foreach ($context['fileext'] as $ext) {
                 $fn = "$dir/$name$ext";
@@ -255,6 +255,12 @@ $libstr
      */
     protected static function _error($context) {
         self::$lastContext = $context;
+
+        if ($context['level'] !== 0) {
+            $token = array_pop($context['stack']);
+            $context['error'] = "Unclosed token {{{$token}}} !!";
+        }
+
         if ($context['error']) {
             if ($context['flags']['errorlog']) {
                 error_log($context['error']);
@@ -317,7 +323,7 @@ $libstr
             switch ($matches[0]) {
                 case '{':
                 case '[':
-                    $level ++;
+                    $level++;
                 case ',':
                     $br = "\n";
             }
@@ -527,13 +533,18 @@ $libstr
 
         switch ($head) {
         case '^':
-            return $context['usedFeature']['isec'] ++;
+            $context['stack'][] = $token[2];
+            $context['level']++;
+            return $context['usedFeature']['isec']++;
 
-            case '/':
+        case '/':
+            array_pop($context['stack']);
             $context['level']--;
             return;
 
         case '#':
+            $context['stack'][] = $token[2];
+            $context['level']++;
             $acts = explode(' ', $act);
             switch ($acts[0]) {
             case 'with':
@@ -541,55 +552,53 @@ $libstr
                     $context['error'] = 'do not support {{#with var}}, you should do compile with LightnCandy::FLAG_WITH flag';
                 }
             case 'each':
-                $context['level'] ++;
             case 'unless':
             case 'if':
-                return $context['usedFeature'][$acts[0]] ++;
+                return $context['usedFeature'][$acts[0]]++;
 
             default:
-                $context['level'] ++;
-                return $context['usedFeature']['sec'] ++;
+                return $context['usedFeature']['sec']++;
             }
 
         case '!':
-            return $context['usedFeature']['comment'] ++;
+            return $context['usedFeature']['comment']++;
 
         default:
             $fn = $raw ? 'raw' : 'enc';
-            $context['usedFeature'][$fn] ++;
+            $context['usedFeature'][$fn]++;
             $token[2] = trim($token[2]);
             switch ($token[2]) {
                 case 'else':
-                    return $context['usedFeature']['else'] ++;
+                    return $context['usedFeature']['else']++;
 
                 case 'this':
                     if ($context['level'] == 0) {
-                        $context['usedFeature']['rootthis'] ++;
+                        $context['usedFeature']['rootthis']++;
                     }
                     if (!$context['flags']['this']) {
                         $context['error'] = 'do not support {{this}}, you should do compile with LightnCandy::FLAG_THIS flag';
                     }
-                    return $context['usedFeature']['this'] ++;
+                    return $context['usedFeature']['this']++;
 
                 case '.':
                     if ($context['level'] == 0) {
-                        $context['usedFeature']['rootthis'] ++;
+                        $context['usedFeature']['rootthis']++;
                     }
                     if (!$context['flags']['this']) {
                         $context['error'] = 'do not support {{.}}, you should do compile with LightnCandy::FLAG_THIS flag';
                     }
-                    return $context['usedFeature']['dot'] ++;
+                    return $context['usedFeature']['dot']++;
 
                 default:
                     if (preg_match('/\\.\\.(\\/.+)*/', $token[2])) {
                         if (!$context['flags']['parent']) {
                             $context['error'] = 'do not support {{../var}}, you should do compile with LightnCandy::FLAG_PARENT flag';
                         }
-                        return $context['usedFeature']['parent'] ++;
+                        return $context['usedFeature']['parent']++;
                     }
             }
             if ($context['level'] == 0) {
-                $context['usedFeature']['rootvar'] ++;
+                $context['usedFeature']['rootvar']++;
             }
         }
     }
@@ -637,7 +646,6 @@ $libstr
                 $each = true;
             default:
                 self::_vx($act, $context);
-                $context['level']--;
                 array_pop($context['vars']);
                 $pop = array_pop($context['stack']);
                 switch($pop) {
@@ -679,7 +687,6 @@ $libstr
                 $act = $acts[1];
             default:
                 self::_vx($act, $context);
-                $context['level'] ++;
                 $context['vars'][] = self::_vs($act);
                 if (($acts[0] === 'with') && $context['flags']['with']) {
                     $context['stack'][] = 'with';
