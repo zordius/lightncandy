@@ -2,7 +2,8 @@ HISTORY
 =======
 
 v0.8 curent trunk
-   * fix partial in partial not works bug
+   * align with handlebars 1.0.12
+   * aaec049 fix partial in partial not works bug
 
 v0.7 https://github.com/zordius/lightncandy/tree/v0.7
    * add HISTORY.md

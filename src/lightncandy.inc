@@ -805,7 +805,8 @@ class LCRun {
      * @return boolean Return true when the value is not null nor false.
      */
     public static function isec($var, $cx, $in) {
-        return !self::ifvar($var, $cx, $in);
+        $v = self::val($var, $cx, $in);
+        return is_null($v) || ($v == false);
     }
 
     /**
