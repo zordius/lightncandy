@@ -107,9 +107,7 @@ class LightnCandy {
         );
 
         // Scan for partial and replace partial with template
-        $template = preg_replace_callback(self::PARTIAL_SEARCH, function ($matches) use (&$context) {
-            return LightnCandy::readPartial($matches[1], $context);
-        }, $template);
+        $template = LightnCandy::expandPartial($template, $context);
 
         if (self::_error($context)) {
             return false;
@@ -163,6 +161,20 @@ $libstr
     }
 
     /**
+     * expand partial string recursively
+     *
+     * @param string $template template string
+     *
+     * @return string partial file content
+     */
+    public static function expandPartial($template, &$context) {
+        $template = preg_replace_callback(self::PARTIAL_SEARCH, function ($matches) use (&$context) {
+            return LightnCandy::expandPartial(LightnCandy::readPartial($matches[1], $context), $context);
+        }, $template);
+        return $template;
+    }
+
+    /**
      * read partial file content as string
      *
      * @param string $name partial file name
@@ -171,10 +183,11 @@ $libstr
      * @return string partial file content
      */
     public static function readPartial($name, &$context) {
+        $f = preg_split('/[ \\t]/', $name);
         $context['usedFeature']['partial']++;
         foreach ($context['basedir'] as $dir) {
             foreach ($context['fileext'] as $ext) {
-                $fn = "$dir/$name$ext";
+                $fn = "$dir/$f[0]$ext";
                 if (file_exists($fn)) {
                     return file_get_contents($fn);
                 }

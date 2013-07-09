@@ -1,7 +1,10 @@
 HISTORY
 =======
 
-v0.7 curent trunk
+v0.8 curent trunk
+   * fix partial in partial not works bug
+
+v0.7 https://github.com/zordius/lightncandy/tree/v0.7
    * add HISTORY.md
    * 777304c change compile format to include in val, isec, ifvar
    * 55de127 support {{../}} in {{#each}}
@@ -13,6 +16,7 @@ v0.7 curent trunk
    * 2b20ef8 fix {{#with}} + {{../}} bug
    * 540cd44 now support FLAG_STANDALONE
    * 67ac5ff support {{>partial}}
+   * 98c7bb1 detect unclosed token now
 
 v0.6 https://github.com/zordius/lightncandy/tree/v0.6
    * align with handlebarsjs 1.0.11
