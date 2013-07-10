@@ -121,6 +121,7 @@ Unsupported Feature (so far)
 
 * [Plan to support] set delimiter (change delimiter from {{ }} to custom string, for example <% then %>)
 * [Possible] input as Object and methods (now only accept associated array data structure)
+* [Never] register a helper function (We wish you to not use custom helper to keep your template generic, then you can reuse these templates in different languages.)
 
 Lightncandy Design Concept
 --------------------------
@@ -134,6 +135,7 @@ Suggested Handlebars Template Practices
 
 * Prevent to use {{#with}} . I think {{path.to.val}} is more readable then {{#with path.to}}{{val}}{{/with}}, when using {{#with}} you will confusing on scope changing. {{#with}} only save you very little time when you access many variables under same path, but cost you a lot time when you need to understand then maintain a template.
 * use {{{val}}} when you do not require urlencode. It is better performance, too.
+* Prevent to use custom helper if you want to reuse your template in different language. Or, you may need to implement different versions of helper in different languages.
 
 Detail Feature list
 -------------------
