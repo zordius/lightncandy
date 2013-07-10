@@ -165,13 +165,13 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * {{/value}} : end section
 * {{^value}} : inverted section
    * false, undefined and null will run the section with original scope
-   * All others will skip the section (include 0, 1, -1, '', '1', '0', '-1', 'false', ...)
+   * All others will skip the section (include 0, 1, -1, '', '1', '0', '-1', 'false', Array, ...)
 * {{! comment}} : comment
 * {{#each var}} : each loop
 * {{/each}} : end loop
 * {{#if var}} : run if logic with original scope
 * {{/if}} : end if
-* {{else}} : run else logic, should between {{#if var}} and {{/if}}
+* {{else}} : run else logic, should between {{#if var}} and {{/if}} , or between {{#unless var}} and {{/unless}}
 * {{#unless var}} : run unless logic with original scope
 * {{#with var}} : change context scope. If the var is false, skip included section. (require FLAG_WITH)
 * {{../var}}: parent template scope. (require FLAG_PARENT)
