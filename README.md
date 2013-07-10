@@ -174,3 +174,5 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * {{#with var}} : change context scope. If the var is false, skip included section. (require FLAG_WITH)
 * {{../var}}: parent template scope. (require FLAG_PARENT)
 * {{> file}}: partial; include another template inside a template.
+* {{@index}}: reference to current index in a {{#each}} loop on an array.
+* {{@key}}: reference to current key in a {{#each}} loop on an object.
