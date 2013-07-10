@@ -79,6 +79,7 @@ class LightnCandy {
             'error' => false,
             'useVar' => false,
             'vars' => Array(),
+            'sp_vars' => Array(),
             'jsonSchema' => Array(
                 '$schema' => 'http://json-schema.org/draft-03/schema',
                 'description' => 'Template Json Schema'
@@ -820,6 +821,13 @@ class LCRun {
      */
     public static function val($var, $cx, $in) {
         $levels = 0;
+
+        if ($var === '@index') {
+            return $cx['sp_vars']['index'];
+        }
+        if ($var === '@key') {
+            return $cx['sp_vars']['key'];
+        }
         $var = preg_replace_callback('/\\.\\.\\//', function($matches) use (&$levels) {
             $levels++;
             return '';
@@ -904,11 +912,18 @@ class LCRun {
             $loop = (count(array_diff_key($v, array_keys(array_keys($v)))) == 0);
         }
         if ($loop) {
+            if ($each) {
+                $is_obj = count(array_diff_key($v, array_keys(array_keys($v)))) > 0;
+            } else {
+                $is_obj = false;
+            }
             $ret = Array();
             $cx['scopes'][] = $in;
-            foreach ($v as $raw) {
+            foreach ($v as $index => $raw) {
+                $cx['sp_vars'][$is_obj ? 'key' : 'index'] = $index;
                 $ret[] = $cb($cx, $raw);
             }
+            unset($cx['sp_vars'][$is_obj ? 'key' : 'index']);
             array_pop($cx['scopes']);
             return join('', $ret);
         }

@@ -4,6 +4,7 @@ HISTORY
 v0.8 curent trunk
    * align with handlebars 1.0.12
    * aaec049 fix partial in partial not works bug
+   * 52706cc fix for {{#var}} and {{^var}} , now when var === 0 means true
 
 v0.7 https://github.com/zordius/lightncandy/tree/v0.7
    * add HISTORY.md
