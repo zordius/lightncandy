@@ -907,13 +907,14 @@ class LCRun {
      */
     public static function sec($var, &$cx, $in, $each, $cb) {
         $v = self::val($var, $cx, $in);
+        $isary = is_array($v);
         $loop = $each;
-        if (!$loop && is_array($v)) {
+        if (!$loop && $isary) {
             $loop = (count(array_diff_key($v, array_keys(array_keys($v)))) == 0);
         }
-        if ($loop) {
+        if ($loop && $isary) {
             if ($each) {
-                $is_obj = is_array($v) && (count(array_diff_key($v, array_keys(array_keys($v)))) > 0);
+                $is_obj = count(array_diff_key($v, array_keys(array_keys($v)))) > 0;
             } else {
                 $is_obj = false;
             }
@@ -930,7 +931,7 @@ class LCRun {
         if ($each) {
             return '';
         }
-        if (is_array($v)) {
+        if ($isary) {
             $cx['scopes'][] = $v;
             $ret = $cb($cx, $v);
             array_pop($cx['scopes']);
