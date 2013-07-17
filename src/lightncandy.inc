@@ -913,7 +913,7 @@ class LCRun {
         }
         if ($loop) {
             if ($each) {
-                $is_obj = count(array_diff_key($v, array_keys(array_keys($v)))) > 0;
+                $is_obj = is_array($v) && (count(array_diff_key($v, array_keys(array_keys($v)))) > 0);
             } else {
                 $is_obj = false;
             }
