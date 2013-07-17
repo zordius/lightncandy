@@ -7,7 +7,8 @@ v0.8 curent trunk
    * 52706cc fix for {{#var}} and {{^var}} , now when var === 0 means true
    * 4f7f816 support {{@key}} and {{@index}} in {{#each var}}
    * 63aef2a prevent array_diff_key() PHP warning when {{#each}} on none array value
-   * add more is_array() check when {{#each}} and {{#var}}
+   * 10f3d73 add more is_array() check when {{#each}} and {{#var}}
+   * fix {{#if}} and {{#unless}} when value is an empty array
 
 v0.7 https://github.com/zordius/lightncandy/tree/v0.7
    * add HISTORY.md
