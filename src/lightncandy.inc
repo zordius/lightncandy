@@ -847,7 +847,7 @@ class LCRun {
                 return null;
             }
         }
-        return ($var === '') ? $in : (is_array($in) ? $in[$var] : null);
+        return ($var === '') ? $in : (is_array($in) && isset($in[$var]) ? $in[$var] : null);
     }
 
     /**
