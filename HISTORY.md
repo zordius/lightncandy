@@ -8,7 +8,9 @@ v0.8 curent trunk
    * 4f7f816 support {{@key}} and {{@index}} in {{#each var}}
    * 63aef2a prevent array_diff_key() PHP warning when {{#each}} on none array value
    * 10f3d73 add more is_array() check when {{#each}} and {{#var}}
-   * fix {{#if}} and {{#unless}} when value is an empty array
+   * 367247b fix {{#if}} and {{#unless}} when value is an empty array
+   * c76c0bb returns null if var is not exist in a template [contributed by dtelyukh@github.com]
+   * add FLAG_ECHO support
 
 v0.7 https://github.com/zordius/lightncandy/tree/v0.7
    * add HISTORY.md

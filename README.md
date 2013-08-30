@@ -84,13 +84,15 @@ Default is to compile the template as php which can be run as fast as possible, 
 
 * FLAG_ERROR_LOG : output error_log when found any template error
 * FLAG_ERROR_EXCEPTION : throw exception when found any template error
-* FLAG_STANDALONE : generate stand alone php codes which can be execute without include LightnCandy. The compiled php code will contain scopped user function, somehow larger.
+* FLAG_STANDALONE : generate stand alone php codes which can be execute without including LightnCandy. The compiled php code will contain scopped user function, somehow larger. And, the performance of the template will slow 1 ~ 10%.
 * FLAG_JSTRUE: generate 'true' when value is true (handlebars.js behavior). Otherwise, true will generate ''.
 * FLAG_JSOBJECT: generate '[object Object]' for associated array, generate ',' seperated values for array (handlebars.js behavior). Otherwise, all php array will generate ''.
 * FLAG_THIS: support {{this}} or {{.}} in template. Otherwise, {{this}} and {{.}} will cause template error.
 * FLAG_WITH: support {{#with var}} . Otherwise, {{#with var}} will cause template error.
 * FLAG_PARENT: support {{../var}} . Otherwise, {{../var}} will cause template error.
 * FLAG_HANDLEBARSJS: align with handlebars.js behaviors, same as FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS + FLAG_WITH + FLAG_PARENT.
+* FLAG_ECHO (experimental): compile to echo 'a', $b, 'c'; to improve performance. This will slow down rendering when the template and data are simple, but will improve 1% ~ 7% when the data is big and looping in the template.
+* FLAG_BESTPERFORMANCE: same as FLAG_ECHO now. This flag may be changed base on performance testing result.
 
 Partial Support
 ---------------

@@ -23,16 +23,24 @@ Origin: https://github.com/zordius/lightncandy
  * LightnCandy static core class.
  */
 class LightnCandy {
+    // Compile time error handling flags
     const FLAG_ERROR_LOG = 1;
     const FLAG_ERROR_EXCEPTION = 2;
+
+    // Compile the template as standalone php code which can execute without including LightnCandy
     const FLAG_STANDALONE = 4;
+
+    // Handlebars.js compatibility
     const FLAG_JSTRUE = 8;
     const FLAG_JSOBJECT = 16;
     const FLAG_THIS = 32;
     const FLAG_WITH = 64;
     const FLAG_PARENT = 128;
 
-    const FLAG_BESTPERFORMANCE = 0;
+    // PHP performance flags
+    const FLAG_ECHO = 256;
+
+    const FLAG_BESTPERFORMANCE = 256; // FLAG_ECHO
     const FLAG_HANDLEBARSJS = 248; // FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS + FLAG_WITH + FLAG_PARENT
 
     const PARTIAL_SEARCH = '/\\{\\{>[ \\t]*(.+?)[ \\t]*\\}\\}/s';
@@ -73,6 +81,7 @@ class LightnCandy {
                 'this' => $flags & self::FLAG_THIS,
                 'with' => $flags & self::FLAG_WITH,
                 'parent' => $flags & self::FLAG_PARENT,
+                'echo' => $flags & self::FLAG_ECHO,
             ),
             'level' => 0,
             'stack' => Array(),
@@ -105,6 +114,28 @@ class LightnCandy {
                 'comment' => 0,
                 'partial' => 0,
             )
+        );
+
+        $context['ops'] = $context['flags']['echo'] ? Array(
+            'seperator' => ',',
+            'f_start' => 'echo ',
+            'f_end' => ';',
+            'op_start' => 'ob_start();echo ',
+            'op_end' => ';return ob_get_clean();',
+            'cnd_start' => ';if ',
+            'cnd_then' => '{echo ',
+            'cnd_else' => ';}else{echo ',
+            'cnd_end' => ';}echo ',
+        ) : Array(
+            'seperator' => '.',
+            'f_start' => 'return ',
+            'f_end' => ';',
+            'op_start' => 'return ',
+            'op_end' => ';',
+            'cnd_start' => '.(',
+            'cnd_then' => ' ? ',
+            'cnd_else' => ' : ',
+            'cnd_end' => ').',
         );
 
         // Scan for partial and replace partial with template
@@ -156,7 +187,7 @@ class LightnCandy {
         'path' => Array(),
 $libstr
     );
-    return '$code';
+    {$context['ops']['op_start']}'$code'{$context['ops']['op_end']}
 }
 ?>";
     }
@@ -634,9 +665,9 @@ $libstr
             $context['stack'][] = '^';
             if ($context['useVar']) {
                 $v = end($context['useVar']) . "['{$act}']";
-                return ".((is_null($v) && ($v !== false)) ? ("; 
+                return "{$context['ops']['cnd_start']}(is_null($v) && ($v !== false)){$context['ops']['cnd_then']}"; 
             } else {
-                return '.(' . self::_fn($context, 'isec') . "('$act', \$cx, \$in) ? (";
+                return "{$context['ops']['cnd_start']}(" . self::_fn($context, 'isec') . "('$act', \$cx, \$in)){$context['ops']['cnd_then']}";
             }
         case '/':
             $each = false;
@@ -646,16 +677,16 @@ $libstr
                 $pop = array_pop($context['stack']);
                 if ($pop == ':') {
                     $pop = array_pop($context['stack']);
-                    return $context['usedFeature']['parent'] ? ';}).' : ')).';
+                    return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}){$context['ops']['seperator']}" : "{$context['ops']['cnd_end']}";
                 }
-                return $context['usedFeature']['parent'] ? ';}).' : ') : \'\').';
+                return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}){$context['ops']['seperator']}" : "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
             case 'with':
                 $pop = array_pop($context['stack']);
                 if ($pop !== 'with') {
                    $context['error'] = 'Unexpect token /with !';
                    return;
                 }
-                return ';}).';
+                return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
             case 'each':
                 $each = true;
             default:
@@ -671,9 +702,9 @@ $libstr
                         return;
                     }
                     if ($pop == '^') {
-                        return $context['usedFeature']['parent'] ? ';}).' : ') : \'\').';
+                        return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}){$context['ops']['seperator']}" : "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
                     }
-                    return ';}).';
+                    return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
                 default:
                     $context['error'] = "Unexpect token: {$token[2]} !";
                     return;
@@ -687,14 +718,14 @@ $libstr
                 $context['stack'][] = 'if';
                 self::_vx($acts[1], $context);
                 return $context['usedFeature']['parent'] 
-                       ? '.' . self::_fn($context, 'ifv') . "('{$acts[1]}', \$cx, \$in, function(\$cx, \$in) {return "
-                       : '.(' . self::_fn($context, 'ifvar') . "('{$acts[1]}', \$cx, \$in) ? (";
+                       ? $context['ops']['seperator'] . self::_fn($context, 'ifv') . "('{$acts[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
+                       : "{$context['ops']['cnd_start']}(" . self::_fn($context, 'ifvar') . "('{$acts[1]}', \$cx, \$in)){$context['ops']['cnd_then']}";
             case 'unless':
                 $context['stack'][] = 'unless';
                 self::_vx($acts[1], $context);
                 return $context['usedFeature']['parent']
-                       ? '.' . self::_fn($context, 'unl') . "('{$acts[1]}', \$cx, \$in, function(\$cx, \$in) {return "
-                       : '.(!' . self::_fn($context, 'ifvar') . "('{$acts[1]}', \$cx, \$in) ? (";
+                       ? $context['ops']['seperator'] . self::_fn($context, 'unl') . "('{$acts[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
+                       : "{$context['ops']['cnd_start']}(!" . self::_fn($context, 'ifvar') . "('{$acts[1]}', \$cx, \$in)){$context['ops']['cnd_then']}";
             case 'each':
                 $each = 'true';
             case 'with':
@@ -704,32 +735,32 @@ $libstr
                 $context['vars'][] = self::_vs($act);
                 if (($acts[0] === 'with') && $context['flags']['with']) {
                     $context['stack'][] = 'with';
-                    return '.' . self::_fn($context, 'wi') . "('{$acts[1]}', \$cx, \$in, function(\$cx, \$in) {return ";
+                    return $context['ops']['seperator'] . self::_fn($context, 'wi') . "('{$acts[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
                 }
                 self::_jsp($context);
                 $context['stack'][] = $act;
                 $context['stack'][] = '#';
-                return '.' . self::_fn($context, 'sec') . "('$act', \$cx, \$in, $each, function(\$cx, \$in) {return ";
+                return $context['ops']['seperator'] . self::_fn($context, 'sec') . "('$act', \$cx, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
             }
         case '!':
-            return '.';
+            return $context['ops']['seperator'];
         default:
             self::_vx($token[2], $context);
             if ($token[2] ==='else') {
                 $context['stack'][] = ':';
-                return $context['usedFeature']['parent'] ? ';}, function($cx, $in) {return ' : ') : (';
+                return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}" : "{$context['ops']['cnd_else']}";
             }
             self::_jsv($context, $token[2]);
             $fn = $raw ? 'raw' : 'enc';
             if ($context['useVar']) {
                 $v = end($context['useVar']) . self::_vn($token[2]);
                 if ($context['flags']['jstrue']) {
-                    return $raw ? ".(($v === true) ? 'true' : $v)." : ".(($v === true) ? 'true' : htmlentities($v, ENT_QUOTES)).";
+                    return $raw ? "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}$v{$context['ops']['cnd_end']}" : "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}htmlentities($v, ENT_QUOTES){$context['ops']['cnd_end']}";
                 } else {
-                    return $raw ? ".$v." : ".htmlentities($v, ENT_QUOTES).";
+                    return $raw ? "{$context['ops']['seperator']}$v{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlentities($v, ENT_QUOTES){$context['ops']['seperator']}";
                 }
             } else {
-                return '.' . self::_fn($context, $fn) . "('{$token[2]}', \$cx, \$in).";
+                return $context['ops']['seperator'] . self::_fn($context, $fn) . "('{$token[2]}', \$cx, \$in){$context['ops']['seperator']}";
             }
         }
     }
