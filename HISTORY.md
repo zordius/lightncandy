@@ -10,7 +10,8 @@ v0.8 curent trunk
    * 10f3d73 add more is_array() check when {{#each}} and {{#var}}
    * 367247b fix {{#if}} and {{#unless}} when value is an empty array
    * c76c0bb returns null if var is not exist in a template [contributed by dtelyukh@github.com]
-   * add FLAG_ECHO support
+   * d18bb6d add FLAG_ECHO support
+   * fix for{{#if}} and {{#unless}} when value is an empty string
 
 v0.7 https://github.com/zordius/lightncandy/tree/v0.7
    * add HISTORY.md

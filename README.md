@@ -171,10 +171,10 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * {{! comment}} : comment
 * {{#each var}} : each loop
 * {{/each}} : end loop
-* {{#if var}} : run if logic with original scope (null, false, empty Array will skip this block)
+* {{#if var}} : run if logic with original scope (null, false, empty Array and '' will skip this block)
 * {{/if}} : end if
 * {{else}} : run else logic, should between {{#if var}} and {{/if}} , or between {{#unless var}} and {{/unless}}
-* {{#unless var}} : run unless logic with original scope (null, false, empty Array will render this block)
+* {{#unless var}} : run unless logic with original scope (null, false, empty Array and '' will render this block)
 * {{#with var}} : change context scope. If the var is false, skip included section. (require FLAG_WITH)
 * {{../var}}: parent template scope. (require FLAG_PARENT)
 * {{> file}}: partial; include another template inside a template.
