@@ -13,7 +13,7 @@ v0.8 curent trunk
    * d18bb6d add FLAG_ECHO support
    * aec2b2b fix {{#if}} and {{#unless}} when value is an empty string
    * 8924604 fix variable output when false in an array
-   * fix for ifv and ifvar logic difference
+   * e82c324 fix for ifv and ifvar logic difference
 
 v0.7 https://github.com/zordius/lightncandy/tree/v0.7
    * add HISTORY.md
