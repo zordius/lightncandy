@@ -887,28 +887,38 @@ class LCRun {
      * @param string $var variable name to get the raw value
      * @param array $cx render time context
      * @param array $in input data with current scope
+     * @param boolean $loop true when in loop
      *
      * @return mixed The raw value of the specified variable
      */
-    public static function raw($var, $cx, $in) {
+    public static function raw($var, $cx, $in, $loop = false) {
         $v = self::val($var, $cx, $in);
         if ($v === true) {
             if ($cx['flags']['jstrue']) {
                 return 'true';
             }
-        } elseif (is_array($v)) {
+        }
+
+        if ($loop && ($v === false)) {
+            if ($cx['flags']['jstrue']) {
+                return 'false';
+            }
+        }
+
+        if (is_array($v)) {
             if ($cx['flags']['jsobj']) {
                 if (count(array_diff_key($v, array_keys(array_keys($v)))) > 0) {
                     return '[object Object]';
                 } else {
                     $ret = Array();
                     foreach ($v as $k => $vv) {
-                        $ret[] = self::raw($k, $cx, $v);
+                        $ret[] = self::raw($k, $cx, $v, true);
                     }
                     return join(',', $ret);
                 }
             }
         }
+
         return $v;
     }
 
