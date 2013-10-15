@@ -798,7 +798,7 @@ class LCRun {
     public static function ifv($var, $cx, $in, $truecb, $falsecb = null) {
         $v = self::val($var, $cx, $in);
         $ret = '';
-        if (is_null($v) || ($v === false)) {
+        if (is_null($v) || ($v === false) || ($v === 0) || ($v === '') || (is_array($v) && (count($v) == 0))) {
             if ($falsecb) {
                 $cx['scopes'][] = $in;
                 $ret = $falsecb($cx, $in);

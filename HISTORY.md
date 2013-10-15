@@ -12,7 +12,8 @@ v0.8 curent trunk
    * c76c0bb returns null if var is not exist in a template [contributed by dtelyukh@github.com]
    * d18bb6d add FLAG_ECHO support
    * aec2b2b fix {{#if}} and {{#unless}} when value is an empty string
-   * fix variable output when false in an array
+   * 8924604 fix variable output when false in an array
+   * fix for ifv and ifvar logic difference
 
 v0.7 https://github.com/zordius/lightncandy/tree/v0.7
    * add HISTORY.md
