@@ -489,7 +489,7 @@ $libstr
         if ($v == '.') {
             return Array('.');
         }
-        return $v ? explode('.', $v) : array(0);
+        return ($v !== '') ? explode('.', $v) : null;
     }
 
     /**
