@@ -1,8 +1,12 @@
 HISTORY
 =======
 
-v0.8 curent trunk
-   * align with handlebars 1.0.12
+v0.9 current trunk
+   * align with handlebars.js 1.3
+   * a55f2dd067 support both {{@index}} and {{@key}} when {{#each an_object}}
+
+v0.8 https://github.com/zordius/lightncandy/tree/v0.8
+   * align with handlebars.js 1.0.12
    * aaec049 fix partial in partial not works bug
    * 52706cc fix for {{#var}} and {{^var}} , now when var === 0 means true
    * 4f7f816 support {{@key}} and {{@index}} in {{#each var}}
