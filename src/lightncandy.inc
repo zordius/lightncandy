@@ -961,11 +961,21 @@ class LCRun {
             }
             $ret = Array();
             $cx['scopes'][] = $in;
+            $i = 0;
             foreach ($v as $index => $raw) {
-                $cx['sp_vars'][$is_obj ? 'key' : 'index'] = $index;
+                if ($is_obj) {
+                    $cx['sp_vars']['key'] = $index;
+                    $cx['sp_vars']['index'] = $i;
+                    $i++;
+                } else {
+                    $cx['sp_vars']['index'] = $index;
+                }
                 $ret[] = $cb($cx, $raw);
             }
-            unset($cx['sp_vars'][$is_obj ? 'key' : 'index']);
+            if ($is_obj) {
+                unset($cx['sp_vars']['key']);
+            }
+            unset($cx['sp_vars']['index']);
             array_pop($cx['scopes']);
             return join('', $ret);
         }

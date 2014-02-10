@@ -14,6 +14,7 @@ v0.8 curent trunk
    * aec2b2b fix {{#if}} and {{#unless}} when value is an empty string
    * 8924604 fix variable output when false in an array
    * e82c324 fix for ifv and ifvar logic difference
+   * 1e38e47 better logic on var name checking. now support {{0}} in the loop, but it is not handlebars.js standard
 
 v0.7 https://github.com/zordius/lightncandy/tree/v0.7
    * add HISTORY.md
