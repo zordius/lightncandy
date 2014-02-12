@@ -159,7 +159,7 @@ class LightnCandy {
         // Check used features and compile flags. If the template is simple enough,
         // we can generate best performance code with enable 'useVar' internal flag.
         if (!$context['flags']['jsobj'] && (($context['usedFeature']['sec'] + $context['usedFeature']['parent'] < 1) || !$context['flags']['jsobj'])) {
-            $context['useVar'] = Array('$in');
+            $context['useVar'] = '$in';
         }
 
         // Do PHP code and json schema generation.
@@ -664,7 +664,7 @@ $libstr
             $context['stack'][] = $act;
             $context['stack'][] = '^';
             if ($context['useVar']) {
-                $v = end($context['useVar']) . "['{$act}']";
+                $v = $context['useVar'] . "['{$act}']";
                 return "{$context['ops']['cnd_start']}(is_null($v) && ($v !== false)){$context['ops']['cnd_then']}"; 
             } else {
                 return "{$context['ops']['cnd_start']}(" . self::_fn($context, 'isec') . "('$act', \$cx, \$in)){$context['ops']['cnd_then']}";
@@ -753,7 +753,7 @@ $libstr
             self::_jsv($context, $token[2]);
             $fn = $raw ? 'raw' : 'enc';
             if ($context['useVar']) {
-                $v = end($context['useVar']) . self::_vn($token[2]);
+                $v = $context['useVar'] . self::_vn($token[2]);
                 if ($context['flags']['jstrue']) {
                     return $raw ? "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}$v{$context['ops']['cnd_end']}" : "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}htmlentities($v, ENT_QUOTES){$context['ops']['cnd_end']}";
                 } else {
