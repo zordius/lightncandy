@@ -183,3 +183,4 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * {{> file}}: partial; include another template inside a template.
 * {{@index}}: reference to current index in a {{#each}} loop on an array.
 * {{@key}}: reference to current key in a {{#each}} loop on an object.
+* {{foo.[ba.r].[#spec].0.ok}}: reference to $CurrentConext['foo']['ba.r']['#spec'][0]['ok']
