@@ -36,13 +36,14 @@ class LightnCandy {
     const FLAG_THIS = 32;
     const FLAG_WITH = 64;
     const FLAG_PARENT = 128;
-    const FLAG_ADVARNAME = 256;
+    const FLAG_JSQUOTE = 256;
+    const FLAG_ADVARNAME = 512;
 
     // PHP performance flags
-    const FLAG_ECHO = 512;
+    const FLAG_ECHO = 1024;
 
-    const FLAG_BESTPERFORMANCE = 512; // FLAG_ECHO
-    const FLAG_HANDLEBARSJS = 504; // FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_ADVARNAME
+    const FLAG_BESTPERFORMANCE = 1024; // FLAG_ECHO
+    const FLAG_HANDLEBARSJS = 1016; // FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME
 
     const PARTIAL_SEARCH = '/\\{\\{>[ \\t]*(.+?)[ \\t]*\\}\\}/s';
     const TOKEN_SEARCH = '/(\\{{2,3})(.+?)(\\}{2,3})/s';
@@ -81,6 +82,7 @@ class LightnCandy {
                 'standalone' => $flags & self::FLAG_STANDALONE,
                 'jstrue' => $flags & self::FLAG_JSTRUE,
                 'jsobj' => $flags & self::FLAG_JSOBJECT,
+                'jsquote' => $flags & self::FLAG_JSQUOTE,
                 'this' => $flags & self::FLAG_THIS,
                 'with' => $flags & self::FLAG_WITH,
                 'parent' => $flags & self::FLAG_PARENT,
@@ -141,6 +143,8 @@ class LightnCandy {
             'cnd_else' => ' : ',
             'cnd_end' => ').',
         );
+
+        $context['ops']['enc'] = $context['flags']['jsquote'] ? 'encq' : 'enc';
 
         // Scan for partial and replace partial with template
         $template = LightnCandy::expandPartial($template, $context);
@@ -619,7 +623,7 @@ $libstr
             return $context['usedFeature']['comment']++;
 
         default:
-            $fn = $raw ? 'raw' : 'enc';
+            $fn = $raw ? 'raw' : $context['ops']['enc'];
             $context['usedFeature'][$fn]++;
             $token[2] = trim($token[2]);
             switch ($token[2]) {
@@ -761,7 +765,7 @@ $libstr
                 return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}" : "{$context['ops']['cnd_else']}";
             }
             self::_jsv($context, $token[2]);
-            $fn = $raw ? 'raw' : 'enc';
+            $fn = $raw ? 'raw' : $context['ops']['enc'];
             if ($context['useVar']) {
                 $v = $context['useVar'] . self::_vn($token[2]);
                 if ($context['flags']['jstrue']) {
@@ -943,6 +947,19 @@ class LCRun {
      */
     public static function enc($var, $cx, $in) {
         return htmlentities(self::raw($var, $cx, $in), ENT_QUOTES);
+    }
+
+    /**
+     * LightnCandy runtime method for {{var}} , and deal with single quote to same as handlebars.js
+     *
+     * @param string $var variable name to get the htmlencoded value
+     * @param array $cx render time context
+     * @param array $in input data with current scope
+     *
+     * @return mixed The htmlencoded value of the specified variable
+     */
+    public static function encq($var, $cx, $in) {
+        return htmlentities(preg_replace('/\'/', '&#x27;', self::raw($var, $cx, $in)), ENT_QUOTES);
     }
 
     /**
