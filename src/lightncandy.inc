@@ -47,7 +47,7 @@ class LightnCandy {
 
     const PARTIAL_SEARCH = '/\\{\\{>[ \\t]*(.+?)[ \\t]*\\}\\}/s';
     const TOKEN_SEARCH = '/(\\{{2,3})(.+?)(\\}{2,3})/s';
-    const DOT_SEARCH = '/(.+)\\./s';
+    const VARNAME_SEARCH = '/(\\[[^\\]+\\]|[^\\[\\]\\.]+)/';
 
     private static $lastContext;
 
@@ -488,7 +488,7 @@ $libstr
         if (!preg_match('/\\./')) {
             return "['" . substr($vn, 1, -1) . "']";
         }
-        return preg_replace('/\\]\\.\\[/', '][', preg_replace_callback('/(\\[[^\\]+]|[^\\[\\]]+)/', function ($matches) {
+        return preg_replace('/\\]\\.\\[/', '][', preg_replace_callback(self::VARNAME_SEARCH, function ($matches) {
             if (substr($vn, 0, 1) === '[') {
                 return "['" . substr($vn, 1, -1) . "']";
             } else {
@@ -498,7 +498,7 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Fix the variable name to null when reference to {{this}} or {{.}}
+     * Internal method used by compile(). Fix the variable name to '' when reference to {{this}} or {{.}} . When advanced variable name enabled, convert foo.[ba.r].test to foo]ba.r]test . (Always use ] as name spacing notation)
      *
      * @param mixed $v variable name to be fixed.
      * @param array $context Current compile content.
@@ -507,16 +507,22 @@ $libstr
         $v = trim($v);
         if ($context['flags']['this']) {
             if (($v == 'this') || $v == '.') {
-                $v = null;
+                $v = '';
+                return;
             }
         }
-/*
-        if ($context['flags']['advar']) {
-            $v = preg_replace_callback('????????', function ($matches) {
-                return "[{$matches[1]}]"; 
-            }, $v);
+
+        if ($context['flags']['advar'] && preg_match('/\\]/', $v)) {
+            $v = substr(preg_replace('/\\]\\.\\[/', ']', preg_replace_callback(self::VARNAME_SEARCH, function ($matches) {
+                if (substr($vn, 0, 1) === '[') {
+                    return $vn;
+                } else {
+                    return '[' . $vn . ']';
+                }
+            }, $vn)) , 1, -1);
+        } else {
+            $v = preg_match('/\\./', ']', $v);
         }
-*/
     }
     /**
      * Internal method used by compile().
@@ -911,10 +917,14 @@ class LCRun {
         if ($var === '@key') {
             return $cx['sp_vars']['key'];
         }
+
+        // Tract to parent. Do not support foo/../bar style variable name
         $var = preg_replace_callback('/\\.\\.\\//', function($matches) use (&$levels) {
             $levels++;
             return '';
         }, $var);
+
+        // response '' when beyand root.
         if ($levels > 0) {
             $pos = count($cx['scopes']) - $levels;
             if ($pos >= 0) {
@@ -923,7 +933,7 @@ class LCRun {
                 return '';
             }
         }
-        if (preg_match('/(.+?)\\.(.+)/', $var, $matched)) {
+        if (preg_match('/(.+?)\\](.+)/', $var, $matched)) {
             if (array_key_exists($matched[1], $in)) {
                 return self::val($matched[2], $cx, $in[$matched[1]]);
             } else {
