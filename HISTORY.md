@@ -5,6 +5,9 @@ v0.9 current trunk
    * align with handlebars.js 1.3
    * a55f2dd067 support both {{@index}} and {{@key}} when {{#each an_object}}
    * e59f931ea7 add FLAG_JSQUOTE support
+   * 92b3cf58af report more than 1 error when compile()
+   * 93cc121bcf test for wrong variable name format in test/error.php
+   * 41c1b431b4 support advanced variable naming {{foo.[bar].10}} now
 
 v0.8 https://github.com/zordius/lightncandy/tree/v0.8
    * align with handlebars.js 1.0.12
