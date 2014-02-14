@@ -48,7 +48,6 @@ class LightnCandy {
     const PARTIAL_SEARCH = '/\\{\\{>[ \\t]*(.+?)[ \\t]*\\}\\}/s';
     const TOKEN_SEARCH = '/(\\{{2,3})(.+?)(\\}{2,3})/s';
     const DOT_SEARCH = '/(.+)\\./s';
-    const SQUAREBRACK_SEARCH = '/\\[([^]+?)\\]/s';
 
     private static $lastContext;
 
@@ -511,13 +510,11 @@ $libstr
                 $v = null;
             }
         }
-/*
         if ($context['flags']['advar']) {
-            $v = preg_replace_callback(self::SQUAREBRACK_SEARCH, function ($matches) {
+            $v = preg_replace_callback('????????', function ($matches) {
                 return "[{$matches[1]}]"; 
             }, $v);
         }
-*/
     }
     /**
      * Internal method used by compile().
@@ -676,6 +673,11 @@ $libstr
                     return $context['usedFeature']['dot']++;
 
                 default:
+                    if ($context['flags']['advar']) {
+                        if (preg_match('/^[^\\.\\[]+\\[[^\\]+]/', $token[2]) || preg_match('/\\[[^\\]+][^\\.]/', $token[2])) {
+                            $context['error'] = "Wrong variable naming as '{$token[2]}' !";
+                        }
+                    }
                     if (preg_match('/\\.\\.(\\/.+)*/', $token[2])) {
                         if (!$context['flags']['parent']) {
                             $context['error'] = 'do not support {{../var}}, you should do compile with LightnCandy::FLAG_PARENT flag';
