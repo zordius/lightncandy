@@ -521,7 +521,7 @@ $libstr
                 }
             }, $vn)) , 1, -1);
         } else {
-            $v = preg_match('/\\./', ']', $v);
+            $v = preg_replace('/\\./', ']', $v);
         }
     }
     /**
