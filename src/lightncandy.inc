@@ -489,10 +489,10 @@ $libstr
             return "['" . substr($vn, 1, -1) . "']";
         }
         return preg_replace('/\\]\\.\\[/', '][', preg_replace_callback(self::VARNAME_SEARCH, function ($matches) {
-            if (substr($vn, 0, 1) === '[') {
-                return "['" . substr($vn, 1, -1) . "']";
+            if (substr($matches[1], 0, 1) === '[') {
+                return "['" . substr($matches[1], 1, -1) . "']";
             } else {
-                return "['" . $vn . "']";
+                return "['" . $matches[1] . "']";
             }
         }, $vn));
     }
@@ -514,12 +514,12 @@ $libstr
 
         if ($context['flags']['advar'] && preg_match('/\\]/', $v)) {
             $v = substr(preg_replace('/\\]\\.\\[/', ']', preg_replace_callback(self::VARNAME_SEARCH, function ($matches) {
-                if (substr($vn, 0, 1) === '[') {
-                    return $vn;
+                if (substr($matches[1], 0, 1) === '[') {
+                    return $matches[1];
                 } else {
-                    return '[' . $vn . ']';
+                    return '[' . $matches[1] . ']';
                 }
-            }, $vn)) , 1, -1);
+            }, $v)) , 1, -1);
         } else {
             $v = preg_replace('/\\./', ']', $v);
         }
