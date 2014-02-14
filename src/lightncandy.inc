@@ -510,11 +510,13 @@ $libstr
                 $v = null;
             }
         }
+/*
         if ($context['flags']['advar']) {
             $v = preg_replace_callback('????????', function ($matches) {
                 return "[{$matches[1]}]"; 
             }, $v);
         }
+*/
     }
     /**
      * Internal method used by compile().
@@ -673,8 +675,16 @@ $libstr
 
                 default:
                     if ($context['flags']['advar']) {
-                        if (preg_match('/^[^\\.\\[]+\\[[^\\]+]/', $token[2]) || preg_match('/\\[[^\\]+][^\\.]/', $token[2])) {
-                            $context['error'][] = "Wrong variable naming as '{$token[2]}' !";
+                            // foo]  Rule 1: no starting [ or [ not start from head
+                        if (preg_match('/^[^\\[\\.]+[\\]\\[]/', $token[2])
+                            // [bar  Rule 2: no ending ] or ] not in the end
+                            || preg_match('/[\\[\\]][^\\]\\.]+$/', $token[2])
+                            // ]bar. Rule 3: middle ] not before .
+                            || preg_match('/\\][^\\]\\[\\.]+\\./', $token[2])
+                            // .foo[ Rule 4: middle [ not after .
+                            || preg_match('/\\.[^\\]\\[\\.]+\\[/', preg_replace('/\\[[^\\]]+\\]/', '[XXX]', $token[2]))
+                           ) {
+                            $context['error'][] = "Wrong variable naming as '{$token[2]}' !" . (preg_match('/^[^\\[\\.]+[\\]\\[]/', $token[2]) ? 'Rule 1' : 'Rule 2');
                         }
                     }
                     if (preg_match('/\\.\\.(\\/.+)*/', $token[2])) {
