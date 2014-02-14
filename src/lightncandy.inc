@@ -90,7 +90,7 @@ class LightnCandy {
             ),
             'level' => 0,
             'stack' => Array(),
-            'error' => false,
+            'error' => Array(),
             'useVar' => false,
             'vars' => Array(),
             'sp_vars' => Array(),
@@ -232,7 +232,7 @@ $libstr
                 }
             }
         }
-        $context['error'] = "can not find partial file for '$name', you should set correct basedir and fileext in options";
+        $context['error'][] = "can not find partial file for '$name', you should set correct basedir and fileext in options";
     }
 
     /**
@@ -305,17 +305,17 @@ $libstr
      *
      * @return boolean True when error detected
      */
-    protected static function _error($context) {
-        self::$lastContext = $context;
-
+    protected static function _error(&$context) {
         if ($context['level'] !== 0) {
             $token = array_pop($context['stack']);
-            $context['error'] = "Unclosed token {{{$token}}} !!";
+            $context['error'][] = "Unclosed token {{{$token}}} !!";
         }
 
-        if ($context['error']) {
+        self::$lastContext = $context;
+
+        if (count($context['error'])) {
             if ($context['flags']['errorlog']) {
-                error_log($context['error']);
+                error_log(implode("\n", $context['error']));
             }
             if ($context['flags']['exception']) {
                 throw new Exception($context['error']);
@@ -603,13 +603,13 @@ $libstr
         $raw = ($token[1] === '{{{');
 
         if (count($token[1]) !== count($token[3])) {
-            $context['error'] = "Bad token {$token[1]}{$token[2]}{$token[3]} ! Do you mean {{}} or {{{}}}?";
+            $context['error'][] = "Bad token {$token[1]}{$token[2]}{$token[3]} ! Do you mean {{}} or {{{}}}?";
             return;
         }
 
         if ($raw) {
             if (preg_match('/\\^|\\/|#/', $head)) {
-                $context['error'] = "Bad token {$token[1]}{$token[2]}{$token[3]} ! Do you mean \{\{{$token[2]}\}\}?";
+                $context['error'][] = "Bad token {$token[1]}{$token[2]}{$token[3]} ! Do you mean \{\{{$token[2]}\}\}?";
                 return;
             }
         }
@@ -632,7 +632,7 @@ $libstr
             switch ($acts[0]) {
             case 'with':
                 if (isset($acts[1]) && !$context['flags']['with']) {
-                    $context['error'] = 'do not support {{#with var}}, you should do compile with LightnCandy::FLAG_WITH flag';
+                    $context['error'][] = 'do not support {{#with var}}, you should do compile with LightnCandy::FLAG_WITH flag';
                 }
             case 'each':
             case 'unless':
@@ -647,8 +647,7 @@ $libstr
             return $context['usedFeature']['comment']++;
 
         default:
-            $fn = $raw ? 'raw' : $context['ops']['enc'];
-            $context['usedFeature'][$fn]++;
+            $context['usedFeature'][$raw ? 'raw' : 'enc']++;
             $token[2] = trim($token[2]);
             switch ($token[2]) {
                 case 'else':
@@ -659,7 +658,7 @@ $libstr
                         $context['usedFeature']['rootthis']++;
                     }
                     if (!$context['flags']['this']) {
-                        $context['error'] = 'do not support {{this}}, you should do compile with LightnCandy::FLAG_THIS flag';
+                        $context['error'][] = 'do not support {{this}}, you should do compile with LightnCandy::FLAG_THIS flag';
                     }
                     return $context['usedFeature']['this']++;
 
@@ -668,19 +667,19 @@ $libstr
                         $context['usedFeature']['rootthis']++;
                     }
                     if (!$context['flags']['this']) {
-                        $context['error'] = 'do not support {{.}}, you should do compile with LightnCandy::FLAG_THIS flag';
+                        $context['error'][] = 'do not support {{.}}, you should do compile with LightnCandy::FLAG_THIS flag';
                     }
                     return $context['usedFeature']['dot']++;
 
                 default:
                     if ($context['flags']['advar']) {
                         if (preg_match('/^[^\\.\\[]+\\[[^\\]+]/', $token[2]) || preg_match('/\\[[^\\]+][^\\.]/', $token[2])) {
-                            $context['error'] = "Wrong variable naming as '{$token[2]}' !";
+                            $context['error'][] = "Wrong variable naming as '{$token[2]}' !";
                         }
                     }
                     if (preg_match('/\\.\\.(\\/.+)*/', $token[2])) {
                         if (!$context['flags']['parent']) {
-                            $context['error'] = 'do not support {{../var}}, you should do compile with LightnCandy::FLAG_PARENT flag';
+                            $context['error'][] = 'do not support {{../var}}, you should do compile with LightnCandy::FLAG_PARENT flag';
                         }
                         return $context['usedFeature']['parent']++;
                     }
@@ -726,7 +725,7 @@ $libstr
             case 'with':
                 $pop = array_pop($context['stack']);
                 if ($pop !== 'with') {
-                   $context['error'] = 'Unexpect token /with !';
+                   $context['error'][] = 'Unexpect token /with !';
                    return;
                 }
                 return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
@@ -741,7 +740,7 @@ $libstr
                 case '^':
                     $pop2 = array_pop($context['stack']);
                     if (!$each && ($pop2 !== $act)) {
-                        $context['error'] = "Unexpect token {$token[2]} ! Previous token $pop$pop2 is not closed";
+                        $context['error'][] = "Unexpect token {$token[2]} ! Previous token $pop$pop2 is not closed";
                         return;
                     }
                     if ($pop == '^') {
@@ -749,7 +748,7 @@ $libstr
                     }
                     return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
                 default:
-                    $context['error'] = "Unexpect token: {$token[2]} !";
+                    $context['error'][] = "Unexpect token: {$token[2]} !";
                     return;
                 }
             }
