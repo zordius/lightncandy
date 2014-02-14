@@ -959,7 +959,7 @@ class LCRun {
      * @return mixed The htmlencoded value of the specified variable
      */
     public static function encq($var, $cx, $in) {
-        return htmlentities(preg_replace('/\'/', '&#x27;', self::raw($var, $cx, $in)), ENT_QUOTES);
+        return preg_replace('/&#039;/', '&#x27;', htmlentities(self::raw($var, $cx, $in), ENT_QUOTES));
     }
 
     /**
