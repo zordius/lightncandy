@@ -464,11 +464,38 @@ $libstr
      * Internal method used by compile(). Get variable names translated string, Ex: a.b.c => "['a']['b']['c']"
      *
      * @param string $vn variable name.
+     * @param integer $adv 0 to disable advanced veriable naming, N to enable a.[0].[#123] style.
      *
      * @return string Translated variable name as input array notation.
      */
-    protected static function _vn($vn) {
+    protected static function _vn($vn, $adv) {
+        if ($adv) {
+            return $vn ? self::_advn($vn) : '';
+        }
         return $vn ? self::_qscope(explode('.', $vn)) : '';
+    }
+
+    /**
+     * Internal method used by compile(). Get variable names translated string, Ex: a.[0].[#123][.] => "['a']['0']['#123']['.']""
+     *
+     * @param string $vn variable name. Illegal variable name will be removed and will never pass into this function.
+     *
+     * @return string Translated advanced format variable name as input array notation.
+     */
+    protected static function _advn($vn) {
+        if (!preg_match('/[\\.\\]\\[]/')) {
+            return "['" . $vn . "']";
+        }
+        if (!preg_match('/\\./')) {
+            return "['" . substr($vn, 1, -1) . "']";
+        }
+        return preg_replace('/\\]\\.\\[/', '][', preg_replace_callback('/(\\[[^\\]+]|[^\\[\\]]+)/', function ($matches) {
+            if (substr($vn, 0, 1) === '[') {
+                return "['" . substr($vn, 1, -1) . "']";
+            } else {
+                return "['" . $vn . "']";
+            }
+        }, $vn));
     }
 
     /**
@@ -767,7 +794,7 @@ $libstr
             self::_jsv($context, $token[2]);
             $fn = $raw ? 'raw' : $context['ops']['enc'];
             if ($context['useVar']) {
-                $v = $context['useVar'] . self::_vn($token[2]);
+                $v = $context['useVar'] . self::_vn($token[2], $context['flags']['advar']);
                 if ($context['flags']['jstrue']) {
                     return $raw ? "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}$v{$context['ops']['cnd_end']}" : "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}htmlentities($v, ENT_QUOTES){$context['ops']['cnd_end']}";
                 } else {

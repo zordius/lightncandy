@@ -123,6 +123,7 @@ LightnCandy supports parent context access in partial {{../vars}}, so far no oth
 Unsupported Feature (so far)
 ----------------------------
 
+* [NEVER] {{foo/bar}} style variable name, it is deprecated in offical handlebars.js document.
 * [Plan to support] set delimiter (change delimiter from {{ }} to custom string, for example <% then %>)
 * [Plan to support] register a helper function (We wish you to not use custom helper to keep your template generic, then you can reuse these templates in different languages. This feature will default off, you can turn it on with enable the option flag)
 * [Possible] input as Object and methods (now only accept associated array data structure)
