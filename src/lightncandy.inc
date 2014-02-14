@@ -36,15 +36,18 @@ class LightnCandy {
     const FLAG_THIS = 32;
     const FLAG_WITH = 64;
     const FLAG_PARENT = 128;
+    const FLAG_ADVARNAME = 256;
 
     // PHP performance flags
-    const FLAG_ECHO = 256;
+    const FLAG_ECHO = 512;
 
-    const FLAG_BESTPERFORMANCE = 256; // FLAG_ECHO
-    const FLAG_HANDLEBARSJS = 248; // FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS + FLAG_WITH + FLAG_PARENT
+    const FLAG_BESTPERFORMANCE = 512; // FLAG_ECHO
+    const FLAG_HANDLEBARSJS = 504; // FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_ADVARNAME
 
     const PARTIAL_SEARCH = '/\\{\\{>[ \\t]*(.+?)[ \\t]*\\}\\}/s';
     const TOKEN_SEARCH = '/(\\{{2,3})(.+?)(\\}{2,3})/s';
+    const DOT_SEARCH = '/(.+)\\./s';
+    const SQUAREBRACK_SEARCH = '/\\[([^]+?)\\]/s';
 
     private static $lastContext;
 
@@ -82,6 +85,7 @@ class LightnCandy {
                 'with' => $flags & self::FLAG_WITH,
                 'parent' => $flags & self::FLAG_PARENT,
                 'echo' => $flags & self::FLAG_ECHO,
+                'advar' => $flags & self::FLAG_ADVARNAME,
             ),
             'level' => 0,
             'stack' => Array(),
@@ -464,20 +468,26 @@ $libstr
     }
 
     /**
-     * Internal method used by compile().
+     * Internal method used by compile(). Fix the variable name to null when reference to {{this}} or {{.}}
      *
      * @param mixed $v variable name to be fixed.
      * @param array $context Current compile content.
      */
     protected static function _vx(&$v, $context) {
         $v = trim($v);
-        if (($v == 'this') || $v == '.') {
-            if ($context['flags']['this']) {
+        if ($context['flags']['this']) {
+            if (($v == 'this') || $v == '.') {
                 $v = null;
             }
         }
+/*
+        if ($context['flags']['advar']) {
+            $v = preg_replace_callback(self::SQUAREBRACK_SEARCH, function ($matches) {
+                return "[{$matches[1]}]"; 
+            }, $v);
+        }
+*/
     }
-
     /**
      * Internal method used by compile().
      *
