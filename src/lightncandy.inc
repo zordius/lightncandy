@@ -47,7 +47,7 @@ class LightnCandy {
 
     const PARTIAL_SEARCH = '/\\{\\{>[ \\t]*(.+?)[ \\t]*\\}\\}/s';
     const TOKEN_SEARCH = '/(\\{{2,3})(.+?)(\\}{2,3})/s';
-    const VARNAME_SEARCH = '/(\\[[^\\]+\\]|[^\\[\\]\\.]+)/';
+    const VARNAME_SEARCH = '/(\\[[^\\]]+\\]|[^\\[\\]\\.]+)/';
 
     private static $lastContext;
 
