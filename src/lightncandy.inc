@@ -498,7 +498,7 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Fix the variable name to '' when reference to {{this}} or {{.}} . When advanced variable name enabled, convert foo.[ba.r].test to foo]ba.r]test . (Always use ] as name spacing notation)
+     * Internal method used by compile(). Fix the variable name to null when reference to {{this}} or {{.}} . When advanced variable name enabled, convert foo.[ba.r].test to foo]ba.r]test . (Always use ] as name spacing notation)
      *
      * @param mixed $v variable name to be fixed.
      * @param array $context Current compile content.
@@ -507,7 +507,7 @@ $libstr
         $v = trim($v);
         if ($context['flags']['this']) {
             if (($v == 'this') || $v == '.') {
-                $v = '';
+                $v = null;
                 return;
             }
         }
@@ -789,12 +789,14 @@ $libstr
             case 'with':
                 $act = $acts[1];
             default:
-                self::_vx($act, $context);
-                $context['vars'][] = self::_vs($act);
                 if (($acts[0] === 'with') && $context['flags']['with']) {
+                    self::_vx($acts[1], $context);
+                    $context['vars'][] = self::_vs($acts[1]);
                     $context['stack'][] = 'with';
                     return $context['ops']['seperator'] . self::_fn($context, 'wi') . "('{$acts[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
                 }
+                self::_vx($act, $context);
+                $context['vars'][] = self::_vs($act);
                 self::_jsp($context);
                 $context['stack'][] = $act;
                 $context['stack'][] = '#';
