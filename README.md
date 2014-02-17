@@ -159,7 +159,7 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
    * false as ''
 * {{{path.to.value}}} : dot notation, raw
 * {{path.to.value}} : dot notation, html encoded
-* {{.}} : current context, html encoded
+* {{.}} : current context, html encoded (require FLAG_THIS)
 * {{this}} : current context, html encoded (require FLAG_THIS)
 * {{{.}}} : current context, raw (require FLAG_THIS)
 * {{{this}}} : current context, raw (require FLAG_THIS)
