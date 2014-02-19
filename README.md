@@ -20,7 +20,7 @@ Features
    * NOTE: Detail performance test reports can be found here: https://github.com/zordius/HandlebarsTest
 * Context generation
    * Analyze used feature from your template
-   * generate <B>Json Schema</B>
+   * generate <B>Json Schema</B> [BUGGY NOW]
       * Do LightnCandy::getJsonSchema() right after LightnCandy::compile() to get jsonSchema
       * Know required data structure from your templates
       * Verify input data, or find out missing variables with any jsonSchema validator
