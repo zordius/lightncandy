@@ -33,8 +33,13 @@ Sample
 // THREE STEPS TO USE LIGHTNCANDY
 // Step 1. require the lib, compile template, get the php code as string
 require('src/lightncandy.inc');
+
 $template = "Welcome {{name}} , You win \${{value}} dollars!!\n";
 $phpStr = LightnCandy::compile($template);
+
+echo "Template is:\n$template\n\n";
+echo "Rendered PHP code is:\n$phpStr\n\n";
+
 
 // Step 2A. (Usage 1) use LightnCandy::prepare to get render function
 //   Do not suggested this way, because it may require php setting allow_url_fopen=1 ,
@@ -42,9 +47,8 @@ $phpStr = LightnCandy::compile($template);
 //   When allow_url_fopen = 0, prepare() will create tmp file then include it, 
 //   you will need to add your tmp directory into open_basedir.
 //   YOU MAY NEED TO CHANGE PHP SETTING BY THIS WAY
-echo "Template is:\n$template\n\n";
-echo "Rendered PHP code is:\n$php\n\n";
 $renderer = LightnCandy::prepare($phpStr);
+
 
 // Step 2B. (Usage 2) Store your render function in a file 
 //   You decide your compiled template file path and name
@@ -52,6 +56,7 @@ $renderer = LightnCandy::prepare($phpStr);
 //   RECOMMENDED WAY
 file_put_contents($php_inc, $phpStr)
 $renderer = include($php_inc);
+
 
 // Step 3. run native php render function any time
 echo $renderer(Array('name' => 'John', 'value' => 10000));
