@@ -93,12 +93,12 @@ Default is to compile the template as php which can be run as fast as possible, 
 * `FLAG_JSOBJECT` : generate '[object Object]' for associated array, generate ',' seperated values for array (handlebars.js behavior). Otherwise, all php array will generate ''.
 * `FLAG_THIS` : support `{{this}}` or `{{.}}` in template. Otherwise, `{{this}}` and `{{.}}` will cause template error.
 * `FLAG_WITH` : support `{{#with var}}` . Otherwise, `{{#with var}}` will cause template error.
-* `FLAG_PARENT` : support `{{../var}}` . Otherwise, {{../var}} will cause template error.
-* `FLAG_JSQUOTE` : encode `'` to `&amp;#x27;` . Otherwise, `'` will encoded as &amp;#039; .
+* `FLAG_PARENT` : support `{{../var}}` . Otherwise, `{{../var}}` will cause template error.
+* `FLAG_JSQUOTE` : encode `'` to `&#x27;` . Otherwise, `'` will encoded as `&#039;` .
 * `FLAG_ADVARNAME` : support `{{foo.[0].[#te#st].bar}}` style advanced variable naming.
-* `FLAG_HANDLEBARSJS` : align with handlebars.js behaviors, same as FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME.
+* `FLAG_HANDLEBARSJS` : align with handlebars.js behaviors, same as `FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME`.
 * `FLAG_ECHO (experimental): compile to `echo 'a', $b, 'c';` to improve performance. This will slow down rendering when the template and data are simple, but will improve 1% ~ 7% when the data is big and looping in the template.
-* `FLAG_BESTPERFORMANCE` : same as `FLAG_ECHO` now. This flag may be changed base on performance testing result.
+* `FLAG_BESTPERFORMANCE` : same as `FLAG_ECHO` now. This flag may be changed base on performance testing result in the future.
 
 Partial Support
 ---------------
@@ -167,21 +167,21 @@ Detail Feature list
 Go http://handlebarsjs.com/ to see more feature description about handlebars.js. All features align with it.
 
 * Exact same CR/LF behavior with handlebars.js
-* Exact same 'true' output with handlebars.js (require FLAG_JSTRUE)
-* Exact same '[object Object]' output or join(',' array) output with handlebars.js (require FLAG_JSOBJECT)
+* Exact same 'true' output with handlebars.js (require `FLAG_JSTRUE`)
+* Exact same '[object Object]' output or join(',' array) output with handlebars.js (require `FLAG_JSOBJECT`)
 * Can place heading/tailing space, tab, CR/LF inside `{{ var }}` or `{{{ var }}}`
 * `{{{value}}}` : raw variable
-   * true as 'true' (require FLAG_JSTRUE)
+   * true as 'true' (require `FLAG_JSTRUE`)
    * false as ''
 * `{{value}}` : html encoded variable
-   * true as 'true' (require FLAG_JSTRUE)
+   * true as 'true' (require `FLAG_JSTRUE`)
    * false as ''
 * `{{{path.to.value}}}` : dot notation, raw
 * `{{path.to.value}}` : dot notation, html encoded
-* `{{.}}` : current context, html encoded (require FLAG_THIS)
-* `{{this}}` : current context, html encoded (require FLAG_THIS)
-* `{{{.}}}` : current context, raw (require FLAG_THIS)
-* `{{{this}}}` : current context, raw (require FLAG_THIS)
+* `{{.}}` : current context, html encoded (require `FLAG_THIS`)
+* `{{this}}` : current context, html encoded (require `FLAG_THIS`)
+* `{{{.}}}` : current context, raw (require `FLAG_THIS`)
+* `{{{this}}}` : current context, raw (require `FLAG_THIS`)
 * `{{#value}}` : section
    * false, undefined and null will skip the section
    * true will run the section with original scope
@@ -197,8 +197,8 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{/if}}` : end if
 * `{{else}}` : run else logic, should between {{#if var}} and {{/if}} , or between {{#unless var}} and {{/unless}}
 * `{{#unless var}}` : run unless logic with original scope (null, false, empty Array and '' will render this block)
-* `{{#with var}}` : change context scope. If the var is false, skip included section. (require FLAG_WITH)
-* `{{../var}}` : parent template scope. (require FLAG_PARENT)
+* `{{#with var}}` : change context scope. If the var is false, skip included section. (require `FLAG_WITH`)
+* `{{../var}}` : parent template scope. (require `FLAG_PARENT`)
 * `{{> file}}` : partial; include another template inside a template.
 * `{{@index}}` : reference to current index in a {{#each}} loop on an array.
 * `{{@key}}` : reference to current key in a {{#each}} loop on an object.
