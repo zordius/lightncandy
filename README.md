@@ -29,7 +29,7 @@ Features
 
 Sample
 ------
-```
+```php
 // THREE STEPS TO USE LIGHTNCANDY
 // Step 1. require the lib, compile template, get the php code as string
 require('src/lightncandy.inc');
@@ -87,7 +87,7 @@ CONSTANTS
 You can apply more flags by running `LightnCandy::compile($php, $options)`
 for example:
 
-```
+```php
 LightnCandy::compile($template, Array(
     'flags' => LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_STANDALONE
 ));
@@ -115,7 +115,7 @@ Partial Support
 LightnCandy supports partial when compile time. When `compile()`, LightnCandy will search template file in current directory by default. You can define more then 1 template directories with `basedir` option. Default template file name is `*.tmpl`, you can change or add more template file extensions with `fileext` option. 
 
 for example:
-```
+```php
 LightnCandy::compile($template, Array(
     'flags' => LightnCandy::FLAG_STANDALONE,
     'basedir' => Array(
@@ -139,7 +139,7 @@ Custom Helper
 LightnCandy supports custom helper when compile time. When `compile()`, LightnCandy will lookup helpers from custom helper table. You can regist custom helpers with `helpers` option.
 
 for exmample:
-```
+```php
 LightnCandy::compile($template, Array(
     'helpers' => Array(
         'my_helper_function', // You may pass your function name
