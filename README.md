@@ -30,26 +30,30 @@ Features
 Sample
 ------
 ```
-// require the lib, compile template string
+// THREE STEPS TO USE LIGHTNCANDY
+// Step 1. require the lib, compile template, get the php code as string
 require('src/lightncandy.inc');
 $template = "Welcome {{name}} , You win \${{value}} dollars!!\n";
 $phpStr = LightnCandy::compile($template);
 
-// Usage 1: One time compile then runtime execute
-// Do not suggested this way, because it require php setting allow_url_fopen=1 and and allow_url_fopen=1, not secure.
-// Or, prepare() will create tmp file then include it, you will need to add your tmp directory into open_basedir.
+// Step 2A. (Usage 1) use LightnCandy::prepare to get render function
+//   Do not suggested this way, because it may require php setting allow_url_fopen=1 ,
+//   and allow_url_fopen=1 is not secure .
+//   When allow_url_fopen = 0, prepare() will create tmp file then include it, 
+//   you will need to add your tmp directory into open_basedir.
+//   YOU MAY NEED TO CHANGE PHP SETTING BY THIS WAY
 echo "Template is:\n$template\n\n";
 echo "Rendered PHP code is:\n$php\n\n";
 $renderer = LightnCandy::prepare($phpStr);
 
-echo $renderer(Array('name' => 'John', 'value' => 10000));
-echo $renderer(Array('name' => 'Peter', 'value' => 1000));
-
-
-// Usage 2: One time save compiled php, later run with include
+// Step 2B. (Usage 2) Store your render function in a file 
+//   You decide your compiled template file path and name
+//   You can load your render function by include()
+//   RECOMMENDED WAY
 file_put_contents($php_inc, $phpStr)
-
 $renderer = include($php_inc);
+
+// Step 3. run native php render function any time
 echo $renderer(Array('name' => 'John', 'value' => 10000));
 echo $renderer(Array('name' => 'Peter', 'value' => 1000));
 ```
