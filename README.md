@@ -29,7 +29,7 @@ Features
 
 Sample
 ------
-<pre>
+```
 // require the lib, compile template string
 require('src/lightncandy.inc');
 $template = "Welcome {{name}} , You win \${{value}} dollars!!\n";
@@ -52,11 +52,11 @@ file_put_contents($php_inc, $phpStr)
 $renderer = include($php_inc);
 echo $renderer(Array('name' => 'John', 'value' => 10000));
 echo $renderer(Array('name' => 'Peter', 'value' => 1000));
-</pre>
+```
 
 Sample output
 -------------
-<pre>
+```
 Template is:
 Welcome {{name}} , You win ${{value}} dollars!!
 
@@ -70,7 +70,7 @@ Rendered PHP code is:
 
 Welcome John , You win $10000 dollars!!
 Welcome Peter , You win $1000 dollars!!
-</pre>
+```
 
 CONSTANTS
 ---------
@@ -102,7 +102,7 @@ Partial Support
 LightnCandy supports partial when compile time. When compile(), LightnCandy will search template file in current directory by default. You can define more then 1 template directories with 'basedir' option. Default template file name is *.tmpl, you can change or add more template file extensions with 'fileext' option. 
 
 for example:
-<pre>
+```
 LightnCandy::compile($template, Array(
     'flags' => LightnCandy::FLAG_STANDALONE,
     'basedir' => Array(
@@ -116,9 +116,24 @@ LightnCandy::compile($template, Array(
         '.handlebars',
     )
 ));
-</pre>
+```
 
 LightnCandy supports parent context access in partial {{../vars}}, so far no other php/javascript library can handle this correctly.
+
+Custom Helper
+-------------
+
+LightnCandy supports custom helper when compile time. When compile(), LightnCandy will lookup helpers from custom helper table. You can regist custom helpers with 'helpers' option.
+
+for exmample:
+```
+LightnCandy::compile($template, Array(
+    'helpers' => Array(
+        'my_helper_function', // You may pass your function name
+        function ( .... TODO....
+    )
+));
+```
 
 Unsupported Feature (so far)
 ----------------------------

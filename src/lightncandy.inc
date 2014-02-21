@@ -88,6 +88,7 @@ class LightnCandy {
                 'echo' => $flags & self::FLAG_ECHO,
                 'advar' => $flags & self::FLAG_ADVARNAME,
             ),
+            'helpers' => Array(),
             'level' => 0,
             'stack' => Array(),
             'error' => Array(),
