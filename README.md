@@ -143,6 +143,7 @@ for exmample:
 LightnCandy::compile($template, Array(
     'helpers' => Array(
         'my_helper_function', // You may pass your function name
+                              // Cause error when the function is not exist
         function ( .... TODO....
     )
 ));
