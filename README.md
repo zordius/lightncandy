@@ -6,7 +6,7 @@ A PHP library to support almost all features of handlebars ( http://handlebarsjs
 Features
 --------
 
-* Logicless template: subset of mustache ( http://mustache.github.com/ ) or handlebars ( http://handlebarsjs.com/ ) .
+* Logicless template: mustache ( http://mustache.github.com/ ) or handlebars ( http://handlebarsjs.com/ ) .
 * Compile template to <B>pure php</B> code.
    * Examples:
       * templateA: https://github.com/zordius/HandlebarsTest/blob/master/fixture/001-simple-vars.tmpl
