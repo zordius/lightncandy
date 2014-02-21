@@ -79,7 +79,9 @@ You can apply more flags by running `LightnCandy::compile($php, $options)`
 for example:
 
 ```
-LightnCandy::compile($template, Array('flags' => LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_STANDALONE));
+LightnCandy::compile($template, Array(
+    'flags' => LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_STANDALONE
+));
 ```
 
 Default is to compile the template as php which can be run as fast as possible, all flags are off.
