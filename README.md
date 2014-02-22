@@ -7,20 +7,20 @@ Features
 --------
 
 * Logicless template: mustache ( http://mustache.github.com/ ) or handlebars ( http://handlebarsjs.com/ ) .
-* Compile template to <B>pure php</B> code.
+* Compile template to **pure php** code.
    * Examples:
       * templateA: https://github.com/zordius/HandlebarsTest/blob/master/fixture/001-simple-vars.tmpl
       * compile as phpA: https://github.com/zordius/HandlebarsTest/blob/master/fixture/001-simple-vars.php
       * templateB: https://github.com/zordius/HandlebarsTest/blob/master/fixture/016-hb-eachthis.tmpl
       * compile as phpB: https://github.com/zordius/HandlebarsTest/blob/master/fixture/016-hb-eachthis.php
-* <B>Fast</B>!
+* **FAST!**
    * runs 4~6 times faster than https://github.com/bobthecow/mustache.php
    * runs 4~10 times faster than https://github.com/dingram/mustache-php
    * runs 10~30 times faster than https://github.com/XaminProject/handlebars.php
    * NOTE: Detail performance test reports can be found here: https://github.com/zordius/HandlebarsTest
 * Context generation
    * Analyze used feature from your template
-   * generate <B>Json Schema</B> [BUGGY NOW]
+   * generate **Json Schema** [BUGGY NOW]
       * Do `LightnCandy::getJsonSchema()` right after `LightnCandy::compile()` to get jsonSchema
       * Know required data structure from your templates
       * Verify input data, or find out missing variables with any jsonSchema validator
@@ -105,6 +105,7 @@ Default is to compile the template as php which can be run as fast as possible, 
 * `FLAG_PARENT` : support `{{../var}}` . Otherwise, `{{../var}}` will cause template error.
 * `FLAG_JSQUOTE` : encode `'` to `&#x27;` . Otherwise, `'` will encoded as `&#039;` .
 * `FLAG_ADVARNAME` : support `{{foo.[0].[#te#st].bar}}` style advanced variable naming.
+* `FLAG_EXTHELPER` : do not include custom helper codes in compiled php codes. This reduce the code size, but you need to take care of your helper functions when rendering. If you forget to include required functions, `undefined function` runtime error will be triggered. **Note: Anonymouse functions will always be placed in generated codes**
 * `FLAG_HANDLEBARSJS` : align with handlebars.js behaviors, same as `FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME`.
 * `FLAG_ECHO` (experimental): compile to `echo 'a', $b, 'c';` to improve performance. This will slow down rendering when the template and data are simple, but will improve 1% ~ 7% when the data is big and looping in the template.
 * `FLAG_BESTPERFORMANCE` : same as `FLAG_ECHO` now. This flag may be changed base on performance testing result in the future.
