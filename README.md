@@ -25,13 +25,13 @@ Features
       * Know required data structure from your templates
       * Verify input data, or find out missing variables with any jsonSchema validator
 * Standalone Template
-   * The compiled php template can run without any php library.
+   * The compiled PHP template can run without any PHP library.
 
 Sample
 ------
 ```php
 // THREE STEPS TO USE LIGHTNCANDY
-// Step 1. require the lib, compile template, get the php code as string
+// Step 1. require the lib, compile template, get the PHP code as string
 require('src/lightncandy.inc');
 
 $template = "Welcome {{name}} , You win \${{value}} dollars!!\n";
@@ -42,7 +42,7 @@ echo "Rendered PHP code is:\n$phpStr\n\n";
 
 
 // Step 2A. (Usage 1) use LightnCandy::prepare to get render function
-//   Do not suggested this way, because it may require php setting allow_url_fopen=1 ,
+//   Do not suggested this way, because it may require PHP setting allow_url_fopen=1 ,
 //   and allow_url_fopen=1 is not secure .
 //   When allow_url_fopen = 0, prepare() will create tmp file then include it, 
 //   you will need to add your tmp directory into open_basedir.
@@ -93,19 +93,19 @@ LightnCandy::compile($template, Array(
 ));
 ```
 
-Default is to compile the template as php which can be run as fast as possible, all flags are off.
+Default is to compile the template as PHP which can be run as fast as possible, all flags are off.
 
 * `FLAG_ERROR_LOG` : output error_log when found any template error
 * `FLAG_ERROR_EXCEPTION` : throw exception when found any template error
-* `FLAG_STANDALONE` : generate stand alone php codes which can be execute without including LightnCandy. The compiled php code will contain scopped user function, somehow larger. And, the performance of the template will slow 1 ~ 10%.
+* `FLAG_STANDALONE` : generate stand alone PHP codes which can be execute without including LightnCandy. The compiled PHP code will contain scopped user function, somehow larger. And, the performance of the template will slow 1 ~ 10%.
 * `FLAG_JSTRUE` : generate 'true' when value is true (handlebars.js behavior). Otherwise, true will generate ''.
-* `FLAG_JSOBJECT` : generate '[object Object]' for associated array, generate ',' seperated values for array (handlebars.js behavior). Otherwise, all php array will generate ''.
+* `FLAG_JSOBJECT` : generate '[object Object]' for associated array, generate ',' seperated values for array (handlebars.js behavior). Otherwise, all PHP array will generate ''.
 * `FLAG_THIS` : support `{{this}}` or `{{.}}` in template. Otherwise, `{{this}}` and `{{.}}` will cause template error.
 * `FLAG_WITH` : support `{{#with var}}` . Otherwise, `{{#with var}}` will cause template error.
 * `FLAG_PARENT` : support `{{../var}}` . Otherwise, `{{../var}}` will cause template error.
 * `FLAG_JSQUOTE` : encode `'` to `&#x27;` . Otherwise, `'` will encoded as `&#039;` .
 * `FLAG_ADVARNAME` : support `{{foo.[0].[#te#st].bar}}` style advanced variable naming.
-* `FLAG_EXTHELPER` : do not include custom helper codes in compiled php codes. This reduce the code size, but you need to take care of your helper functions when rendering. If you forget to include required functions, `undefined function` runtime error will be triggered. **Note: Anonymouse functions will always be placed in generated codes**
+* `FLAG_EXTHELPER` : do not include custom helper codes in compiled PHP codes. This reduce the code size, but you need to take care of your helper functions when rendering. If you forget to include required functions, `undefined function` runtime error will be triggered. **Note: Anonymouse functions will always be placed in generated codes**
 * `FLAG_HANDLEBARSJS` : align with handlebars.js behaviors, same as `FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME`.
 * `FLAG_ECHO` (experimental): compile to `echo 'a', $b, 'c';` to improve performance. This will slow down rendering when the template and data are simple, but will improve 1% ~ 7% when the data is big and looping in the template.
 * `FLAG_BESTPERFORMANCE` : same as `FLAG_ECHO` now. This flag may be changed base on performance testing result in the future.
@@ -136,6 +136,8 @@ LightnCandy supports parent context access in partial (access `{{../vars}}` insi
 
 Custom Helper
 -------------
+
+Custom helper can help you deal with common template tasks, for example: provide URL and text then generate an link. To know more about custom helper, you can read original handlebars.js document here: http://handlebarsjs.com/expressions.html .
 
 LightnCandy supports custom helper when compile time. When `compile()`, LightnCandy will lookup helpers from custom helper table. You can regist custom helpers with `helpers` option.
 
