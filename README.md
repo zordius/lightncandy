@@ -1,13 +1,13 @@
 lightncandy
 ===========
 
-A PHP library to support almost all features of handlebars ( http://handlebarsjs.com/ ) , target to run as fast as pure php.
+A PHP library to support almost all features of handlebars ( http://handlebarsjs.com/ ) , target to run as fast as pure PHP.
 
 Features
 --------
 
 * Logicless template: mustache ( http://mustache.github.com/ ) or handlebars ( http://handlebarsjs.com/ ) .
-* Compile template to **pure php** code.
+* Compile template to **pure PHP** code.
    * Examples:
       * templateA: https://github.com/zordius/HandlebarsTest/blob/master/fixture/001-simple-vars.tmpl
       * compile as phpA: https://github.com/zordius/HandlebarsTest/blob/master/fixture/001-simple-vars.php
