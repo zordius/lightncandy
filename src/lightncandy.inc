@@ -39,10 +39,13 @@ class LightnCandy {
     const FLAG_JSQUOTE = 256;
     const FLAG_ADVARNAME = 512;
 
-    // PHP performance flags
-    const FLAG_ECHO = 1024;
+    // Custom helper options
+    const FLAG_EXTHELPER = 1024;
 
-    const FLAG_BESTPERFORMANCE = 1024; // FLAG_ECHO
+    // PHP performance flags
+    const FLAG_ECHO = 2048;
+
+    const FLAG_BESTPERFORMANCE = 2048; // FLAG_ECHO
     const FLAG_HANDLEBARSJS = 1016; // FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME
 
     const PARTIAL_SEARCH = '/\\{\\{>[ \\t]*(.+?)[ \\t]*\\}\\}/s';
@@ -87,8 +90,8 @@ class LightnCandy {
                 'parent' => $flags & self::FLAG_PARENT,
                 'echo' => $flags & self::FLAG_ECHO,
                 'advar' => $flags & self::FLAG_ADVARNAME,
+                'exhlp' => $flags & self::FLAG_EXTHELPER,
             ),
-            'helpers' => Array(),
             'level' => 0,
             'stack' => Array(),
             'error' => Array(),
@@ -119,7 +122,8 @@ class LightnCandy {
                 'dot' => 0,
                 'comment' => 0,
                 'partial' => 0,
-            )
+            ),
+            'helpers' => Array(),
         );
 
         $context['ops'] = $context['flags']['echo'] ? Array(
@@ -145,6 +149,19 @@ class LightnCandy {
         );
 
         $context['ops']['enc'] = $context['flags']['jsquote'] ? 'encq' : 'enc';
+
+        // Generate custom helpers table
+        if (isset($options['helpers']) && is_array($options['helpers'])) {
+            foreach ($options['helpers'] as $name => $func) {
+                if (is_callable($func)) {
+                    $context[is_int($name) ? $func : $name] = $name;
+                } else {
+                    if (!$context['flags']['exhlp']) {
+                        $context['error'][] = "Can not find custom helper function defination $func() !";
+                    }
+                }
+            }
+        }
 
         // Scan for partial and replace partial with template
         $template = LightnCandy::expandPartial($template, $context);
