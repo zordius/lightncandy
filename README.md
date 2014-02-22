@@ -159,11 +159,11 @@ LightnCandy::compile($template, Array(
 
         // 4. Alias also works well for static call from a class
         //    This help you to mapping different function to a prefered helper name
-        'helper_name' => 'myClass::func',
+        'helper_name2' => 'myClass::func',
 
         // 5. Anonymouse function should be provided with helper name
         //    The function will be included in generaed code always
-        'helper_name' => function ($arg1, $arg2) {
+        'helper_name3' => function ($arg1, $arg2) {
             return "<a href="{$arg1}">{$arg2}</a>";
         }
     )
