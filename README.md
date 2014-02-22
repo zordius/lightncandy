@@ -142,11 +142,23 @@ for exmample:
 ```php
 LightnCandy::compile($template, Array(
     'helpers' => Array(
-        'my_helper_function', // You may pass your function name
-                              // Cause error when the function is not exist
-        function ( .... TODO....
+        'my_helper_function',         // 1. You may pass your function name
+                                      //    When the function is not exist, you get compile time error
+                                      //    In this case, the helper name is same with function name
+        'myClass::myStaticMethod',    // 2. You may also provide a static call from a class
+                                      //    In this case, the helper name is same with provided full name
+                                      //    It is not valid in handlebars.js
+        'helper_name=my_other_helper' // 3. You may also provide an alias for helper name
+                                      //    This help you to mapping different function to a prefered helper name
+        'helper_name=myClass::func'   // 4. Alias also works well for static call from a class
+                                      //    This help you to mapping different function to a prefered helper name
     )
 ));
+/* TODO ... issue: how to provide helper name for this case?
+        function ($arg1, $arg2) {                   // 2. You may pass an anonymous function here
+            return "<a href="{$arg1}">{$arg2}</a>"; // 
+        }
+*/
 ```
 
 Unsupported Feature (so far)
