@@ -54,7 +54,7 @@ $renderer = LightnCandy::prepare($phpStr);
 //   You decide your compiled template file path and name
 //   You can load your render function by include()
 //   RECOMMENDED WAY
-file_put_contents($php_inc, $phpStr)
+file_put_contents($php_inc, $phpStr);
 $renderer = include($php_inc);
 
 
