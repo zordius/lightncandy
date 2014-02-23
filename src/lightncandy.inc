@@ -618,15 +618,28 @@ $libstr
     }
 
     /**
+     * Internal method used by scan() and compile(). Parse the token and return parsed result.
+     *
+     * @param array $context current compile context
+     * @param string $var current variable name
+     */
+    protected static function _tk($token, &$context) {
+        $head = substr($token[2], 0, 1);
+        $act = substr($token[2], 1);
+        $raw = ($token[1] === '{{{');
+        return Array(
+            $head, $act, $raw
+        );
+    }
+
+    /**
      * Internal method used by compile(). Collect handlebars usage information, detect template error.
      *
      * @param string $token detected handlebars {{ }} token
      * @param string $context current scaning context
      */
     protected static function scan($token, &$context) {
-        $head = substr($token[2], 0, 1);
-        $act = substr($token[2], 1);
-        $raw = ($token[1] === '{{{');
+        list($head, $act, $raw) = self::_tk($token, $context);
 
         if (count($token[1]) !== count($token[3])) {
             $context['error'][] = "Bad token {$token[1]}{$token[2]}{$token[3]} ! Do you mean {{}} or {{{}}}?";
@@ -731,9 +744,7 @@ $libstr
      * @param string $context current scaning context
      */
     public static function tokens($token, &$context) {
-        $head = substr($token[2], 0, 1);
-        $act = substr($token[2], 1);
-        $raw = ($token[1] === '{{{');
+        list($head, $act, $raw) = self::_tk($token, $context);
 
         switch ($head) {
         case '^':
