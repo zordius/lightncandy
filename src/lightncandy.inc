@@ -625,11 +625,8 @@ $libstr
      */
     protected static function _tk(&$token, &$context) {
         trim($token[2]);
-        $head = substr($token[2], 0, 1);
-        $act = substr($token[2], 1);
-        $raw = ($token[1] === '{{{');
         return Array(
-            $head, $act, $raw
+            substr($token[2], 0, 1), $act, ($token[1] === '{{{')
         );
     }
 
