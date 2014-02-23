@@ -36,6 +36,16 @@ print_r(LightnCandy::getContext());
 
 $renderer = LightnCandy::prepare($php);
 
+function helper1($arg) {
+    return "-$arg-";
+}
+
+class myClass {
+    function helper2($arg) {
+        return "=$arg=";
+    }
+}
+
 echo $renderer(Array('name' => 'John', 'value' => 10000));
 
 ?>
