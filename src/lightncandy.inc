@@ -623,7 +623,8 @@ $libstr
      * @param array $context current compile context
      * @param string $var current variable name
      */
-    protected static function _tk($token, &$context) {
+    protected static function _tk(&$token, &$context) {
+        trim($token[2]);
         $head = substr($token[2], 0, 1);
         $act = substr($token[2], 1);
         $raw = ($token[1] === '{{{');
@@ -687,7 +688,6 @@ $libstr
 
         default:
             $context['usedFeature'][$raw ? 'raw' : 'enc']++;
-            $token[2] = trim($token[2]);
             switch ($token[2]) {
                 case 'else':
                     return $context['usedFeature']['else']++;
