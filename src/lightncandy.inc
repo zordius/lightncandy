@@ -154,7 +154,7 @@ class LightnCandy {
         if (isset($options['helpers']) && is_array($options['helpers'])) {
             foreach ($options['helpers'] as $name => $func) {
                 if (is_callable($func)) {
-                    $context[is_int($name) ? $func : $name] = $name;
+                    $context['helpers'][is_int($name) ? $func : $name] = $name;
                 } else {
                     if (!$context['flags']['exhlp']) {
                         $context['error'][] = "Can not find custom helper function defination $func() !";
@@ -720,6 +720,10 @@ $libstr
         }
 
         // Handle custom helpers
+        $acts = explode(' ', $intag);
+        if (isset($context['helpers'][$acts[0]])) {
+            error_log("CUSTOM HELPER!!!! $acts[0] and $acts[1]");
+        }
 
         // Check for advanced variable
         if ($context['flags']['advar']) {
