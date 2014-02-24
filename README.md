@@ -237,7 +237,7 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{@index}}` : reference to current index in a `{{#each}}` loop on an array.
 * `{{@key}}` : reference to current key in a `{{#each}}` loop on an object.
 * `{{foo.[ba.r].[#spec].0.ok}}` : reference to $CurrentConext['foo']['ba.r']['#spec'][0]['ok']
-* `{{~any_valid_tag}}` : Space control, remove all previous spacing (include CR/LF, tab, space, stop until any none spacing charactor) (require `FLAG_SPACECTL`)
-* `{{any_valid_tag~}}` : Space control, remove all next spacing (include CR/LF, tab, space, stop until any none spacing charactor) (require `FLAG_SPACECTL`)
+* `{{~any_valid_tag}}` : Space control, remove all previous spacing (include CR/LF, tab, space; stop on any none spacing charactor) (require `FLAG_SPACECTL`)
+* `{{any_valid_tag~}}` : Space control, remove all next spacing (include CR/LF, tab, space; stop on any none spacing charactor) (require `FLAG_SPACECTL`)
 
 
