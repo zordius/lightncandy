@@ -64,18 +64,6 @@ class LightnCandy {
      * @return string Compiled PHP code when successed. If error happened and compile failed, return false.
      */
     public static function compile($template, $options = 0) {
-        return self::compiledCode($template, $options);
-    }
-
-    /**
-     * Internal method used by compile(). Get compiled code from a template string
-     *
-     * @param string $template handlebars template string
-     * @param array $options LightnCandy compile time and run time options, default is Array('flags' => LightnCandy::FLAG_BESTPERFORMANCE)
-     *
-     * @return string Compiled PHP code when successed. If error happened and compile failed, return false.
-     */
-    protected static function compiledCode($template, $options) {
         $flags = isset($options['flags']) ? $options['flags'] : self::FLAG_BESTPERFORMANCE;
 
         $context = Array(
@@ -203,7 +191,7 @@ class LightnCandy {
         $flagJSObj = self::_on($context['flags']['jsobj']);
 
         $libstr = self::exportLCRun($context);
-        $helpers = var_export($context['helpers'], true);
+        $helpers = self::exportHelper($context);
 
         // return generated PHP code string
         return "<?php return function (\$in) {
@@ -273,7 +261,7 @@ $libstr
     /**
      * Internal method used by compile(). check options and handle basedir
      *
-     * @param string $options current compile option
+     * @param array $options current compile option
      *
      * @return array base directories
      */
@@ -292,6 +280,36 @@ $libstr
         }
 
         return $dirs;
+    }
+
+    /**
+     * Internal method used by compile(). get closure PHP code as string.
+     *
+     * @param object $closure Closure object
+     */
+    protected static function getClosureCode($closure) {
+    }
+
+    /**
+     * Internal method used by compile(). export required custom helper functions.
+     *
+     * @param string $context current scaning context
+     */
+    protected static function exportHelper($context) {
+        $ret = '';
+        foreach ($context['helpers'] as $name => $func) {
+            if (is_object($func) && ($func instanceof Closure)) {
+                $ret .= ("    '$name' => " . self::getClosureCode($func) . ",\n");
+                continue;
+            }
+            if ($context['flags']['exhlp']) {
+                $ret .= "    '$name' => '$func',\n";
+            } else {
+                $ret .= ".....local: $name - $func,\n";
+            }
+        }
+
+        return "Array(\n$ret\n)\n";
     }
 
     /**
@@ -736,7 +754,7 @@ $libstr
 
         // Handle custom helpers
         if (isset($context['helpers'][$acts[0]])) {
-            return $contest['usedFeature']['helper']++;
+            return $context['usedFeature']['helper']++;
         }
 
         // Check for advanced variable
