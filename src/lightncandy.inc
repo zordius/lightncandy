@@ -626,8 +626,8 @@ $libstr
      * @param array $context current compile context
      */
     protected static function _tk(&$token, &$context) {
-        trim($token[4]);
-        $acts = explode(' ', $token[4]); // TODO: in future we should support 2 or more args and arguments parsing.
+        trim($token[5]);
+        $acts = explode(' ', $token[5]); // TODO: in future we should support 2 or more args and arguments parsing.
 
         return Array(
             ($token[2] === '{{{'), $acts
