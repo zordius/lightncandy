@@ -628,7 +628,7 @@ $libstr
 
         trim($token[2]);
         return Array(
-            substr($token[2], 0, 1), $args[0], ($token[1] === '{{{'), $args
+            substr($token[2], 0, 1), substr($token[2], 1), ($token[1] === '{{{'), $args
         );
     }
 
