@@ -123,6 +123,7 @@ class LightnCandy {
                 'dot' => 0,
                 'comment' => 0,
                 'partial' => 0,
+                'helper' => 0,
             ),
             'helpers' => Array(),
         );
@@ -458,7 +459,7 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Get variable names translated array, Ex: a.b.c => ["'a'", "'b'", "'c'"]
+     * Internal method used by _qscope(). Get variable names translated string, Ex: "['a']['b']['c']"
      *
      * @param array $scopes an array of variable names with single quote
      *
@@ -469,11 +470,11 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Get variable names translated string, Ex: a.b.c => "['a']['b']['c']"
+     * Internal method used by _vn(). Get variable names translated string, Ex: "['a']['b']['c']"
      *
-     * @param array $scopes an array of variable names. ex: ['a', 'b', 'c', ...]
+     * @param array $list an array of variable names. ex: ['a', 'b', 'c', ...]
      *
-     * @return string Translated variable name as input array notation.
+     * @return string PHP array names string
      */
     protected static function _qscope($list) {
         return self::_scope(array_map(function ($v) {return "'$v'";}, $list));
@@ -544,6 +545,7 @@ $libstr
             $v = preg_replace('/([^\\.\\/])\\./', '$1]', $v);
         }
     }
+
     /**
      * Internal method used by compile().
      *
@@ -556,6 +558,17 @@ $libstr
             return Array('.');
         }
         return ($v !== '') ? explode('.', $v) : null;
+    }
+
+    /**
+     * Internal method used by compile(). Get argument names string, Ex: "'a','b','c'"
+     *
+     * @param array $list an array of arguments. ex: ['a', 'b', 'c', ...]
+     *
+     * @return string PHP arguments string
+     */
+    protected static function _arg($list) {
+        return implode(',', array_map(function ($v) {return "'$v'";}, $list));
     }
 
     /**
@@ -628,7 +641,7 @@ $libstr
     protected static function _tk(&$token, &$context) {
         trim($token[5]);
         $acts = explode(' ', $token[5]); // TODO: in future we should support 2 or more args and arguments parsing.
-
+                                         // Now can not handle [test 123] or "abc def" correctly
         return Array(
             ($token[2] === '{{{'), $acts
         );
@@ -721,7 +734,7 @@ $libstr
 
         // Handle custom helpers
         if (isset($context['helpers'][$acts[0]])) {
-            error_log("CUSTOM HELPER!!!! $acts[0] and $acts[1]");
+            return $contest['usedFeature']['helper']++;
         }
 
         // Check for advanced variable
@@ -860,6 +873,12 @@ $libstr
             return $context['ops']['seperator'];
         }
 
+        // Handle custom helpers
+        $fn = $raw ? 'raw' : $context['ops']['enc'];
+        if (isset($context['helpers'][$acts[0]])) {
+            return $context['ops']['seperator'] . self::_fn($context, 'ch') . '(Array(' . self::_arg($acts) . "), '$fn', \$cx, \$in){$context['ops']['seperator']}";
+        }
+
         // Handle else
         self::_vx($intag, $context);
         if ($intag ==='else') {
@@ -869,7 +888,6 @@ $libstr
 
         // Handle variable
         self::_jsv($context, $intag);
-        $fn = $raw ? 'raw' : $context['ops']['enc'];
         if ($context['useVar']) {
             $v = $context['useVar'] . self::_vn($intag, $context['flags']['advar']);
             if ($context['flags']['jstrue']) {
