@@ -1172,5 +1172,25 @@ class LCRun {
         array_pop($cx['scopes']);
         return $ret;
     }
+
+    /**
+     * LightnCandy runtime method for custom helpers
+     *
+     * @param array $vars variable names for helpers. $vars[0] will be the callback function
+     * @param array $cx render time context
+     * @param array $in input data with current scope
+     * @param function $cb callback function to render child context
+     *
+     * @return string The rendered string of the token
+     */
+    public static function ch($vars, $op, &$cx, $in) {
+        $ch = array_shift($vars);
+        $func = self::$op;
+        $args = array_map(function ($v) use (&$cx, $in, $func) {return $func($v, $cx, $in);}, $vars);
+print "Custom Helpers! run $ch with args:";
+print_r($args);
+        //$v = self::val($var, $cx, $in);
+        return '';
+    }
 }
 ?>
