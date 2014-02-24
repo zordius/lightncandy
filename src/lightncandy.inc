@@ -315,7 +315,7 @@ $libstr
             if ($context['flags']['exhlp']) {
                 $ret .= "        '$name' => '$func',\n";
             } else {
-                $ret .= ".....local: $name - $func,\n";
+                $ret .= "        '$name' => '$func',\n"; // TODO: move $func to local anonymous function
             }
         }
 
