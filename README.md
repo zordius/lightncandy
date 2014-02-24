@@ -105,7 +105,7 @@ Default is to compile the template as PHP which can be run as fast as possible, 
 * `FLAG_PARENT` : support `{{../var}}` in temlpate. Otherwise, `{{../var}}` will cause template error.
 * `FLAG_JSQUOTE` : encode `'` to `&#x27;` . Otherwise, `'` will encoded as `&#039;` .
 * `FLAG_ADVARNAME` : support `{{foo.[0].[#te#st].bar}}` style advanced variable naming in temlpate.
-* `FLAG_EXTHELPER` : do not include custom helper codes in compiled PHP codes. This reduce the code size, but you need to take care of your helper functions when rendering. If you forget to include required functions, `undefined function` runtime error will be triggered. **Note: Anonymouse functions will always be placed in generated codes**
+* `FLAG_EXTHELPER` : do not including custom helper codes into compiled PHP codes. This reduce the code size, but you need to take care of your helper functions when rendering. If you forget to include required functions when execute rendering function, `undefined function` runtime error will be triggered. **Note: Anonymouse functions will always be placed in generated codes**
 * `FLAG_SPACECTL` : support space control `{{~ }}` or `{{ ~}}` in template. Otherwise, `{{~ }}` or `{{ ~}}` will cause template error. 
 * `FLAG_HANDLEBARSJS` : align with handlebars.js behaviors, same as `FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME`.
 * `FLAG_ECHO` (experimental): compile to `echo 'a', $b, 'c';` to improve performance. This will slow down rendering when the template and data are simple, but will improve 1% ~ 7% when the data is big and looping in the template.
@@ -229,11 +229,11 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{#value}}` : section
    * false, undefined and null will skip the section
    * true will run the section with original scope
-   * All others will run the section with new scope (include 0, 1, -1, '', '1', '0', '-1', 'false', Array, ...)
+   * All others will run the section with new scope (includes 0, 1, -1, '', '1', '0', '-1', 'false', Array, ...)
 * `{{/value}}` : end section
 * `{{^value}}` : inverted section
    * false, undefined and null will run the section with original scope
-   * All others will skip the section (include 0, 1, -1, '', '1', '0', '-1', 'false', Array, ...)
+   * All others will skip the section (includes 0, 1, -1, '', '1', '0', '-1', 'false', Array, ...)
 * `{{! comment}}` : comment
 * `{{#each var}}` : each loop
 * `{{/each}}` : end loop
@@ -247,7 +247,7 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{@index}}` : reference to current index in a `{{#each}}` loop on an array.
 * `{{@key}}` : reference to current key in a `{{#each}}` loop on an object.
 * `{{foo.[ba.r].[#spec].0.ok}}` : reference to $CurrentConext['foo']['ba.r']['#spec'][0]['ok']
-* `{{~any_valid_tag}}` : Space control, remove all previous spacing (include CR/LF, tab, space; stop on any none spacing charactor) (require `FLAG_SPACECTL`)
-* `{{any_valid_tag~}}` : Space control, remove all next spacing (include CR/LF, tab, space; stop on any none spacing charactor) (require `FLAG_SPACECTL`)
+* `{{~any_valid_tag}}` : Space control, remove all previous spacing (includes CR/LF, tab, space; stop on any none spacing charactor) (require `FLAG_SPACECTL`)
+* `{{any_valid_tag~}}` : Space control, remove all next spacing (includes CR/LF, tab, space; stop on any none spacing charactor) (require `FLAG_SPACECTL`)
 
 
