@@ -288,6 +288,16 @@ $libstr
      * @param object $closure Closure object
      */
     protected static function getClosureCode($closure) {
+        $ref = new ReflectionFunction($closure);
+        $fname = $ref->getFileName();
+        $lines = file_get_contents($fname);
+        $file = new SplFileObject($fname);
+
+        $file->seek($ref->getStartLine() - 2);
+        $spos = $file->ftell();
+        $file->seek($ref->getEndLine() - 1);
+        $epos = $file->ftell();
+        return preg_replace('/^.+?function(.+?)\\}[,\\s]*$/s', 'function$1}', substr($lines, $spos, $epos - $spos));
     }
 
     /**
@@ -299,17 +309,17 @@ $libstr
         $ret = '';
         foreach ($context['helpers'] as $name => $func) {
             if (is_object($func) && ($func instanceof Closure)) {
-                $ret .= ("    '$name' => " . self::getClosureCode($func) . ",\n");
+                $ret .= ("        '$name' => " . self::getClosureCode($func) . ",\n");
                 continue;
             }
             if ($context['flags']['exhlp']) {
-                $ret .= "    '$name' => '$func',\n";
+                $ret .= "        '$name' => '$func',\n";
             } else {
                 $ret .= ".....local: $name - $func,\n";
             }
         }
 
-        return "Array(\n$ret\n)\n";
+        return "Array(\n$ret\n)";
     }
 
     /**

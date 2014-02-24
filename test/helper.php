@@ -24,7 +24,7 @@ $php = LightnCandy::compile($template, Array(
         'h2' => 'myClass::helper2',
         'link' => function ($arg) {
             return "<a href=\"{$arg}\">click here</a>";
-        }
+        },
     )
 
 ));
