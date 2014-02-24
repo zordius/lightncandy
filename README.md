@@ -180,7 +180,8 @@ The input parameters are process by LightnCandy automatically, you do not need t
 {{helper ../name}}        // This send processed {{../name}} into the helper
 {{{helper "Test"}}}       // This send the string "Test" into the helper
 {{helper "Test"}}         // This send html encoded string "Test" into the helper
-{{helper "Test" ../name}} // This send html encoded string "Test" and processed {{../name}} into the helper
+{{helper "Test" ../name}} // This send html encoded string "Test" as first param,
+                          // and processed {{../name}} as second param into the helper
 ```
 
 Unsupported Feature (so far)
