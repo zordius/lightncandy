@@ -627,10 +627,10 @@ $libstr
      */
     protected static function _tk(&$token, &$context) {
         trim($token[4]);
-        $args = Array($token[4]); // TODO: in future we should support 2 or more args and arguments parsing.
+        $acts = explode(' ', $token[4]); // TODO: in future we should support 2 or more args and arguments parsing.
 
         return Array(
-            ($token[2] === '{{{'), $args
+            ($token[2] === '{{{'), $acts
         );
     }
 
@@ -641,19 +641,19 @@ $libstr
      * @param string $context current scaning context
      */
     protected static function scan($token, &$context) {
-        list($raw, $args) = self::_tk($token, $context);
+        list($raw, $acts) = self::_tk($token, $context);
         list($all, $beginsp, $begintag, $lspctl, $blockop, $intag, $rspctl, $endtag, $endsp) = $token;
 
         // {{ }}} or {{{ }} are invalid
-        if (count($begintag) !== count($endtag)) {
-            $context['error'][] = "Bad token $begintag$lspctl$blockop$intag$rspctl$endtag ! Do you mean {{}} or {{{}}}?";
+        if (strlen($begintag) !== strlen($endtag)) {
+            $context['error'][] = "Bad token $begintag$lspctl$blockop$intag$rspctl$endtag ! Do you mean {{ }} or {{{ }}}?";
             return;
         }
 
         // {{{# }}} or {{{! }}} or {{{/ }}} or {{{^ }}} are invalid
         if ($raw) {
-            if ($blckop) {
-                $context['error'][] = "Bad token $begintag$lspctl$blockop$intag$rspctl$endtag ! Do you mean \{\{$lspctl$blockop$intag$rspctl}\}\}?";
+            if ($blockop) {
+                $context['error'][] = "Bad token $begintag$lspctl$blockop$intag$rspctl$endtag ! Do you mean {{" . "$lspctl$blockop$intag$rspctl}}?";
                 return;
             }
         }
@@ -676,7 +676,6 @@ $libstr
         case '#':
             $context['stack'][] = $intag;
             $context['level']++;
-            $acts = explode(' ', $intag);
             switch ($acts[0]) {
             case 'with':
                 if (isset($acts[1]) && !$context['flags']['with']) {
@@ -721,7 +720,6 @@ $libstr
         }
 
         // Handle custom helpers
-        $acts = explode(' ', $intag);
         if (isset($context['helpers'][$acts[0]])) {
             error_log("CUSTOM HELPER!!!! $acts[0] and $acts[1]");
         }
@@ -761,7 +759,7 @@ $libstr
      * @param string $context current scaning context
      */
     public static function tokens(&$token, &$context) {
-        list($raw, $args) = self::_tk($token, $context);
+        list($raw, $acts) = self::_tk($token, $context);
         list($all, $beginsp, $begintag, $lspctl, $blockop, $intag, $rspctl, $endtag, $endsp) = $token;
 
         // Handle space control
@@ -827,7 +825,6 @@ $libstr
             }
         case '#':
             $each = 'false';
-            $acts = explode(' ', $intag);
             switch ($acts[0]) {
             case 'if':
                 $context['stack'][] = 'if';
