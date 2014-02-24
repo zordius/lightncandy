@@ -16,7 +16,7 @@ $template = <<<VAREND
 VAREND
 ;
 $php = LightnCandy::compile($template, Array(
-    'flags' => LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_STANDALONE | LightnCandy::FLAG_HANDLEBARSJS,
+    'flags' => LightnCandy::FLAG_ERROR_LOG | 0 * LightnCandy::FLAG_STANDALONE | LightnCandy::FLAG_HANDLEBARSJS,
     'helpers' => Array(
         'helper1',
         'myClass::helper2',

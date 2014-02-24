@@ -156,7 +156,7 @@ class LightnCandy {
         if (isset($options['helpers']) && is_array($options['helpers'])) {
             foreach ($options['helpers'] as $name => $func) {
                 if (is_callable($func)) {
-                    $context['helpers'][is_int($name) ? $func : $name] = $name;
+                    $context['helpers'][is_int($name) ? $func : $name] = $func;
                 } else {
                     if (!$context['flags']['exhlp']) {
                         $context['error'][] = "Can not find custom helper function defination $func() !";
@@ -203,6 +203,7 @@ class LightnCandy {
         $flagJSObj = self::_on($context['flags']['jsobj']);
 
         $libstr = self::exportLCRun($context);
+        $helpers = var_export($context['helpers'], true);
 
         // return generated PHP code string
         return "<?php return function (\$in) {
@@ -211,6 +212,7 @@ class LightnCandy {
             'jstrue' => $flagJStrue,
             'jsobj' => $flagJSObj,
         ),
+        'helpers' => $helpers,
         'scopes' => Array(\$in),
         'path' => Array(),
 $libstr
@@ -1184,13 +1186,14 @@ class LCRun {
      * @return string The rendered string of the token
      */
     public static function ch($vars, $op, &$cx, $in) {
+        $args = Array();
         $ch = array_shift($vars);
-        $func = self::$op;
-        $args = array_map(function ($v) use (&$cx, $in, $func) {return $func($v, $cx, $in);}, $vars);
-print "Custom Helpers! run $ch with args:";
-print_r($args);
-        //$v = self::val($var, $cx, $in);
-        return '';
+
+        foreach ($vars as $v) {
+            $args[] = self::$op($v, $cx, $in);
+        }
+print_r($cx);
+        return call_user_func_array($cx['helpers'][$ch], $args);
     }
 }
 ?>
