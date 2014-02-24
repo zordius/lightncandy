@@ -49,7 +49,7 @@ class LightnCandy {
     const FLAG_HANDLEBARSJS = 1016; // FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME
 
     const PARTIAL_SEARCH = '/\\{\\{>[ \\t]*(.+?)[ \\t]*\\}\\}/s';
-    const TOKEN_SEARCH = '/(\\{{2,3})(.+?)(\\}{2,3})/s';
+    const TOKEN_SEARCH = '/(\s*)(\\{{2,3})(~?)([\\^#\\/!]?)(.+?)(~?)(\\}{2,3})(\s*)/s';
     const VARNAME_SEARCH = '/(\\[[^\\]]+\\]|[^\\[\\]\\.]+)/';
 
     private static $lastContext;
@@ -624,11 +624,11 @@ $libstr
      * @param array $context current compile context
      */
     protected static function _tk(&$token, &$context) {
-        $args = Array($token[2]); // TODO: in future we should support 2 or more args and arguments parsing.
+        trim($token[4]);
+        $args = Array($token[4]); // TODO: in future we should support 2 or more args and arguments parsing.
 
-        trim($token[2]);
         return Array(
-            substr($token[2], 0, 1), substr($token[2], 1), ($token[1] === '{{{'), $args
+            ($token[1] === '{{{'), $args
         );
     }
 
@@ -639,23 +639,27 @@ $libstr
      * @param string $context current scaning context
      */
     protected static function scan($token, &$context) {
-        list($head, $act, $raw) = self::_tk($token, $context);
+        list($raw, $args) = self::_tk($token, $context);
+        list($beginsp, $begintag, $lspctl, $blockop, $intag, $rspctl, $endtag, $endsp) = $token;
 
-        if (count($token[1]) !== count($token[3])) {
-            $context['error'][] = "Bad token {$token[1]}{$token[2]}{$token[3]} ! Do you mean {{}} or {{{}}}?";
+        // {{ }}} or {{{ }} are invalid
+        if (count($begintag) !== count($endtag)) {
+            $context['error'][] = "Bad token $begintag$lspctl$blockop$intag$rspctl$endtag ! Do you mean {{}} or {{{}}}?";
             return;
         }
 
+        // {{{# }}} or {{{! }}} or {{{/ }}} or {{{^ }}} are invalid
         if ($raw) {
-            if (preg_match('/\\^|\\/|#/', $head)) {
-                $context['error'][] = "Bad token {$token[1]}{$token[2]}{$token[3]} ! Do you mean \{\{{$token[2]}\}\}?";
+            if ($blckop) {
+                $context['error'][] = "Bad token $begintag$lspctl$blockop$intag$rspctl$endtag ! Do you mean \{\{$lspctl$blockop$intag$rspctl}\}\}?";
                 return;
             }
         }
 
-        switch ($head) {
+        // Handle block operations: ^ / ! #
+        switch ($blockop) {
         case '^':
-            $context['stack'][] = $token[2];
+            $context['stack'][] = $intag;
             $context['level']++;
             return $context['usedFeature']['isec']++;
 
@@ -664,10 +668,13 @@ $libstr
             $context['level']--;
             return;
 
+        case '!':
+            return $context['usedFeature']['comment']++;
+
         case '#':
-            $context['stack'][] = $token[2];
+            $context['stack'][] = $intag;
             $context['level']++;
-            $acts = explode(' ', $act);
+            $acts = explode(' ', $intag);
             switch ($acts[0]) {
             case 'with':
                 if (isset($acts[1]) && !$context['flags']['with']) {
@@ -682,57 +689,62 @@ $libstr
                 return $context['usedFeature']['sec']++;
             }
 
-        case '!':
-            return $context['usedFeature']['comment']++;
-
         default:
-            $context['usedFeature'][$raw ? 'raw' : 'enc']++;
-            switch ($token[2]) {
-                case 'else':
-                    return $context['usedFeature']['else']++;
+        }
 
-                case 'this':
-                    if ($context['level'] == 0) {
-                        $context['usedFeature']['rootthis']++;
-                    }
-                    if (!$context['flags']['this']) {
-                        $context['error'][] = 'do not support {{this}}, you should do compile with LightnCandy::FLAG_THIS flag';
-                    }
-                    return $context['usedFeature']['this']++;
+        $context['usedFeature'][$raw ? 'raw' : 'enc']++;
 
-                case '.':
-                    if ($context['level'] == 0) {
-                        $context['usedFeature']['rootthis']++;
-                    }
-                    if (!$context['flags']['this']) {
-                        $context['error'][] = 'do not support {{.}}, you should do compile with LightnCandy::FLAG_THIS flag';
-                    }
-                    return $context['usedFeature']['dot']++;
+        // Handle else and this
+        switch ($intag) {
+            case 'else':
+                return $context['usedFeature']['else']++;
 
-                default:
-                    if ($context['flags']['advar']) {
-                            // foo]  Rule 1: no starting [ or [ not start from head
-                        if (preg_match('/^[^\\[\\.]+[\\]\\[]/', $token[2])
-                            // [bar  Rule 2: no ending ] or ] not in the end
-                            || preg_match('/[\\[\\]][^\\]\\.]+$/', $token[2])
-                            // ]bar. Rule 3: middle ] not before .
-                            || preg_match('/\\][^\\]\\[\\.]+\\./', $token[2])
-                            // .foo[ Rule 4: middle [ not after .
-                            || preg_match('/\\.[^\\]\\[\\.]+\\[/', preg_replace('/\\[[^\\]]+\\]/', '[XXX]', $token[2]))
-                           ) {
-                            $context['error'][] = "Wrong variable naming as '{$token[2]}' !" . (preg_match('/^[^\\[\\.]+[\\]\\[]/', $token[2]) ? 'Rule 1' : 'Rule 2');
-                        }
-                    }
-                    if (preg_match('/\\.\\.(\\/.+)*/', $token[2])) {
-                        if (!$context['flags']['parent']) {
-                            $context['error'][] = 'do not support {{../var}}, you should do compile with LightnCandy::FLAG_PARENT flag';
-                        }
-                        return $context['usedFeature']['parent']++;
-                    }
+            case 'this':
+                if ($context['level'] == 0) {
+                    $context['usedFeature']['rootthis']++;
+                }
+                if (!$context['flags']['this']) {
+                    $context['error'][] = 'do not support {{this}}, you should do compile with LightnCandy::FLAG_THIS flag';
+                }
+                return $context['usedFeature']['this']++;
+
+            case '.':
+                if ($context['level'] == 0) {
+                    $context['usedFeature']['rootthis']++;
+                }
+                if (!$context['flags']['this']) {
+                    $context['error'][] = 'do not support {{.}}, you should do compile with LightnCandy::FLAG_THIS flag';
+                }
+                return $context['usedFeature']['dot']++;
+        }
+
+        // Handle custom helpers
+
+        // Check for advanced variable
+        if ($context['flags']['advar']) {
+                // foo]  Rule 1: no starting [ or [ not start from head
+            if (preg_match('/^[^\\[\\.]+[\\]\\[]/', $intag)
+                // [bar  Rule 2: no ending ] or ] not in the end
+                || preg_match('/[\\[\\]][^\\]\\.]+$/', $intag)
+                // ]bar. Rule 3: middle ] not before .
+                || preg_match('/\\][^\\]\\[\\.]+\\./', $intag)
+                // .foo[ Rule 4: middle [ not after .
+                || preg_match('/\\.[^\\]\\[\\.]+\\[/', preg_replace('/\\[[^\\]]+\\]/', '[XXX]', $intag))
+            ) {
+                $context['error'][] = "Wrong variable naming as '$intag' !";
             }
-            if ($context['level'] == 0) {
-                $context['usedFeature']['rootvar']++;
+        }
+
+        // Check for parent context
+        if (preg_match('/\\.\\.(\\/.+)*/', $intag)) {
+            if (!$context['flags']['parent']) {
+                $context['error'][] = 'do not support {{../var}}, you should do compile with LightnCandy::FLAG_PARENT flag';
             }
+            return $context['usedFeature']['parent']++;
+        }
+
+        if ($context['level'] == 0) {
+            $context['usedFeature']['rootvar']++;
         }
     }
 
