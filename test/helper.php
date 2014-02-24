@@ -2,8 +2,8 @@
 require('src/lightncandy.inc');
 $template = <<<VAREND
 <ul>
- <li>1. {{heler1 name}}</li>
- <li>2. {{heler1 value}}</li>
+ <li>1. {{helper1 name}}</li>
+ <li>2. {{helper1 value}}</li>
  <li>3. {{myClass::helper2 name}}</li>
  <li>4. {{myClass::helper2 value}}</li>
  <li>5. {{he name}}</li>
