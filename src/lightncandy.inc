@@ -624,9 +624,11 @@ $libstr
      * @param string $var current variable name
      */
     protected static function _tk(&$token, &$context) {
+        $args = Array($token[2]);
+
         trim($token[2]);
         return Array(
-            substr($token[2], 0, 1), $act, ($token[1] === '{{{')
+            substr($token[2], 0, 1), $args[0], ($token[1] === '{{{'), $args
         );
     }
 
