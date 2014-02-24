@@ -620,11 +620,11 @@ $libstr
     /**
      * Internal method used by scan() and compile(). Parse the token and return parsed result.
      *
+     * @param array $token preg_match results
      * @param array $context current compile context
-     * @param string $var current variable name
      */
     protected static function _tk(&$token, &$context) {
-        $args = Array($token[2]);
+        $args = Array($token[2]); // TODO: in future we should support 2 or more args and arguments parsing.
 
         trim($token[2]);
         return Array(
