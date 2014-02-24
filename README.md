@@ -173,6 +173,16 @@ LightnCandy::compile($template, Array(
 ));
 ```
 
+The input parameters are process by LightnCandy automatically, you do not need to worry about variable name processing or current context. You can also use double quoted string as input, for example:
+
+```
+{{helper name}}           // This send processed {{name}} into the helper
+{{helper ../name}}        // This send processed {{../name}} into the helper
+{{{helper "Test"}}}       // This send the string "Test" into the helper
+{{helper "Test"}}         // This send html encoded string "Test" into the helper
+{{helper "Test" ../name}} // This send html encoded string "Test" and processed {{../name}} into the helper
+```
+
 Unsupported Feature (so far)
 ----------------------------
 
