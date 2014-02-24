@@ -38,15 +38,16 @@ class LightnCandy {
     const FLAG_PARENT = 128;
     const FLAG_JSQUOTE = 256;
     const FLAG_ADVARNAME = 512;
+    const FLAG_SPACECTL = 1024;
 
     // Custom helper options
-    const FLAG_EXTHELPER = 1024;
+    const FLAG_EXTHELPER = 2048;
 
     // PHP performance flags
-    const FLAG_ECHO = 2048;
+    const FLAG_ECHO = 4096;
 
-    const FLAG_BESTPERFORMANCE = 2048; // FLAG_ECHO
-    const FLAG_HANDLEBARSJS = 1016; // FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME
+    const FLAG_BESTPERFORMANCE = 4096; // FLAG_ECHO
+    const FLAG_HANDLEBARSJS = 2040; // FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME + FLAG_SPACECTL
 
     const PARTIAL_SEARCH = '/\\{\\{>[ \\t]*(.+?)[ \\t]*\\}\\}/s';
     const TOKEN_SEARCH = '/(\s*)(\\{{2,3})(~?)([\\^#\\/!]?)(.+?)(~?)(\\}{2,3})(\s*)/s';
