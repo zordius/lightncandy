@@ -140,7 +140,7 @@ Custom Helper
 
 Custom helper can help you deal with common template tasks, for example: provide URL and text then generate an link. To know more about custom helper, you can read original handlebars.js document here: http://handlebarsjs.com/expressions.html .
 
-LightnCandy supports custom helper when compile time. When `compile()`, LightnCandy will lookup helpers from custom helper table. You can regist custom helpers with `helpers` option.
+LightnCandy supports custom helper when compile time. When `compile()`, LightnCandy will lookup helpers from custom helper table. You can register custom helpers with `helpers` option.
 
 for exmample:
 ```php
@@ -173,7 +173,7 @@ LightnCandy::compile($template, Array(
 ));
 ```
 
-The input parameters are process by LightnCandy automatically, you do not need to worry about variable name processing or current context. You can also use double quoted string as input, for example:
+The input parameters are processed by LightnCandy automatically, you do not need to worry about variable name processing or current context. You can also use double quoted string as input, for example:
 
 ```
 {{helper name}}           // This send processed {{name}} into the helper
