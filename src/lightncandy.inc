@@ -189,7 +189,8 @@ class LightnCandy {
 
         // Do PHP code and json schema generation.
         $code = preg_replace_callback(self::TOKEN_SEARCH, function ($matches) use (&$context) {
-            return '\'' . LightnCandy::tokens($matches, $context) . '\'';
+            $tmpl = LightnCandy::tokens($matches, $context);
+            return "{$matches[1]}'$tmpl'{$matches[8]}";
         }, addcslashes($template, "'"));
 
         if (self::_error($context)) {
@@ -628,7 +629,7 @@ $libstr
         $args = Array($token[4]); // TODO: in future we should support 2 or more args and arguments parsing.
 
         return Array(
-            ($token[1] === '{{{'), $args
+            ($token[2] === '{{{'), $args
         );
     }
 
@@ -640,7 +641,7 @@ $libstr
      */
     protected static function scan($token, &$context) {
         list($raw, $args) = self::_tk($token, $context);
-        list($beginsp, $begintag, $lspctl, $blockop, $intag, $rspctl, $endtag, $endsp) = $token;
+        list($all, $beginsp, $begintag, $lspctl, $blockop, $intag, $rspctl, $endtag, $endsp) = $token;
 
         // {{ }}} or {{{ }} are invalid
         if (count($begintag) !== count($endtag)) {
@@ -754,22 +755,33 @@ $libstr
      * @param string $token detected handlebars {{ }} token
      * @param string $context current scaning context
      */
-    public static function tokens($token, &$context) {
-        list($head, $act, $raw) = self::_tk($token, $context);
+    public static function tokens(&$token, &$context) {
+        list($raw, $args) = self::_tk($token, $context);
+        list($all, $beginsp, $begintag, $lspctl, $blockop, $intag, $rspctl, $endtag, $endsp) = $token;
 
-        switch ($head) {
+        // Handle space control
+        if ($lspctl) {
+            $token[1] = '';
+        }
+
+        if ($rspctl) {
+            $token[8] = '';
+        }
+
+        // Handle block operations: ^ / ! #
+        switch ($blockop) {
         case '^':
-            $context['stack'][] = $act;
+            $context['stack'][] = $intag;
             $context['stack'][] = '^';
             if ($context['useVar']) {
-                $v = $context['useVar'] . "['{$act}']";
+                $v = $context['useVar'] . "['{$intag}']";
                 return "{$context['ops']['cnd_start']}(is_null($v) && ($v !== false)){$context['ops']['cnd_then']}"; 
             } else {
-                return "{$context['ops']['cnd_start']}(" . self::_fn($context, 'isec') . "('$act', \$cx, \$in)){$context['ops']['cnd_then']}";
+                return "{$context['ops']['cnd_start']}(" . self::_fn($context, 'isec') . "('$intag', \$cx, \$in)){$context['ops']['cnd_then']}";
             }
         case '/':
             $each = false;
-            switch ($act) {
+            switch ($intag) {
             case 'if':
             case 'unless':
                 $pop = array_pop($context['stack']);
@@ -788,15 +800,15 @@ $libstr
             case 'each':
                 $each = true;
             default:
-                self::_vx($act, $context);
+                self::_vx($intag, $context);
                 array_pop($context['vars']);
                 $pop = array_pop($context['stack']);
                 switch($pop) {
                 case '#':
                 case '^':
                     $pop2 = array_pop($context['stack']);
-                    if (!$each && ($pop2 !== $act)) {
-                        $context['error'][] = "Unexpect token {$token[2]} ! Previous token $pop$pop2 is not closed";
+                    if (!$each && ($pop2 !== $intag)) {
+                        $context['error'][] = "Unexpect token $begintag$lspctl$blockop$intag$rspctl$endtag ! Previous token $pop$pop2 is not closed";
                         return;
                     }
                     if ($pop == '^') {
@@ -804,13 +816,13 @@ $libstr
                     }
                     return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
                 default:
-                    $context['error'][] = "Unexpect token: {$token[2]} !";
+                    $context['error'][] = "Unexpect token: $begintag$lspctl$blockop$intag$rspctl$endtag !";
                     return;
                 }
             }
         case '#':
             $each = 'false';
-            $acts = explode(' ', $act);
+            $acts = explode(' ', $intag);
             switch ($acts[0]) {
             case 'if':
                 $context['stack'][] = 'if';
@@ -827,7 +839,7 @@ $libstr
             case 'each':
                 $each = 'true';
             case 'with':
-                $act = $acts[1];
+                $intag = $acts[1];
             default:
                 if (($acts[0] === 'with') && $context['flags']['with']) {
                     self::_vx($acts[1], $context);
@@ -835,33 +847,36 @@ $libstr
                     $context['stack'][] = 'with';
                     return $context['ops']['seperator'] . self::_fn($context, 'wi') . "('{$acts[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
                 }
-                self::_vx($act, $context);
-                $context['vars'][] = self::_vs($act);
+                self::_vx($intag, $context);
+                $context['vars'][] = self::_vs($intag);
                 self::_jsp($context);
-                $context['stack'][] = $act;
+                $context['stack'][] = $intag;
                 $context['stack'][] = '#';
-                return $context['ops']['seperator'] . self::_fn($context, 'sec') . "('$act', \$cx, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
+                return $context['ops']['seperator'] . self::_fn($context, 'sec') . "('$intag', \$cx, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
             }
         case '!':
             return $context['ops']['seperator'];
-        default:
-            self::_vx($token[2], $context);
-            if ($token[2] ==='else') {
-                $context['stack'][] = ':';
-                return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}" : "{$context['ops']['cnd_else']}";
-            }
-            self::_jsv($context, $token[2]);
-            $fn = $raw ? 'raw' : $context['ops']['enc'];
-            if ($context['useVar']) {
-                $v = $context['useVar'] . self::_vn($token[2], $context['flags']['advar']);
-                if ($context['flags']['jstrue']) {
-                    return $raw ? "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}$v{$context['ops']['cnd_end']}" : "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}htmlentities($v, ENT_QUOTES){$context['ops']['cnd_end']}";
-                } else {
-                    return $raw ? "{$context['ops']['seperator']}$v{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlentities($v, ENT_QUOTES){$context['ops']['seperator']}";
-                }
+        }
+
+        // Handle else
+        self::_vx($intag, $context);
+        if ($intag ==='else') {
+            $context['stack'][] = ':';
+            return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}" : "{$context['ops']['cnd_else']}";
+        }
+
+        // Handle variable
+        self::_jsv($context, $intag);
+        $fn = $raw ? 'raw' : $context['ops']['enc'];
+        if ($context['useVar']) {
+            $v = $context['useVar'] . self::_vn($intag, $context['flags']['advar']);
+            if ($context['flags']['jstrue']) {
+                return $raw ? "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}$v{$context['ops']['cnd_end']}" : "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}htmlentities($v, ENT_QUOTES){$context['ops']['cnd_end']}";
             } else {
-                return $context['ops']['seperator'] . self::_fn($context, $fn) . "('{$token[2]}', \$cx, \$in){$context['ops']['seperator']}";
+                return $raw ? "{$context['ops']['seperator']}$v{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlentities($v, ENT_QUOTES){$context['ops']['seperator']}";
             }
+        } else {
+            return $context['ops']['seperator'] . self::_fn($context, $fn) . "('$intag', \$cx, \$in){$context['ops']['seperator']}";
         }
     }
 }
