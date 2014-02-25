@@ -8,6 +8,10 @@ v0.9 current trunk
    * 92b3cf58af report more than 1 error when compile()
    * 93cc121bcf test for wrong variable name format in test/error.php
    * 41c1b431b4 support advanced variable naming {{foo.[bar].10}} now
+   * 15ce1a00a8 add FLAG_EXTHELPER option
+   * f51337bde2 support space control {{~sometag}} or {{sometag~}}
+   * fe3d67802e add FLAG_SPACECTL option
+   * 920fbb3039 support custom helper
 
 v0.8 https://github.com/zordius/lightncandy/tree/v0.8
    * align with handlebars.js 1.0.12
