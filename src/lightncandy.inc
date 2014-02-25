@@ -673,7 +673,7 @@ $libstr
         preg_match_all('/(\s*)([^\s]+)/', $token[5], $matched);
 
         // Parse arguments and deal with "..." or [...]
-        if (is_array($matched)) {
+        if (is_array($matched) && $context['flags']['advar']) {
             $prev = '';
             $expect = 0;
             foreach ($matched[2] as $index => $t) {
@@ -702,6 +702,8 @@ $libstr
                 }
                 $acts[] = $t;
             }
+        } else {
+            $acts = explode(' ', $token[5]);
         }
 
         // Check for advanced variable.
