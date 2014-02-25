@@ -1207,10 +1207,11 @@ class LCRun {
     /**
      * LightnCandy runtime method for custom helpers.
      *
-     * @param array $vars variable names for helpers. $vars[0] will be the callback function
+     * @param string $ch the name of custom helper to be executed
+     * @param array $vars variable names for helpers
+     * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
      * @param array $cx render time context
      * @param array $in input data with current scope
-     * @param function $cb callback function to render child context
      *
      * @return string The rendered string of the token
      */
