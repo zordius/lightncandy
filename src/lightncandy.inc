@@ -671,6 +671,24 @@ $libstr
         trim($token[5]);
         $acts = explode(' ', $token[5]); // TODO: in future we should support 2 or more args and arguments parsing.
                                          // Now can not handle [test 123] or "abc def" correctly
+
+        // Check for advanced variable.
+        foreach ($acts as $act) {
+            if ($context['flags']['advar']) {
+                    // foo]  Rule 1: no starting [ or [ not start from head
+                if (preg_match('/^[^\\[\\.]+[\\]\\[]/', $act)
+                    // [bar  Rule 2: no ending ] or ] not in the end
+                    || preg_match('/[\\[\\]][^\\]\\.]+$/', $act)
+                    // ]bar. Rule 3: middle ] not before .
+                    || preg_match('/\\][^\\]\\[\\.]+\\./', $act)
+                    // .foo[ Rule 4: middle [ not after .
+                    || preg_match('/\\.[^\\]\\[\\.]+\\[/', preg_replace('/\\[[^\\]]+\\]/', '[XXX]', $act))
+                ) {
+                    $context['error'][] = "Wrong variable naming as '$act' !";
+                }
+            }
+        }
+
         return Array(
             ($token[2] === '{{{'), $acts
         );
@@ -764,21 +782,6 @@ $libstr
         // Handle custom helpers.
         if (isset($context['helpers'][$acts[0]])) {
             return $context['usedFeature']['helper']++;
-        }
-
-        // Check for advanced variable.
-        if ($context['flags']['advar']) {
-                // foo]  Rule 1: no starting [ or [ not start from head
-            if (preg_match('/^[^\\[\\.]+[\\]\\[]/', $intag)
-                // [bar  Rule 2: no ending ] or ] not in the end
-                || preg_match('/[\\[\\]][^\\]\\.]+$/', $intag)
-                // ]bar. Rule 3: middle ] not before .
-                || preg_match('/\\][^\\]\\[\\.]+\\./', $intag)
-                // .foo[ Rule 4: middle [ not after .
-                || preg_match('/\\.[^\\]\\[\\.]+\\[/', preg_replace('/\\[[^\\]]+\\]/', '[XXX]', $intag))
-            ) {
-                $context['error'][] = "Wrong variable naming as '$intag' !";
-            }
         }
 
         // Check for parent context.
