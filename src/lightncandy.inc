@@ -593,13 +593,14 @@ $libstr
      * Internal method used by compile(). Get argument names string, Ex: "'a','b','c'"
      *
      * @param array $list an array of arguments. ex: ['a', 'b', 'c', ...]
+     * @param array $context Current compile content.
      *
      * @return string PHP arguments string
      */
-    protected static function _arg($list) {
+    protected static function _arg($list, $context) {
         $ret = Array();
         foreach ($list as $v) {
-            self::_vx($v);
+            self::_vx($v, $context);
             $ret[] = "'$v'";
         }
         return implode(',', $ret);
@@ -945,30 +946,30 @@ $libstr
         }
 
         // Handle custom helpers.
+        self::_vx($acts[0], $context);
         $fn = $raw ? 'raw' : $context['ops']['enc'];
         if (isset($context['helpers'][$acts[0]])) {
             $ch = array_shift($acts);
-            return $context['ops']['seperator'] . self::_fn($context, 'ch') . "('$ch', Array(" . self::_arg($acts) . "), '$fn', \$cx, \$in){$context['ops']['seperator']}";
+            return $context['ops']['seperator'] . self::_fn($context, 'ch') . "('$ch', Array(" . self::_arg($acts, $context) . "), '$fn', \$cx, \$in){$context['ops']['seperator']}";
         }
 
         // Handle else.
-        self::_vx($intag, $context);
-        if ($intag ==='else') {
+        if ($acts[0] ==='else') {
             $context['stack'][] = ':';
             return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}" : "{$context['ops']['cnd_else']}";
         }
 
         // Handle variables.
-        self::_jsv($context, $intag);
+        self::_jsv($context, $acts[0]); // TODO: more variables should be placed in json schema in custom helper calls
         if ($context['useVar']) {
-            $v = $context['useVar'] . self::_vn($intag, $context['flags']['advar']);
+            $v = $context['useVar'] . self::_vn($act[0], $context['flags']['advar']);
             if ($context['flags']['jstrue']) {
                 return $raw ? "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}$v{$context['ops']['cnd_end']}" : "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}htmlentities($v, ENT_QUOTES){$context['ops']['cnd_end']}";
             } else {
                 return $raw ? "{$context['ops']['seperator']}$v{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlentities($v, ENT_QUOTES){$context['ops']['seperator']}";
             }
         } else {
-            return $context['ops']['seperator'] . self::_fn($context, $fn) . "('$intag', \$cx, \$in){$context['ops']['seperator']}";
+            return $context['ops']['seperator'] . self::_fn($context, $fn) . "('{$acts[0]}', \$cx, \$in){$context['ops']['seperator']}";
         }
     }
 }
@@ -1065,6 +1066,9 @@ class LCRun {
         }
         if ($var === '@key') {
             return $cx['sp_vars']['key'];
+        }
+        if (preg_match('/^"(.*)"$/', $var, $matched)) {
+            return $matched[1];
         }
 
         // Tract to parent. Do not support foo/../bar style variable name
@@ -1259,10 +1263,18 @@ class LCRun {
     public static function ch($ch, $vars, $op, &$cx, $in) {
         $args = Array();
         foreach ($vars as $v) {
-            $args[] = self::$op($v, $cx, $in);
+            $args[] = self::raw($v, $cx, $in);
         }
 
-        return call_user_func_array($cx['helpers'][$ch], $args);
+        $r = call_user_func_array($cx['helpers'][$ch], $args);
+        switch ($op) {
+            case 'enc': 
+                return htmlentities($r, ENT_QUOTES);
+            case 'encq':
+                return preg_replace('/&#039;/', '&#x27;', htmlentities($r, ENT_QUOTES));
+            default:
+                return $r;
+        }
     }
 }
 ?>
