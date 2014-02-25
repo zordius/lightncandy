@@ -1,5 +1,5 @@
 #!/bin/sh
-git checkout gh-pages
+git checkout -b gh-pages
 rm *
 cp -r build/result/docs/* .
 rm -rf build
