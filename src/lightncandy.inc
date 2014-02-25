@@ -38,21 +38,25 @@ class LightnCandy {
     const FLAG_PARENT = 128;
     const FLAG_JSQUOTE = 256;
     const FLAG_ADVARNAME = 512;
+    const FLAG_SPACECTL = 1024;
+
+    // Custom helper options
+    const FLAG_EXTHELPER = 2048;
 
     // PHP performance flags
-    const FLAG_ECHO = 1024;
+    const FLAG_ECHO = 4096;
 
-    const FLAG_BESTPERFORMANCE = 1024; // FLAG_ECHO
-    const FLAG_HANDLEBARSJS = 1016; // FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME
+    const FLAG_BESTPERFORMANCE = 4096; // FLAG_ECHO
+    const FLAG_HANDLEBARSJS = 2040; // FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME + FLAG_SPACECTL
 
     const PARTIAL_SEARCH = '/\\{\\{>[ \\t]*(.+?)[ \\t]*\\}\\}/s';
-    const TOKEN_SEARCH = '/(\\{{2,3})(.+?)(\\}{2,3})/s';
+    const TOKEN_SEARCH = '/(\s*)(\\{{2,3})(~?)([\\^#\\/!]?)(.+?)(~?)(\\}{2,3})(\s*)/s';
     const VARNAME_SEARCH = '/(\\[[^\\]]+\\]|[^\\[\\]\\.]+)/';
 
     private static $lastContext;
 
     /**
-     * Compile handlebars template into PHP code
+     * Compile handlebars template into PHP code.
      *
      * @param string $template handlebars template string
      * @param array $options LightnCandy compile time and run time options, default is Array('flags' => LightnCandy::FLAG_BESTPERFORMANCE)
@@ -60,18 +64,6 @@ class LightnCandy {
      * @return string Compiled PHP code when successed. If error happened and compile failed, return false.
      */
     public static function compile($template, $options = 0) {
-        return self::compiledCode($template, $options);
-    }
-
-    /**
-     * Internal method used by compile(). Get compiled code from a template string
-     *
-     * @param string $template handlebars template string
-     * @param array $options LightnCandy compile time and run time options, default is Array('flags' => LightnCandy::FLAG_BESTPERFORMANCE)
-     *
-     * @return string Compiled PHP code when successed. If error happened and compile failed, return false.
-     */
-    protected static function compiledCode($template, $options) {
         $flags = isset($options['flags']) ? $options['flags'] : self::FLAG_BESTPERFORMANCE;
 
         $context = Array(
@@ -87,6 +79,7 @@ class LightnCandy {
                 'parent' => $flags & self::FLAG_PARENT,
                 'echo' => $flags & self::FLAG_ECHO,
                 'advar' => $flags & self::FLAG_ADVARNAME,
+                'exhlp' => $flags & self::FLAG_EXTHELPER,
             ),
             'level' => 0,
             'stack' => Array(),
@@ -118,7 +111,9 @@ class LightnCandy {
                 'dot' => 0,
                 'comment' => 0,
                 'partial' => 0,
-            )
+                'helper' => 0,
+            ),
+            'helpers' => Array(),
         );
 
         $context['ops'] = $context['flags']['echo'] ? Array(
@@ -145,7 +140,20 @@ class LightnCandy {
 
         $context['ops']['enc'] = $context['flags']['jsquote'] ? 'encq' : 'enc';
 
-        // Scan for partial and replace partial with template
+        // Generate custom helpers table.
+        if (isset($options['helpers']) && is_array($options['helpers'])) {
+            foreach ($options['helpers'] as $name => $func) {
+                if (is_callable($func)) {
+                    $context['helpers'][is_int($name) ? $func : $name] = $func;
+                } else {
+                    if (!$context['flags']['exhlp']) {
+                        $context['error'][] = "Can not find custom helper function defination $func() !";
+                    }
+                }
+            }
+        }
+
+        // Scan for partial and replace partial with template.
         $template = LightnCandy::expandPartial($template, $context);
 
         if (self::_error($context)) {
@@ -171,7 +179,8 @@ class LightnCandy {
 
         // Do PHP code and json schema generation.
         $code = preg_replace_callback(self::TOKEN_SEARCH, function ($matches) use (&$context) {
-            return '\'' . LightnCandy::tokens($matches, $context) . '\'';
+            $tmpl = LightnCandy::tokens($matches, $context);
+            return "{$matches[1]}'$tmpl'{$matches[8]}";
         }, addcslashes($template, "'"));
 
         if (self::_error($context)) {
@@ -182,14 +191,16 @@ class LightnCandy {
         $flagJSObj = self::_on($context['flags']['jsobj']);
 
         $libstr = self::exportLCRun($context);
+        $helpers = self::exportHelper($context);
 
-        // return generated PHP code string
+        // Return generated PHP code string.
         return "<?php return function (\$in) {
     \$cx = Array(
         'flags' => Array(
             'jstrue' => $flagJStrue,
             'jsobj' => $flagJSObj,
         ),
+        'helpers' => $helpers,
         'scopes' => Array(\$in),
         'path' => Array(),
 $libstr
@@ -200,7 +211,7 @@ $libstr
     }
 
     /**
-     * expand partial string recursively
+     * Expand partial string recursively.
      *
      * @param string $template template string
      *
@@ -214,7 +225,7 @@ $libstr
     }
 
     /**
-     * read partial file content as string
+     * Read partial file content as string.
      *
      * @param string $name partial file name
      * @param array $context Current context of compiler progress.
@@ -236,7 +247,7 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). check options and handle fileext 
+     * Internal method used by compile(). Check options and handle fileext.
      *
      * @param string $options current compile option
      *
@@ -248,9 +259,9 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). check options and handle basedir
+     * Internal method used by compile(). Check options and handle basedir.
      *
-     * @param string $options current compile option
+     * @param array $options current compile option
      *
      * @return array base directories
      */
@@ -272,7 +283,47 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). export required standalone functions.
+     * Internal method used by compile(). Get PHP code from a closure of function as string.
+     *
+     * @param object $closure Closure object
+     */
+    protected static function getPHPCode($closure) {
+        if (is_string($closure) && preg_match('/(.+)::(.+)/', $closure, $matched)) {
+            $ref = new ReflectionMethod($matched[1], $matched[2]);
+        } else {
+            $ref = new ReflectionFunction($closure);
+        }
+        $fname = $ref->getFileName();
+        $lines = file_get_contents($fname);
+        $file = new SplFileObject($fname);
+
+        $file->seek($ref->getStartLine() - 2);
+        $spos = $file->ftell();
+        $file->seek($ref->getEndLine() - 1);
+        $epos = $file->ftell();
+        return preg_replace('/^.*?function\s.*?\\((.+?)\\}[,\\s]*$/s', 'function($1}', substr($lines, $spos, $epos - $spos));
+    }
+
+    /**
+     * Internal method used by compile(). Export required custom helper functions.
+     *
+     * @param string $context current scaning context
+     */
+    protected static function exportHelper($context) {
+        $ret = '';
+        foreach ($context['helpers'] as $name => $func) {
+            if ((is_object($func) && ($func instanceof Closure)) || ($context['flags']['exhlp'] == 0)) {
+                $ret .= ("            '$name' => " . self::getPHPCode($func) . ",\n");
+                continue;
+            }
+            $ret .= "            '$name' => '$func',\n";
+        }
+
+        return "Array($ret)";
+    }
+
+    /**
+     * Internal method used by compile(). Export required standalone functions.
      *
      * @param string $context current scaning context
      */
@@ -299,7 +350,7 @@ $libstr
     }
 
     /**
-     * Internal method used by compile().
+     * Internal method used by compile(). Handle exists error and return error status.
      *
      * @param array $context Current context of compiler progress.
      *
@@ -326,7 +377,7 @@ $libstr
     }
 
     /**
-     * Internal method used by compile().
+     * Internal method used by compile(). Return 'true' or 'false' string.
      *
      * @param mixed $v value
      *
@@ -337,7 +388,7 @@ $libstr
     }
 
     /**
-     * get last compiler context.
+     * Get last compiler context.
      *
      * @return array Context data
      */
@@ -346,7 +397,7 @@ $libstr
     }
 
     /**
-     * get JsonSchema of last compiled handlebars template.
+     * Get JsonSchema of last compiled handlebars template.
      *
      * @return array JsonSchema data
      */
@@ -355,7 +406,7 @@ $libstr
     }
 
     /**
-     * get JsonSchema of last compiled handlebars template as pretty printed string.
+     * Get JsonSchema of last compiled handlebars template as pretty printed string.
      *
      * @return string JsonSchema string
      */
@@ -385,7 +436,7 @@ $libstr
     }
 
     /**
-     * include a string as php codes. this method requires php setting allow_url_include=1 and allow_url_fopen=1
+     * Get a working render function by a string of PHP code. This method may requires php setting allow_url_include=1 and allow_url_fopen=1 , or access right to tmp file system.
      *
      * @param string $php php codes
      * @param string $tmp_dir optional, change temp directory for php include file saved by prepare() when can not include php code with data:// format.
@@ -414,7 +465,7 @@ $libstr
     }
 
     /**
-     * include a compiled and saved template php file, then render with input data.
+     * Use a saved PHP file to render the input data.
      *
      * @param string $compiled compiled template php file name
      *
@@ -438,7 +489,7 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Get variable names translated array, Ex: a.b.c => ["'a'", "'b'", "'c'"]
+     * Internal method used by _qscope(). Get variable names translated string, Ex: "['a']['b']['c']"
      *
      * @param array $scopes an array of variable names with single quote
      *
@@ -449,11 +500,11 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Get variable names translated string, Ex: a.b.c => "['a']['b']['c']"
+     * Internal method used by _vn(). Get variable names translated string, Ex: "['a']['b']['c']"
      *
-     * @param array $scopes an array of variable names. ex: ['a', 'b', 'c', ...]
+     * @param array $list an array of variable names. ex: ['a', 'b', 'c', ...]
      *
-     * @return string Translated variable name as input array notation.
+     * @return string PHP array names string
      */
     protected static function _qscope($list) {
         return self::_scope(array_map(function ($v) {return "'$v'";}, $list));
@@ -524,8 +575,9 @@ $libstr
             $v = preg_replace('/([^\\.\\/])\\./', '$1]', $v);
         }
     }
+
     /**
-     * Internal method used by compile().
+     * Internal method used by compile(). Get variable name array, Ex: 'a.b.c' will return ['a', 'b', 'c']
      *
      * @param string $v variable name.
      *
@@ -536,6 +588,17 @@ $libstr
             return Array('.');
         }
         return ($v !== '') ? explode('.', $v) : null;
+    }
+
+    /**
+     * Internal method used by compile(). Get argument names string, Ex: "'a','b','c'"
+     *
+     * @param array $list an array of arguments. ex: ['a', 'b', 'c', ...]
+     *
+     * @return string PHP arguments string
+     */
+    protected static function _arg($list) {
+        return implode(',', array_map(function ($v) {return "'$v'";}, $list));
     }
 
     /**
@@ -600,31 +663,48 @@ $libstr
     }
 
     /**
+     * Internal method used by scan() and compile(). Parse the token and return parsed result.
+     *
+     * @param array $token preg_match results
+     * @param array $context current compile context
+     */
+    protected static function _tk(&$token, &$context) {
+        trim($token[5]);
+        $acts = explode(' ', $token[5]); // TODO: in future we should support 2 or more args and arguments parsing.
+                                         // Now can not handle [test 123] or "abc def" correctly
+        return Array(
+            ($token[2] === '{{{'), $acts
+        );
+    }
+
+    /**
      * Internal method used by compile(). Collect handlebars usage information, detect template error.
      *
      * @param string $token detected handlebars {{ }} token
      * @param string $context current scaning context
      */
     protected static function scan($token, &$context) {
-        $head = substr($token[2], 0, 1);
-        $act = substr($token[2], 1);
-        $raw = ($token[1] === '{{{');
+        list($raw, $acts) = self::_tk($token, $context);
+        list($all, $beginsp, $begintag, $lspctl, $blockop, $intag, $rspctl, $endtag, $endsp) = $token;
 
-        if (count($token[1]) !== count($token[3])) {
-            $context['error'][] = "Bad token {$token[1]}{$token[2]}{$token[3]} ! Do you mean {{}} or {{{}}}?";
+        // {{ }}} or {{{ }} are invalid
+        if (strlen($begintag) !== strlen($endtag)) {
+            $context['error'][] = "Bad token $begintag$lspctl$blockop$intag$rspctl$endtag ! Do you mean {{ }} or {{{ }}}?";
             return;
         }
 
+        // {{{# }}} or {{{! }}} or {{{/ }}} or {{{^ }}} are invalid.
         if ($raw) {
-            if (preg_match('/\\^|\\/|#/', $head)) {
-                $context['error'][] = "Bad token {$token[1]}{$token[2]}{$token[3]} ! Do you mean \{\{{$token[2]}\}\}?";
+            if ($blockop) {
+                $context['error'][] = "Bad token $begintag$lspctl$blockop$intag$rspctl$endtag ! Do you mean {{" . "$lspctl$blockop$intag$rspctl}}?";
                 return;
             }
         }
 
-        switch ($head) {
+        // Handle block operations: ^ / ! # .
+        switch ($blockop) {
         case '^':
-            $context['stack'][] = $token[2];
+            $context['stack'][] = $intag;
             $context['level']++;
             return $context['usedFeature']['isec']++;
 
@@ -633,10 +713,12 @@ $libstr
             $context['level']--;
             return;
 
+        case '!':
+            return $context['usedFeature']['comment']++;
+
         case '#':
-            $context['stack'][] = $token[2];
+            $context['stack'][] = $intag;
             $context['level']++;
-            $acts = explode(' ', $act);
             switch ($acts[0]) {
             case 'with':
                 if (isset($acts[1]) && !$context['flags']['with']) {
@@ -651,58 +733,65 @@ $libstr
                 return $context['usedFeature']['sec']++;
             }
 
-        case '!':
-            return $context['usedFeature']['comment']++;
-
         default:
-            $context['usedFeature'][$raw ? 'raw' : 'enc']++;
-            $token[2] = trim($token[2]);
-            switch ($token[2]) {
-                case 'else':
-                    return $context['usedFeature']['else']++;
+        }
 
-                case 'this':
-                    if ($context['level'] == 0) {
-                        $context['usedFeature']['rootthis']++;
-                    }
-                    if (!$context['flags']['this']) {
-                        $context['error'][] = 'do not support {{this}}, you should do compile with LightnCandy::FLAG_THIS flag';
-                    }
-                    return $context['usedFeature']['this']++;
+        $context['usedFeature'][$raw ? 'raw' : 'enc']++;
 
-                case '.':
-                    if ($context['level'] == 0) {
-                        $context['usedFeature']['rootthis']++;
-                    }
-                    if (!$context['flags']['this']) {
-                        $context['error'][] = 'do not support {{.}}, you should do compile with LightnCandy::FLAG_THIS flag';
-                    }
-                    return $context['usedFeature']['dot']++;
+        // Handle else and this.
+        switch ($intag) {
+            case 'else':
+                return $context['usedFeature']['else']++;
 
-                default:
-                    if ($context['flags']['advar']) {
-                            // foo]  Rule 1: no starting [ or [ not start from head
-                        if (preg_match('/^[^\\[\\.]+[\\]\\[]/', $token[2])
-                            // [bar  Rule 2: no ending ] or ] not in the end
-                            || preg_match('/[\\[\\]][^\\]\\.]+$/', $token[2])
-                            // ]bar. Rule 3: middle ] not before .
-                            || preg_match('/\\][^\\]\\[\\.]+\\./', $token[2])
-                            // .foo[ Rule 4: middle [ not after .
-                            || preg_match('/\\.[^\\]\\[\\.]+\\[/', preg_replace('/\\[[^\\]]+\\]/', '[XXX]', $token[2]))
-                           ) {
-                            $context['error'][] = "Wrong variable naming as '{$token[2]}' !" . (preg_match('/^[^\\[\\.]+[\\]\\[]/', $token[2]) ? 'Rule 1' : 'Rule 2');
-                        }
-                    }
-                    if (preg_match('/\\.\\.(\\/.+)*/', $token[2])) {
-                        if (!$context['flags']['parent']) {
-                            $context['error'][] = 'do not support {{../var}}, you should do compile with LightnCandy::FLAG_PARENT flag';
-                        }
-                        return $context['usedFeature']['parent']++;
-                    }
+            case 'this':
+                if ($context['level'] == 0) {
+                    $context['usedFeature']['rootthis']++;
+                }
+                if (!$context['flags']['this']) {
+                    $context['error'][] = 'do not support {{this}}, you should do compile with LightnCandy::FLAG_THIS flag';
+                }
+                return $context['usedFeature']['this']++;
+
+            case '.':
+                if ($context['level'] == 0) {
+                    $context['usedFeature']['rootthis']++;
+                }
+                if (!$context['flags']['this']) {
+                    $context['error'][] = 'do not support {{.}}, you should do compile with LightnCandy::FLAG_THIS flag';
+                }
+                return $context['usedFeature']['dot']++;
+        }
+
+        // Handle custom helpers.
+        if (isset($context['helpers'][$acts[0]])) {
+            return $context['usedFeature']['helper']++;
+        }
+
+        // Check for advanced variable.
+        if ($context['flags']['advar']) {
+                // foo]  Rule 1: no starting [ or [ not start from head
+            if (preg_match('/^[^\\[\\.]+[\\]\\[]/', $intag)
+                // [bar  Rule 2: no ending ] or ] not in the end
+                || preg_match('/[\\[\\]][^\\]\\.]+$/', $intag)
+                // ]bar. Rule 3: middle ] not before .
+                || preg_match('/\\][^\\]\\[\\.]+\\./', $intag)
+                // .foo[ Rule 4: middle [ not after .
+                || preg_match('/\\.[^\\]\\[\\.]+\\[/', preg_replace('/\\[[^\\]]+\\]/', '[XXX]', $intag))
+            ) {
+                $context['error'][] = "Wrong variable naming as '$intag' !";
             }
-            if ($context['level'] == 0) {
-                $context['usedFeature']['rootvar']++;
+        }
+
+        // Check for parent context.
+        if (preg_match('/\\.\\.(\\/.+)*/', $intag)) {
+            if (!$context['flags']['parent']) {
+                $context['error'][] = 'do not support {{../var}}, you should do compile with LightnCandy::FLAG_PARENT flag';
             }
+            return $context['usedFeature']['parent']++;
+        }
+
+        if ($context['level'] == 0) {
+            $context['usedFeature']['rootvar']++;
         }
     }
 
@@ -712,24 +801,33 @@ $libstr
      * @param string $token detected handlebars {{ }} token
      * @param string $context current scaning context
      */
-    public static function tokens($token, &$context) {
-        $head = substr($token[2], 0, 1);
-        $act = substr($token[2], 1);
-        $raw = ($token[1] === '{{{');
+    public static function tokens(&$token, &$context) {
+        list($raw, $acts) = self::_tk($token, $context);
+        list($all, $beginsp, $begintag, $lspctl, $blockop, $intag, $rspctl, $endtag, $endsp) = $token;
 
-        switch ($head) {
+        // Handle space control.
+        if ($lspctl) {
+            $token[1] = '';
+        }
+
+        if ($rspctl) {
+            $token[8] = '';
+        }
+
+        // Handle block operations: ^ / ! # .
+        switch ($blockop) {
         case '^':
-            $context['stack'][] = $act;
+            $context['stack'][] = $intag;
             $context['stack'][] = '^';
             if ($context['useVar']) {
-                $v = $context['useVar'] . "['{$act}']";
+                $v = $context['useVar'] . "['{$intag}']";
                 return "{$context['ops']['cnd_start']}(is_null($v) && ($v !== false)){$context['ops']['cnd_then']}"; 
             } else {
-                return "{$context['ops']['cnd_start']}(" . self::_fn($context, 'isec') . "('$act', \$cx, \$in)){$context['ops']['cnd_then']}";
+                return "{$context['ops']['cnd_start']}(" . self::_fn($context, 'isec') . "('$intag', \$cx, \$in)){$context['ops']['cnd_then']}";
             }
         case '/':
             $each = false;
-            switch ($act) {
+            switch ($intag) {
             case 'if':
             case 'unless':
                 $pop = array_pop($context['stack']);
@@ -748,15 +846,15 @@ $libstr
             case 'each':
                 $each = true;
             default:
-                self::_vx($act, $context);
+                self::_vx($intag, $context);
                 array_pop($context['vars']);
                 $pop = array_pop($context['stack']);
                 switch($pop) {
                 case '#':
                 case '^':
                     $pop2 = array_pop($context['stack']);
-                    if (!$each && ($pop2 !== $act)) {
-                        $context['error'][] = "Unexpect token {$token[2]} ! Previous token $pop$pop2 is not closed";
+                    if (!$each && ($pop2 !== $intag)) {
+                        $context['error'][] = "Unexpect token $begintag$lspctl$blockop$intag$rspctl$endtag ! Previous token $pop$pop2 is not closed";
                         return;
                     }
                     if ($pop == '^') {
@@ -764,13 +862,12 @@ $libstr
                     }
                     return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
                 default:
-                    $context['error'][] = "Unexpect token: {$token[2]} !";
+                    $context['error'][] = "Unexpect token: $begintag$lspctl$blockop$intag$rspctl$endtag !";
                     return;
                 }
             }
         case '#':
             $each = 'false';
-            $acts = explode(' ', $act);
             switch ($acts[0]) {
             case 'if':
                 $context['stack'][] = 'if';
@@ -787,7 +884,7 @@ $libstr
             case 'each':
                 $each = 'true';
             case 'with':
-                $act = $acts[1];
+                $intag = $acts[1];
             default:
                 if (($acts[0] === 'with') && $context['flags']['with']) {
                     self::_vx($acts[1], $context);
@@ -795,33 +892,42 @@ $libstr
                     $context['stack'][] = 'with';
                     return $context['ops']['seperator'] . self::_fn($context, 'wi') . "('{$acts[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
                 }
-                self::_vx($act, $context);
-                $context['vars'][] = self::_vs($act);
+                self::_vx($intag, $context);
+                $context['vars'][] = self::_vs($intag);
                 self::_jsp($context);
-                $context['stack'][] = $act;
+                $context['stack'][] = $intag;
                 $context['stack'][] = '#';
-                return $context['ops']['seperator'] . self::_fn($context, 'sec') . "('$act', \$cx, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
+                return $context['ops']['seperator'] . self::_fn($context, 'sec') . "('$intag', \$cx, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
             }
         case '!':
             return $context['ops']['seperator'];
-        default:
-            self::_vx($token[2], $context);
-            if ($token[2] ==='else') {
-                $context['stack'][] = ':';
-                return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}" : "{$context['ops']['cnd_else']}";
-            }
-            self::_jsv($context, $token[2]);
-            $fn = $raw ? 'raw' : $context['ops']['enc'];
-            if ($context['useVar']) {
-                $v = $context['useVar'] . self::_vn($token[2], $context['flags']['advar']);
-                if ($context['flags']['jstrue']) {
-                    return $raw ? "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}$v{$context['ops']['cnd_end']}" : "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}htmlentities($v, ENT_QUOTES){$context['ops']['cnd_end']}";
-                } else {
-                    return $raw ? "{$context['ops']['seperator']}$v{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlentities($v, ENT_QUOTES){$context['ops']['seperator']}";
-                }
+        }
+
+        // Handle custom helpers.
+        $fn = $raw ? 'raw' : $context['ops']['enc'];
+        if (isset($context['helpers'][$acts[0]])) {
+            $ch = array_shift($acts);
+            return $context['ops']['seperator'] . self::_fn($context, 'ch') . "('$ch', Array(" . self::_arg($acts) . "), '$fn', \$cx, \$in){$context['ops']['seperator']}";
+        }
+
+        // Handle else.
+        self::_vx($intag, $context);
+        if ($intag ==='else') {
+            $context['stack'][] = ':';
+            return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}" : "{$context['ops']['cnd_else']}";
+        }
+
+        // Handle variables.
+        self::_jsv($context, $intag);
+        if ($context['useVar']) {
+            $v = $context['useVar'] . self::_vn($intag, $context['flags']['advar']);
+            if ($context['flags']['jstrue']) {
+                return $raw ? "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}$v{$context['ops']['cnd_end']}" : "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}htmlentities($v, ENT_QUOTES){$context['ops']['cnd_end']}";
             } else {
-                return $context['ops']['seperator'] . self::_fn($context, $fn) . "('{$token[2]}', \$cx, \$in){$context['ops']['seperator']}";
+                return $raw ? "{$context['ops']['seperator']}$v{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlentities($v, ENT_QUOTES){$context['ops']['seperator']}";
             }
+        } else {
+            return $context['ops']['seperator'] . self::_fn($context, $fn) . "('$intag', \$cx, \$in){$context['ops']['seperator']}";
         }
     }
 }
@@ -831,7 +937,7 @@ $libstr
  */
 class LCRun {
     /**
-     * LightnCandy runtime method for {{#if var}}
+     * LightnCandy runtime method for {{#if var}}.
      *
      * @param string $var variable name to be tested
      * @param array $cx render time context
@@ -845,7 +951,7 @@ class LCRun {
     }
 
     /**
-     * LightnCandy runtime method for {{#if var}} when {{../var}} used
+     * LightnCandy runtime method for {{#if var}} when {{../var}} used.
      *
      * @param string $var variable name to be tested
      * @param array $cx render time context
@@ -875,7 +981,7 @@ class LCRun {
     }
 
     /**
-     * LightnCandy runtime method for {{$unless var}} when {{../var}} used
+     * LightnCandy runtime method for {{$unless var}} when {{../var}} used.
      *
      * @param string $var variable name to be tested
      * @param array $cx render time context
@@ -888,7 +994,7 @@ class LCRun {
     }
 
     /**
-     * LightnCandy runtime method for {{^var}} inverted section
+     * LightnCandy runtime method for {{^var}} inverted section.
      *
      * @param string $var variable name to be tested
      * @param array $cx render time context
@@ -902,7 +1008,7 @@ class LCRun {
     }
 
     /**
-     * LightnCandy runtime method to get input value
+     * LightnCandy runtime method to get input value.
      *
      * @param string $var variable name to get the raw value
      * @param array $cx render time context
@@ -946,7 +1052,7 @@ class LCRun {
     }
 
     /**
-     * LightnCandy runtime method for {{{var}}}
+     * LightnCandy runtime method for {{{var}}} .
      *
      * @param string $var variable name to get the raw value
      * @param array $cx render time context
@@ -987,7 +1093,7 @@ class LCRun {
     }
 
     /**
-     * LightnCandy runtime method for {{var}}
+     * LightnCandy runtime method for {{var}} .
      *
      * @param string $var variable name to get the htmlencoded value
      * @param array $cx render time context
@@ -1000,7 +1106,7 @@ class LCRun {
     }
 
     /**
-     * LightnCandy runtime method for {{var}} , and deal with single quote to same as handlebars.js
+     * LightnCandy runtime method for {{var}} , and deal with single quote to same as handlebars.js .
      *
      * @param string $var variable name to get the htmlencoded value
      * @param array $cx render time context
@@ -1013,7 +1119,7 @@ class LCRun {
     }
 
     /**
-     * LightnCandy runtime method for {{#var}} section
+     * LightnCandy runtime method for {{#var}} section.
      *
      * @param string $var variable name for section
      * @param array $cx render time context
@@ -1078,7 +1184,7 @@ class LCRun {
     }
 
     /**
-     * LightnCandy runtime method for {{#with var}}
+     * LightnCandy runtime method for {{#with var}} .
      *
      * @param string $var variable name for section
      * @param array $cx render time context
@@ -1096,6 +1202,26 @@ class LCRun {
         $ret = $cb($cx, $v);
         array_pop($cx['scopes']);
         return $ret;
+    }
+
+    /**
+     * LightnCandy runtime method for custom helpers.
+     *
+     * @param string $ch the name of custom helper to be executed
+     * @param array $vars variable names for helpers
+     * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
+     * @param array $cx render time context
+     * @param array $in input data with current scope
+     *
+     * @return string The rendered string of the token
+     */
+    public static function ch($ch, $vars, $op, &$cx, $in) {
+        $args = Array();
+        foreach ($vars as $v) {
+            $args[] = self::$op($v, $cx, $in);
+        }
+
+        return call_user_func_array($cx['helpers'][$ch], $args);
     }
 }
 ?>
