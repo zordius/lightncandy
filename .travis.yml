@@ -5,4 +5,4 @@ php:
   - 5.5
 
 script:
-  - build/gendoc
+  - build/gen_doc
