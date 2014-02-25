@@ -1086,6 +1086,8 @@ class LCRun {
                 return '';
             }
         }
+
+        // path search on objects
         if (preg_match('/(.+?)\\](.+)/', $var, $matched)) {
             if (array_key_exists($matched[1], $in)) {
                 return self::val($matched[2], $cx, $in[$matched[1]]);
@@ -1093,6 +1095,7 @@ class LCRun {
                 return null;
             }
         }
+
         return ($var === '') ? $in : (is_array($in) && isset($in[$var]) ? $in[$var] : null);
     }
 
