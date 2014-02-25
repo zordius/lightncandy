@@ -3,6 +3,8 @@ lightncandy
 
 A PHP library to support almost all features of handlebars ( http://handlebarsjs.com/ ) , target to run as fast as pure PHP.
 
+Travis CI status: [![Build Status](https://travis-ci.org/zordius/lightncandy.png?branch=master)](https://travis-ci.org/zordius/lightncandy)
+
 Features
 --------
 
