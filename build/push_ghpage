@@ -1,2 +1,8 @@
 #!/bin/sh
-git checkout --orphan gh-pages
+git checkout gh-pages
+rm *
+cp -r build/result/docs/* .
+rm -rf build
+git add .
+git commit -a -m "New documents on github"
+git push origin gh-pages
