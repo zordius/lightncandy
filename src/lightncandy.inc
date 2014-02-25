@@ -319,7 +319,7 @@ $libstr
             $ret .= "            '$name' => '$func',\n";
         }
 
-        return "Array(\n$ret\n)";
+        return "Array($ret)";
     }
 
     /**
