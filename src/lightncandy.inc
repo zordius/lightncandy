@@ -358,7 +358,7 @@ $libstr
     protected static function _error(&$context) {
         if ($context['level'] !== 0) {
             $token = array_pop($context['stack']);
-            $context['error'][] = "Unclosed token {{{$token}}} !!";
+            $context['error'][] = "Unclosed token {{{#$token}}} !!";
         }
 
         self::$lastContext = $context;
