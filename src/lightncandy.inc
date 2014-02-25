@@ -15,7 +15,6 @@ Origin: https://github.com/zordius/lightncandy
  * This is abstract engine which defines must-have methods.
  *
  * @package    LightnCandy
- * @subpackage Core
  * @author     Zordius <zordius@yahoo-inc.com>
  */
 
