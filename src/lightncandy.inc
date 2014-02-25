@@ -668,9 +668,41 @@ $libstr
      * @param array $context current compile context
      */
     protected static function _tk(&$token, &$context) {
+        $acts = Array();
         trim($token[5]);
-        $acts = explode(' ', $token[5]); // TODO: in future we should support 2 or more args and arguments parsing.
-                                         // Now can not handle [test 123] or "abc def" correctly
+        preg_match_all('/(\s*)([^\s]+)/', $token[5], $matched);
+
+        // Parse arguments and deal with "..." or [...]
+        if (is_array($matched)) {
+            $prev = '';
+            $expect = 0;
+            foreach ($matched[2] as $index => $t) {
+                // continue from previous match when expect something
+                if ($expect) {
+                    $prev .= "{$matched[1][$index]}$t";
+                    // end an argument when end with expected charactor
+                    if (substr($t, -1, 1) === $expect) {
+                        $acts[] = $prev;
+                        $prev = '';
+                        $expect = 0;
+                    }
+                    continue;
+                }
+                // continue to next match when '"' started without ending '"'
+                if (preg_match('/^"[^"]+$/', $t)) {
+                    $prev = $t;
+                    $expect = '"';
+                    continue;
+                }
+                // continue to next match when '[' started without ending ']'
+                if (preg_match('/\\[[^\\]]+$/', $t)) {
+                    $prev = $t;
+                    $expect = ']';
+                    continue;
+                }
+                $acts[] = $t;
+            }
+        }
 
         // Check for advanced variable.
         foreach ($acts as $act) {
@@ -684,7 +716,7 @@ $libstr
                     // .foo[ Rule 4: middle [ not after .
                     || preg_match('/\\.[^\\]\\[\\.]+\\[/', preg_replace('/\\[[^\\]]+\\]/', '[XXX]', $act))
                 ) {
-                    $context['error'][] = "Wrong variable naming as '$act' !";
+                    $context['error'][] = "Wrong variable naming as '$act' in {$token[2]}{$token[3]}{$token[4]}{$token[5]}{$token[6]}{$token[7]} !";
                 }
             }
         }
