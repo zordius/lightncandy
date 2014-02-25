@@ -12,6 +12,7 @@ v0.9 current trunk
    * f51337bde2 support space control {{~sometag}} or {{sometag~}}
    * fe3d67802e add FLAG_SPACECTL option
    * 920fbb3039 support custom helper
+   * 07ae71a1bf migrate into Travis CI
 
 v0.8 https://github.com/zordius/lightncandy/tree/v0.8
    * align with handlebars.js 1.0.12
