@@ -25,7 +25,7 @@ Features
       * Know required data structure from your templates
       * Verify input data, or find out missing variables with any jsonSchema validator
 * Standalone Template
-   * The compiled PHP template can run without any PHP library.
+   * The compiled PHP code can run without any PHP library. You do not need to include LightnCandy when execute rendering function.
 
 Sample
 ------
@@ -51,14 +51,14 @@ $renderer = LightnCandy::prepare($phpStr);
 
 
 // Step 2B. (Usage 2) Store your render function in a file 
-//   You decide your compiled template file path and name
-//   You can load your render function by include()
+//   You decide your compiled template file path and name, save it.
+//   You can load your render function by include() later.
 //   RECOMMENDED WAY
 file_put_contents($php_inc, $phpStr);
 $renderer = include($php_inc);
 
 
-// Step 3. run native php render function any time
+// Step 3. run native PHP render function any time
 echo $renderer(Array('name' => 'John', 'value' => 10000));
 echo $renderer(Array('name' => 'Peter', 'value' => 1000));
 ```
@@ -133,7 +133,7 @@ LightnCandy::compile($template, Array(
 ));
 ```
 
-LightnCandy supports parent context access in partial (access `{{../vars}}` inside the template), so far no other php/javascript library can handle this correctly.
+LightnCandy supports parent context access in partial (access `{{../vars}}` inside the template), so far no other PHP/javascript library can handle this correctly.
 
 Custom Helper
 -------------
@@ -202,8 +202,9 @@ Suggested Handlebars Template Practices
 ---------------------------------------
 
 * Prevent to use `{{#with}}` . I think `{{path.to.val}}` is more readable then `{{#with path.to}}{{val}}{{/with}}`; when using `{{#with}}` you will confusing on scope changing. `{{#with}}` only save you very little time when you access many variables under same path, but cost you a lot time when you need to understand then maintain a template.
-* use `{{{val}}}` when you do not require urlencode. It is better performance, too.
+* use `{{{val}}}` when you do not require html encoded output on the value. It is better performance, too.
 * Prevent to use custom helper if you want to reuse your template in different language. Or, you may need to implement different versions of helper in different languages.
+* For best performance, you should only use 'compile on demand' pattern only when you in development stage. Before you go to production, you can `LightnCandy::compile()` on all your templates, save all generated PHP codes, and only deploy these generated files. You may need to maintain a build process for this. Adding cache logic on 'compile on demand' may be good, but it is not the best solution. If you want to build some library or framework based on LightnCandy, think about this scenario.
 
 Detail Feature list
 -------------------
