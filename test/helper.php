@@ -12,6 +12,8 @@ $template = <<<VAREND
  <li>8. {{h2 value}}</li>
  <li>9. {{link name}}</li>
  <li>10. {{link value}}</li>
+ <li>11. {{alink url text}}</li>
+ <li>12. {{{alink url text}}}</li>
 </ul>
 VAREND
 ;
@@ -25,6 +27,7 @@ $php = LightnCandy::compile($template, Array(
         'link' => function ($arg) {
             return "<a href=\"{$arg}\">click here</a>";
         },
+        'alink',
     )
 
 ));
@@ -40,12 +43,16 @@ function helper1($arg) {
     return "-$arg-";
 }
 
+function alink($u, $t) {
+    return "<a href=\"$u\">$t</a>";
+}
+
 class myClass {
     function helper2($arg) {
         return "=$arg=";
     }
 }
 
-echo $renderer(Array('name' => 'John', 'value' => 10000));
+echo $renderer(Array('name' => 'John', 'value' => 10000, 'url' => 'http://yahoo.com', 'text' => 'You&Me!'));
 
 ?>
