@@ -597,7 +597,12 @@ $libstr
      * @return string PHP arguments string
      */
     protected static function _arg($list) {
-        return implode(',', array_map(function ($v) {return "'$v'";}, $list));
+        $ret = Array();
+        foreach ($list as $v) {
+            self::_vx($v);
+            $ret[] = "'$v'";
+        }
+        return implode(',', $ret);
     }
 
     /**
