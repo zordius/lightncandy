@@ -906,7 +906,8 @@ $libstr
         // Handle custom helpers.
         $fn = $raw ? 'raw' : $context['ops']['enc'];
         if (isset($context['helpers'][$acts[0]])) {
-            return $context['ops']['seperator'] . self::_fn($context, 'ch') . '(Array(' . self::_arg($acts) . "), '$fn', \$cx, \$in){$context['ops']['seperator']}";
+            $ch = array_shift($acts);
+            return $context['ops']['seperator'] . self::_fn($context, 'ch') . "('$ch', Array(" . self::_arg($acts) . "), '$fn', \$cx, \$in){$context['ops']['seperator']}";
         }
 
         // Handle else.
@@ -1213,14 +1214,12 @@ class LCRun {
      *
      * @return string The rendered string of the token
      */
-    public static function ch($vars, $op, &$cx, $in) {
+    public static function ch($ch, $vars, $op, &$cx, $in) {
         $args = Array();
-        $ch = array_shift($vars);
-
         foreach ($vars as $v) {
             $args[] = self::$op($v, $cx, $in);
         }
-print_r($cx);
+
         return call_user_func_array($cx['helpers'][$ch], $args);
     }
 }
