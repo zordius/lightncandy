@@ -1,5 +1,6 @@
 #!/bin/sh
 git checkout -B gh-pages
+git pull origin gh-pages
 rm *
 rm -rf src
 rm -rf test
