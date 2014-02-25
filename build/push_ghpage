@@ -1,5 +1,5 @@
 #!/bin/sh
-git checkout -b gh-pages
+git checkout -B gh-pages
 rm *
 rm -rf src
 rm -rf test
