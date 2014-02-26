@@ -593,11 +593,21 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Get variable names translated string, Ex: a.[0].[#123][.] => "['a']['0']['#123']['.']""
+     * Internal method used by compile(). Get translated variable name.
      *
      * @param string $vn variable name. Illegal variable name will be removed and will never pass into this function.
      *
      * @return string Translated advanced format variable name as input array notation.
+     * 
+     * @expect "['']" when input ''
+     * @expect "['a']" when input 'a'
+     * @expect "['a']" when input '[a]'
+     * @expect "['a']['b']" when input '[a].b'
+     * @expect "['a']['b']" when input 'a.b'
+     * @expect "['a']['b']" when input 'a.[b]'
+     * @expect "['a']['b[c']" when input 'a.[b[c]'
+     * @expect "['a']['b.c']" when input 'a.[b.c]'
+     * @expect "['a.b']" when input '[a.b]'
      */
     protected static function _advn($vn) {
         if (!preg_match('/[\\.\\]\\[]/', $vn)) {
@@ -620,6 +630,7 @@ $libstr
      *
      * @param mixed $v variable name to be fixed.
      * @param array $context Current compile content.
+     * 
      */
     protected static function _vx(&$v, $context) {
         $v = trim($v);
@@ -644,13 +655,16 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Get variable name array, Ex: 'a.b.c' will return ['a', 'b', 'c']
+     * Internal method used by compile(). Get variable name tokens.
      *
      * @param string $v variable name.
      *
      * @return mixed Variable names array or null.
      * 
+     * @expect null when input ''
      * @expect Array('.') when input '.'
+     * @expect Array('a') when input 'a'
+     * @expect Array('a', 'b') when input 'a.b'
      */
     protected static function _vs($v) {
         if ($v == '.') {
@@ -660,12 +674,18 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Get argument names string, Ex: "'a','b','c'"
+     * Internal method used by compile(). Get custom helper arguments.
      *
-     * @param array $list an array of arguments. ex: ['a', 'b', 'c', ...]
+     * @param array $list an array of arguments.
      * @param array $context Current compile content.
      *
      * @return string PHP arguments string
+     * 
+     * @expect '' when input Array(), Array('flags' => Array('this' => 0, 'advar' => 0))
+     * @expect '' when input Array(), Array('flags' => Array('this' => 0, 'advar' => 1))
+     * @expect "'a'" when input Array('a'), Array('flags' => Array('this' => 0, 'advar' => 0))
+     * @expect "'this'" when input Array('this'), Array('flags' => Array('this' => 0, 'advar' => 0))
+     * @expect "''" when input Array('this'), Array('flags' => Array('this' => 1, 'advar' => 0))
      */
     protected static function _arg($list, $context) {
         $ret = Array();

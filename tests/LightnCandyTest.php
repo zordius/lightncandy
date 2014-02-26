@@ -99,12 +99,43 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("['g.h']['i']", $method->invoke(null, '[g.h].i', 1));
     }
     /**
+     * @covers LightnCandy::_advn
+     */
+    public function testOn__advn() {
+        $method = new ReflectionMethod('LightnCandy', '_advn');
+        $method->setAccessible(true);
+        $this->assertEquals("['']", $method->invoke(null, ''));
+        $this->assertEquals("['a']", $method->invoke(null, 'a'));
+        $this->assertEquals("['a']", $method->invoke(null, '[a]'));
+        $this->assertEquals("['a']['b']", $method->invoke(null, '[a].b'));
+        $this->assertEquals("['a']['b']", $method->invoke(null, 'a.b'));
+        $this->assertEquals("['a']['b']", $method->invoke(null, 'a.[b]'));
+        $this->assertEquals("['a']['b[c']", $method->invoke(null, 'a.[b[c]'));
+        $this->assertEquals("['a']['b.c']", $method->invoke(null, 'a.[b.c]'));
+        $this->assertEquals("['a.b']", $method->invoke(null, '[a.b]'));
+    }
+    /**
      * @covers LightnCandy::_vs
      */
     public function testOn__vs() {
         $method = new ReflectionMethod('LightnCandy', '_vs');
         $method->setAccessible(true);
+        $this->assertEquals(null, $method->invoke(null, ''));
         $this->assertEquals(Array('.'), $method->invoke(null, '.'));
+        $this->assertEquals(Array('a'), $method->invoke(null, 'a'));
+        $this->assertEquals(Array('a', 'b'), $method->invoke(null, 'a.b'));
+    }
+    /**
+     * @covers LightnCandy::_arg
+     */
+    public function testOn__arg() {
+        $method = new ReflectionMethod('LightnCandy', '_arg');
+        $method->setAccessible(true);
+        $this->assertEquals('', $method->invoke(null, Array(), Array('flags' => Array('this' => 0, 'advar' => 0))));
+        $this->assertEquals('', $method->invoke(null, Array(), Array('flags' => Array('this' => 0, 'advar' => 1))));
+        $this->assertEquals("'a'", $method->invoke(null, Array('a'), Array('flags' => Array('this' => 0, 'advar' => 0))));
+        $this->assertEquals("'this'", $method->invoke(null, Array('this'), Array('flags' => Array('this' => 0, 'advar' => 0))));
+        $this->assertEquals("''", $method->invoke(null, Array('this'), Array('flags' => Array('this' => 1, 'advar' => 0))));
     }
 }
 
