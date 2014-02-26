@@ -169,7 +169,7 @@ LightnCandy::compile($template, Array(
         // 5. Anonymouse function should be provided with helper name
         //    The function will be included in generaed code always
         'helper_name3' => function ($arg1, $arg2) {
-            return "<a href="{$arg1}">{$arg2}</a>";
+            return "<a href=\"{$arg1}\">{$arg2}</a>";
         }
     )
 ));

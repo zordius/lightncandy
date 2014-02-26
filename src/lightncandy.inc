@@ -15,7 +15,6 @@ Origin: https://github.com/zordius/lightncandy
  * This is abstract engine which defines must-have methods.
  *
  * @package    LightnCandy
- * @subpackage Core
  * @author     Zordius <zordius@yahoo-inc.com>
  */
 
@@ -359,7 +358,7 @@ $libstr
     protected static function _error(&$context) {
         if ($context['level'] !== 0) {
             $token = array_pop($context['stack']);
-            $context['error'][] = "Unclosed token {{{$token}}} !!";
+            $context['error'][] = "Unclosed token {{{#$token}}} !!";
         }
 
         self::$lastContext = $context;
@@ -489,11 +488,15 @@ $libstr
     }
 
     /**
-     * Internal method used by _qscope(). Get variable names translated string, Ex: "['a']['b']['c']"
+     * Internal method used by _qscope(). Get variable names translated string.
      *
      * @param array $scopes an array of variable names with single quote
      *
      * @return string PHP array names string
+     * 
+     * @expect '' when input Array()
+     * @expect '[a]' when input Array('a')
+     * @expect '[a][b][c]' when input Array('a', 'b', 'c')
      */
     protected static function _scope($scopes) {
         return count($scopes) ? '[' . implode('][', $scopes) . ']' : '';
@@ -582,6 +585,8 @@ $libstr
      * @param string $v variable name.
      *
      * @return mixed Variable names array or null.
+     * 
+     * @expect Array('.') when input '.'
      */
     protected static function _vs($v) {
         if ($v == '.') {
@@ -594,11 +599,17 @@ $libstr
      * Internal method used by compile(). Get argument names string, Ex: "'a','b','c'"
      *
      * @param array $list an array of arguments. ex: ['a', 'b', 'c', ...]
+     * @param array $context Current compile content.
      *
      * @return string PHP arguments string
      */
-    protected static function _arg($list) {
-        return implode(',', array_map(function ($v) {return "'$v'";}, $list));
+    protected static function _arg($list, $context) {
+        $ret = Array();
+        foreach ($list as $v) {
+            self::_vx($v, $context);
+            $ret[] = "'$v'";
+        }
+        return implode(',', $ret);
     }
 
     /**
@@ -669,9 +680,61 @@ $libstr
      * @param array $context current compile context
      */
     protected static function _tk(&$token, &$context) {
+        $acts = Array();
         trim($token[5]);
-        $acts = explode(' ', $token[5]); // TODO: in future we should support 2 or more args and arguments parsing.
-                                         // Now can not handle [test 123] or "abc def" correctly
+        preg_match_all('/(\s*)([^\s]+)/', $token[5], $matched);
+
+        // Parse arguments and deal with "..." or [...]
+        if (is_array($matched) && $context['flags']['advar']) {
+            $prev = '';
+            $expect = 0;
+            foreach ($matched[2] as $index => $t) {
+                // continue from previous match when expect something
+                if ($expect) {
+                    $prev .= "{$matched[1][$index]}$t";
+                    // end an argument when end with expected charactor
+                    if (substr($t, -1, 1) === $expect) {
+                        $acts[] = $prev;
+                        $prev = '';
+                        $expect = 0;
+                    }
+                    continue;
+                }
+                // continue to next match when '"' started without ending '"'
+                if (preg_match('/^"[^"]+$/', $t)) {
+                    $prev = $t;
+                    $expect = '"';
+                    continue;
+                }
+                // continue to next match when '[' started without ending ']'
+                if (preg_match('/\\[[^\\]]+$/', $t)) {
+                    $prev = $t;
+                    $expect = ']';
+                    continue;
+                }
+                $acts[] = $t;
+            }
+        } else {
+            $acts = explode(' ', $token[5]);
+        }
+
+        // Check for advanced variable.
+        foreach ($acts as $act) {
+            if ($context['flags']['advar']) {
+                    // foo]  Rule 1: no starting [ or [ not start from head
+                if (preg_match('/^[^\\[\\.]+[\\]\\[]/', $act)
+                    // [bar  Rule 2: no ending ] or ] not in the end
+                    || preg_match('/[\\[\\]][^\\]\\.]+$/', $act)
+                    // ]bar. Rule 3: middle ] not before .
+                    || preg_match('/\\][^\\]\\[\\.]+\\./', $act)
+                    // .foo[ Rule 4: middle [ not after .
+                    || preg_match('/\\.[^\\]\\[\\.]+\\[/', preg_replace('/\\[[^\\]]+\\]/', '[XXX]', $act))
+                ) {
+                    $context['error'][] = "Wrong variable naming as '$act' in {$token[2]}{$token[3]}{$token[4]}{$token[5]}{$token[6]}{$token[7]} !";
+                }
+            }
+        }
+
         return Array(
             ($token[2] === '{{{'), $acts
         );
@@ -765,21 +828,6 @@ $libstr
         // Handle custom helpers.
         if (isset($context['helpers'][$acts[0]])) {
             return $context['usedFeature']['helper']++;
-        }
-
-        // Check for advanced variable.
-        if ($context['flags']['advar']) {
-                // foo]  Rule 1: no starting [ or [ not start from head
-            if (preg_match('/^[^\\[\\.]+[\\]\\[]/', $intag)
-                // [bar  Rule 2: no ending ] or ] not in the end
-                || preg_match('/[\\[\\]][^\\]\\.]+$/', $intag)
-                // ]bar. Rule 3: middle ] not before .
-                || preg_match('/\\][^\\]\\[\\.]+\\./', $intag)
-                // .foo[ Rule 4: middle [ not after .
-                || preg_match('/\\.[^\\]\\[\\.]+\\[/', preg_replace('/\\[[^\\]]+\\]/', '[XXX]', $intag))
-            ) {
-                $context['error'][] = "Wrong variable naming as '$intag' !";
-            }
         }
 
         // Check for parent context.
@@ -904,30 +952,30 @@ $libstr
         }
 
         // Handle custom helpers.
+        self::_vx($acts[0], $context);
         $fn = $raw ? 'raw' : $context['ops']['enc'];
         if (isset($context['helpers'][$acts[0]])) {
             $ch = array_shift($acts);
-            return $context['ops']['seperator'] . self::_fn($context, 'ch') . "('$ch', Array(" . self::_arg($acts) . "), '$fn', \$cx, \$in){$context['ops']['seperator']}";
+            return $context['ops']['seperator'] . self::_fn($context, 'ch') . "('$ch', Array(" . self::_arg($acts, $context) . "), '$fn', \$cx, \$in){$context['ops']['seperator']}";
         }
 
         // Handle else.
-        self::_vx($intag, $context);
-        if ($intag ==='else') {
+        if ($acts[0] ==='else') {
             $context['stack'][] = ':';
             return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}" : "{$context['ops']['cnd_else']}";
         }
 
         // Handle variables.
-        self::_jsv($context, $intag);
+        self::_jsv($context, $acts[0]); // TODO: more variables should be placed in json schema in custom helper calls
         if ($context['useVar']) {
-            $v = $context['useVar'] . self::_vn($intag, $context['flags']['advar']);
+            $v = $context['useVar'] . self::_vn($act[0], $context['flags']['advar']);
             if ($context['flags']['jstrue']) {
                 return $raw ? "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}$v{$context['ops']['cnd_end']}" : "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}htmlentities($v, ENT_QUOTES){$context['ops']['cnd_end']}";
             } else {
                 return $raw ? "{$context['ops']['seperator']}$v{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlentities($v, ENT_QUOTES){$context['ops']['seperator']}";
             }
         } else {
-            return $context['ops']['seperator'] . self::_fn($context, $fn) . "('$intag', \$cx, \$in){$context['ops']['seperator']}";
+            return $context['ops']['seperator'] . self::_fn($context, $fn) . "('{$acts[0]}', \$cx, \$in){$context['ops']['seperator']}";
         }
     }
 }
@@ -1025,6 +1073,9 @@ class LCRun {
         if ($var === '@key') {
             return $cx['sp_vars']['key'];
         }
+        if (preg_match('/^"(.*)"$/', $var, $matched)) {
+            return $matched[1];
+        }
 
         // Tract to parent. Do not support foo/../bar style variable name
         $var = preg_replace_callback('/\\.\\.\\//', function($matches) use (&$levels) {
@@ -1041,6 +1092,8 @@ class LCRun {
                 return '';
             }
         }
+
+        // path search on objects
         if (preg_match('/(.+?)\\](.+)/', $var, $matched)) {
             if (array_key_exists($matched[1], $in)) {
                 return self::val($matched[2], $cx, $in[$matched[1]]);
@@ -1048,6 +1101,7 @@ class LCRun {
                 return null;
             }
         }
+
         return ($var === '') ? $in : (is_array($in) && isset($in[$var]) ? $in[$var] : null);
     }
 
@@ -1218,10 +1272,18 @@ class LCRun {
     public static function ch($ch, $vars, $op, &$cx, $in) {
         $args = Array();
         foreach ($vars as $v) {
-            $args[] = self::$op($v, $cx, $in);
+            $args[] = self::raw($v, $cx, $in);
         }
 
-        return call_user_func_array($cx['helpers'][$ch], $args);
+        $r = call_user_func_array($cx['helpers'][$ch], $args);
+        switch ($op) {
+            case 'enc': 
+                return htmlentities($r, ENT_QUOTES);
+            case 'encq':
+                return preg_replace('/&#039;/', '&#x27;', htmlentities($r, ENT_QUOTES));
+            default:
+                return $r;
+        }
     }
 }
 ?>
