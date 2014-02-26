@@ -1084,6 +1084,10 @@ class LCRun {
      * @expect false when input 'a', Array(), Array('a' => false)
      * @expect true when input 'a', Array(), Array('a' => true)
      * @expect true when input 'a', Array(), Array('a' => 1)
+     * @expect false when input 'a', Array(), Array('a' => '')
+     * @expect false when input 'a', Array(), Array('a' => Array())
+     * @expect true when input 'a', Array(), Array('a' => Array(''))
+     * @expect true when input 'a', Array(), Array('a' => Array(0))
      */
     public static function ifvar($var, $cx, $in) {
         $v = self::val($var, $cx, $in);
@@ -1100,6 +1104,16 @@ class LCRun {
      * @param function $falsecb callback function when test result is false
      *
      * @return string The rendered string of the section
+     * 
+     * @expect '' when input 'a', Array('scopes' => Array()), Array(), function () {return 'Y';}
+     * @expect 'Y' when input 'a', Array('scopes' => Array()), Array('a' => 1), function () {return 'Y';}
+     * @expect 'N' when input 'a', Array('scopes' => Array()), Array(), function () {return 'Y';}, function () {return 'N';}
+     * @expect 'N' when input 'a', Array('scopes' => Array()), Array('a' => null), function () {return 'Y';}, function () {return 'N';}
+     * @expect 'N' when input 'a', Array('scopes' => Array()), Array('a' => false), function () {return 'Y';}, function () {return 'N';}
+     * @expect 'N' when input 'a', Array('scopes' => Array()), Array('a' => ''), function () {return 'Y';}, function () {return 'N';}
+     * @expect 'N' when input 'a', Array('scopes' => Array()), Array('a' => Array()), function () {return 'Y';}, function () {return 'N';}
+     * @expect 'N' when input 'a', Array('scopes' => Array()), Array('a' => 0), function () {return 'Y';}, function () {return 'N';}
+     * @expect 'Y' when input 'a', Array('scopes' => Array()), Array('a' => Array(0)), function () {return 'Y';}, function () {return 'N';}
      */
     public static function ifv($var, $cx, $in, $truecb, $falsecb = null) {
         $v = self::val($var, $cx, $in);
@@ -1128,6 +1142,16 @@ class LCRun {
      * @param array $in input data with current scope
      *
      * @return boolean Return true when the value is not null nor false.
+     *
+     * @expect 'Y' when input 'a', Array('scopes' => Array()), Array(), function () {return 'Y';}
+     * @expect '' when input 'a', Array('scopes' => Array()), Array('a' => 1), function () {return 'Y';}
+     * @expect 'Y' when input 'a', Array('scopes' => Array()), Array(), function () {return 'Y';}, function () {return 'N';}
+     * @expect 'Y' when input 'a', Array('scopes' => Array()), Array('a' => null), function () {return 'Y';}, function () {return 'N';}
+     * @expect 'Y' when input 'a', Array('scopes' => Array()), Array('a' => false), function () {return 'Y';}, function () {return 'N';}
+     * @expect 'Y' when input 'a', Array('scopes' => Array()), Array('a' => ''), function () {return 'Y';}, function () {return 'N';}
+     * @expect 'Y' when input 'a', Array('scopes' => Array()), Array('a' => Array()), function () {return 'Y';}, function () {return 'N';}
+     * @expect 'Y' when input 'a', Array('scopes' => Array()), Array('a' => 0), function () {return 'Y';}, function () {return 'N';}
+     * @expect 'N' when input 'a', Array('scopes' => Array()), Array('a' => Array(0)), function () {return 'Y';}, function () {return 'N';}
      */
     public static function unl($var, $cx, $in, $truecb, $falsecb = null) {
         return self::ifv($var, $cx, $in, $falsecb, $truecb);
