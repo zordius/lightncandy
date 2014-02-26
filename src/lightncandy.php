@@ -488,7 +488,7 @@ $libstr
      *
      * @codeCoverageIgnore
      */
-    public static function prepare($php, $tmp_dir = false) {
+    public static function prepare($php, $tmp_dir) {
         if (!ini_get('allow_url_include') || !ini_get('allow_url_fopen')) {
             if (!is_dir($tmp_dir)) {
                 $tmp_dir = sys_get_temp_dir();
@@ -828,7 +828,7 @@ $libstr
     /**
      * Internal method used by compile(). Collect handlebars usage information, detect template error.
      *
-     * @param array $token detected handlebars {{ }} token
+     * @param string[] $token detected handlebars {{ }} token
      * @param array $context current scaning context
      */
     protected static function scan($token, &$context) {
@@ -1077,6 +1077,10 @@ class LCRun {
      * @param array $in input data with current scope
      *
      * @return boolean Return true when the value is not null nor false.
+     * 
+     * @expect true when input 'a', Array(), Array()
+     * @expect true when input 'a', Array(), Array('a' => null)
+     * @expect true when input 'a', Array(), Array('a' => true)
      */
     public static function ifvar($var, $cx, $in) {
         $v = self::val($var, $cx, $in);
@@ -1238,7 +1242,7 @@ class LCRun {
      * @param array $cx render time context
      * @param array $in input data with current scope
      *
-     * @return mixed The htmlencoded value of the specified variable
+     * @return string The htmlencoded value of the specified variable
      */
     public static function enc($var, $cx, $in) {
         return htmlentities(self::raw($var, $cx, $in), ENT_QUOTES);
