@@ -93,6 +93,10 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("['a']", $method->invoke(null, 'a', 1));
         $this->assertEquals("['b']['c']", $method->invoke(null, 'b.c', 0));
         $this->assertEquals("['b']['c']", $method->invoke(null, 'b.c', 1));
+        $this->assertEquals("['d']['e']['f']", $method->invoke(null, 'd.e.f', 0));
+        $this->assertEquals("['d']['e']['f']", $method->invoke(null, 'd.e.f', 1));
+        $this->assertEquals("['[g']['h]']['i']", $method->invoke(null, '[g.h].i', 0));
+        $this->assertEquals("['g.h']['i']", $method->invoke(null, '[g.h].i', 1));
     }
     /**
      * @covers LightnCandy::_vs

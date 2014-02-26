@@ -576,6 +576,10 @@ $libstr
      * @expect "['a']" when input 'a', 1
      * @expect "['b']['c']" when input 'b.c', 0
      * @expect "['b']['c']" when input 'b.c', 1
+     * @expect "['d']['e']['f']" when input 'd.e.f', 0
+     * @expect "['d']['e']['f']" when input 'd.e.f', 1
+     * @expect "['[g']['h]']['i']" when input '[g.h].i', 0
+     * @expect "['g.h']['i']" when input '[g.h].i', 1
      */
     protected static function _vn($vn, $adv) {
         if ($adv) {
