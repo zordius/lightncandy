@@ -1,5 +1,8 @@
-imports:
-    - php
+filter:
+    excluded_paths: [vendor/*, tests/*, app/*, bin/*, library/*]
+    path: [src/*]
 tools:
+    php_cpd: true
+    php_analyzer: true
     php_pdepend: true
     php_code_coverage: true
