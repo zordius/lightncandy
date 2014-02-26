@@ -290,7 +290,7 @@ $libstr
         $ret = Array();
 
         foreach ($dirs as $dir) {
-            if (is_dir($dir)) {
+            if (is_string($dir) && is_dir($dir)) {
                 $ret[] = $dir;
             }
         }
@@ -811,7 +811,7 @@ $libstr
      */
     protected static function scan($token, &$context) {
         list($raw, $acts) = self::_tk($token, $context);
-        list($all, $beginsp, $begintag, $lspctl, $blockop, $intag, $rspctl, $endtag, $endsp) = $token;
+        list(, , $begintag, $lspctl, $blockop, $intag, $rspctl, $endtag) = $token;
 
         // {{ }}} or {{{ }} are invalid
         if (strlen($begintag) !== strlen($endtag)) {
@@ -914,7 +914,7 @@ $libstr
      */
     public static function tokens(&$token, &$context) {
         list($raw, $acts) = self::_tk($token, $context);
-        list($all, $beginsp, $begintag, $lspctl, $blockop, $intag, $rspctl, $endtag, $endsp) = $token;
+        list(, , $begintag, $lspctl, $blockop, $intag, $rspctl, $endtag) = $token;
 
         // Handle space control.
         if ($lspctl) {
@@ -943,7 +943,7 @@ $libstr
             case 'unless':
                 $pop = array_pop($context['stack']);
                 if ($pop == ':') {
-                    $pop = array_pop($context['stack']);
+                    array_pop($context['stack']);
                     return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}){$context['ops']['seperator']}" : "{$context['ops']['cnd_end']}";
                 }
                 return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}){$context['ops']['seperator']}" : "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
@@ -1031,7 +1031,7 @@ $libstr
         // Handle variables.
         self::_jsv($context, $acts[0]); // TODO: more variables should be placed in json schema in custom helper calls
         if ($context['useVar']) {
-            $v = $context['useVar'] . self::_vn($act[0], $context['flags']['advar']);
+            $v = $context['useVar'] . self::_vn($acts[0], $context['flags']['advar']);
             if ($context['flags']['jstrue']) {
                 return $raw ? "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}$v{$context['ops']['cnd_end']}" : "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}htmlentities($v, ENT_QUOTES){$context['ops']['cnd_end']}";
             } else {
@@ -1141,7 +1141,7 @@ class LCRun {
         }
 
         // Tract to parent. Do not support foo/../bar style variable name
-        $var = preg_replace_callback('/\\.\\.\\//', function($matches) use (&$levels) {
+        $var = preg_replace_callback('/\\.\\.\\//', function() use (&$levels) {
             $levels++;
             return '';
         }, $var);
