@@ -254,7 +254,7 @@ $libstr
     /**
      * Internal method used by compile(). Check options and handle fileext.
      *
-     * @param string $options current compile option
+     * @param array $options current compile option
      *
      * @return array file extensions
      *
@@ -329,7 +329,7 @@ $libstr
     /**
      * Internal method used by compile(). Export required custom helper functions.
      *
-     * @param string $context current scaning context
+     * @param array $context current scaning context
      *
      * @codeCoverageIgnore
      */
@@ -349,7 +349,7 @@ $libstr
     /**
      * Internal method used by compile(). Export required standalone functions.
      *
-     * @param string $context current scaning context
+     * @param array $context current scaning context
      *
      * @codeCoverageIgnore
      */
@@ -826,7 +826,7 @@ $libstr
     /**
      * Internal method used by compile(). Collect handlebars usage information, detect template error.
      *
-     * @param string $token detected handlebars {{ }} token
+     * @param array $token detected handlebars {{ }} token
      * @param string $context current scaning context
      */
     protected static function scan($token, &$context) {
@@ -929,8 +929,8 @@ $libstr
     /**
      * Internal method used by compile(). Return compiled PHP code partial for a handlebars token.
      *
-     * @param string $token detected handlebars {{ }} token
-     * @param string $context current scaning context
+     * @param array $token detected handlebars {{ }} token
+     * @param array $context current scaning context
      */
     public static function tokens(&$token, &$context) {
         list($raw, $acts) = self::_tk($token, $context);
