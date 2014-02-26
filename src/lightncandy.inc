@@ -582,7 +582,7 @@ $libstr
      *
      * @return mixed Variable names array or null.
      * 
-     * @assert ('.') === Array('.')
+     * @expect Array('.') when input '.'
      */
     protected static function _vs($v) {
         if ($v == '.') {
