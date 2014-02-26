@@ -1078,9 +1078,12 @@ class LCRun {
      *
      * @return boolean Return true when the value is not null nor false.
      * 
-     * @expect true when input 'a', Array(), Array()
-     * @expect true when input 'a', Array(), Array('a' => null)
+     * @expect false when input 'a', Array(), Array()
+     * @expect false when input 'a', Array(), Array('a' => null)
+     * @expect false when input 'a', Array(), Array('a' => 0)
+     * @expect false when input 'a', Array(), Array('a' => false)
      * @expect true when input 'a', Array(), Array('a' => true)
+     * @expect true when input 'a', Array(), Array('a' => 1)
      */
     public static function ifvar($var, $cx, $in) {
         $v = self::val($var, $cx, $in);
