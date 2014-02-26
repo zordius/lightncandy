@@ -447,6 +447,8 @@ $libstr
     /**
      * Get JsonSchema of last compiled handlebars template as pretty printed string.
      *
+     * @param string $indent indent string.
+     *
      * @return string JsonSchema string
      *
      * @codeCoverageIgnore
@@ -458,7 +460,7 @@ $libstr
                 case '}':
                 case ']':
                     $level--;
-                    $is = str_repeat('  ', $level);
+                    $is = str_repeat($indent, $level);
                     return "\n$is{$matches[0]}";
                 case ':':
                     return ': ';
@@ -471,7 +473,7 @@ $libstr
                 case ',':
                     $br = "\n";
             }
-            $is = str_repeat('  ', $level);
+            $is = str_repeat($indent, $level);
             return "{$matches[0]}$br$is";
         }, json_encode(self::getJsonSchema()));
     }
@@ -827,7 +829,7 @@ $libstr
      * Internal method used by compile(). Collect handlebars usage information, detect template error.
      *
      * @param array $token detected handlebars {{ }} token
-     * @param string $context current scaning context
+     * @param array $context current scaning context
      */
     protected static function scan($token, &$context) {
         list($raw, $acts) = self::_tk($token, $context);
