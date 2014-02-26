@@ -1,5 +1,5 @@
 <?php
-require('src/lightncandy.inc');
+require('src/lightncandy.php');
 $template = <<<VAREND
 <ul>
  <li>1. {{helper1 name}}</li>

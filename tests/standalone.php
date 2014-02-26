@@ -1,5 +1,5 @@
 <?php
-require('src/lightncandy.inc');
+require('src/lightncandy.php');
 $template = "{{#if name}}Welcome {{name}} , You win \${{value}} dollars!!{{else}}No name!{{/if}}\n";
 $php = LightnCandy::compile($template, Array('flags' => LightnCandy::FLAG_STANDALONE));
 

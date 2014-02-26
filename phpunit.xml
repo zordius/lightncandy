@@ -2,7 +2,6 @@
 <phpunit 
  backupGlobals="false"
  colors="true"
- xbootstrap="src/lightncandy.inc"
 >
  <filter>
   <blacklist>

@@ -1,5 +1,5 @@
 <?php
-require('src/lightncandy.inc');
+require('src/lightncandy.php');
 $template = <<<TEMP
 {{#each list}}
 Name {{0}} , Age {{1}} ...;

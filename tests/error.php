@@ -1,5 +1,5 @@
 <?php
-require('src/lightncandy.inc');
+require('src/lightncandy.php');
 $template = <<<VAREND
 Test {{testerr1}}} ....
 Test {{{testerr2}} ....

@@ -1,5 +1,5 @@
 <?php
-require('src/lightncandy.inc');
+require('src/lightncandy.php');
 $template = "Welcome {{name}} , You win \${{value}} dollars!!\n";
 $php = LightnCandy::compile($template);
 

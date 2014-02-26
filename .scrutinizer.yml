@@ -1,6 +1,5 @@
 filter:
-    excluded_paths: [vendor/*, tests/*, app/*, bin/*, library/*]
-    path: [src/*.inc]
+    excluded_paths: [tests/*, build/*]
 tools:
     php_cpd: true
     php_analyzer: true

@@ -36,7 +36,7 @@ Sample
 ```php
 // THREE STEPS TO USE LIGHTNCANDY
 // Step 1. require the lib, compile template, get the PHP code as string
-require('src/lightncandy.inc');
+require('src/lightncandy.php');
 
 $template = "Welcome {{name}} , You win \${{value}} dollars!!\n";
 $phpStr = LightnCandy::compile($template);
@@ -254,5 +254,4 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{foo.[ba.r].[#spec].0.ok}}` : reference to $CurrentConext['foo']['ba.r']['#spec'][0]['ok']
 * `{{~any_valid_tag}}` : Space control, remove all previous spacing (includes CR/LF, tab, space; stop on any none spacing charactor) (require `FLAG_SPACECTL`)
 * `{{any_valid_tag~}}` : Space control, remove all next spacing (includes CR/LF, tab, space; stop on any none spacing charactor) (require `FLAG_SPACECTL`)
-
 
