@@ -488,11 +488,15 @@ $libstr
     }
 
     /**
-     * Internal method used by _qscope(). Get variable names translated string, Ex: "['a']['b']['c']"
+     * Internal method used by _qscope(). Get variable names translated string.
      *
      * @param array $scopes an array of variable names with single quote
      *
      * @return string PHP array names string
+     * 
+     * @expect '' when input Array()
+     * @expect '[a]' when input Array('a')
+     * @expect '[a][b][c]' when input Array('a', 'b', 'c')
      */
     protected static function _scope($scopes) {
         return count($scopes) ? '[' . implode('][', $scopes) . ']' : '';

@@ -6,6 +6,16 @@ include('src/lightncandy.inc');
 class LightnCandyTest extends PHPUnit_Framework_TestCase
 {
     /**
+     * @covers LightnCandy::_scope
+     */
+    public function testOn__scope() {
+        $method = new ReflectionMethod('LightnCandy', '_scope');
+        $method->setAccessible(true);
+        $this->assertEquals('', $method->invoke(null, Array()));
+        $this->assertEquals('[a]', $method->invoke(null, Array('a')));
+        $this->assertEquals('[a][b][c]', $method->invoke(null, Array('a', 'b', 'c')));
+    }
+    /**
      * @covers LightnCandy::_vs
      */
     public function testOn__vs() {
