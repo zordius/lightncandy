@@ -64,7 +64,11 @@ class LightnCandy {
      *
      * @codeCoverageIgnore
      */
-    public static function compile($template, $options = 0) {
+    public static function compile($template, $options) {
+        if (!is_array($options)) {
+            $options = Array();
+        }
+
         $flags = isset($options['flags']) ? $options['flags'] : self::FLAG_BESTPERFORMANCE;
 
         $context = Array(
@@ -407,7 +411,7 @@ $libstr
      *
      * @param mixed $v value
      *
-     * @return boolean True when the value larger then 0
+     * @return string 'true' when the value larger then 0
      *
      * @expect 'true' when input 1
      * @expect 'true' when input 999
@@ -703,7 +707,6 @@ $libstr
      * Internal method used by compile(). Find current json schema target, prepare target parent.
      *
      * @param array $context current compile context
-     * @param string $var current variable name
      */
     protected static function &_jsp(&$context) {
         $target = &$context['jsonSchema'];
@@ -1173,7 +1176,7 @@ class LCRun {
      * @param array $in input data with current scope
      * @param boolean $loop true when in loop
      *
-     * @return mixed The raw value of the specified variable
+     * @return string The raw value of the specified variable
      */
     public static function raw($var, $cx, $in, $loop = false) {
         $v = self::val($var, $cx, $in);
@@ -1226,7 +1229,7 @@ class LCRun {
      * @param array $cx render time context
      * @param array $in input data with current scope
      *
-     * @return mixed The htmlencoded value of the specified variable
+     * @return string The htmlencoded value of the specified variable
      */
     public static function encq($var, $cx, $in) {
         return preg_replace('/&#039;/', '&#x27;', htmlentities(self::raw($var, $cx, $in), ENT_QUOTES));
