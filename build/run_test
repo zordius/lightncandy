@@ -1,3 +1,0 @@
-#!/bin/sh
-echo 'Script usage sample: ./run_test test/error.php'
-php -dopen_basedir=/ $1

@@ -1,4 +1,3 @@
-#!/usr/bin/php -dopen_basedir=/
 <?php
 
 require_once 'PHPUnit/Autoload.php';
