@@ -408,6 +408,11 @@ $libstr
      * @param mixed $v value
      *
      * @return boolean True when the value larger then 0
+     *
+     * @expect 'true' when input 1
+     * @expect 'true' when input 999
+     * @expect 'false' when input 0
+     * @expect 'false' when input -1
      */
     protected static function _on($v) {
         return ($v > 0) ? 'true' : 'false';
@@ -417,6 +422,8 @@ $libstr
      * Get last compiler context.
      *
      * @return array Context data
+     *
+     * @codeCoverageIgnore
      */
     public static function getContext() {
         return self::$lastContext;
@@ -426,6 +433,8 @@ $libstr
      * Get JsonSchema of last compiled handlebars template.
      *
      * @return array JsonSchema data
+     *
+     * @codeCoverageIgnore
      */
     public static function getJsonSchema() {
         return self::$lastContext['jsonSchema'];
@@ -435,6 +444,8 @@ $libstr
      * Get JsonSchema of last compiled handlebars template as pretty printed string.
      *
      * @return string JsonSchema string
+     *
+     * @codeCoverageIgnore
      */
     public static function getJsonSchemaString($indent = '  ') {
         $level = 0;
@@ -513,6 +524,10 @@ $libstr
      * @param string $name base function name
      *
      * @return string compiled Function name
+     *
+     * @expect 'LCRun::test' when input Array('flags' => Array('standalone' => 0)), 'test'
+     * @expect 'LCRun::test2' when input Array('flags' => Array('standalone' => 0)), 'test2'
+     * @expect "\$cx['funcs']['test3']" when input Array('flags' => Array('standalone' => 1)), 'test3'
      */
     protected static function _fn($context, $name) {
         return $context['flags']['standalone'] ? "\$cx['funcs']['$name']" : "LCRun::$name";
@@ -534,23 +549,33 @@ $libstr
     }
 
     /**
-     * Internal method used by _vn(). Get variable names translated string, Ex: "['a']['b']['c']"
+     * Internal method used by _vn(). Get variable names translated string.
      *
-     * @param array $list an array of variable names. ex: ['a', 'b', 'c', ...]
+     * @param array $list an array of variable names.
      *
      * @return string PHP array names string
+     * 
+     * @expect '' when input Array()
+     * @expect "['a']" when input Array('a')
+     * @expect "['a']['b']['c']" when input Array('a', 'b', 'c')
      */
     protected static function _qscope($list) {
         return self::_scope(array_map(function ($v) {return "'$v'";}, $list));
     }
 
     /**
-     * Internal method used by compile(). Get variable names translated string, Ex: a.b.c => "['a']['b']['c']"
+     * Internal method used by compile(). Get variable names translated string.
      *
      * @param string $vn variable name.
      * @param integer $adv 0 to disable advanced veriable naming, N to enable a.[0].[#123] style.
      *
      * @return string Translated variable name as input array notation.
+     * 
+     * @expect '' when input '', 0
+     * @expect "['a']" when input 'a', 0
+     * @expect "['a']" when input 'a', 1
+     * @expect "['b']['c']" when input 'b.c', 0
+     * @expect "['b']['c']" when input 'b.c', 1
      */
     protected static function _vn($vn, $adv) {
         if ($adv) {
@@ -567,10 +592,10 @@ $libstr
      * @return string Translated advanced format variable name as input array notation.
      */
     protected static function _advn($vn) {
-        if (!preg_match('/[\\.\\]\\[]/')) {
+        if (!preg_match('/[\\.\\]\\[]/', $vn)) {
             return "['" . $vn . "']";
         }
-        if (!preg_match('/\\./')) {
+        if (!preg_match('/\\./', $vn)) {
             return "['" . substr($vn, 1, -1) . "']";
         }
         return preg_replace('/\\]\\.\\[/', '][', preg_replace_callback(self::VARNAME_SEARCH, function ($matches) {

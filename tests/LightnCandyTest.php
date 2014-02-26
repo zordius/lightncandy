@@ -42,6 +42,27 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(true, $method->invoke(null, Array('level' => 0, 'error' => Array('some error'), 'flags' => Array('errorlog' => 0, 'exception' => 0))));
     }
     /**
+     * @covers LightnCandy::_on
+     */
+    public function testOn__on() {
+        $method = new ReflectionMethod('LightnCandy', '_on');
+        $method->setAccessible(true);
+        $this->assertEquals('true', $method->invoke(null, 1));
+        $this->assertEquals('true', $method->invoke(null, 999));
+        $this->assertEquals('false', $method->invoke(null, 0));
+        $this->assertEquals('false', $method->invoke(null, -1));
+    }
+    /**
+     * @covers LightnCandy::_fn
+     */
+    public function testOn__fn() {
+        $method = new ReflectionMethod('LightnCandy', '_fn');
+        $method->setAccessible(true);
+        $this->assertEquals('LCRun::test', $method->invoke(null, Array('flags' => Array('standalone' => 0)), 'test'));
+        $this->assertEquals('LCRun::test2', $method->invoke(null, Array('flags' => Array('standalone' => 0)), 'test2'));
+        $this->assertEquals("\$cx['funcs']['test3']", $method->invoke(null, Array('flags' => Array('standalone' => 1)), 'test3'));
+    }
+    /**
      * @covers LightnCandy::_scope
      */
     public function testOn__scope() {
@@ -50,6 +71,28 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('', $method->invoke(null, Array()));
         $this->assertEquals('[a]', $method->invoke(null, Array('a')));
         $this->assertEquals('[a][b][c]', $method->invoke(null, Array('a', 'b', 'c')));
+    }
+    /**
+     * @covers LightnCandy::_qscope
+     */
+    public function testOn__qscope() {
+        $method = new ReflectionMethod('LightnCandy', '_qscope');
+        $method->setAccessible(true);
+        $this->assertEquals('', $method->invoke(null, Array()));
+        $this->assertEquals("['a']", $method->invoke(null, Array('a')));
+        $this->assertEquals("['a']['b']['c']", $method->invoke(null, Array('a', 'b', 'c')));
+    }
+    /**
+     * @covers LightnCandy::_vn
+     */
+    public function testOn__vn() {
+        $method = new ReflectionMethod('LightnCandy', '_vn');
+        $method->setAccessible(true);
+        $this->assertEquals('', $method->invoke(null, '', 0));
+        $this->assertEquals("['a']", $method->invoke(null, 'a', 0));
+        $this->assertEquals("['a']", $method->invoke(null, 'a', 1));
+        $this->assertEquals("['b']['c']", $method->invoke(null, 'b.c', 0));
+        $this->assertEquals("['b']['c']", $method->invoke(null, 'b.c', 1));
     }
     /**
      * @covers LightnCandy::_vs
