@@ -4,5 +4,8 @@ php:
   - 5.4
   - 5.5
 
+before_script:
+  - build/gen_test
+
 script:
   - build/gen_doc

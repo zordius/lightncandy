@@ -1,0 +1,5 @@
+#!/bin/sh
+wget https://phar.phpunit.de/phpunit-skelgen.phar --no-check-certificate
+php -dopen_basedir=/ phpunit-skelgen.phar --test LightnCandy src/lightncandy.inc testLightnCandy tests/testLightnCandy.php
+ls -al tests/
+cat tests/*.php
