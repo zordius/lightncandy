@@ -61,6 +61,8 @@ class LightnCandy {
      * @param array $options LightnCandy compile time and run time options, default is Array('flags' => LightnCandy::FLAG_BESTPERFORMANCE)
      *
      * @return string Compiled PHP code when successed. If error happened and compile failed, return false.
+     *
+     * @codeCoverageIgnore
      */
     public static function compile($template, $options = 0) {
         $flags = isset($options['flags']) ? $options['flags'] : self::FLAG_BESTPERFORMANCE;
@@ -251,6 +253,11 @@ $libstr
      * @param string $options current compile option
      *
      * @return array file extensions
+     *
+     * @expect Array('.tmpl') when input Array()
+     * @expect Array('test') when input Array('fileext' => 'test')
+     * @expect Array('test1') when input Array('fileext' => Array('test1'))
+     * @expect Array('test2', 'test3') when input Array('fileext' => Array('test2', 'test3'))
      */
     protected static function _fileext($options) {
         $exts = isset($options['fileext']) ? $options['fileext'] : '.tmpl';
@@ -441,6 +448,8 @@ $libstr
      * @param string $tmp_dir optional, change temp directory for php include file saved by prepare() when can not include php code with data:// format.
      *
      * @return mixed result of include()
+     *
+     * @codeCoverageIgnore
      */
     public static function prepare($php, $tmp_dir = false) {
         if (!ini_get('allow_url_include') || !ini_get('allow_url_fopen')) {
@@ -469,6 +478,8 @@ $libstr
      * @param string $compiled compiled template php file name
      *
      * @return string rendered result
+     *
+     * @codeCoverageIgnore
      */
     public static function render($compiled, $data) {
         $func = include($compiled);

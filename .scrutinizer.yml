@@ -1,4 +1,5 @@
 imports:
     - php
 tools:
+    php_pdepend: true
     php_code_coverage: true
