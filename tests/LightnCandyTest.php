@@ -32,6 +32,16 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(Array('src', 'build'), $method->invoke(null, Array('basedir' => Array('src', 'build'))));
     }
     /**
+     * @covers LightnCandy::_error
+     */
+    public function testOn__error() {
+        $method = new ReflectionMethod('LightnCandy', '_error');
+        $method->setAccessible(true);
+        $this->assertEquals(true, $method->invoke(null, Array('level' => 1, 'stack' => Array('X'), 'flags' => Array('errorlog' => 0, 'exception' => 0), 'error' => Array())));
+        $this->assertEquals(false, $method->invoke(null, Array('level' => 0, 'error' => Array())));
+        $this->assertEquals(true, $method->invoke(null, Array('level' => 0, 'error' => Array('some error'), 'flags' => Array('errorlog' => 0, 'exception' => 0))));
+    }
+    /**
      * @covers LightnCandy::_scope
      */
     public function testOn__scope() {

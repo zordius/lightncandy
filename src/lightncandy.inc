@@ -302,6 +302,8 @@ $libstr
      * Internal method used by compile(). Get PHP code from a closure of function as string.
      *
      * @param object $closure Closure object
+     *
+     * @codeCoverageIgnore
      */
     protected static function getPHPCode($closure) {
         if (is_string($closure) && preg_match('/(.+)::(.+)/', $closure, $matched)) {
@@ -324,6 +326,8 @@ $libstr
      * Internal method used by compile(). Export required custom helper functions.
      *
      * @param string $context current scaning context
+     *
+     * @codeCoverageIgnore
      */
     protected static function exportHelper($context) {
         $ret = '';
@@ -342,6 +346,8 @@ $libstr
      * Internal method used by compile(). Export required standalone functions.
      *
      * @param string $context current scaning context
+     *
+     * @codeCoverageIgnore
      */
     protected static function exportLCRun($context) {
         if ($context['flags']['standalone'] == 0) {
@@ -371,6 +377,10 @@ $libstr
      * @param array $context Current context of compiler progress.
      *
      * @return boolean True when error detected
+     *
+     * @expect true when input Array('level' => 1, 'stack' => Array('X'), 'flags' => Array('errorlog' => 0, 'exception' => 0), 'error' => Array())
+     * @expect false when input Array('level' => 0, 'error' => Array())
+     * @expect true when input Array('level' => 0, 'error' => Array('some error'), 'flags' => Array('errorlog' => 0, 'exception' => 0))
      */
     protected static function _error(&$context) {
         if ($context['level'] !== 0) {
