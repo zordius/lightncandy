@@ -17,6 +17,21 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(Array('test2', 'test3'), $method->invoke(null, Array('fileext' => Array('test2', 'test3'))));
     }
     /**
+     * @covers LightnCandy::_basedir
+     */
+    public function testOn__basedir() {
+        $method = new ReflectionMethod('LightnCandy', '_basedir');
+        $method->setAccessible(true);
+        $this->assertEquals(Array(getcwd()), $method->invoke(null, Array()));
+        $this->assertEquals(Array(getcwd()), $method->invoke(null, Array('basedir' => 0)));
+        $this->assertEquals(Array(getcwd()), $method->invoke(null, Array('basedir' => '')));
+        $this->assertEquals(Array(getcwd()), $method->invoke(null, Array('basedir' => Array())));
+        $this->assertEquals(Array('src'), $method->invoke(null, Array('basedir' => Array('src'))));
+        $this->assertEquals(Array(getcwd()), $method->invoke(null, Array('basedir' => Array('*dir*not*found'))));
+        $this->assertEquals(Array('src'), $method->invoke(null, Array('basedir' => Array('src', 'dir*not*found'))));
+        $this->assertEquals(Array('src', 'build'), $method->invoke(null, Array('basedir' => Array('src', 'build'))));
+    }
+    /**
      * @covers LightnCandy::_scope
      */
     public function testOn__scope() {

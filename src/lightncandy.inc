@@ -270,22 +270,32 @@ $libstr
      * @param array $options current compile option
      *
      * @return array base directories
+     *
+     * @expect Array(getcwd()) when input Array()
+     * @expect Array(getcwd()) when input Array('basedir' => 0)
+     * @expect Array(getcwd()) when input Array('basedir' => '')
+     * @expect Array(getcwd()) when input Array('basedir' => Array())
+     * @expect Array('src') when input Array('basedir' => Array('src'))
+     * @expect Array(getcwd()) when input Array('basedir' => Array('*dir*not*found'))
+     * @expect Array('src') when input Array('basedir' => Array('src', 'dir*not*found'))
+     * @expect Array('src', 'build') when input Array('basedir' => Array('src', 'build'))
      */
     protected static function _basedir($options) {
         $dirs = isset($options['basedir']) ? $options['basedir'] : 0;
         $dirs = is_array($dirs) ? $dirs : Array($dirs);
+        $ret = Array();
 
-        foreach ($dirs as $index => $dir) {
-            if (!is_dir($dir)) {
-                unset($dirs[$index]);
+        foreach ($dirs as $dir) {
+            if (is_dir($dir)) {
+                $ret[] = $dir;
             }
         }
 
-        if (count(array_keys($dirs)) === 0) {
-            $dirs[] = getcwd();
+        if (count($ret) === 0) {
+            $ret[] = getcwd();
         }
 
-        return $dirs;
+        return $ret;
     }
 
     /**
