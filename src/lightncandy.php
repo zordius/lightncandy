@@ -233,6 +233,10 @@ $libstr
      * @param mixed $options input options
      *
      * @return array context with generated helper table
+     *
+     * @expect Array() when input Array(), Array()
+     * @expect Array('flags' => Array('exhlp' => 1)) when input Array('flags' => Array('exhlp' => 1)), Array('helpers' => Array('abc'))
+     * @expect Array('error' => Array('Can not find custom helper function defination abc() !'), 'flags' => Array('exhlp' => 0)) when input Array('error' => Array(), 'flags' => Array('exhlp' => 0)), Array('helpers' => Array('abc'))
      */
     public static function buildHelperTable($context, $options) {
         if (isset($options['helpers']) && is_array($options['helpers'])) {
@@ -254,7 +258,7 @@ $libstr
      *
      * @param string $template template string
      *
-     * @return string partial file content
+     * @return string expanded template
      */
     public static function expandPartial($template, &$context) {
         $template = preg_replace_callback(self::PARTIAL_SEARCH, function ($matches) use (&$context) {

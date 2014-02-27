@@ -7,6 +7,21 @@ require_once('src/lightncandy.php');
 class LightnCandyTest extends PHPUnit_Framework_TestCase
 {
     /**
+     * @covers LightnCandy::buildHelperTable
+     */
+    public function testOn_buildHelperTable() {
+        $method = new ReflectionMethod('LightnCandy', 'buildHelperTable');
+        $this->assertEquals(Array(), $method->invoke(null,
+            Array(), Array()
+        ));
+        $this->assertEquals(Array('flags' => Array('exhlp' => 1)), $method->invoke(null,
+            Array('flags' => Array('exhlp' => 1)), Array('helpers' => Array('abc'))
+        ));
+        $this->assertEquals(Array('error' => Array('Can not find custom helper function defination abc() !'), 'flags' => Array('exhlp' => 0)), $method->invoke(null,
+            Array('error' => Array(), 'flags' => Array('exhlp' => 0)), Array('helpers' => Array('abc'))
+        ));
+    }
+    /**
      * @covers LightnCandy::_fileext
      */
     public function testOn__fileext() {
