@@ -223,8 +223,18 @@ $libstr
         );
 
         $context['ops']['enc'] = $context['flags']['jsquote'] ? 'encq' : 'enc';
+        return self::buildHelperTable($context, $options);
+    }
 
-        // Generate custom helpers table.
+    /**
+     * Build custom helper table
+     *
+     * @param array $context prepared context
+     * @param mixed $options input options
+     *
+     * @return array context with generated helper table
+     */
+    public static function buildHelperTable($context, $options) {
         if (isset($options['helpers']) && is_array($options['helpers'])) {
             foreach ($options['helpers'] as $name => $func) {
                 if (is_callable($func)) {
@@ -236,7 +246,6 @@ $libstr
                 }
             }
         }
-
         return $context;
     }
 
