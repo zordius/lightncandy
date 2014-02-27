@@ -1,4 +1,4 @@
-lightncandy
+LightnCandy
 ===========
 
 A PHP library to support almost all features of handlebars ( http://handlebarsjs.com/ ) , target to run as fast as pure PHP.
@@ -31,8 +31,24 @@ Features
 * Standalone Template
    * The compiled PHP code can run without any PHP library. You do not need to include LightnCandy when execute rendering function.
 
-Sample
-------
+Installation
+------------
+
+Use Composer ( https://getcomposer.org/ ) to install LightnCandy:
+
+```
+composer require zordius/lightncandy:dev-master
+composer install
+```
+
+Or, download LightnCandy from github:
+
+```
+wget https://raw.github.com/zordius/lightncandy/master/src/lightncandy.php --no-check-certificate
+```
+
+Usage
+-----
 ```php
 // THREE STEPS TO USE LIGHTNCANDY
 // Step 1. require the lib, compile template, get the PHP code as string
@@ -67,8 +83,8 @@ echo $renderer(Array('name' => 'John', 'value' => 10000));
 echo $renderer(Array('name' => 'Peter', 'value' => 1000));
 ```
 
-Sample output
--------------
+The output will be:
+
 ```
 Template is:
 Welcome {{name}} , You win ${{value}} dollars!!
