@@ -65,6 +65,73 @@ class LightnCandy {
      * @codeCoverageIgnore
      */
     public static function compile($template, $options) {
+        $context = self::buildContext($options);
+
+        // Scan for partial and replace partial with template.
+        $template = LightnCandy::expandPartial($template, $context);
+
+        if (self::_error($context)) {
+            return false;
+        }
+
+        // Do first time scan to find out used feature, detect template error.
+        if (preg_match_all(self::TOKEN_SEARCH, $template, $tokens, PREG_SET_ORDER) > 0) {
+            foreach ($tokens as $token) {
+                self::scan($token, $context);
+            }
+        }
+
+        if (self::_error($context)) {
+            return false;
+        }
+
+        // Check used features and compile flags. If the template is simple enough,
+        // we can generate best performance code with enable 'useVar' internal flag.
+        if (!$context['flags']['jsobj'] && (($context['usedFeature']['sec'] + $context['usedFeature']['parent'] < 1) || !$context['flags']['jsobj'])) {
+            $context['useVar'] = '$in';
+        }
+
+        // Do PHP code and json schema generation.
+        $code = preg_replace_callback(self::TOKEN_SEARCH, function ($matches) use (&$context) {
+            $tmpl = LightnCandy::tokens($matches, $context);
+            return "{$matches[1]}'$tmpl'{$matches[8]}";
+        }, addcslashes($template, "'"));
+
+        if (self::_error($context)) {
+            return false;
+        }
+
+        $flagJStrue = self::_on($context['flags']['jstrue']);
+        $flagJSObj = self::_on($context['flags']['jsobj']);
+
+        $libstr = self::exportLCRun($context);
+        $helpers = self::exportHelper($context);
+
+        // Return generated PHP code string.
+        return "<?php return function (\$in) {
+    \$cx = Array(
+        'flags' => Array(
+            'jstrue' => $flagJStrue,
+            'jsobj' => $flagJSObj,
+        ),
+        'helpers' => $helpers,
+        'scopes' => Array(\$in),
+        'path' => Array(),
+$libstr
+    );
+    {$context['ops']['op_start']}'$code'{$context['ops']['op_end']}
+}
+?>";
+    }
+
+    /**
+     * Build context from options
+     *
+     * @param mixed $options input options
+     *
+     * @return array Context from options
+     */
+    protected static function buildContext($options) {
         if (!is_array($options)) {
             $options = Array();
         }
@@ -158,61 +225,7 @@ class LightnCandy {
             }
         }
 
-        // Scan for partial and replace partial with template.
-        $template = LightnCandy::expandPartial($template, $context);
-
-        if (self::_error($context)) {
-            return false;
-        }
-
-        // Do first time scan to find out used feature, detect template error.
-        if (preg_match_all(self::TOKEN_SEARCH, $template, $tokens, PREG_SET_ORDER) > 0) {
-            foreach ($tokens as $token) {
-                self::scan($token, $context);
-            }
-        }
-
-        if (self::_error($context)) {
-            return false;
-        }
-
-        // Check used features and compile flags. If the template is simple enough,
-        // we can generate best performance code with enable 'useVar' internal flag.
-        if (!$context['flags']['jsobj'] && (($context['usedFeature']['sec'] + $context['usedFeature']['parent'] < 1) || !$context['flags']['jsobj'])) {
-            $context['useVar'] = '$in';
-        }
-
-        // Do PHP code and json schema generation.
-        $code = preg_replace_callback(self::TOKEN_SEARCH, function ($matches) use (&$context) {
-            $tmpl = LightnCandy::tokens($matches, $context);
-            return "{$matches[1]}'$tmpl'{$matches[8]}";
-        }, addcslashes($template, "'"));
-
-        if (self::_error($context)) {
-            return false;
-        }
-
-        $flagJStrue = self::_on($context['flags']['jstrue']);
-        $flagJSObj = self::_on($context['flags']['jsobj']);
-
-        $libstr = self::exportLCRun($context);
-        $helpers = self::exportHelper($context);
-
-        // Return generated PHP code string.
-        return "<?php return function (\$in) {
-    \$cx = Array(
-        'flags' => Array(
-            'jstrue' => $flagJStrue,
-            'jsobj' => $flagJSObj,
-        ),
-        'helpers' => $helpers,
-        'scopes' => Array(\$in),
-        'path' => Array(),
-$libstr
-    );
-    {$context['ops']['op_start']}'$code'{$context['ops']['op_end']}
-}
-?>";
+        return $context;
     }
 
     /**
