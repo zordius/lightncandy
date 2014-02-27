@@ -1141,7 +1141,7 @@ class LCRun {
      * @param array $cx render time context
      * @param array $in input data with current scope
      *
-     * @return boolean Return true when the value is not null nor false.
+     * @return string Return rendered string when the value is not null nor false.
      *
      * @expect 'Y' when input 'a', Array('scopes' => Array()), Array(), function () {return 'Y';}
      * @expect '' when input 'a', Array('scopes' => Array()), Array('a' => 1), function () {return 'Y';}
@@ -1165,6 +1165,12 @@ class LCRun {
      * @param array $in input data with current scope
      *
      * @return boolean Return true when the value is not null nor false.
+     *
+     * @expect true when input 'a', Array(), Array()
+     * @expect false when input 'a', Array(), Array('a' => 0)
+     * @expect true when input 'a', Array(), Array('a' => false)
+     * @expect false when input 'a', Array(), Array('a' => 'false')
+     * @expect true when input 'a', Array(), Array('a' => null)
      */
     public static function isec($var, $cx, $in) {
         $v = self::val($var, $cx, $in);
@@ -1179,6 +1185,20 @@ class LCRun {
      * @param array $in input data with current scope
      *
      * @return mixed The raw value of the specified variable
+     *
+     * @expect Array() when input '', Array(), Array()
+     * @expect null when input 'a', Array(), Array()
+     * @expect 0 when input 'a', Array(), Array('a' => 0)
+     * @expect null when input 'a]b', Array(), Array('a' => 0)
+     * @expect null when input 'a]b', Array(), Array()
+     * @expect 'Q' when input 'a]b', Array(), Array('a' => Array('b' => 'Q'))
+     * @expect '' when input '..', Array('scopes' => Array()), Array()
+     * @expect 'Y' when input '..', Array('scopes' => Array('Y')), Array()
+     * @expect null when input '../a', Array('scopes' => Array('Y')), Array()
+     * @expect 'q' when input '../a', Array('scopes' => Array(Array('a' => 'q'))), Array()
+     * @expect 'o' when input '../../a', Array('scopes' => Array(Array('a' => 'o'), Array('a' => 'p'))), Array()
+     * @expect 'x' when input '../../../', Array('scopes' => Array('x', Array('a' => 'q'), Array('b' => 'r'))), Array()
+     * @expect 'o' when input '../../../c', Array('scopes' => Array(Array('c' => 'o'), Array('a' => 'q'), Array('b' => 'r'))), Array()
      */
     public static function val($var, $cx, $in) {
         $levels = 0;
@@ -1193,7 +1213,13 @@ class LCRun {
             return $matched[1];
         }
 
-        // Tract to parent. Do not support foo/../bar style variable name
+        // Deal with ..
+        if ($var === '..') {
+            $var = '';
+            $levels = 1;
+        }
+
+        // Trace to parent for ../ N times
         $var = preg_replace_callback('/\\.\\.\\//', function() use (&$levels) {
             $levels++;
             return '';
