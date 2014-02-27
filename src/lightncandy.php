@@ -307,7 +307,8 @@ $libstr
      *
      * @param object $closure Closure object
      *
-     * @codeCoverageIgnore
+     * @expect 'function($a) {return;}' when input function ($a) {return;}
+     * @expect 'function($a) {return;}' when input  	function ($a) {return;} 
      */
     protected static function getPHPCode($closure) {
         if (is_string($closure) && preg_match('/(.+)::(.+)/', $closure, $matched)) {
@@ -753,7 +754,7 @@ $libstr
         $target = &self::_jsp($context);
         $vars = self::_vs($var);
         if (is_array($vars)) {
-            foreach (self::_vs($var) as $v) {
+            foreach ($vars as $v) {
                 $target = &self::_jst($target, $v);
             }
         }

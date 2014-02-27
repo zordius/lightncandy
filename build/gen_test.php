@@ -40,7 +40,7 @@ VAR
                 echo "        \$method->setAccessible(true);\n";
             }
             foreach ($matched[1] as $idx => $expect) {
-                echo "        \$this->assertEquals($expect, \$method->invoke(null, {$matched[2][$idx]}));\n";
+                echo "        \$this->assertEquals($expect, \$method->invoke(null,\n            {$matched[2][$idx]}\n        ));\n";
             }
             echo "    }\n";
         }
