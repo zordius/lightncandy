@@ -54,14 +54,14 @@ class LightnCandy {
     const VARNAME_SEARCH = '/(\\[[^\\]]+\\]|[^\\[\\]\\.]+)/';
 
     // Positions of matched token
-    const _mLSPACE = 2;
+    const _mLSPACE = 1;
     const _mBEGINTAG = 2;
     const _mLSPACECTL = 3;
     const _mBLOCKOP = 4;
     const _mINNERTAG = 5;
     const _mRSPACECTL = 6;
     const _mENDTAG = 7;
-    const _mRSPACE = 2;
+    const _mRSPACE = 8;
 
     private static $lastContext;
 
@@ -892,6 +892,18 @@ $libstr
     }
 
     /**
+     * Internal method used by scan(). return token string
+     *
+     * @param string[] $token detected handlebars {{ }} token
+     * @param integer $remove remove how many heading and ending token
+     *
+     * @return string Return whole token
+     */
+    protected static function _tokenString($token, $remove = 1) {
+        return implode('', array_slice($token, $remove, -$remove));
+    }
+
+    /**
      * Internal method used by scan(). Validate start and and.
      *
      * @param string[] $token detected handlebars {{ }} token
@@ -900,16 +912,14 @@ $libstr
      * @return mixed Return true when invalid
      */
     protected static function _validateStartEnd($token, &$context, $raw) {
-        list(, , $begintag, $lspctl, $blockop, $intag, $rspctl, $endtag) = $token;
-
         // {{ }}} or {{{ }} are invalid
-        if (strlen($begintag) !== strlen($endtag)) {
-            $context['error'][] = "Bad token $begintag$lspctl$blockop$intag$rspctl$endtag ! Do you mean {{ }} or {{{ }}}?";
+        if (strlen($token[self::_mBEGINTAG]) !== strlen($token[self::_mENDTAG])) {
+            $context['error'][] = 'Bad token ' . self::_tokenString($token) . ' ! Do you mean {{ }} or {{{ }}}?';
             return true;
         }
         // {{{# }}} or {{{! }}} or {{{/ }}} or {{{^ }}} are invalid.
-        if ($raw && $token[4]) {
-            $context['error'][] = "Bad token $begintag$lspctl$blockop$intag$rspctl$endtag ! Do you mean {{" . "$lspctl$blockop$intag$rspctl}}?";
+        if ($raw && $token[self::_mBLOCKOP]) {
+            $context['error'][] = 'Bad token ' . self::_tokenString($token) . ' ! Do you mean {{' . self::_tokenString($token, 2) . '}}?';
             return true;
         }
     }
@@ -919,20 +929,14 @@ $libstr
      *
      * @param string[] $token detected handlebars {{ }} token
      * @param array $context current scaning context
+     * @param string[] $vars parsed arguments list
      *
      * @return mixed Return true when invalid or detected
      */
-    protected static function _validateBlockOperations($token, &$context) {
-        list(, , $begintag, $lspctl, $blockop, $intag, $rspctl, $endtag) = $token;
-        list($raw, $acts) = self::_tk($token, $context);
-
-        if (!$token[4]) {
-            return;
-        }
-
-        switch ($token[4]) {
+    protected static function _validateBlockOperations($token, &$context, $vars) {
+        switch ($token[self::_mBLOCKOP]) {
         case '^':
-            $context['stack'][] = $intag;
+            $context['stack'][] = $token[self::_mINNERTAG];
             $context['level']++;
             return $context['usedFeature']['isec']++;
 
@@ -945,23 +949,21 @@ $libstr
             return $context['usedFeature']['comment']++;
 
         case '#':
-            $context['stack'][] = $intag;
+            $context['stack'][] = $token[self::_mINNERTAG];
             $context['level']++;
-            switch ($acts[0]) {
+            switch ($vars[0]) {
             case 'with':
-                if (isset($acts[1]) && !$context['flags']['with']) {
+                if (isset($vars[1]) && !$context['flags']['with']) {
                     $context['error'][] = 'do not support {{#with var}}, you should do compile with LightnCandy::FLAG_WITH flag';
                 }
             case 'each':
             case 'unless':
             case 'if':
-                return $context['usedFeature'][$acts[0]]++;
+                return $context['usedFeature'][$vars[0]]++;
 
             default:
                 return $context['usedFeature']['sec']++;
             }
-
-        default:
         }
     }
     /**
@@ -978,7 +980,7 @@ $libstr
             return;
         }
 
-        if (self::_validateBlockOperations($token, $context)) {
+        if (self::_validateBlockOperations($token, $context, $acts)) {
             return;
         }
 
