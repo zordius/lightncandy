@@ -57,7 +57,7 @@ class LightnCandy {
     const _mLSPACE = 1;
     const _mBEGINTAG = 2;
     const _mLSPACECTL = 3;
-    const _mBLOCKOP = 4;
+    const _mOP = 4;
     const _mINNERTAG = 5;
     const _mRSPACECTL = 6;
     const _mENDTAG = 7;
@@ -923,7 +923,7 @@ $libstr
             return true;
         }
         // {{{# }}} or {{{! }}} or {{{/ }}} or {{{^ }}} are invalid.
-        if ($raw && $token[self::_mBLOCKOP]) {
+        if ($raw && $token[self::_mOP]) {
             $context['error'][] = 'Bad token ' . self::_tokenString($token) . ' ! Do you mean {{' . self::_tokenString($token, 2) . '}}?';
             return true;
         }
@@ -938,8 +938,8 @@ $libstr
      *
      * @return mixed Return true when invalid or detected
      */
-    protected static function _validateBlockOperations($token, &$context, $vars) {
-        switch ($token[self::_mBLOCKOP]) {
+    protected static function _validateOperations($token, &$context, $vars) {
+        switch ($token[self::_mOP]) {
         case '^':
             $context['stack'][] = $token[self::_mINNERTAG];
             $context['level']++;
@@ -985,7 +985,7 @@ $libstr
             return;
         }
 
-        if (self::_validateBlockOperations($token, $context, $vars)) {
+        if (self::_validateOperations($token, $context, $vars)) {
             return;
         }
 
@@ -997,22 +997,14 @@ $libstr
             return $context['usedFeature']['else']++;
 
         case 'this':
-            if ($context['level'] == 0) {
-                $context['usedFeature']['rootthis']++;
-            }
-            if (!$context['flags']['this']) {
-                $context['error'][] = 'do not support {{this}}, you should do compile with LightnCandy::FLAG_THIS flag';
-            }
-            return $context['usedFeature']['this']++;
-
         case '.':
             if ($context['level'] == 0) {
                 $context['usedFeature']['rootthis']++;
             }
             if (!$context['flags']['this']) {
-                $context['error'][] = 'do not support {{.}}, you should do compile with LightnCandy::FLAG_THIS flag';
+                $context['error'][] = "do not support {{{$vars[0]}}}, you should do compile with LightnCandy::FLAG_THIS flag";
             }
-            return $context['usedFeature']['dot']++;
+            return $context['usedFeature'][($vars[0] == '.') ? 'dot' : 'this']++;
         }
 
         // detect custom helpers.
@@ -1048,7 +1040,7 @@ $libstr
         }
 
         // Handle block operations: ^ / ! # .
-        switch ($token[self::_mBLOCKOP]) {
+        switch ($token[self::_mOP]) {
         case '^':
             $context['stack'][] = $token[self::_mINNERTAG];
             $context['stack'][] = '^';
