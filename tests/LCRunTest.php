@@ -148,5 +148,14 @@ class LCRunTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('-Array=', $method->invoke(null, '', Array(), Array('a' => 'b'), function ($c, $i) {return "-$i=";}));
         $this->assertEquals('-b=', $method->invoke(null, 'a', Array(), Array('a' => 'b'), function ($c, $i) {return "-$i=";}));
     }
+    /**
+     * @covers LCRun::ch
+     */
+    public function testOn_ch() {
+        $method = new ReflectionMethod('LCRun', 'ch');
+        $this->assertEquals('=-=', $method->invoke(null, 'a', Array(''), 'raw', Array('helpers' => Array('a' => function ($i) {return "=$i=";})), '-'));
+        $this->assertEquals('=&amp;=', $method->invoke(null, 'a', Array(''), 'enc', Array('helpers' => Array('a' => function ($i) {return "=$i=";})), '&'));
+        $this->assertEquals('=&#x27;=', $method->invoke(null, 'a', Array(''), 'encq', Array('helpers' => Array('a' => function ($i) {return "=$i=";})), '\''));
+    }
 }
 ?>

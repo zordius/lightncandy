@@ -1454,6 +1454,10 @@ class LCRun {
      * @param array $in input data with current scope
      *
      * @return string The rendered string of the token
+     *
+     * @expect '=-=' when input 'a', Array(''), 'raw', Array('helpers' => Array('a' => function ($i) {return "=$i=";})), '-'
+     * @expect '=&amp;=' when input 'a', Array(''), 'enc', Array('helpers' => Array('a' => function ($i) {return "=$i=";})), '&'
+     * @expect '=&#x27;=' when input 'a', Array(''), 'encq', Array('helpers' => Array('a' => function ($i) {return "=$i=";})), '\''
      */
     public static function ch($ch, $vars, $op, &$cx, $in) {
         $args = Array();
