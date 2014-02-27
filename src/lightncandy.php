@@ -101,6 +101,18 @@ class LightnCandy {
             return false;
         }
 
+        return self::composePHPRender($context, $code);
+    }
+
+    /**
+     * Compose LightnCandy render codes for incllude()
+     *
+     * @param mixed $options input options
+     * @param string $code generated PHP code
+     *
+     * @return string Composed PHP code
+     */
+    protected static function composePHPRender($context, $code) {
         $flagJStrue = self::_on($context['flags']['jstrue']);
         $flagJSObj = self::_on($context['flags']['jsobj']);
 
