@@ -48,9 +48,20 @@ class LightnCandy {
     const FLAG_BESTPERFORMANCE = 4096; // FLAG_ECHO
     const FLAG_HANDLEBARSJS = 2040; // FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME + FLAG_SPACECTL
 
+    // RegExps
     const PARTIAL_SEARCH = '/\\{\\{>[ \\t]*(.+?)[ \\t]*\\}\\}/s';
     const TOKEN_SEARCH = '/(\s*)(\\{{2,3})(~?)([\\^#\\/!]?)(.+?)(~?)(\\}{2,3})(\s*)/s';
     const VARNAME_SEARCH = '/(\\[[^\\]]+\\]|[^\\[\\]\\.]+)/';
+
+    // Positions of matched token
+    const _mLSPACE = 2;
+    const _mBEGINTAG = 2;
+    const _mLSPACECTL = 3;
+    const _mBLOCKOP = 4;
+    const _mINNERTAG = 5;
+    const _mRSPACECTL = 6;
+    const _mENDTAG = 7;
+    const _mRSPACE = 2;
 
     private static $lastContext;
 
@@ -881,31 +892,45 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Collect handlebars usage information, detect template error.
+     * Internal method used by scan(). Validate start and and.
      *
      * @param string[] $token detected handlebars {{ }} token
      * @param array $context current scaning context
+     *
+     * @return mixed Return true when invalid
      */
-    protected static function scan($token, &$context) {
-        list($raw, $acts) = self::_tk($token, $context);
+    protected static function _validateStartEnd($token, &$context, $raw) {
         list(, , $begintag, $lspctl, $blockop, $intag, $rspctl, $endtag) = $token;
 
         // {{ }}} or {{{ }} are invalid
         if (strlen($begintag) !== strlen($endtag)) {
             $context['error'][] = "Bad token $begintag$lspctl$blockop$intag$rspctl$endtag ! Do you mean {{ }} or {{{ }}}?";
+            return true;
+        }
+        // {{{# }}} or {{{! }}} or {{{/ }}} or {{{^ }}} are invalid.
+        if ($raw && $token[4]) {
+            $context['error'][] = "Bad token $begintag$lspctl$blockop$intag$rspctl$endtag ! Do you mean {{" . "$lspctl$blockop$intag$rspctl}}?";
+            return true;
+        }
+    }
+
+    /**
+     * Internal method used by compile(). Collect handlebars usage information, detect template error.
+     *
+     * @param string[] $token detected handlebars {{ }} token
+     * @param array $context current scaning context
+     *
+     * @return mixed Return true when invalid or detected
+     */
+    protected static function _validateBlockOperations($token, &$context) {
+        list(, , $begintag, $lspctl, $blockop, $intag, $rspctl, $endtag) = $token;
+        list($raw, $acts) = self::_tk($token, $context);
+
+        if (!$token[4]) {
             return;
         }
 
-        // {{{# }}} or {{{! }}} or {{{/ }}} or {{{^ }}} are invalid.
-        if ($raw) {
-            if ($blockop) {
-                $context['error'][] = "Bad token $begintag$lspctl$blockop$intag$rspctl$endtag ! Do you mean {{" . "$lspctl$blockop$intag$rspctl}}?";
-                return;
-            }
-        }
-
-        // Handle block operations: ^ / ! # .
-        switch ($blockop) {
+        switch ($token[4]) {
         case '^':
             $context['stack'][] = $intag;
             $context['level']++;
@@ -914,7 +939,7 @@ $libstr
         case '/':
             array_pop($context['stack']);
             $context['level']--;
-            return;
+            return true;
 
         case '!':
             return $context['usedFeature']['comment']++;
@@ -937,6 +962,24 @@ $libstr
             }
 
         default:
+        }
+    }
+    /**
+     * Internal method used by compile(). Collect handlebars usage information, detect template error.
+     *
+     * @param string[] $token detected handlebars {{ }} token
+     * @param array $context current scaning context
+     */
+    protected static function scan($token, &$context) {
+        list($raw, $acts) = self::_tk($token, $context);
+        list(, , $begintag, $lspctl, $blockop, $intag, $rspctl, $endtag) = $token;
+
+        if (self::_validateStartEnd($token, $context, $raw)) {
+            return;
+        }
+
+        if (self::_validateBlockOperations($token, $context)) {
+            return;
         }
 
         $context['usedFeature'][$raw ? 'raw' : 'enc']++;
