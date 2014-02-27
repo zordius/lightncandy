@@ -13,6 +13,11 @@ v0.9 current trunk
    * fe3d67802e add FLAG_SPACECTL option
    * 920fbb3039 support custom helper
    * 07ae71a1bf migrate into Travis CI
+   * ddd3335ff6 support "some string" argument
+   * 20f6c888d7 html encode after custom helper executed
+   * 10a2f45fdc add test generator
+   * ccd1d3ddc2 migrate to Scrutinizer , change file name LightnCandy.inc to LightnCandy.php
+   * 5ac8ad8d04 now is a Composer package
 
 v0.8 https://github.com/zordius/lightncandy/tree/v0.8
    * align with handlebars.js 1.0.12
