@@ -276,6 +276,10 @@ $libstr
      * @param array $context Current context of compiler progress.
      *
      * @return string partial file content
+     *
+     * @expect "123\n" when input 'test1', Array('basedir' => Array('tests'), 'usedFeature' => Array('partial' =>0), 'fileext' => Array('.tmpl'))
+     * @expect "a{{> test1}}b\n" when input 'test2', Array('basedir' => Array('tests'), 'usedFeature' => Array('partial' =>0), 'fileext' => Array('.tmpl'))
+     * @expect null when input 'test3', Array('basedir' => Array('tests'), 'usedFeature' => Array('partial' =>0), 'fileext' => Array('.tmpl'))
      */
     public static function readPartial($name, &$context) {
         $f = preg_split('/[ \\t]/', $name);
@@ -322,7 +326,7 @@ $libstr
      * @expect Array('src') when input Array('basedir' => Array('src'))
      * @expect Array(getcwd()) when input Array('basedir' => Array('*dir*not*found'))
      * @expect Array('src') when input Array('basedir' => Array('src', 'dir*not*found'))
-     * @expect Array('src', 'build') when input Array('basedir' => Array('src', 'build'))
+     * @expect Array('src', 'tests') when input Array('basedir' => Array('src', 'tests'))
      */
     protected static function _basedir($options) {
         $dirs = isset($options['basedir']) ? $options['basedir'] : 0;

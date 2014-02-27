@@ -26,7 +26,7 @@ VAR
 
     $class = new ReflectionClass($classname);
     foreach ($class->getMethods() as $method) {
-        if (preg_match_all('/@expect (.+) when input (.+)/', $method->getDocComment(), $matched)) {
+        if (preg_match_all('/@expect (.+) when input (.+)( after (.+))?/', $method->getDocComment(), $matched)) {
             echo <<<VAR
     /**
      * @covers {$classname}::{$method->name}
@@ -40,6 +40,9 @@ VAR
                 echo "        \$method->setAccessible(true);\n";
             }
             foreach ($matched[1] as $idx => $expect) {
+                if ($matched[3][$idx]) {
+                    echo "      {$matched[3][$idx]}\n";
+                }
                 echo "        \$this->assertEquals($expect, \$method->invoke(null,\n            {$matched[2][$idx]}\n        ));\n";
             }
             echo "    }\n";
