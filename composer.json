@@ -1,0 +1,16 @@
+{
+    "name": "zordius/lightncandy",
+    "description": "A PHP library to support almost all features of handlebars ( http://handlebarsjs.com/ ) , target to run as fast as pure PHP.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Zordius Chen",
+            "email": "zordius@yahoo-inc.com"
+        }
+    ],
+    "require": {
+    },
+    "require-dev": {
+        "phpunit/phpunit": "3.7.*"
+    }
+}
