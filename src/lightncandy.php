@@ -309,6 +309,7 @@ $libstr
      *
      * @expect 'function($a) {return;}' when input function ($a) {return;}
      * @expect 'function($a) {return;}' when input  	function ($a) {return;} 
+     * @expect '' when input 'Directory::close'
      */
     protected static function getPHPCode($closure) {
         if (is_string($closure) && preg_match('/(.+)::(.+)/', $closure, $matched)) {
@@ -317,13 +318,19 @@ $libstr
             $ref = new ReflectionFunction($closure);
         }
         $fname = $ref->getFileName();
+
+        // This never happened, only for Unit testing.
+        if (!is_file($fname)) {
+            return '';
+        }
+
         $lines = file_get_contents($fname);
         $file = new SplFileObject($fname);
-
         $file->seek($ref->getStartLine() - 2);
         $spos = $file->ftell();
         $file->seek($ref->getEndLine() - 1);
         $epos = $file->ftell();
+
         return preg_replace('/^.*?function\s.*?\\((.+?)\\}[,\\s]*$/s', 'function($1}', substr($lines, $spos, $epos - $spos));
     }
 
