@@ -1037,31 +1037,30 @@ $libstr
      */
     public static function tokens(&$token, &$context) {
         list($raw, $acts) = self::_tk($token, $context);
-        list(, , $begintag, $lspctl, $blockop, $intag, $rspctl, $endtag) = $token;
 
         // Handle space control.
-        if ($lspctl) {
-            $token[1] = '';
+        if ($token[self::_mLSPACECTL]) {
+            $token[self::_mLSPACE] = '';
         }
 
-        if ($rspctl) {
-            $token[8] = '';
+        if ($token[self::_mRSPACECTL]) {
+            $token[self::_mRSPACE] = '';
         }
 
         // Handle block operations: ^ / ! # .
-        switch ($blockop) {
+        switch ($token[self::_mBLOCKOP]) {
         case '^':
-            $context['stack'][] = $intag;
+            $context['stack'][] = $token[self::_mINNERTAG];
             $context['stack'][] = '^';
             if ($context['useVar']) {
-                $v = $context['useVar'] . "['{$intag}']";
+                $v = $context['useVar'] . "['{$token[self::_mINNERTAG]}']";
                 return "{$context['ops']['cnd_start']}(is_null($v) && ($v !== false)){$context['ops']['cnd_then']}"; 
             } else {
-                return "{$context['ops']['cnd_start']}(" . self::_fn($context, 'isec') . "('$intag', \$cx, \$in)){$context['ops']['cnd_then']}";
+                return "{$context['ops']['cnd_start']}(" . self::_fn($context, 'isec') . "('{$token[self::_mINNERTAG]}', \$cx, \$in)){$context['ops']['cnd_then']}";
             }
         case '/':
             $each = false;
-            switch ($intag) {
+            switch ($token[self::_mINNERTAG]) {
             case 'if':
             case 'unless':
                 $pop = array_pop($context['stack']);
@@ -1080,15 +1079,15 @@ $libstr
             case 'each':
                 $each = true;
             default:
-                self::_vx($intag, $context);
+                self::_vx($token[self::_mINNERTAG], $context);
                 array_pop($context['vars']);
                 $pop = array_pop($context['stack']);
                 switch($pop) {
                 case '#':
                 case '^':
                     $pop2 = array_pop($context['stack']);
-                    if (!$each && ($pop2 !== $intag)) {
-                        $context['error'][] = "Unexpect token $begintag$lspctl$blockop$intag$rspctl$endtag ! Previous token $pop$pop2 is not closed";
+                    if (!$each && ($pop2 !== $token[self::_mINNERTAG])) {
+                        $context['error'][] = 'Unexpect token ' . self::_tokenString($token) . " ! Previous token $pop$pop2 is not closed";
                         return;
                     }
                     if ($pop == '^') {
@@ -1096,7 +1095,7 @@ $libstr
                     }
                     return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
                 default:
-                    $context['error'][] = "Unexpect token: $begintag$lspctl$blockop$intag$rspctl$endtag !";
+                    $context['error'][] = 'Unexpect token: ' . self::_tokenString($token) . ' !';
                     return;
                 }
             }
@@ -1118,7 +1117,7 @@ $libstr
             case 'each':
                 $each = 'true';
             case 'with':
-                $intag = $acts[1];
+                $token[self::_mINNERTAG] = $acts[1];
             default:
                 if (($acts[0] === 'with') && $context['flags']['with']) {
                     self::_vx($acts[1], $context);
@@ -1126,12 +1125,12 @@ $libstr
                     $context['stack'][] = 'with';
                     return $context['ops']['seperator'] . self::_fn($context, 'wi') . "('{$acts[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
                 }
-                self::_vx($intag, $context);
-                $context['vars'][] = self::_vs($intag);
+                self::_vx($token[self::_mINNERTAG], $context);
+                $context['vars'][] = self::_vs($token[self::_mINNERTAG]);
                 self::_jsp($context);
-                $context['stack'][] = $intag;
+                $context['stack'][] = $token[self::_mINNERTAG];
                 $context['stack'][] = '#';
-                return $context['ops']['seperator'] . self::_fn($context, 'sec') . "('$intag', \$cx, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
+                return $context['ops']['seperator'] . self::_fn($context, 'sec') . "('{$token[self::_mINNERTAG]}', \$cx, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
             }
         case '!':
             return $context['ops']['seperator'];
