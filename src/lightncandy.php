@@ -455,7 +455,7 @@ $libstr
      */
     public static function getJsonSchemaString($indent = '  ') {
         $level = 0;
-        return preg_replace_callback('/\\{|\\[|,|\\]|\\}|:/', function ($matches) use (&$level) {
+        return preg_replace_callback('/\\{|\\[|,|\\]|\\}|:/', function ($matches) use (&$level, $indent) {
             switch ($matches[0]) {
                 case '}':
                 case ']':
@@ -1189,6 +1189,7 @@ class LCRun {
      * @expect Array() when input '', Array(), Array()
      * @expect null when input 'a', Array(), Array()
      * @expect 0 when input 'a', Array(), Array('a' => 0)
+     * @expect false when input 'a', Array(), Array('a' => false)
      * @expect null when input 'a]b', Array(), Array('a' => 0)
      * @expect null when input 'a]b', Array(), Array()
      * @expect 'Q' when input 'a]b', Array(), Array('a' => Array('b' => 'Q'))
@@ -1256,6 +1257,20 @@ class LCRun {
      * @param boolean $loop true when in loop
      *
      * @return string The raw value of the specified variable
+     *
+     * @expect true when input '', Array('flags' => Array('jstrue' => 0)), true
+     * @expect 'true' when input '', Array('flags' => Array('jstrue' => 1)), true
+     * @expect '' when input '', Array('flags' => Array('jstrue' => 0)), false
+     * @expect '' when input '', Array('flags' => Array('jstrue' => 1)), false
+     * @expect 'false' when input '', Array('flags' => Array('jstrue' => 1)), false, true
+     * @expect Array('a', 'b') when input '', Array('flags' => Array('jstrue' => 1, 'jsobj' => 0)), Array('a', 'b')
+     * @expect 'a,b' when input '', Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('a', 'b')
+     * @expect '[object Object]' when input '', Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('a', 'c' => 'b')
+     * @expect '[object Object]' when input '', Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('c' => 'b')
+     * @expect 'a,true' when input '', Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('a', true)
+     * @expect 'a,1' when input '', Array('flags' => Array('jstrue' => 0, 'jsobj' => 1)), Array('a', true)
+     * @expect 'a,' when input '', Array('flags' => Array('jstrue' => 0, 'jsobj' => 1)), Array('a', false)
+     * @expect 'a,false' when input '', Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('a', false)
      */
     public static function raw($var, $cx, $in, $loop = false) {
         $v = self::val($var, $cx, $in);
@@ -1296,6 +1311,10 @@ class LCRun {
      * @param array $in input data with current scope
      *
      * @return string The htmlencoded value of the specified variable
+     *
+     * @expect 'a' when input '', Array(), 'a'
+     * @expect 'a&amp;b' when input '', Array(), 'a&b'
+     * @expect 'a&#039;b' when input '', Array(), 'a\'b'
      */
     public static function enc($var, $cx, $in) {
         return htmlentities(self::raw($var, $cx, $in), ENT_QUOTES);
@@ -1309,6 +1328,10 @@ class LCRun {
      * @param array $in input data with current scope
      *
      * @return string The htmlencoded value of the specified variable
+     *
+     * @expect 'a' when input '', Array(), 'a'
+     * @expect 'a&amp;b' when input '', Array(), 'a&b'
+     * @expect 'a&#x27;b' when input '', Array(), 'a\'b'
      */
     public static function encq($var, $cx, $in) {
         return preg_replace('/&#039;/', '&#x27;', htmlentities(self::raw($var, $cx, $in), ENT_QUOTES));

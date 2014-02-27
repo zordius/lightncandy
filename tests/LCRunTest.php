@@ -71,6 +71,7 @@ class LCRunTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(Array(), $method->invoke(null, '', Array(), Array()));
         $this->assertEquals(null, $method->invoke(null, 'a', Array(), Array()));
         $this->assertEquals(0, $method->invoke(null, 'a', Array(), Array('a' => 0)));
+        $this->assertEquals(false, $method->invoke(null, 'a', Array(), Array('a' => false)));
         $this->assertEquals(null, $method->invoke(null, 'a]b', Array(), Array('a' => 0)));
         $this->assertEquals(null, $method->invoke(null, 'a]b', Array(), Array()));
         $this->assertEquals('Q', $method->invoke(null, 'a]b', Array(), Array('a' => Array('b' => 'Q'))));
@@ -81,6 +82,43 @@ class LCRunTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('o', $method->invoke(null, '../../a', Array('scopes' => Array(Array('a' => 'o'), Array('a' => 'p'))), Array()));
         $this->assertEquals('x', $method->invoke(null, '../../../', Array('scopes' => Array('x', Array('a' => 'q'), Array('b' => 'r'))), Array()));
         $this->assertEquals('o', $method->invoke(null, '../../../c', Array('scopes' => Array(Array('c' => 'o'), Array('a' => 'q'), Array('b' => 'r'))), Array()));
+    }
+    /**
+     * @covers LCRun::raw
+     */
+    public function testOn_raw() {
+        $method = new ReflectionMethod('LCRun', 'raw');
+        $this->assertEquals(true, $method->invoke(null, '', Array('flags' => Array('jstrue' => 0)), true));
+        $this->assertEquals('true', $method->invoke(null, '', Array('flags' => Array('jstrue' => 1)), true));
+        $this->assertEquals('', $method->invoke(null, '', Array('flags' => Array('jstrue' => 0)), false));
+        $this->assertEquals('', $method->invoke(null, '', Array('flags' => Array('jstrue' => 1)), false));
+        $this->assertEquals('false', $method->invoke(null, '', Array('flags' => Array('jstrue' => 1)), false, true));
+        $this->assertEquals(Array('a', 'b'), $method->invoke(null, '', Array('flags' => Array('jstrue' => 1, 'jsobj' => 0)), Array('a', 'b')));
+        $this->assertEquals('a,b', $method->invoke(null, '', Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('a', 'b')));
+        $this->assertEquals('[object Object]', $method->invoke(null, '', Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('a', 'c' => 'b')));
+        $this->assertEquals('[object Object]', $method->invoke(null, '', Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('c' => 'b')));
+        $this->assertEquals('a,true', $method->invoke(null, '', Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('a', true)));
+        $this->assertEquals('a,1', $method->invoke(null, '', Array('flags' => Array('jstrue' => 0, 'jsobj' => 1)), Array('a', true)));
+        $this->assertEquals('a,', $method->invoke(null, '', Array('flags' => Array('jstrue' => 0, 'jsobj' => 1)), Array('a', false)));
+        $this->assertEquals('a,false', $method->invoke(null, '', Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('a', false)));
+    }
+    /**
+     * @covers LCRun::enc
+     */
+    public function testOn_enc() {
+        $method = new ReflectionMethod('LCRun', 'enc');
+        $this->assertEquals('a', $method->invoke(null, '', Array(), 'a'));
+        $this->assertEquals('a&amp;b', $method->invoke(null, '', Array(), 'a&b'));
+        $this->assertEquals('a&#039;b', $method->invoke(null, '', Array(), 'a\'b'));
+    }
+    /**
+     * @covers LCRun::encq
+     */
+    public function testOn_encq() {
+        $method = new ReflectionMethod('LCRun', 'encq');
+        $this->assertEquals('a', $method->invoke(null, '', Array(), 'a'));
+        $this->assertEquals('a&amp;b', $method->invoke(null, '', Array(), 'a&b'));
+        $this->assertEquals('a&#x27;b', $method->invoke(null, '', Array(), 'a\'b'));
     }
 }
 ?>
