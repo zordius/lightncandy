@@ -751,8 +751,11 @@ $libstr
      */
     protected static function _jsv(&$context, $var) {
         $target = &self::_jsp($context);
-        foreach (self::_vs($var) as $v) {
-            $target = &self::_jst($target, $v);
+        $vars = self::_vs($var);
+        if (is_array($vars)) {
+            foreach (self::_vs($var) as $v) {
+                $target = &self::_jst($target, $v);
+            }
         }
         $target['type'] = Array('string', 'number');
         $target['required'] = true;
