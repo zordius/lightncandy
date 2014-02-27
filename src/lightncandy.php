@@ -190,7 +190,6 @@ $libstr
             'fileext' => self::_fileext($options),
             'usedPartial' => Array(),
             'usedFeature' => Array(
-                'rootvar' => 0,
                 'rootthis' => 0,
                 'enc' => 0,
                 'raw' => 0,
@@ -973,21 +972,20 @@ $libstr
      * @param array $context current scaning context
      */
     protected static function scan($token, &$context) {
-        list($raw, $acts) = self::_tk($token, $context);
-        list(, , $begintag, $lspctl, $blockop, $intag, $rspctl, $endtag) = $token;
+        list($raw, $vars) = self::_tk($token, $context);
 
         if (self::_validateStartEnd($token, $context, $raw)) {
             return;
         }
 
-        if (self::_validateBlockOperations($token, $context, $acts)) {
+        if (self::_validateBlockOperations($token, $context, $vars)) {
             return;
         }
 
         $context['usedFeature'][$raw ? 'raw' : 'enc']++;
 
-        // Handle else and this.
-        switch ($intag) {
+        // validate else and this.
+        switch ($vars[0]) {
         case 'else':
             return $context['usedFeature']['else']++;
 
@@ -1010,21 +1008,17 @@ $libstr
             return $context['usedFeature']['dot']++;
         }
 
-        // Handle custom helpers.
-        if (isset($context['helpers'][$acts[0]])) {
+        // detect custom helpers.
+        if (isset($context['helpers'][$vars[0]])) {
             return $context['usedFeature']['helper']++;
         }
 
-        // Check for parent context.
-        if (preg_match('/\\.\\.(\\/.+)*/', $intag)) {
+        // validate parent context.
+        if (preg_match('/\\.\\.(\\/.+)*/', $vars[0])) {
             if (!$context['flags']['parent']) {
                 $context['error'][] = 'do not support {{../var}}, you should do compile with LightnCandy::FLAG_PARENT flag';
             }
             return $context['usedFeature']['parent']++;
-        }
-
-        if ($context['level'] == 0) {
-            $context['usedFeature']['rootvar']++;
         }
     }
 
