@@ -70,6 +70,9 @@ class LCRunTest extends PHPUnit_Framework_TestCase
         $method = new ReflectionMethod('LCRun', 'val');
         $this->assertEquals(Array(), $method->invoke(null, '', Array(), Array()));
         $this->assertEquals(null, $method->invoke(null, 'a', Array(), Array()));
+        $this->assertEquals('a', $method->invoke(null, '"a"', Array(), Array()));
+        $this->assertEquals('a', $method->invoke(null, '@index', Array('sp_vars' => Array('index' => 'a')), Array()));
+        $this->assertEquals('b', $method->invoke(null, '@key', Array('sp_vars' => Array('key' => 'b')), Array()));
         $this->assertEquals(0, $method->invoke(null, 'a', Array(), Array('a' => 0)));
         $this->assertEquals(false, $method->invoke(null, 'a', Array(), Array('a' => false)));
         $this->assertEquals(null, $method->invoke(null, 'a]b', Array(), Array('a' => 0)));
@@ -137,6 +140,7 @@ class LCRunTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(0, $method->invoke(null, 'a', Array(), Array('a' => 'b'), false, function ($c, $i) {return count($i);}));
         $this->assertEquals('1', $method->invoke(null, 'a', Array(), Array('a' => 1), false, function ($c, $i) {return print_r($i, true);}));
         $this->assertEquals('0', $method->invoke(null, 'a', Array(), Array('a' => 0), false, function ($c, $i) {return print_r($i, true);}));
+        $this->assertEquals('{"b":"c"}', $method->invoke(null, 'a', Array(), Array('a' => Array('b' => 'c')), false, function ($c, $i) {return json_encode($i);}));
     }
     /**
      * @covers LCRun::wi

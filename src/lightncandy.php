@@ -1191,6 +1191,9 @@ class LCRun {
      *
      * @expect Array() when input '', Array(), Array()
      * @expect null when input 'a', Array(), Array()
+     * @expect 'a' when input '"a"', Array(), Array()
+     * @expect 'a' when input '@index', Array('sp_vars' => Array('index' => 'a')), Array()
+     * @expect 'b' when input '@key', Array('sp_vars' => Array('key' => 'b')), Array()
      * @expect 0 when input 'a', Array(), Array('a' => 0)
      * @expect false when input 'a', Array(), Array('a' => false)
      * @expect null when input 'a]b', Array(), Array('a' => 0)
@@ -1363,6 +1366,7 @@ class LCRun {
      * @expect 0 when input 'a', Array(), Array('a' => 'b'), false, function ($c, $i) {return count($i);}
      * @expect '1' when input 'a', Array(), Array('a' => 1), false, function ($c, $i) {return print_r($i, true);}
      * @expect '0' when input 'a', Array(), Array('a' => 0), false, function ($c, $i) {return print_r($i, true);}
+     * @expect '{"b":"c"}' when input 'a', Array(), Array('a' => Array('b' => 'c')), false, function ($c, $i) {return json_encode($i);}
      */
     public static function sec($var, &$cx, $in, $each, $cb) {
         $v = self::val($var, $cx, $in);
