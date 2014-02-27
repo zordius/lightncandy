@@ -1350,6 +1350,19 @@ class LCRun {
      * @param function $cb callback function to render child context
      *
      * @return string The rendered string of the section
+     *
+     * @expect '' when input '', Array(), false, false, function () {return 'A';}
+     * @expect '' when input '', Array(), null, false, function () {return 'A';}
+     * @expect 'A' when input '', Array(), true, false, function () {return 'A';}
+     * @expect 'A' when input '', Array(), 0, false, function () {return 'A';}
+     * @expect '-a=' when input '', Array(), Array('a'), false, function ($c, $i) {return "-$i=";}
+     * @expect '-a=-b=' when input '', Array(), Array('a', 'b'), false, function ($c, $i) {return "-$i=";}
+     * @expect '' when input '', Array(), 'abc', true, function ($c, $i) {return "-$i=";}
+     * @expect '-b=' when input '', Array(), Array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
+     * @expect '' when input 'b', Array(), Array('a' => 'b'), true, function ($c, $i) {return "-{$i['a']}=";}
+     * @expect 0 when input 'a', Array(), Array('a' => 'b'), false, function ($c, $i) {return count($i);}
+     * @expect '1' when input 'a', Array(), Array('a' => 1), false, function ($c, $i) {return print_r($i, true);}
+     * @expect '0' when input 'a', Array(), Array('a' => 0), false, function ($c, $i) {return print_r($i, true);}
      */
     public static function sec($var, &$cx, $in, $each, $cb) {
         $v = self::val($var, $cx, $in);
@@ -1414,6 +1427,11 @@ class LCRun {
      * @param function $cb callback function to render child context
      *
      * @return string The rendered string of the token
+     *
+     * @expect '' when input '', Array(), false, function () {return 'A';}
+     * @expect '' when input '', Array(), null, function () {return 'A';}
+     * @expect '-Array=' when input '', Array(), Array('a' => 'b'), function ($c, $i) {return "-$i=";}
+     * @expect '-b=' when input 'a', Array(), Array('a' => 'b'), function ($c, $i) {return "-$i=";}
      */
     public static function wi($var, &$cx, $in, $cb) {
         $v = self::val($var, $cx, $in);

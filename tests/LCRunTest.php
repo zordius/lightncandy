@@ -120,5 +120,33 @@ class LCRunTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('a&amp;b', $method->invoke(null, '', Array(), 'a&b'));
         $this->assertEquals('a&#x27;b', $method->invoke(null, '', Array(), 'a\'b'));
     }
+    /**
+     * @covers LCRun::sec
+     */
+    public function testOn_sec() {
+        $method = new ReflectionMethod('LCRun', 'sec');
+        $this->assertEquals('', $method->invoke(null, '', Array(), false, false, function () {return 'A';}));
+        $this->assertEquals('', $method->invoke(null, '', Array(), null, false, function () {return 'A';}));
+        $this->assertEquals('A', $method->invoke(null, '', Array(), true, false, function () {return 'A';}));
+        $this->assertEquals('A', $method->invoke(null, '', Array(), 0, false, function () {return 'A';}));
+        $this->assertEquals('-a=', $method->invoke(null, '', Array(), Array('a'), false, function ($c, $i) {return "-$i=";}));
+        $this->assertEquals('-a=-b=', $method->invoke(null, '', Array(), Array('a', 'b'), false, function ($c, $i) {return "-$i=";}));
+        $this->assertEquals('', $method->invoke(null, '', Array(), 'abc', true, function ($c, $i) {return "-$i=";}));
+        $this->assertEquals('-b=', $method->invoke(null, '', Array(), Array('a' => 'b'), true, function ($c, $i) {return "-$i=";}));
+        $this->assertEquals('', $method->invoke(null, 'b', Array(), Array('a' => 'b'), true, function ($c, $i) {return "-{$i['a']}=";}));
+        $this->assertEquals(0, $method->invoke(null, 'a', Array(), Array('a' => 'b'), false, function ($c, $i) {return count($i);}));
+        $this->assertEquals('1', $method->invoke(null, 'a', Array(), Array('a' => 1), false, function ($c, $i) {return print_r($i, true);}));
+        $this->assertEquals('0', $method->invoke(null, 'a', Array(), Array('a' => 0), false, function ($c, $i) {return print_r($i, true);}));
+    }
+    /**
+     * @covers LCRun::wi
+     */
+    public function testOn_wi() {
+        $method = new ReflectionMethod('LCRun', 'wi');
+        $this->assertEquals('', $method->invoke(null, '', Array(), false, function () {return 'A';}));
+        $this->assertEquals('', $method->invoke(null, '', Array(), null, function () {return 'A';}));
+        $this->assertEquals('-Array=', $method->invoke(null, '', Array(), Array('a' => 'b'), function ($c, $i) {return "-$i=";}));
+        $this->assertEquals('-b=', $method->invoke(null, 'a', Array(), Array('a' => 'b'), function ($c, $i) {return "-$i=";}));
+    }
 }
 ?>
