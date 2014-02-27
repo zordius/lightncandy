@@ -107,7 +107,7 @@ class LightnCandy {
     /**
      * Compose LightnCandy render codes for incllude()
      *
-     * @param mixed $options input options
+     * @param array $context Current context
      * @param string $code generated PHP code
      *
      * @return string Composed PHP code
