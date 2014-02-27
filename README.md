@@ -92,8 +92,18 @@ Welcome {{name}} , You win ${{value}} dollars!!
 
 Rendered PHP code is:
 <?php return function ($in) {
-    return 'Welcome ' . $in['name'] . ' , You win $' . $in['value'] . ' dollars!!
-';
+    $cx = Array(
+        'flags' => Array(
+            'jstrue' => false,
+            'jsobj' => false,
+        ),
+        'helpers' => Array(),
+        'scopes' => Array($in),
+        'path' => Array(),
+
+    );
+    ob_start();echo 'Welcome ',htmlentities($in['name'], ENT_QUOTES),' , You win $',htmlentities($in['value'], ENT_QUOTES),' dollars!!
+';return ob_get_clean();
 }
 ?>
 
