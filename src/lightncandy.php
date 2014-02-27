@@ -892,26 +892,26 @@ $libstr
 
         // Handle else and this.
         switch ($intag) {
-            case 'else':
-                return $context['usedFeature']['else']++;
+        case 'else':
+            return $context['usedFeature']['else']++;
 
-            case 'this':
-                if ($context['level'] == 0) {
-                    $context['usedFeature']['rootthis']++;
-                }
-                if (!$context['flags']['this']) {
-                    $context['error'][] = 'do not support {{this}}, you should do compile with LightnCandy::FLAG_THIS flag';
-                }
-                return $context['usedFeature']['this']++;
+        case 'this':
+            if ($context['level'] == 0) {
+                $context['usedFeature']['rootthis']++;
+            }
+            if (!$context['flags']['this']) {
+                $context['error'][] = 'do not support {{this}}, you should do compile with LightnCandy::FLAG_THIS flag';
+            }
+            return $context['usedFeature']['this']++;
 
-            case '.':
-                if ($context['level'] == 0) {
-                    $context['usedFeature']['rootthis']++;
-                }
-                if (!$context['flags']['this']) {
-                    $context['error'][] = 'do not support {{.}}, you should do compile with LightnCandy::FLAG_THIS flag';
-                }
-                return $context['usedFeature']['dot']++;
+        case '.':
+            if ($context['level'] == 0) {
+                $context['usedFeature']['rootthis']++;
+            }
+            if (!$context['flags']['this']) {
+                $context['error'][] = 'do not support {{.}}, you should do compile with LightnCandy::FLAG_THIS flag';
+            }
+            return $context['usedFeature']['dot']++;
         }
 
         // Handle custom helpers.
