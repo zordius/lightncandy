@@ -897,6 +897,9 @@ $libstr
      * @param integer $remove remove how many heading and ending token
      *
      * @return string Return whole token
+     * 
+     * @expect 'b' when input Array('a', 'b', 'c')
+     * @expect 'c' when input Array('a', 'b', 'c', 'd', 'e'), 2
      */
     protected static function _tokenString($token, $remove = 1) {
         return implode('', array_slice($token, $remove, -$remove));
@@ -909,6 +912,9 @@ $libstr
      * @param array $context current scaning context
      *
      * @return mixed Return true when invalid
+     * 
+     * @expect null when input array_fill(0, 8, ''), Array(), true
+     * @expect true when input range(0, 7), Array(), true
      */
     protected static function _validateStartEnd($token, &$context, $raw) {
         // {{ }}} or {{{ }} are invalid
@@ -965,6 +971,7 @@ $libstr
             }
         }
     }
+
     /**
      * Internal method used by compile(). Collect handlebars usage information, detect template error.
      *

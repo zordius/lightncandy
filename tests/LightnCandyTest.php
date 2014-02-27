@@ -300,5 +300,31 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
             Array('this'), Array('flags' => Array('this' => 1, 'advar' => 0))
         ));
     }
+    /**
+     * @covers LightnCandy::_tokenString
+     */
+    public function testOn__tokenString() {
+        $method = new ReflectionMethod('LightnCandy', '_tokenString');
+        $method->setAccessible(true);
+        $this->assertEquals('b', $method->invoke(null,
+            Array('a', 'b', 'c')
+        ));
+        $this->assertEquals('c', $method->invoke(null,
+            Array('a', 'b', 'c', 'd', 'e'), 2
+        ));
+    }
+    /**
+     * @covers LightnCandy::_validateStartEnd
+     */
+    public function testOn__validateStartEnd() {
+        $method = new ReflectionMethod('LightnCandy', '_validateStartEnd');
+        $method->setAccessible(true);
+        $this->assertEquals(null, $method->invoke(null,
+            array_fill(0, 8, ''), Array(), true
+        ));
+        $this->assertEquals(true, $method->invoke(null,
+            range(0, 7), Array(), true
+        ));
+    }
 }
 ?>
