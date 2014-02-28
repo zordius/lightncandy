@@ -1180,6 +1180,7 @@ $libstr
      *
      * @param array $context current scaning context
      * @param string[] $vars parsed arguments list
+     * @param boolean $raw is this {{{ token or not
      *
      * @return string|null Return compiled code segment for the token when the token is custom helper
      */
@@ -1212,6 +1213,7 @@ $libstr
      *
      * @param array $context current scaning context
      * @param string[] $vars parsed arguments list
+     * @param boolean $raw is this {{{ token or not
      *
      * @return string Return compiled code segment for the token
      */
