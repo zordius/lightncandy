@@ -830,6 +830,7 @@ $libstr
      * @param array $context current compile context
      * 
      * @expect Array(false, Array('')) when input Array(0,0,0,0,0,''), Array()
+     * @expect Array(true, Array('')) when input Array(0,0,'{{{',0,0,''), Array()
      * @expect Array(false, Array('a')) when input Array(0,0,0,0,0,'a'), Array('flags' => Array('advar' => 0))
      * @expect Array(false, Array('a', 'b')) when input Array(0,0,0,0,0,'a b'), Array('flags' => Array('advar' => 0))
      * @expect Array(false, Array('a', '"b', 'c"')) when input Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 0))
@@ -894,7 +895,7 @@ $libstr
         }
 
         return Array(
-            ($token[2] === '{{{'), $acts
+            ($token[self::_mBEGINTAG] === '{{{'), $acts
         );
     }
 
