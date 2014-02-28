@@ -2,7 +2,7 @@
 <phpunit 
  backupGlobals="false"
  colors="true"
- convertNoticesToExceptions="true"
+ convertNoticesToExceptions="false"
 >
  <filter>
   <blacklist>

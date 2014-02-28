@@ -375,8 +375,20 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(true, $method->invoke(null,
             Array(0, 0, 0, 0, '/'), Array('stack' => Array(1), 'level' => 1), Array()
         ));
-        $this->assertEquals(2, $method->invoke(null,
-            Array(0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('sec' => 1), 'level' => 0), Array('x')
+        $this->assertEquals(4, $method->invoke(null,
+            Array(0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('sec' => 3), 'level' => 0), Array('x')
+        ));
+        $this->assertEquals(5, $method->invoke(null,
+            Array(0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('if' => 4), 'level' => 0), Array('if')
+        ));
+        $this->assertEquals(6, $method->invoke(null,
+            Array(0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('with' => 5), 'level' => 0, 'flags' => Array('with' => 1)), Array('with')
+        ));
+        $this->assertEquals(7, $method->invoke(null,
+            Array(0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('each' => 6), 'level' => 0), Array('each')
+        ));
+        $this->assertEquals(8, $method->invoke(null,
+            Array(0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('unless' => 7), 'level' => 0), Array('unless')
         ));
     }
 }

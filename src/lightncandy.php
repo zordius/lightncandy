@@ -921,7 +921,7 @@ $libstr
      * @param array $context current scaning context
      * @param boolean $raw the token is started with {{{ or not
      *
-     * @return boollean Return true when invalid
+     * @return mixed Return true when invalid
      * 
      * @expect null when input array_fill(0, 8, ''), Array(), true
      * @expect true when input range(0, 7), Array(), true
@@ -952,7 +952,11 @@ $libstr
      * @expect 2 when input Array(0, 0, 0, 0, '^', '...'), Array('usedFeature' => Array('isec' => 1), 'level' => 0), Array()
      * @expect 3 when input Array(0, 0, 0, 0, '!', '...'), Array('usedFeature' => Array('comment' => 2)), Array()
      * @expect true when input Array(0, 0, 0, 0, '/'), Array('stack' => Array(1), 'level' => 1), Array()
-     * @expect 2 when input Array(0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('sec' => 1), 'level' => 0), Array('x')
+     * @expect 4 when input Array(0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('sec' => 3), 'level' => 0), Array('x')
+     * @expect 5 when input Array(0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('if' => 4), 'level' => 0), Array('if')
+     * @expect 6 when input Array(0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('with' => 5), 'level' => 0, 'flags' => Array('with' => 1)), Array('with')
+     * @expect 7 when input Array(0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('each' => 6), 'level' => 0), Array('each')
+     * @expect 8 when input Array(0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('unless' => 7), 'level' => 0), Array('unless')
      */
     protected static function _validateOperations($token, &$context, $vars) {
         switch ($token[self::_mOP]) {
