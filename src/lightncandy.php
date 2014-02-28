@@ -1069,11 +1069,11 @@ $libstr
             return $ret;
         }
 
-        if ($ret = self::compileElse($token, $context, $vars)) {
+        if ($ret = self::compileElse($context, $vars)) {
             return $ret;
         }
 
-        return self::compileVariable($token, $context, $vars, $raw);
+        return self::compileVariable($context, $vars, $raw);
     }
 
     /**
@@ -1194,13 +1194,13 @@ $libstr
 
    /**
      * Internal method used by compile(). Return compiled PHP code partial for a handlebars else token.
-     *                                                                                                                       * @param array $token detected handlebars {{ }} token
+     *
      * @param array $context current scaning context
      * @param string[] $vars parsed arguments list
      *
      * @return string|null Return compiled code segment for the token when the token is else
      */
-    public static function compileElse(&$token, &$context, &$vars) {
+    public static function compileElse(&$context, &$vars) {
         if ($vars[0] ==='else') {
             $context['stack'][] = ':';
             return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}" : "{$context['ops']['cnd_else']}";
@@ -1209,13 +1209,13 @@ $libstr
 
    /**
      * Internal method used by compile(). Return compiled PHP code partial for a handlebars custom helper token.
-     *                                                                                                                       * @param array $token detected handlebars {{ }} token
+     *
      * @param array $context current scaning context
      * @param string[] $vars parsed arguments list
      *
      * @return string Return compiled code segment for the token
      */
-    public static function compileVariable(&$token, &$context, &$vars, $raw) {
+    public static function compileVariable(&$context, &$vars, $raw) {
         self::_jsv($context, $vars[0]); // TODO: more variables should be placed in json schema in custom helper calls
         $fn = $raw ? 'raw' : $context['ops']['enc'];
         if ($context['useVar']) {
