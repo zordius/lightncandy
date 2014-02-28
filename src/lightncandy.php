@@ -950,7 +950,9 @@ $libstr
      * 
      * @expect null when input Array(0, 0, 0, 0, ''), Array(), Array()
      * @expect 2 when input Array(0, 0, 0, 0, '^', '...'), Array('usedFeature' => Array('isec' => 1), 'level' => 0), Array()
+     * @expect 3 when input Array(0, 0, 0, 0, '!', '...'), Array('usedFeature' => Array('comment' => 2)), Array()
      * @expect true when input Array(0, 0, 0, 0, '/'), Array('stack' => Array(1), 'level' => 1), Array()
+     * @expect 2 when input Array(0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('sec' => 1), 'level' => 0), Array('x')
      */
     protected static function _validateOperations($token, &$context, $vars) {
         switch ($token[self::_mOP]) {
@@ -965,7 +967,7 @@ $libstr
             return true;
 
         case '!':
-            return $context['usedFeature']['comment']++;
+            return ++$context['usedFeature']['comment'];
 
         case '#':
             $context['stack'][] = $token[self::_mINNERTAG];
@@ -978,10 +980,10 @@ $libstr
             case 'each':
             case 'unless':
             case 'if':
-                return $context['usedFeature'][$vars[0]]++;
+                return ++$context['usedFeature'][$vars[0]];
 
             default:
-                return $context['usedFeature']['sec']++;
+                return ++$context['usedFeature']['sec'];
             }
         }
     }
