@@ -950,6 +950,7 @@ $libstr
      * 
      * @expect null when input Array(0, 0, 0, 0, ''), Array(), Array()
      * @expect 2 when input Array(0, 0, 0, 0, '^', '...'), Array('usedFeature' => Array('isec' => 1), 'level' => 0), Array()
+     * @expect true when input Array(0, 0, 0, 0, '/'), Array('stack' => Array(1), 'level' => 1), Array()
      */
     protected static function _validateOperations($token, &$context, $vars) {
         switch ($token[self::_mOP]) {
