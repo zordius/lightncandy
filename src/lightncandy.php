@@ -888,7 +888,7 @@ $libstr
                     // .foo[ Rule 4: middle [ not after .
                     || preg_match('/\\.[^\\]\\[\\.]+\\[/', preg_replace('/\\[[^\\]]+\\]/', '[XXX]', $act))
                 ) {
-                    $context['error'][] = "Wrong variable naming as '$act' in {$token[2]}{$token[3]}{$token[4]}{$token[5]}{$token[6]}{$token[7]} !";
+                    $context['error'][] = "Wrong variable naming as '$act' in " . self::_tokenString($token) . ' !';
                 }
             }
         }
