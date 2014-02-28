@@ -43,10 +43,10 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         ));
     }
     /**
-     * @covers LightnCandy::_fileext
+     * @covers LightnCandy::buildCXFileext
      */
-    public function testOn__fileext() {
-        $method = new ReflectionMethod('LightnCandy', '_fileext');
+    public function testOn_buildCXFileext() {
+        $method = new ReflectionMethod('LightnCandy', 'buildCXFileext');
         $method->setAccessible(true);
         $this->assertEquals(Array('.tmpl'), $method->invoke(null,
             Array()
@@ -62,10 +62,10 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         ));
     }
     /**
-     * @covers LightnCandy::_basedir
+     * @covers LightnCandy::buildCXBasedir
      */
-    public function testOn__basedir() {
-        $method = new ReflectionMethod('LightnCandy', '_basedir');
+    public function testOn_buildCXBasedir() {
+        $method = new ReflectionMethod('LightnCandy', 'buildCXBasedir');
         $method->setAccessible(true);
         $this->assertEquals(Array(getcwd()), $method->invoke(null,
             Array()
@@ -109,10 +109,10 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         ));
     }
     /**
-     * @covers LightnCandy::_error
+     * @covers LightnCandy::handleError
      */
-    public function testOn__error() {
-        $method = new ReflectionMethod('LightnCandy', '_error');
+    public function testOn_handleError() {
+        $method = new ReflectionMethod('LightnCandy', 'handleError');
         $method->setAccessible(true);
         $this->assertEquals(true, $method->invoke(null,
             Array('level' => 1, 'stack' => Array('X'), 'flags' => Array('errorlog' => 0, 'exception' => 0), 'error' => Array())
@@ -125,10 +125,10 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         ));
     }
     /**
-     * @covers LightnCandy::_on
+     * @covers LightnCandy::getBoolStr
      */
-    public function testOn__on() {
-        $method = new ReflectionMethod('LightnCandy', '_on');
+    public function testOn_getBoolStr() {
+        $method = new ReflectionMethod('LightnCandy', 'getBoolStr');
         $method->setAccessible(true);
         $this->assertEquals('true', $method->invoke(null,
             1
@@ -144,10 +144,10 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         ));
     }
     /**
-     * @covers LightnCandy::_fn
+     * @covers LightnCandy::getFuncName
      */
-    public function testOn__fn() {
-        $method = new ReflectionMethod('LightnCandy', '_fn');
+    public function testOn_getFuncName() {
+        $method = new ReflectionMethod('LightnCandy', 'getFuncName');
         $method->setAccessible(true);
         $this->assertEquals('LCRun::test', $method->invoke(null,
             Array('flags' => Array('standalone' => 0)), 'test'
@@ -160,10 +160,10 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         ));
     }
     /**
-     * @covers LightnCandy::_scope
+     * @covers LightnCandy::getArrayStr
      */
-    public function testOn__scope() {
-        $method = new ReflectionMethod('LightnCandy', '_scope');
+    public function testOn_getArrayStr() {
+        $method = new ReflectionMethod('LightnCandy', 'getArrayStr');
         $method->setAccessible(true);
         $this->assertEquals('', $method->invoke(null,
             Array()
@@ -176,10 +176,10 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         ));
     }
     /**
-     * @covers LightnCandy::_qscope
+     * @covers LightnCandy::getArrayCode
      */
-    public function testOn__qscope() {
-        $method = new ReflectionMethod('LightnCandy', '_qscope');
+    public function testOn_getArrayCode() {
+        $method = new ReflectionMethod('LightnCandy', 'getArrayCode');
         $method->setAccessible(true);
         $this->assertEquals('', $method->invoke(null,
             Array()
@@ -192,10 +192,10 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         ));
     }
     /**
-     * @covers LightnCandy::_vn
+     * @covers LightnCandy::getVariableName
      */
-    public function testOn__vn() {
-        $method = new ReflectionMethod('LightnCandy', '_vn');
+    public function testOn_getVariableName() {
+        $method = new ReflectionMethod('LightnCandy', 'getVariableName');
         $method->setAccessible(true);
         $this->assertEquals('', $method->invoke(null,
             '', 0
@@ -226,10 +226,10 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         ));
     }
     /**
-     * @covers LightnCandy::_advn
+     * @covers LightnCandy::getAdvName
      */
-    public function testOn__advn() {
-        $method = new ReflectionMethod('LightnCandy', '_advn');
+    public function testOn_getAdvName() {
+        $method = new ReflectionMethod('LightnCandy', 'getAdvName');
         $method->setAccessible(true);
         $this->assertEquals("['']", $method->invoke(null,
             ''

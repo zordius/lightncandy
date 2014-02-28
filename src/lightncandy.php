@@ -81,7 +81,7 @@ class LightnCandy {
         // Scan for partial and replace partial with template.
         $template = LightnCandy::expandPartial($template, $context);
 
-        if (self::_error($context)) {
+        if (self::handleError($context)) {
             return false;
         }
 
@@ -92,7 +92,7 @@ class LightnCandy {
             }
         }
 
-        if (self::_error($context)) {
+        if (self::handleError($context)) {
             return false;
         }
 
@@ -108,7 +108,7 @@ class LightnCandy {
             return "{$matches[LightnCandy::_mLSPACE]}'$tmpl'{$matches[LightnCandy::_mRSPACE]}";
         }, addcslashes($template, "'"));
 
-        if (self::_error($context)) {
+        if (self::handleError($context)) {
             return false;
         }
 
@@ -124,8 +124,8 @@ class LightnCandy {
      * @return string Composed PHP code
      */
     protected static function composePHPRender($context, $code) {
-        $flagJStrue = self::_on($context['flags']['jstrue']);
-        $flagJSObj = self::_on($context['flags']['jsobj']);
+        $flagJStrue = self::getBoolStr($context['flags']['jstrue']);
+        $flagJSObj = self::getBoolStr($context['flags']['jsobj']);
 
         $libstr = self::exportLCRun($context);
         $helpers = self::exportHelper($context);
@@ -186,8 +186,8 @@ $libstr
                 '$schema' => 'http://json-schema.org/draft-03/schema',
                 'description' => 'Template Json Schema'
             ),
-            'basedir' => self::_basedir($options),
-            'fileext' => self::_fileext($options),
+            'basedir' => self::buildCXBasedir($options),
+            'fileext' => self::buildCXFileext($options),
             'usedPartial' => Array(),
             'usedFeature' => Array(
                 'rootthis' => 0,
@@ -317,7 +317,7 @@ $libstr
      * @expect Array('test1') when input Array('fileext' => Array('test1'))
      * @expect Array('test2', 'test3') when input Array('fileext' => Array('test2', 'test3'))
      */
-    protected static function _fileext($options) {
+    protected static function buildCXFileext($options) {
         $exts = isset($options['fileext']) ? $options['fileext'] : '.tmpl';
         return is_array($exts) ? $exts : Array($exts);
     }
@@ -338,7 +338,7 @@ $libstr
      * @expect Array('src') when input Array('basedir' => Array('src', 'dir*not*found'))
      * @expect Array('src', 'tests') when input Array('basedir' => Array('src', 'tests'))
      */
-    protected static function _basedir($options) {
+    protected static function buildCXBasedir($options) {
         $dirs = isset($options['basedir']) ? $options['basedir'] : 0;
         $dirs = is_array($dirs) ? $dirs : Array($dirs);
         $ret = Array();
@@ -448,7 +448,7 @@ $libstr
      * @expect false when input Array('level' => 0, 'error' => Array())
      * @expect true when input Array('level' => 0, 'error' => Array('some error'), 'flags' => Array('errorlog' => 0, 'exception' => 0))
      */
-    protected static function _error(&$context) {
+    protected static function handleError(&$context) {
         if ($context['level'] !== 0) {
             $token = array_pop($context['stack']);
             $context['error'][] = "Unclosed token {{{#$token}}} !!";
@@ -480,7 +480,7 @@ $libstr
      * @expect 'false' when input 0
      * @expect 'false' when input -1
      */
-    protected static function _on($v) {
+    protected static function getBoolStr($v) {
         return ($v > 0) ? 'true' : 'false';
     }
 
@@ -597,12 +597,12 @@ $libstr
      * @expect 'LCRun::test2' when input Array('flags' => Array('standalone' => 0)), 'test2'
      * @expect "\$cx['funcs']['test3']" when input Array('flags' => Array('standalone' => 1)), 'test3'
      */
-    protected static function _fn($context, $name) {
+    protected static function getFuncName($context, $name) {
         return $context['flags']['standalone'] ? "\$cx['funcs']['$name']" : "LCRun::$name";
     }
 
     /**
-     * Internal method used by _qscope(). Get variable names translated string.
+     * Internal method used by getArrayCode(). Get variable names translated string.
      *
      * @param array $scopes an array of variable names with single quote
      *
@@ -612,12 +612,12 @@ $libstr
      * @expect '[a]' when input Array('a')
      * @expect '[a][b][c]' when input Array('a', 'b', 'c')
      */
-    protected static function _scope($scopes) {
+    protected static function getArrayStr($scopes) {
         return count($scopes) ? '[' . implode('][', $scopes) . ']' : '';
     }
 
     /**
-     * Internal method used by _vn(). Get variable names translated string.
+     * Internal method used by getVariableName(). Get variable names translated string.
      *
      * @param array $list an array of variable names.
      *
@@ -627,8 +627,8 @@ $libstr
      * @expect "['a']" when input Array('a')
      * @expect "['a']['b']['c']" when input Array('a', 'b', 'c')
      */
-    protected static function _qscope($list) {
-        return self::_scope(array_map(function ($v) {return "'$v'";}, $list));
+    protected static function getArrayCode($list) {
+        return self::getArrayStr(array_map(function ($v) {return "'$v'";}, $list));
     }
 
     /**
@@ -649,11 +649,11 @@ $libstr
      * @expect "['[g']['h]']['i']" when input '[g.h].i', 0
      * @expect "['g.h']['i']" when input '[g.h].i', 1
      */
-    protected static function _vn($vn, $adv) {
+    protected static function getVariableName($vn, $adv) {
         if ($adv) {
-            return $vn ? self::_advn($vn) : '';
+            return $vn ? self::getAdvName($vn) : '';
         }
-        return $vn ? self::_qscope(explode('.', $vn)) : '';
+        return $vn ? self::getArrayCode(explode('.', $vn)) : '';
     }
 
     /**
@@ -673,7 +673,7 @@ $libstr
      * @expect "['a']['b.c']" when input 'a.[b.c]'
      * @expect "['a.b']" when input '[a.b]'
      */
-    protected static function _advn($vn) {
+    protected static function getAdvName($vn) {
         if (!preg_match('/[\\.\\]\\[]/', $vn)) {
             return "['" . $vn . "']";
         }
@@ -696,7 +696,7 @@ $libstr
      * @param array $context Current compile content.
      * 
      */
-    protected static function _vx(&$v, $context) {
+    protected static function fixVariable(&$v, $context) {
         $v = trim($v);
         if ($context['flags']['this']) {
             if (($v == 'this') || $v == '.') {
@@ -754,7 +754,7 @@ $libstr
     protected static function _arg($list, $context) {
         $ret = Array();
         foreach ($list as $v) {
-            self::_vx($v, $context);
+            self::fixVariable($v, $context);
             $ret[] = "'$v'";
         }
         return implode(',', $ret);
@@ -1094,7 +1094,7 @@ $libstr
                 $v = $context['useVar'] . "['{$token[self::_mINNERTAG]}']";
                 return "{$context['ops']['cnd_start']}(is_null($v) && ($v !== false)){$context['ops']['cnd_then']}"; 
             } else {
-                return "{$context['ops']['cnd_start']}(" . self::_fn($context, 'isec') . "('{$token[self::_mINNERTAG]}', \$cx, \$in)){$context['ops']['cnd_then']}";
+                return "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'isec') . "('{$token[self::_mINNERTAG]}', \$cx, \$in)){$context['ops']['cnd_then']}";
             }
         case '/':
             $each = false;
@@ -1117,7 +1117,7 @@ $libstr
             case 'each':
                 $each = true;
             default:
-                self::_vx($token[self::_mINNERTAG], $context);
+                self::fixVariable($token[self::_mINNERTAG], $context);
                 array_pop($context['vars']);
                 $pop = array_pop($context['stack']);
                 switch($pop) {
@@ -1142,33 +1142,33 @@ $libstr
             switch ($vars[0]) {
             case 'if':
                 $context['stack'][] = 'if';
-                self::_vx($vars[1], $context);
+                self::fixVariable($vars[1], $context);
                 return $context['usedFeature']['parent'] 
-                       ? $context['ops']['seperator'] . self::_fn($context, 'ifv') . "('{$vars[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
-                       : "{$context['ops']['cnd_start']}(" . self::_fn($context, 'ifvar') . "('{$vars[1]}', \$cx, \$in)){$context['ops']['cnd_then']}";
+                       ? $context['ops']['seperator'] . self::getFuncName($context, 'ifv') . "('{$vars[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
+                       : "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'ifvar') . "('{$vars[1]}', \$cx, \$in)){$context['ops']['cnd_then']}";
             case 'unless':
                 $context['stack'][] = 'unless';
-                self::_vx($vars[1], $context);
+                self::fixVariable($vars[1], $context);
                 return $context['usedFeature']['parent']
-                       ? $context['ops']['seperator'] . self::_fn($context, 'unl') . "('{$vars[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
-                       : "{$context['ops']['cnd_start']}(!" . self::_fn($context, 'ifvar') . "('{$vars[1]}', \$cx, \$in)){$context['ops']['cnd_then']}";
+                       ? $context['ops']['seperator'] . self::getFuncName($context, 'unl') . "('{$vars[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
+                       : "{$context['ops']['cnd_start']}(!" . self::getFuncName($context, 'ifvar') . "('{$vars[1]}', \$cx, \$in)){$context['ops']['cnd_then']}";
             case 'each':
                 $each = 'true';
             case 'with':
                 $token[self::_mINNERTAG] = $vars[1];
             default:
                 if (($vars[0] === 'with') && $context['flags']['with']) {
-                    self::_vx($vars[1], $context);
+                    self::fixVariable($vars[1], $context);
                     $context['vars'][] = self::_vs($vars[1]);
                     $context['stack'][] = 'with';
-                    return $context['ops']['seperator'] . self::_fn($context, 'wi') . "('{$vars[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
+                    return $context['ops']['seperator'] . self::getFuncName($context, 'wi') . "('{$vars[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
                 }
-                self::_vx($token[self::_mINNERTAG], $context);
+                self::fixVariable($token[self::_mINNERTAG], $context);
                 $context['vars'][] = self::_vs($token[self::_mINNERTAG]);
                 self::_jsp($context);
                 $context['stack'][] = $token[self::_mINNERTAG];
                 $context['stack'][] = '#';
-                return $context['ops']['seperator'] . self::_fn($context, 'sec') . "('{$token[self::_mINNERTAG]}', \$cx, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
+                return $context['ops']['seperator'] . self::getFuncName($context, 'sec') . "('{$token[self::_mINNERTAG]}', \$cx, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
             }
         case '!':
             return $context['ops']['seperator'];
@@ -1185,11 +1185,11 @@ $libstr
      * @return string|null Return compiled code segment for the token when the token is custom helper
      */
     public static function compileCustomHelper(&$context, &$vars, $raw) {
-        self::_vx($vars[0], $context);
+        self::fixVariable($vars[0], $context);
         $fn = $raw ? 'raw' : $context['ops']['enc'];
         if (isset($context['helpers'][$vars[0]])) {
             $ch = array_shift($vars);
-            return $context['ops']['seperator'] . self::_fn($context, 'ch') . "('$ch', Array(" . self::_arg($vars, $context) . "), '$fn', \$cx, \$in){$context['ops']['seperator']}";
+            return $context['ops']['seperator'] . self::getFuncName($context, 'ch') . "('$ch', Array(" . self::_arg($vars, $context) . "), '$fn', \$cx, \$in){$context['ops']['seperator']}";
         }
     }
 
@@ -1221,14 +1221,14 @@ $libstr
         self::_jsv($context, $vars[0]); // TODO: more variables should be placed in json schema in custom helper calls
         $fn = $raw ? 'raw' : $context['ops']['enc'];
         if ($context['useVar']) {
-            $v = $context['useVar'] . self::_vn($vars[0], $context['flags']['advar']);
+            $v = $context['useVar'] . self::getVariableName($vars[0], $context['flags']['advar']);
             if ($context['flags']['jstrue']) {
                 return $raw ? "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}$v{$context['ops']['cnd_end']}" : "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}htmlentities($v, ENT_QUOTES){$context['ops']['cnd_end']}";
             } else {
                 return $raw ? "{$context['ops']['seperator']}$v{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlentities($v, ENT_QUOTES){$context['ops']['seperator']}";
             }
         } else {
-            return $context['ops']['seperator'] . self::_fn($context, $fn) . "('{$vars[0]}', \$cx, \$in){$context['ops']['seperator']}";
+            return $context['ops']['seperator'] . self::getFuncName($context, $fn) . "('{$vars[0]}', \$cx, \$in){$context['ops']['seperator']}";
         }
     }
 }
