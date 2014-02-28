@@ -834,6 +834,8 @@ $libstr
      * @expect Array(false, Array('a', 'b')) when input Array(0,0,0,0,0,'a b'), Array('flags' => Array('advar' => 0))
      * @expect Array(false, Array('a', '"b', 'c"')) when input Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 0))
      * @expect Array(false, Array('a', '"b c"')) when input Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 1))
+     * @expect Array(false, Array('a', '[b', 'c]')) when input Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 0))
+     * @expect Array(false, Array('a', '[b c]')) when input Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 1))
      */
     protected static function _tk(&$token, &$context) {
         $acts = Array();
