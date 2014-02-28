@@ -839,7 +839,7 @@ $libstr
      * @expect Array(false, Array('a', '[b c]')) when input Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 1))
      */
     protected static function _tk(&$token, &$context) {
-        $acts = Array();
+        $vars = Array();
         trim($token[self::_mINNERTAG]);
         preg_match_all('/(\s*)([^\s]+)/', $token[self::_mINNERTAG], $matched);
 
@@ -853,7 +853,7 @@ $libstr
                     $prev .= "{$matched[1][$index]}$t";
                     // end an argument when end with expected charactor
                     if (substr($t, -1, 1) === $expect) {
-                        $acts[] = $prev;
+                        $vars[] = $prev;
                         $prev = '';
                         $expect = 0;
                     }
@@ -871,32 +871,30 @@ $libstr
                     $expect = ']';
                     continue;
                 }
-                $acts[] = $t;
+                $vars[] = $t;
             }
         } else {
-            $acts = explode(' ', $token[self::_mINNERTAG]);
+            $vars = explode(' ', $token[self::_mINNERTAG]);
         }
 
         // Check for advanced variable.
-        foreach ($acts as $act) {
+        foreach ($vars as $var) {
             if ($context['flags']['advar']) {
                     // foo]  Rule 1: no starting [ or [ not start from head
-                if (preg_match('/^[^\\[\\.]+[\\]\\[]/', $act)
+                if (preg_match('/^[^\\[\\.]+[\\]\\[]/', $var)
                     // [bar  Rule 2: no ending ] or ] not in the end
-                    || preg_match('/[\\[\\]][^\\]\\.]+$/', $act)
+                    || preg_match('/[\\[\\]][^\\]\\.]+$/', $var)
                     // ]bar. Rule 3: middle ] not before .
-                    || preg_match('/\\][^\\]\\[\\.]+\\./', $act)
+                    || preg_match('/\\][^\\]\\[\\.]+\\./', $var)
                     // .foo[ Rule 4: middle [ not after .
-                    || preg_match('/\\.[^\\]\\[\\.]+\\[/', preg_replace('/\\[[^\\]]+\\]/', '[XXX]', $act))
+                    || preg_match('/\\.[^\\]\\[\\.]+\\[/', preg_replace('/\\[[^\\]]+\\]/', '[XXX]', $var))
                 ) {
-                    $context['error'][] = "Wrong variable naming as '$act' in " . self::_tokenString($token) . ' !';
+                    $context['error'][] = "Wrong variable naming as '$var' in " . self::_tokenString($token) . ' !';
                 }
             }
         }
 
-        return Array(
-            ($token[self::_mBEGINTAG] === '{{{'), $acts
-        );
+        return Array(($token[self::_mBEGINTAG] === '{{{'), $vars);
     }
 
     /**
@@ -921,7 +919,7 @@ $libstr
      * @param array $context current scaning context
      * @param boolean $raw the token is started with {{{ or not
      *
-     * @return mixed Return true when invalid
+     * @return boolean|null Return true when invalid
      * 
      * @expect null when input array_fill(0, 8, ''), Array(), true
      * @expect true when input range(0, 7), Array(), true
@@ -1046,9 +1044,11 @@ $libstr
      *
      * @param array $token detected handlebars {{ }} token
      * @param array $context current scaning context
+     *
+     * @return string Return compiled code segment for the token
      */
     public static function compileToken(&$token, &$context) {
-        list($raw, $acts) = self::_tk($token, $context);
+        list($raw, $vars) = self::_tk($token, $context);
 
         // Handle space control.
         if ($token[self::_mLSPACECTL]) {
@@ -1059,7 +1059,31 @@ $libstr
             $token[self::_mRSPACE] = '';
         }
 
-        // Handle block operations: ^ / ! # .
+        if ($ret = self::compileSection($token, $context, $vars)) {
+            return $ret;
+        }
+
+        if ($ret = self::compileCustomHelper($token, $context, $vars, $raw)) {
+            return $ret;
+        }
+
+        if ($ret = self::compileElse($token, $context, $vars)) {
+            return $ret;
+        }
+
+        return self::compileVariable($token, $context, $vars, $raw);
+    }
+
+    /**
+     * Internal method used by compile(). Return compiled PHP code partial for a handlebars section token.
+     *
+     * @param array $token detected handlebars {{ }} token
+     * @param array $context current scaning context
+     * @param string[] $vars parsed arguments list
+     *
+     * @return string|null Return compiled code segment for the token when the token is section
+     */
+    public static function compileSection(&$token, &$context, $vars) {
         switch ($token[self::_mOP]) {
         case '^':
             $context['stack'][] = $token[self::_mINNERTAG];
@@ -1113,29 +1137,29 @@ $libstr
             }
         case '#':
             $each = 'false';
-            switch ($acts[0]) {
+            switch ($vars[0]) {
             case 'if':
                 $context['stack'][] = 'if';
-                self::_vx($acts[1], $context);
+                self::_vx($vars[1], $context);
                 return $context['usedFeature']['parent'] 
-                       ? $context['ops']['seperator'] . self::_fn($context, 'ifv') . "('{$acts[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
-                       : "{$context['ops']['cnd_start']}(" . self::_fn($context, 'ifvar') . "('{$acts[1]}', \$cx, \$in)){$context['ops']['cnd_then']}";
+                       ? $context['ops']['seperator'] . self::_fn($context, 'ifv') . "('{$vars[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
+                       : "{$context['ops']['cnd_start']}(" . self::_fn($context, 'ifvar') . "('{$vars[1]}', \$cx, \$in)){$context['ops']['cnd_then']}";
             case 'unless':
                 $context['stack'][] = 'unless';
-                self::_vx($acts[1], $context);
+                self::_vx($vars[1], $context);
                 return $context['usedFeature']['parent']
-                       ? $context['ops']['seperator'] . self::_fn($context, 'unl') . "('{$acts[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
-                       : "{$context['ops']['cnd_start']}(!" . self::_fn($context, 'ifvar') . "('{$acts[1]}', \$cx, \$in)){$context['ops']['cnd_then']}";
+                       ? $context['ops']['seperator'] . self::_fn($context, 'unl') . "('{$vars[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
+                       : "{$context['ops']['cnd_start']}(!" . self::_fn($context, 'ifvar') . "('{$vars[1]}', \$cx, \$in)){$context['ops']['cnd_then']}";
             case 'each':
                 $each = 'true';
             case 'with':
-                $token[self::_mINNERTAG] = $acts[1];
+                $token[self::_mINNERTAG] = $vars[1];
             default:
-                if (($acts[0] === 'with') && $context['flags']['with']) {
-                    self::_vx($acts[1], $context);
-                    $context['vars'][] = self::_vs($acts[1]);
+                if (($vars[0] === 'with') && $context['flags']['with']) {
+                    self::_vx($vars[1], $context);
+                    $context['vars'][] = self::_vs($vars[1]);
                     $context['stack'][] = 'with';
-                    return $context['ops']['seperator'] . self::_fn($context, 'wi') . "('{$acts[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
+                    return $context['ops']['seperator'] . self::_fn($context, 'wi') . "('{$vars[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
                 }
                 self::_vx($token[self::_mINNERTAG], $context);
                 $context['vars'][] = self::_vs($token[self::_mINNERTAG]);
@@ -1147,32 +1171,60 @@ $libstr
         case '!':
             return $context['ops']['seperator'];
         }
+    }
 
-        // Handle custom helpers.
-        self::_vx($acts[0], $context);
+    /**
+     * Internal method used by compile(). Return compiled PHP code partial for a handlebars custom helper token.
+     *                                                                                                                       * @param array $token detected handlebars {{ }} token
+     * @param array $context current scaning context
+     * @param string[] $vars parsed arguments list
+     *
+     * @return string|null Return compiled code segment for the token when the token is custom helper
+     */
+    public static function compileCustomHelper(&$token, &$context, &$vars, $raw) {
+        self::_vx($vars[0], $context);
         $fn = $raw ? 'raw' : $context['ops']['enc'];
-        if (isset($context['helpers'][$acts[0]])) {
-            $ch = array_shift($acts);
-            return $context['ops']['seperator'] . self::_fn($context, 'ch') . "('$ch', Array(" . self::_arg($acts, $context) . "), '$fn', \$cx, \$in){$context['ops']['seperator']}";
+        if (isset($context['helpers'][$vars[0]])) {
+            $ch = array_shift($vars);
+            return $context['ops']['seperator'] . self::_fn($context, 'ch') . "('$ch', Array(" . self::_arg($vars, $context) . "), '$fn', \$cx, \$in){$context['ops']['seperator']}";
         }
+    }
 
-        // Handle else.
-        if ($acts[0] ==='else') {
+   /**
+     * Internal method used by compile(). Return compiled PHP code partial for a handlebars else token.
+     *                                                                                                                       * @param array $token detected handlebars {{ }} token
+     * @param array $context current scaning context
+     * @param string[] $vars parsed arguments list
+     *
+     * @return string|null Return compiled code segment for the token when the token is else
+     */
+    public static function compileElse(&$token, &$context, &$vars) {
+        if ($vars[0] ==='else') {
             $context['stack'][] = ':';
             return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}" : "{$context['ops']['cnd_else']}";
         }
+    }
 
-        // Handle variables.
-        self::_jsv($context, $acts[0]); // TODO: more variables should be placed in json schema in custom helper calls
+   /**
+     * Internal method used by compile(). Return compiled PHP code partial for a handlebars custom helper token.
+     *                                                                                                                       * @param array $token detected handlebars {{ }} token
+     * @param array $context current scaning context
+     * @param string[] $vars parsed arguments list
+     *
+     * @return string Return compiled code segment for the token
+     */
+    public static function compileVariable(&$token, &$context, &$vars, $raw) {
+        self::_jsv($context, $vars[0]); // TODO: more variables should be placed in json schema in custom helper calls
+        $fn = $raw ? 'raw' : $context['ops']['enc'];
         if ($context['useVar']) {
-            $v = $context['useVar'] . self::_vn($acts[0], $context['flags']['advar']);
+            $v = $context['useVar'] . self::_vn($vars[0], $context['flags']['advar']);
             if ($context['flags']['jstrue']) {
                 return $raw ? "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}$v{$context['ops']['cnd_end']}" : "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}htmlentities($v, ENT_QUOTES){$context['ops']['cnd_end']}";
             } else {
                 return $raw ? "{$context['ops']['seperator']}$v{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlentities($v, ENT_QUOTES){$context['ops']['seperator']}";
             }
         } else {
-            return $context['ops']['seperator'] . self::_fn($context, $fn) . "('{$acts[0]}', \$cx, \$in){$context['ops']['seperator']}";
+            return $context['ops']['seperator'] . self::_fn($context, $fn) . "('{$vars[0]}', \$cx, \$in){$context['ops']['seperator']}";
         }
     }
 }
