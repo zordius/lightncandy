@@ -104,8 +104,8 @@ class LightnCandy {
 
         // Do PHP code and json schema generation.
         $code = preg_replace_callback(self::TOKEN_SEARCH, function ($matches) use (&$context) {
-            $tmpl = LightnCandy::tokens($matches, $context);
-            return "{$matches[1]}'$tmpl'{$matches[8]}";
+            $tmpl = LightnCandy::compileToken($matches, $context);
+            return "{$matches[LightnCandy::_mLSPACE]}'$tmpl'{$matches[LightnCandy::_mRSPACE]}";
         }, addcslashes($template, "'"));
 
         if (self::_error($context)) {
@@ -1027,7 +1027,7 @@ $libstr
      * @param array $token detected handlebars {{ }} token
      * @param array $context current scaning context
      */
-    public static function tokens(&$token, &$context) {
+    public static function compileToken(&$token, &$context) {
         list($raw, $acts) = self::_tk($token, $context);
 
         // Handle space control.
