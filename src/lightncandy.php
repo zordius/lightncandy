@@ -828,7 +828,9 @@ $libstr
      *
      * @param array $token preg_match results
      * @param array $context current compile context
-     * 
+     *
+     * @return array Return parsed result
+     *
      * @expect Array(false, Array('')) when input Array(0,0,0,0,0,''), Array('flags' => Array('advar' => 0))
      * @expect Array(true, Array('')) when input Array(0,0,'{{{',0,0,''), Array('flags' => Array('advar' => 0))
      * @expect Array(false, Array('a')) when input Array(0,0,0,0,0,'a'), Array('flags' => Array('advar' => 0))
@@ -1063,7 +1065,7 @@ $libstr
             return $ret;
         }
 
-        if ($ret = self::compileCustomHelper($token, $context, $vars, $raw)) {
+        if ($ret = self::compileCustomHelper($context, $vars, $raw)) {
             return $ret;
         }
 
@@ -1175,13 +1177,13 @@ $libstr
 
     /**
      * Internal method used by compile(). Return compiled PHP code partial for a handlebars custom helper token.
-     *                                                                                                                       * @param array $token detected handlebars {{ }} token
+     *
      * @param array $context current scaning context
      * @param string[] $vars parsed arguments list
      *
      * @return string|null Return compiled code segment for the token when the token is custom helper
      */
-    public static function compileCustomHelper(&$token, &$context, &$vars, $raw) {
+    public static function compileCustomHelper(&$context, &$vars, $raw) {
         self::_vx($vars[0], $context);
         $fn = $raw ? 'raw' : $context['ops']['enc'];
         if (isset($context['helpers'][$vars[0]])) {
