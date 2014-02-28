@@ -168,9 +168,9 @@ LightnCandy supports parent context access in partial (access `{{../vars}}` insi
 Custom Helper
 -------------
 
-Custom helper can help you deal with common template tasks, for example: provide URL and text then generate an link. To know more about custom helper, you can read original handlebars.js document here: http://handlebarsjs.com/expressions.html .
+Custom helper can help you deal with common template tasks, for example: provide URL and text then generate a link. To know more about custom helper, you can read original handlebars.js document here: http://handlebarsjs.com/expressions.html .
 
-LightnCandy supports custom helper when compile time. When `compile()`, LightnCandy will lookup helpers from custom helper table. You can register custom helpers with `helpers` option.
+When `compile()`, LightnCandy will lookup helpers from generated custom helper name table. You can register custom helpers with `helpers` option.
 
 for exmample:
 ```php
@@ -179,23 +179,28 @@ LightnCandy::compile($template, Array(
         // 1. You may pass your function name
         //    When the function is not exist, you get compile time error
         //    In this case, the helper name is same with function name
+        //    Tempalte: {{my_helper_functoin ....}}
         'my_helper_function',
 
         // 2. You may also provide a static call from a class
         //    In this case, the helper name is same with provided full name
-        //    It is not valid in handlebars.js
+        //    **DEPRECATED** It is not valid in handlebars.js 
+        //    Tempalte: {{myClass::myStaticMethod ....}}
         'myClass::myStaticMethod',
 
         // 3. You may also provide an alias for helper name
         //    This help you to mapping different function to a prefered helper name
+        //    Tempalte: {{helper_name ....}}
         'helper_name' => 'my_other_helper',
 
         // 4. Alias also works well for static call from a class
         //    This help you to mapping different function to a prefered helper name
+        //    Tempalte: {{helper_name2 ....}}
         'helper_name2' => 'myClass::func',
 
         // 5. Anonymouse function should be provided with helper name
         //    The function will be included in generaed code always
+        //    Tempalte: {{helper_name3 ....}}
         'helper_name3' => function ($arg1, $arg2) {
             return "<a href=\"{$arg1}\">{$arg2}</a>";
         }
@@ -206,13 +211,15 @@ LightnCandy::compile($template, Array(
 The input parameters are processed by LightnCandy automatically, you do not need to worry about variable name processing or current context. You can also use double quoted string as input, for example:
 
 ```
-{{helper name}}           // This send processed {{name}} into the helper
-{{helper ../name}}        // This send processed {{../name}} into the helper
-{{{helper "Test"}}}       // This send the string "Test" into the helper
-{{helper "Test"}}         // This send html encoded string "Test" into the helper
-{{helper "Test" ../name}} // This send html encoded string "Test" as first param,
-                          // and processed {{../name}} as second param into the helper
+{{{helper name}}}           // This send processed {{name}} into the helper
+{{{helper ../name}}}        // This send processed {{../name}} into the helper
+{{{helper "Test"}}}         // This send the string "Test" into the helper
+{{helper "Test"}}           // This send the string "Test" into the helper and HTML encode the helper result
+{{{helper "Test" ../name}}} // This send string "Test" as first param,
+                            // and processed {{../name}} as second param into the helper
 ```
+
+When your custom helper be executed from {{ }} , the return value will be HTML encoded. You may execute your helper by {{{ }}} , then the original helper return value will be output directly.
 
 Unsupported Feature (so far)
 ----------------------------
@@ -232,7 +239,7 @@ Suggested Handlebars Template Practices
 ---------------------------------------
 
 * Prevent to use `{{#with}}` . I think `{{path.to.val}}` is more readable then `{{#with path.to}}{{val}}{{/with}}`; when using `{{#with}}` you will confusing on scope changing. `{{#with}}` only save you very little time when you access many variables under same path, but cost you a lot time when you need to understand then maintain a template.
-* use `{{{val}}}` when you do not require html encoded output on the value. It is better performance, too.
+* use `{{{val}}}` when you do not require HTML encoded output on the value. It is better performance, too.
 * Prevent to use custom helper if you want to reuse your template in different language. Or, you may need to implement different versions of helper in different languages.
 * For best performance, you should only use 'compile on demand' pattern only when you in development stage. Before you go to production, you can `LightnCandy::compile()` on all your templates, save all generated PHP codes, and only deploy these generated files. You may need to maintain a build process for this. Adding cache logic on 'compile on demand' may be good, but it is not the best solution. If you want to build some library or framework based on LightnCandy, think about this scenario.
 
@@ -248,13 +255,13 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{{value}}}` : raw variable
    * true as 'true' (require `FLAG_JSTRUE`)
    * false as ''
-* `{{value}}` : html encoded variable
+* `{{value}}` : HTML encoded variable
    * true as 'true' (require `FLAG_JSTRUE`)
    * false as ''
 * `{{{path.to.value}}}` : dot notation, raw
-* `{{path.to.value}}` : dot notation, html encoded
-* `{{.}}` : current context, html encoded (require `FLAG_THIS`)
-* `{{this}}` : current context, html encoded (require `FLAG_THIS`)
+* `{{path.to.value}}` : dot notation, HTML encoded
+* `{{.}}` : current context, HTML encoded (require `FLAG_THIS`)
+* `{{this}}` : current context, HTML encoded (require `FLAG_THIS`)
 * `{{{.}}}` : current context, raw (require `FLAG_THIS`)
 * `{{{this}}}` : current context, raw (require `FLAG_THIS`)
 * `{{#value}}` : section
