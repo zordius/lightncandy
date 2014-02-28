@@ -301,6 +301,28 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         ));
     }
     /**
+     * @covers LightnCandy::_tk
+     */
+    public function testOn__tk() {
+        $method = new ReflectionMethod('LightnCandy', '_tk');
+        $method->setAccessible(true);
+        $this->assertEquals(Array(false, Array('')), $method->invoke(null,
+            Array(0,0,0,0,0,''), Array()
+        ));
+        $this->assertEquals(Array(false, Array('a')), $method->invoke(null,
+            Array(0,0,0,0,0,'a'), Array('flags' => Array('advar' => 0))
+        ));
+        $this->assertEquals(Array(false, Array('a', 'b')), $method->invoke(null,
+            Array(0,0,0,0,0,'a b'), Array('flags' => Array('advar' => 0))
+        ));
+        $this->assertEquals(Array(false, Array('a', '"b', 'c"')), $method->invoke(null,
+            Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 0))
+        ));
+        $this->assertEquals(Array(false, Array('a', '"b c"')), $method->invoke(null,
+            Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 1))
+        ));
+    }
+    /**
      * @covers LightnCandy::_tokenString
      */
     public function testOn__tokenString() {

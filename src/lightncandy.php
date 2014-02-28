@@ -828,11 +828,17 @@ $libstr
      *
      * @param array $token preg_match results
      * @param array $context current compile context
+     * 
+     * @expect Array(false, Array('')) when input Array(0,0,0,0,0,''), Array()
+     * @expect Array(false, Array('a')) when input Array(0,0,0,0,0,'a'), Array('flags' => Array('advar' => 0))
+     * @expect Array(false, Array('a', 'b')) when input Array(0,0,0,0,0,'a b'), Array('flags' => Array('advar' => 0))
+     * @expect Array(false, Array('a', '"b', 'c"')) when input Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 0))
+     * @expect Array(false, Array('a', '"b c"')) when input Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 1))
      */
     protected static function _tk(&$token, &$context) {
         $acts = Array();
-        trim($token[5]);
-        preg_match_all('/(\s*)([^\s]+)/', $token[5], $matched);
+        trim($token[self::_mINNERTAG]);
+        preg_match_all('/(\s*)([^\s]+)/', $token[self::_mINNERTAG], $matched);
 
         // Parse arguments and deal with "..." or [...]
         if (is_array($matched) && $context['flags']['advar']) {
@@ -865,7 +871,7 @@ $libstr
                 $acts[] = $t;
             }
         } else {
-            $acts = explode(' ', $token[5]);
+            $acts = explode(' ', $token[self::_mINNERTAG]);
         }
 
         // Check for advanced variable.
