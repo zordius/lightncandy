@@ -829,8 +829,8 @@ $libstr
      * @param array $token preg_match results
      * @param array $context current compile context
      * 
-     * @expect Array(false, Array('')) when input Array(0,0,0,0,0,''), Array()
-     * @expect Array(true, Array('')) when input Array(0,0,'{{{',0,0,''), Array()
+     * @expect Array(false, Array('')) when input Array(0,0,0,0,0,''), Array('flags' => Array('advar' => 0))
+     * @expect Array(true, Array('')) when input Array(0,0,'{{{',0,0,''), Array('flags' => Array('advar' => 0))
      * @expect Array(false, Array('a')) when input Array(0,0,0,0,0,'a'), Array('flags' => Array('advar' => 0))
      * @expect Array(false, Array('a', 'b')) when input Array(0,0,0,0,0,'a b'), Array('flags' => Array('advar' => 0))
      * @expect Array(false, Array('a', '"b', 'c"')) when input Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 0))
@@ -919,8 +919,9 @@ $libstr
      *
      * @param string[] $token detected handlebars {{ }} token
      * @param array $context current scaning context
+     * @param boolean $raw the token is started with {{{ or not
      *
-     * @return mixed Return true when invalid
+     * @return boollean Return true when invalid
      * 
      * @expect null when input array_fill(0, 8, ''), Array(), true
      * @expect true when input range(0, 7), Array(), true
@@ -946,13 +947,16 @@ $libstr
      * @param string[] $vars parsed arguments list
      *
      * @return mixed Return true when invalid or detected
+     * 
+     * @expect null when input Array(0, 0, 0, 0, ''), Array(), Array()
+     * @expect 2 when input Array(0, 0, 0, 0, '^', '...'), Array('usedFeature' => Array('isec' => 1), 'level' => 0), Array()
      */
     protected static function _validateOperations($token, &$context, $vars) {
         switch ($token[self::_mOP]) {
         case '^':
             $context['stack'][] = $token[self::_mINNERTAG];
             $context['level']++;
-            return $context['usedFeature']['isec']++;
+            return ++$context['usedFeature']['isec'];
 
         case '/':
             array_pop($context['stack']);

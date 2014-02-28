@@ -307,10 +307,10 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $method = new ReflectionMethod('LightnCandy', '_tk');
         $method->setAccessible(true);
         $this->assertEquals(Array(false, Array('')), $method->invoke(null,
-            Array(0,0,0,0,0,''), Array()
+            Array(0,0,0,0,0,''), Array('flags' => Array('advar' => 0))
         ));
         $this->assertEquals(Array(true, Array('')), $method->invoke(null,
-            Array(0,0,'{{{',0,0,''), Array()
+            Array(0,0,'{{{',0,0,''), Array('flags' => Array('advar' => 0))
         ));
         $this->assertEquals(Array(false, Array('a')), $method->invoke(null,
             Array(0,0,0,0,0,'a'), Array('flags' => Array('advar' => 0))
@@ -355,6 +355,19 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         ));
         $this->assertEquals(true, $method->invoke(null,
             range(0, 7), Array(), true
+        ));
+    }
+    /**
+     * @covers LightnCandy::_validateOperations
+     */
+    public function testOn__validateOperations() {
+        $method = new ReflectionMethod('LightnCandy', '_validateOperations');
+        $method->setAccessible(true);
+        $this->assertEquals(null, $method->invoke(null,
+            Array(0, 0, 0, 0, ''), Array(), Array()
+        ));
+        $this->assertEquals(2, $method->invoke(null,
+            Array(0, 0, 0, 0, '^', '...'), Array('usedFeature' => Array('isec' => 1), 'level' => 0), Array()
         ));
     }
 }
