@@ -1,7 +1,8 @@
 <?php
 
-require_once 'PHPUnit/Autoload.php';
-include('src/lightncandy.php');
+include_once('vendor/phpunit/phpunit/PHPUnitPHPUnit/Autoload.php');
+include_once('PHPUnit/Autoload.php');
+require('src/lightncandy.php');
 
 $datetime = date('Y-m-d H:i:s');
 

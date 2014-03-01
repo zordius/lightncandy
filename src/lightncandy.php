@@ -334,8 +334,8 @@ $libstr
      * @expect Array(getcwd()) when input Array('basedir' => '')
      * @expect Array(getcwd()) when input Array('basedir' => Array())
      * @expect Array('src') when input Array('basedir' => Array('src'))
-     * @expect Array(getcwd()) when input Array('basedir' => Array('*dir*not*found'))
-     * @expect Array('src') when input Array('basedir' => Array('src', 'dir*not*found'))
+     * @expect Array(getcwd()) when input Array('basedir' => Array('dir_not_found'))
+     * @expect Array('src') when input Array('basedir' => Array('src', 'dir_not_found'))
      * @expect Array('src', 'tests') when input Array('basedir' => Array('src', 'tests'))
      */
     protected static function buildCXBasedir($options) {

@@ -83,10 +83,10 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
             Array('basedir' => Array('src'))
         ));
         $this->assertEquals(Array(getcwd()), $method->invoke(null,
-            Array('basedir' => Array('*dir*not*found'))
+            Array('basedir' => Array('dir_not_found'))
         ));
         $this->assertEquals(Array('src'), $method->invoke(null,
-            Array('basedir' => Array('src', 'dir*not*found'))
+            Array('basedir' => Array('src', 'dir_not_found'))
         ));
         $this->assertEquals(Array('src', 'tests'), $method->invoke(null,
             Array('basedir' => Array('src', 'tests'))
