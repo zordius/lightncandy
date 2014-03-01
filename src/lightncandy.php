@@ -1145,47 +1145,47 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Return compiled PHP code partial for a handlebars section token.
+     * Internal method used by compile(). Return compiled PHP code partial for a handlebars block token.
      *
      * @param array $token detected handlebars {{ }} token
      * @param array $context current scaning context
      * @param string[] $vars parsed arguments list
      *
-     * @return string|null Return compiled code segment for the token when the token is section
+     * @return string Return compiled code segment for the token when the token is section
      */
     public static function compileBlock(&$token, &$context, $vars) {
-            $each = 'false';
-            switch ($vars[0]) {
-            case 'if':
-                $context['stack'][] = 'if';
+        $each = 'false';
+        switch ($vars[0]) {
+        case 'if':
+            $context['stack'][] = 'if';
+            self::fixVariable($vars[1], $context);
+            return $context['usedFeature']['parent'] 
+                ? $context['ops']['seperator'] . self::getFuncName($context, 'ifv') . "('{$vars[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
+                : "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'ifvar') . "('{$vars[1]}', \$cx, \$in)){$context['ops']['cnd_then']}";
+        case 'unless':
+            $context['stack'][] = 'unless';
+            self::fixVariable($vars[1], $context);
+            return $context['usedFeature']['parent']
+                ? $context['ops']['seperator'] . self::getFuncName($context, 'unl') . "('{$vars[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
+                : "{$context['ops']['cnd_start']}(!" . self::getFuncName($context, 'ifvar') . "('{$vars[1]}', \$cx, \$in)){$context['ops']['cnd_then']}";
+        case 'each':
+            $each = 'true';
+        case 'with':
+            $token[self::_mINNERTAG] = $vars[1];
+        default:
+            if (($vars[0] === 'with') && $context['flags']['with']) {
                 self::fixVariable($vars[1], $context);
-                return $context['usedFeature']['parent'] 
-                       ? $context['ops']['seperator'] . self::getFuncName($context, 'ifv') . "('{$vars[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
-                       : "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'ifvar') . "('{$vars[1]}', \$cx, \$in)){$context['ops']['cnd_then']}";
-            case 'unless':
-                $context['stack'][] = 'unless';
-                self::fixVariable($vars[1], $context);
-                return $context['usedFeature']['parent']
-                       ? $context['ops']['seperator'] . self::getFuncName($context, 'unl') . "('{$vars[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
-                       : "{$context['ops']['cnd_start']}(!" . self::getFuncName($context, 'ifvar') . "('{$vars[1]}', \$cx, \$in)){$context['ops']['cnd_then']}";
-            case 'each':
-                $each = 'true';
-            case 'with':
-                $token[self::_mINNERTAG] = $vars[1];
-            default:
-                if (($vars[0] === 'with') && $context['flags']['with']) {
-                    self::fixVariable($vars[1], $context);
-                    $context['vars'][] = self::_vs($vars[1]);
-                    $context['stack'][] = 'with';
-                    return $context['ops']['seperator'] . self::getFuncName($context, 'wi') . "('{$vars[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
-                }
-                self::fixVariable($token[self::_mINNERTAG], $context);
-                $context['vars'][] = self::_vs($token[self::_mINNERTAG]);
-                self::_jsp($context);
-                $context['stack'][] = $token[self::_mINNERTAG];
-                $context['stack'][] = '#';
-                return $context['ops']['seperator'] . self::getFuncName($context, 'sec') . "('{$token[self::_mINNERTAG]}', \$cx, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
+                $context['vars'][] = self::_vs($vars[1]);
+                $context['stack'][] = 'with';
+                return $context['ops']['seperator'] . self::getFuncName($context, 'wi') . "('{$vars[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
             }
+            self::fixVariable($token[self::_mINNERTAG], $context);
+            $context['vars'][] = self::_vs($token[self::_mINNERTAG]);
+            self::_jsp($context);
+            $context['stack'][] = $token[self::_mINNERTAG];
+            $context['stack'][] = '#';
+            return $context['ops']['seperator'] . self::getFuncName($context, 'sec') . "('{$token[self::_mINNERTAG]}', \$cx, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
+        }
     }
 
     /**
