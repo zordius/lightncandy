@@ -840,7 +840,7 @@ $libstr
      * @expect Array(false, Array('a', '[b', 'c]')) when input Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 0))
      * @expect Array(false, Array('a', '[b c]')) when input Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 1))
      */
-    protected static function _tk(&$token, &$context) {
+    protected static function parseTokenArgs(&$token, &$context) {
         $vars = Array();
         trim($token[self::_mINNERTAG]);
         preg_match_all('/(\s*)([^\s]+)/', $token[self::_mINNERTAG], $matched);
@@ -999,7 +999,7 @@ $libstr
      * @param array $context current scaning context
      */
     protected static function scan($token, &$context) {
-        list($raw, $vars) = self::_tk($token, $context);
+        list($raw, $vars) = self::parseTokenArgs($token, $context);
 
         if (self::_validateStartEnd($token, $context, $raw)) {
             return;
@@ -1050,7 +1050,7 @@ $libstr
      * @return string Return compiled code segment for the token
      */
     public static function compileToken(&$token, &$context) {
-        list($raw, $vars) = self::_tk($token, $context);
+        list($raw, $vars) = self::parseTokenArgs($token, $context);
 
         // Handle space control.
         if ($token[self::_mLSPACECTL]) {

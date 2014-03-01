@@ -301,10 +301,10 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         ));
     }
     /**
-     * @covers LightnCandy::_tk
+     * @covers LightnCandy::parseTokenArgs
      */
-    public function testOn__tk() {
-        $method = new ReflectionMethod('LightnCandy', '_tk');
+    public function testOn_parseTokenArgs() {
+        $method = new ReflectionMethod('LightnCandy', 'parseTokenArgs');
         $method->setAccessible(true);
         $this->assertEquals(Array(false, Array('')), $method->invoke(null,
             Array(0,0,0,0,0,''), Array('flags' => Array('advar' => 0))
