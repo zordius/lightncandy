@@ -38,7 +38,6 @@ Use Composer ( https://getcomposer.org/ ) to install LightnCandy:
 
 ```
 composer require zordius/lightncandy:dev-master
-composer install
 ```
 
 Or, download LightnCandy from github:
