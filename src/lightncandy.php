@@ -754,7 +754,6 @@ $libstr
     protected static function _arg($list, $context) {
         $ret = Array();
         foreach ($list as $v) {
-            self::fixVariable($v, $context);
             $ret[] = "'$v'";
         }
         return implode(',', $ret);
@@ -838,7 +837,7 @@ $libstr
      * @expect Array(false, Array('a', '"b', 'c"')) when input Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 0))
      * @expect Array(false, Array('a', '"b c"')) when input Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 1))
      * @expect Array(false, Array('a', '[b', 'c]')) when input Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 0))
-     * @expect Array(false, Array('a', '[b c]')) when input Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 1))
+     * @expect Array(false, Array('a', 'b c')) when input Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 1))
      */
     protected static function parseTokenArgs(&$token, &$context) {
         $vars = Array();
@@ -880,7 +879,7 @@ $libstr
         }
 
         // Check for advanced variable.
-        foreach ($vars as $var) {
+        foreach ($vars as &$var) {
             if ($context['flags']['advar']) {
                     // foo]  Rule 1: no starting [ or [ not start from head
                 if (preg_match('/^[^\\[\\.]+[\\]\\[]/', $var)
@@ -894,6 +893,7 @@ $libstr
                     $context['error'][] = "Wrong variable naming as '$var' in " . self::_tokenString($token) . ' !';
                 }
             }
+            self::fixVariable($var, $context);
         }
 
         return Array(($token[self::_mBEGINTAG] === '{{{'), $vars);
@@ -1158,13 +1158,11 @@ $libstr
         switch ($vars[0]) {
         case 'if':
             $context['stack'][] = 'if';
-            self::fixVariable($vars[1], $context);
             return $context['usedFeature']['parent'] 
                 ? $context['ops']['seperator'] . self::getFuncName($context, 'ifv') . "('{$vars[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
                 : "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'ifvar') . "('{$vars[1]}', \$cx, \$in)){$context['ops']['cnd_then']}";
         case 'unless':
             $context['stack'][] = 'unless';
-            self::fixVariable($vars[1], $context);
             return $context['usedFeature']['parent']
                 ? $context['ops']['seperator'] . self::getFuncName($context, 'unl') . "('{$vars[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
                 : "{$context['ops']['cnd_start']}(!" . self::getFuncName($context, 'ifvar') . "('{$vars[1]}', \$cx, \$in)){$context['ops']['cnd_then']}";
@@ -1174,7 +1172,6 @@ $libstr
             $token[self::_mINNERTAG] = $vars[1];
         default:
             if (($vars[0] === 'with') && $context['flags']['with']) {
-                self::fixVariable($vars[1], $context);
                 $context['vars'][] = self::_vs($vars[1]);
                 $context['stack'][] = 'with';
                 return $context['ops']['seperator'] . self::getFuncName($context, 'wi') . "('{$vars[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
@@ -1198,7 +1195,6 @@ $libstr
      * @return string|null Return compiled code segment for the token when the token is custom helper
      */
     public static function compileCustomHelper(&$context, &$vars, $raw) {
-        self::fixVariable($vars[0], $context);
         $fn = $raw ? 'raw' : $context['ops']['enc'];
         if (isset($context['helpers'][$vars[0]])) {
             $ch = array_shift($vars);
