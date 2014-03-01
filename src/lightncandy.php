@@ -1095,6 +1095,24 @@ $libstr
                 return "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'isec') . "('{$token[self::_mINNERTAG]}', \$cx, \$in)){$context['ops']['cnd_then']}";
             }
         case '/':
+            return self::compileBlockEnd($token, $context, $vars);
+        case '!':
+            return $context['ops']['seperator'];
+        case '#':
+            return self::compileBlockBegin($token, $context, $vars);
+        }
+    }
+
+    /**
+     * Internal method used by compile(). Return compiled PHP code partial for a handlebars block end token.
+     *
+     * @param array $token detected handlebars {{ }} token
+     * @param array $context current scaning context
+     * @param string[] $vars parsed arguments list
+     *
+     * @return string Return compiled code segment for the token
+     */
+    public static function compileBlockEnd(&$token, &$context, $vars) {
             $each = false;
             switch ($token[self::_mINNERTAG]) {
             case 'if':
@@ -1135,23 +1153,18 @@ $libstr
                     return;
                 }
             }
-        case '!':
-            return $context['ops']['seperator'];
-        case '#':
-            return self::compileBlock($token, $context, $vars);
-        }
     }
 
     /**
-     * Internal method used by compile(). Return compiled PHP code partial for a handlebars block token.
+     * Internal method used by compile(). Return compiled PHP code partial for a handlebars block begin token.
      *
      * @param array $token detected handlebars {{ }} token
      * @param array $context current scaning context
      * @param string[] $vars parsed arguments list
      *
-     * @return string Return compiled code segment for the token when the token is section
+     * @return string Return compiled code segment for the token
      */
-    public static function compileBlock(&$token, &$context, $vars) {
+    public static function compileBlockBegin(&$token, &$context, $vars) {
         $each = 'false';
         switch ($vars[0]) {
         case 'if':
