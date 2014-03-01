@@ -285,19 +285,13 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $method = new ReflectionMethod('LightnCandy', '_arg');
         $method->setAccessible(true);
         $this->assertEquals('', $method->invoke(null,
-            Array(), Array('flags' => Array('this' => 0, 'advar' => 0))
-        ));
-        $this->assertEquals('', $method->invoke(null,
-            Array(), Array('flags' => Array('this' => 0, 'advar' => 1))
+            Array(), Array()
         ));
         $this->assertEquals("'a'", $method->invoke(null,
-            Array('a'), Array('flags' => Array('this' => 0, 'advar' => 0))
+            Array('a'), Array()
         ));
-        $this->assertEquals("'this'", $method->invoke(null,
-            Array('this'), Array('flags' => Array('this' => 0, 'advar' => 0))
-        ));
-        $this->assertEquals("''", $method->invoke(null,
-            Array('this'), Array('flags' => Array('this' => 1, 'advar' => 0))
+        $this->assertEquals("'a','b'", $method->invoke(null,
+            Array('a', 'b'), Array()
         ));
     }
     /**

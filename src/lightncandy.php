@@ -745,11 +745,9 @@ $libstr
      *
      * @return string PHP arguments string
      * 
-     * @expect '' when input Array(), Array('flags' => Array('this' => 0, 'advar' => 0))
-     * @expect '' when input Array(), Array('flags' => Array('this' => 0, 'advar' => 1))
-     * @expect "'a'" when input Array('a'), Array('flags' => Array('this' => 0, 'advar' => 0))
-     * @expect "'this'" when input Array('this'), Array('flags' => Array('this' => 0, 'advar' => 0))
-     * @expect "''" when input Array('this'), Array('flags' => Array('this' => 1, 'advar' => 0))
+     * @expect '' when input Array(), Array()
+     * @expect "'a'" when input Array('a'), Array()
+     * @expect "'a','b'" when input Array('a', 'b'), Array()
      */
     protected static function _arg($list, $context) {
         $ret = Array();
