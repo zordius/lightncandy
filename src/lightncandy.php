@@ -738,26 +738,6 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Get custom helper arguments.
-     *
-     * @param array $list an array of arguments.
-     * @param array $context Current compile content.
-     *
-     * @return string PHP arguments string
-     * 
-     * @expect '' when input Array(), Array()
-     * @expect "'a'" when input Array('a'), Array()
-     * @expect "'a','b'" when input Array('a', 'b'), Array()
-     */
-    protected static function _arg($list, $context) {
-        $ret = Array();
-        foreach ($list as $v) {
-            $ret[] = "'$v'";
-        }
-        return implode(',', $ret);
-    }
-
-    /**
      * Internal method used by compile(). Find current json schema target, return childrens.
      *
      * @param array $target current json schema target
@@ -1095,7 +1075,7 @@ $libstr
                 return "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'isec') . "('{$token[self::_mINNERTAG]}', \$cx, \$in)){$context['ops']['cnd_then']}";
             }
         case '/':
-            return self::compileBlockEnd($token, $context, $vars);
+            return self::compileBlockEnd($token, $context);
         case '!':
             return $context['ops']['seperator'];
         case '#':
@@ -1108,11 +1088,10 @@ $libstr
      *
      * @param array $token detected handlebars {{ }} token
      * @param array $context current scaning context
-     * @param string[] $vars parsed arguments list
      *
      * @return string Return compiled code segment for the token
      */
-    public static function compileBlockEnd(&$token, &$context, $vars) {
+    public static function compileBlockEnd(&$token, &$context) {
             $each = false;
             switch ($token[self::_mINNERTAG]) {
             case 'if':
@@ -1209,7 +1188,7 @@ $libstr
         $fn = $raw ? 'raw' : $context['ops']['enc'];
         if (isset($context['helpers'][$vars[0]])) {
             $ch = array_shift($vars);
-            return $context['ops']['seperator'] . self::getFuncName($context, 'ch') . "('$ch', Array(" . self::_arg($vars, $context) . "), '$fn', \$cx, \$in){$context['ops']['seperator']}";
+            return $context['ops']['seperator'] . self::getFuncName($context, 'ch') . "('$ch', Array(" . implode(',', array_map(function ($v) {return "'$v'";}, $vars)) . "), '$fn', \$cx, \$in){$context['ops']['seperator']}";
         }
     }
 
