@@ -1137,7 +1137,23 @@ $libstr
                     return;
                 }
             }
+        case '!':
+            return $context['ops']['seperator'];
         case '#':
+            return self::compileBlock($token, $context, $vars);
+        }
+    }
+
+    /**
+     * Internal method used by compile(). Return compiled PHP code partial for a handlebars section token.
+     *
+     * @param array $token detected handlebars {{ }} token
+     * @param array $context current scaning context
+     * @param string[] $vars parsed arguments list
+     *
+     * @return string|null Return compiled code segment for the token when the token is section
+     */
+    public static function compileBlock(&$token, &$context, $vars) {
             $each = 'false';
             switch ($vars[0]) {
             case 'if':
@@ -1170,9 +1186,6 @@ $libstr
                 $context['stack'][] = '#';
                 return $context['ops']['seperator'] . self::getFuncName($context, 'sec') . "('{$token[self::_mINNERTAG]}', \$cx, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
             }
-        case '!':
-            return $context['ops']['seperator'];
-        }
     }
 
     /**

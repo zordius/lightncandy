@@ -1,8 +1,15 @@
 <?php
 
-include_once('vendor/phpunit/phpunit/PHPUnitPHPUnit/Autoload.php');
-include_once('PHPUnit/Autoload.php');
-require('src/lightncandy.php');
+foreach (Array(
+    'vendor/phpunit/phpunit/PHPUnitPHPUnit/Autoload.php',
+    'PHPUnit/Autoload.php',
+    'src/lightncandy.php'
+) as $inc) {
+    if (file_exists($inc)) {
+       include_once($inc);
+       break;
+    }
+}
 
 $datetime = date('Y-m-d H:i:s');
 
