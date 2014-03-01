@@ -192,6 +192,22 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         ));
     }
     /**
+     * @covers LightnCandy::getVariablePathList
+     */
+    public function testOn_getVariablePathList() {
+        $method = new ReflectionMethod('LightnCandy', 'getVariablePathList');
+        $method->setAccessible(true);
+        $this->assertEquals(Array('a'), $method->invoke(null,
+            'a', 0
+        ));
+        $this->assertEquals(Array('[g','h]','i'), $method->invoke(null,
+            '[g.h].i', 0
+        ));
+        $this->assertEquals(Array('g.h','i'), $method->invoke(null,
+            '[g.h].i', 1
+        ));
+    }
+    /**
      * @covers LightnCandy::getVariableName
      */
     public function testOn_getVariableName() {
@@ -226,36 +242,36 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         ));
     }
     /**
-     * @covers LightnCandy::getAdvName
+     * @covers LightnCandy::getAdvPathList
      */
-    public function testOn_getAdvName() {
-        $method = new ReflectionMethod('LightnCandy', 'getAdvName');
+    public function testOn_getAdvPathList() {
+        $method = new ReflectionMethod('LightnCandy', 'getAdvPathList');
         $method->setAccessible(true);
-        $this->assertEquals("['']", $method->invoke(null,
+        $this->assertEquals(Array(''), $method->invoke(null,
             ''
         ));
-        $this->assertEquals("['a']", $method->invoke(null,
+        $this->assertEquals(Array('a'), $method->invoke(null,
             'a'
         ));
-        $this->assertEquals("['a']", $method->invoke(null,
+        $this->assertEquals(Array('a'), $method->invoke(null,
             '[a]'
         ));
-        $this->assertEquals("['a']['b']", $method->invoke(null,
+        $this->assertEquals(Array('a','b'), $method->invoke(null,
             '[a].b'
         ));
-        $this->assertEquals("['a']['b']", $method->invoke(null,
+        $this->assertEquals(Array('a','b'), $method->invoke(null,
             'a.b'
         ));
-        $this->assertEquals("['a']['b']", $method->invoke(null,
+        $this->assertEquals(Array('a','b'), $method->invoke(null,
             'a.[b]'
         ));
-        $this->assertEquals("['a']['b[c']", $method->invoke(null,
+        $this->assertEquals(Array('a','b[c'), $method->invoke(null,
             'a.[b[c]'
         ));
-        $this->assertEquals("['a']['b.c']", $method->invoke(null,
+        $this->assertEquals(Array('a','b.c'), $method->invoke(null,
             'a.[b.c]'
         ));
-        $this->assertEquals("['a.b']", $method->invoke(null,
+        $this->assertEquals(Array('a.b'), $method->invoke(null,
             '[a.b]'
         ));
     }
@@ -276,22 +292,6 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         ));
         $this->assertEquals(Array('a', 'b'), $method->invoke(null,
             'a.b'
-        ));
-    }
-    /**
-     * @covers LightnCandy::_arg
-     */
-    public function testOn__arg() {
-        $method = new ReflectionMethod('LightnCandy', '_arg');
-        $method->setAccessible(true);
-        $this->assertEquals('', $method->invoke(null,
-            Array(), Array()
-        ));
-        $this->assertEquals("'a'", $method->invoke(null,
-            Array('a'), Array()
-        ));
-        $this->assertEquals("'a','b'", $method->invoke(null,
-            Array('a', 'b'), Array()
         ));
     }
     /**

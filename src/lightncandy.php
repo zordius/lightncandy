@@ -632,6 +632,26 @@ $libstr
     }
 
     /**
+     * Internal method used by compile(). Get variable name path
+     *
+     * @param string $vn variable name.
+     * @param integer $adv 0 to disable advanced veriable naming, N to enable a.[0].[#123] style.
+     *
+     * @return array variable path
+     *
+     * @expect Array('a') when input 'a', 0
+     * @expect Array('[g','h]','i') when input '[g.h].i', 0
+     * @expect Array('g.h','i') when input '[g.h].i', 1
+     */
+    protected static function getVariablePathList($vn, $adv) {
+        if ($adv) {
+            return self::getAdvPathList($vn);
+        } else {
+            return explode('.', $vn);
+        }
+    }
+
+    /**
      * Internal method used by compile(). Get variable names translated string.
      *
      * @param string $vn variable name.
@@ -650,10 +670,7 @@ $libstr
      * @expect "['g.h']['i']" when input '[g.h].i', 1
      */
     protected static function getVariableName($vn, $adv) {
-        if ($adv) {
-            return $vn ? self::getAdvName($vn) : '';
-        }
-        return $vn ? self::getArrayCode(explode('.', $vn)) : '';
+        return $vn ? self::getArrayCode(self::getVariablePathList($vn, $adv)): '';
     }
 
     /**
@@ -663,30 +680,31 @@ $libstr
      *
      * @return string Translated advanced format variable name as input array notation.
      * 
-     * @expect "['']" when input ''
-     * @expect "['a']" when input 'a'
-     * @expect "['a']" when input '[a]'
-     * @expect "['a']['b']" when input '[a].b'
-     * @expect "['a']['b']" when input 'a.b'
-     * @expect "['a']['b']" when input 'a.[b]'
-     * @expect "['a']['b[c']" when input 'a.[b[c]'
-     * @expect "['a']['b.c']" when input 'a.[b.c]'
-     * @expect "['a.b']" when input '[a.b]'
+     * @expect Array('') when input ''
+     * @expect Array('a') when input 'a'
+     * @expect Array('a') when input '[a]'
+     * @expect Array('a','b') when input '[a].b'
+     * @expect Array('a','b') when input 'a.b'
+     * @expect Array('a','b') when input 'a.[b]'
+     * @expect Array('a','b[c') when input 'a.[b[c]'
+     * @expect Array('a','b.c') when input 'a.[b.c]'
+     * @expect Array('a.b') when input '[a.b]'
      */
-    protected static function getAdvName($vn) {
+    protected static function getAdvPathList($vn) {
         if (!preg_match('/[\\.\\]\\[]/', $vn)) {
-            return "['" . $vn . "']";
+            return Array($vn);
         }
         if (!preg_match('/\\./', $vn)) {
-            return "['" . substr($vn, 1, -1) . "']";
+            return Array(substr($vn, 1, -1));
         }
-        return preg_replace('/\\]\\.\\[/', '][', preg_replace_callback(self::VARNAME_SEARCH, function ($matches) {
-            if (substr($matches[1], 0, 1) === '[') {
-                return "['" . substr($matches[1], 1, -1) . "']";
-            } else {
-                return "['" . $matches[1] . "']";
-            }
-        }, $vn));
+
+        $ret = Array();
+        preg_match_all(self::VARNAME_SEARCH, $vn, $matches);
+        foreach ($matches[1] as $m) {
+            $ret[] = (substr($m, 0, 1) === '[') ? substr($m, 1, -1) : $m;
+        }
+
+        return $ret;
     }
 
     /**
