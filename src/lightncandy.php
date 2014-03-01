@@ -783,12 +783,12 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Define a json schema string/number with the variable name.
+     * Internal method used by compile(). Define a json schema string/number with provided variable name.
      *
      * @param array $context current compile context
      * @param string $var current variable name
      */
-    protected static function _jsv(&$context, $var) {
+    protected static function addJsonSchema(&$context, $var) {
         $target = &self::_jsp($context);
         $vars = self::_vs($var);
         if (is_array($vars)) {
@@ -1168,7 +1168,6 @@ $libstr
             }
             self::fixVariable($token[self::_mINNERTAG], $context);
             $context['vars'][] = self::_vs($token[self::_mINNERTAG]);
-            self::_jsp($context);
             $context['stack'][] = $token[self::_mINNERTAG];
             $context['stack'][] = '#';
             return $context['ops']['seperator'] . self::getFuncName($context, 'sec') . "('{$token[self::_mINNERTAG]}', \$cx, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
@@ -1188,6 +1187,9 @@ $libstr
         $fn = $raw ? 'raw' : $context['ops']['enc'];
         if (isset($context['helpers'][$vars[0]])) {
             $ch = array_shift($vars);
+            foreach ($vars as $var) {
+                self::addJsonSchema($context, $var);
+            }
             return $context['ops']['seperator'] . self::getFuncName($context, 'ch') . "('$ch', Array(" . implode(',', array_map(function ($v) {return "'$v'";}, $vars)) . "), '$fn', \$cx, \$in){$context['ops']['seperator']}";
         }
     }
@@ -1217,8 +1219,7 @@ $libstr
      * @return string Return compiled code segment for the token
      */
     public static function compileVariable(&$context, &$vars, $raw) {
-        self::_jsv($context, $vars[0]); // TODO: more variables should be placed in json schema in custom helper calls
-        $fn = $raw ? 'raw' : $context['ops']['enc'];
+        self::addJsonSchema($context, $vars[0]);
         if ($context['useVar']) {
             $v = $context['useVar'] . self::getVariableName($vars[0], $context['flags']['advar']);
             if ($context['flags']['jstrue']) {
@@ -1227,7 +1228,7 @@ $libstr
                 return $raw ? "{$context['ops']['seperator']}$v{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlentities($v, ENT_QUOTES){$context['ops']['seperator']}";
             }
         } else {
-            return $context['ops']['seperator'] . self::getFuncName($context, $fn) . "('{$vars[0]}', \$cx, \$in){$context['ops']['seperator']}";
+            return $context['ops']['seperator'] . self::getFuncName($context, $raw ? 'raw' : $context['ops']['enc']) . "('{$vars[0]}', \$cx, \$in){$context['ops']['seperator']}";
         }
     }
 }
