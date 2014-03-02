@@ -1158,20 +1158,20 @@ $libstr
                 : "{$context['ops']['cnd_start']}(!" . self::getFuncName($context, 'ifvar') . "('{$vars[1]}', \$cx, \$in)){$context['ops']['cnd_then']}";
         case 'each':
             $each = 'true';
+            array_shift($vars);
+            break;
         case 'with':
-            $token[self::_mINNERTAG] = $vars[1];
-        default:
-            if (($vars[0] === 'with') && $context['flags']['with']) {
+            if ($context['flags']['with']) {
                 $context['vars'][] = self::getVariablePathList($vars[1], $context['flags']['advar']);
                 $context['stack'][] = 'with';
                 return $context['ops']['seperator'] . self::getFuncName($context, 'wi') . "('{$vars[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
             }
-            self::fixVariable($token[self::_mINNERTAG], $context);
-            $context['vars'][] = self::getVariablePathList($token[self::_mINNERTAG], $context['flags']['advar']);
-            $context['stack'][] = $token[self::_mINNERTAG];
-            $context['stack'][] = '#';
-            return $context['ops']['seperator'] . self::getFuncName($context, 'sec') . "('{$token[self::_mINNERTAG]}', \$cx, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
         }
+
+        $context['vars'][] = self::getVariablePathList($vars[0], $context['flags']['advar']);
+        $context['stack'][] = $vars[0];
+        $context['stack'][] = '#';
+        return $context['ops']['seperator'] . self::getFuncName($context, 'sec') . "('{$vars[0]}', \$cx, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
     /**
