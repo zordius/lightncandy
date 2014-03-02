@@ -207,7 +207,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
             '[g.h].i', 0
         ));
         $this->assertEquals(Array('g.h','i'), $method->invoke(null,
-            '[g.h].i', 1
+            'g.h]i', 1
         ));
     }
     /**
@@ -229,53 +229,19 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
             'b.c', 0
         ));
         $this->assertEquals("['b']['c']", $method->invoke(null,
-            'b.c', 1
+            'b]c', 1
         ));
         $this->assertEquals("['d']['e']['f']", $method->invoke(null,
             'd.e.f', 0
         ));
         $this->assertEquals("['d']['e']['f']", $method->invoke(null,
-            'd.e.f', 1
+            'd]e]f', 1
         ));
         $this->assertEquals("['[g']['h]']['i']", $method->invoke(null,
             '[g.h].i', 0
         ));
         $this->assertEquals("['g.h']['i']", $method->invoke(null,
-            '[g.h].i', 1
-        ));
-    }
-    /**
-     * @covers LightnCandy::getAdvPathList
-     */
-    public function testOn_getAdvPathList() {
-        $method = new ReflectionMethod('LightnCandy', 'getAdvPathList');
-        $method->setAccessible(true);
-        $this->assertEquals(Array(''), $method->invoke(null,
-            ''
-        ));
-        $this->assertEquals(Array('a'), $method->invoke(null,
-            'a'
-        ));
-        $this->assertEquals(Array('a'), $method->invoke(null,
-            '[a]'
-        ));
-        $this->assertEquals(Array('a','b'), $method->invoke(null,
-            '[a].b'
-        ));
-        $this->assertEquals(Array('a','b'), $method->invoke(null,
-            'a.b'
-        ));
-        $this->assertEquals(Array('a','b'), $method->invoke(null,
-            'a.[b]'
-        ));
-        $this->assertEquals(Array('a','b[c'), $method->invoke(null,
-            'a.[b[c]'
-        ));
-        $this->assertEquals(Array('a','b.c'), $method->invoke(null,
-            'a.[b.c]'
-        ));
-        $this->assertEquals(Array('a.b'), $method->invoke(null,
-            '[a.b]'
+            'g.h]i', 1
         ));
     }
     /**
