@@ -532,6 +532,7 @@ $libstr
                 case '{':
                 case '[':
                     $level++;
+                    // Continue to add CR
                 case ',':
                     $br = "\n";
             }
@@ -1115,6 +1116,7 @@ $libstr
                 return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
             case 'each':
                 $each = true;
+                // Continue to same logic {{/each}} === {{/any_value}}
             default:
                 self::fixVariable($token[self::_mINNERTAG], $context);
                 array_pop($context['vars']);
