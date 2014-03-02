@@ -959,6 +959,10 @@ $libstr
                 if (isset($vars[1]) && !$context['flags']['with']) {
                     $context['error'][] = 'do not support {{#with var}}, you should do compile with LightnCandy::FLAG_WITH flag';
                 }
+                if ((count($vars) < 2) && $context['flags']['with']) {
+                    $context['error'][] = 'no argument after {{#with}} !';
+                }
+                // Continue to add usage...
             case 'each':
             case 'unless':
             case 'if':
@@ -1079,7 +1083,7 @@ $libstr
         case '!':
             return $context['ops']['seperator'];
         case '#':
-            return self::compileBlockBegin($token, $context, $vars);
+            return self::compileBlockBegin($context, $vars);
         }
     }
 
@@ -1137,13 +1141,12 @@ $libstr
     /**
      * Internal method used by compile(). Return compiled PHP code partial for a handlebars block begin token.
      *
-     * @param array $token detected handlebars {{ }} token
      * @param array $context current scaning context
      * @param string[] $vars parsed arguments list
      *
      * @return string Return compiled code segment for the token
      */
-    public static function compileBlockBegin(&$token, &$context, $vars) {
+    public static function compileBlockBegin(&$context, $vars) {
         $each = 'false';
         switch ($vars[0]) {
         case 'if':
