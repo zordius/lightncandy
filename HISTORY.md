@@ -1,7 +1,11 @@
 HISTORY
 =======
 
-v0.9 current trunk
+v0.10 current trunk
+   * align with handlebars.js 2.0.0-alpha.1
+   * 
+
+v0.9 https://github.com/zordius/lightncandy/tree/v0.9
    * align with handlebars.js 1.3
    * a55f2dd067 support both {{@index}} and {{@key}} when {{#each an_object}}
    * e59f931ea7 add FLAG_JSQUOTE support
