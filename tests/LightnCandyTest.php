@@ -279,25 +279,6 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         ));
     }
     /**
-     * @covers LightnCandy::_vs
-     */
-    public function testOn__vs() {
-        $method = new ReflectionMethod('LightnCandy', '_vs');
-        $method->setAccessible(true);
-        $this->assertEquals(null, $method->invoke(null,
-            ''
-        ));
-        $this->assertEquals(Array('.'), $method->invoke(null,
-            '.'
-        ));
-        $this->assertEquals(Array('a'), $method->invoke(null,
-            'a'
-        ));
-        $this->assertEquals(Array('a', 'b'), $method->invoke(null,
-            'a.b'
-        ));
-    }
-    /**
      * @covers LightnCandy::parseTokenArgs
      */
     public function testOn_parseTokenArgs() {

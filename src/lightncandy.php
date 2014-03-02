@@ -793,7 +793,7 @@ $libstr
      */
     protected static function addJsonSchema(&$context, $var) {
         $target = &self::_jsp($context);
-        foreach (self::getVariablePathList($var, $contest['flags']['advar']) as $v) {
+        foreach (self::getVariablePathList($var, $context['flags']['advar']) as $v) {
             $target = &self::_jst($target, $v);
         }
         $target['type'] = Array('string', 'number');
