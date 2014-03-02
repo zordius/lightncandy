@@ -197,6 +197,9 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
     public function testOn_getVariablePathList() {
         $method = new ReflectionMethod('LightnCandy', 'getVariablePathList');
         $method->setAccessible(true);
+        $this->assertEquals(Array(), $method->invoke(null,
+            '', 0
+        ));
         $this->assertEquals(Array('a'), $method->invoke(null,
             'a', 0
         ));

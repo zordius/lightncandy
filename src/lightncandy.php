@@ -639,11 +639,15 @@ $libstr
      *
      * @return array variable path
      *
+     * @expect Array() when input '', 0
      * @expect Array('a') when input 'a', 0
      * @expect Array('[g','h]','i') when input '[g.h].i', 0
      * @expect Array('g.h','i') when input '[g.h].i', 1
      */
     protected static function getVariablePathList($vn, $adv) {
+        if (!$vn) {
+            return Array();
+        }
         if ($adv) {
             return self::getAdvPathList($vn);
         } else {
@@ -737,25 +741,6 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Get variable name tokens.
-     *
-     * @param string $v variable name.
-     *
-     * @return mixed Variable names array or null.
-     * 
-     * @expect null when input ''
-     * @expect Array('.') when input '.'
-     * @expect Array('a') when input 'a'
-     * @expect Array('a', 'b') when input 'a.b'
-     */
-    protected static function _vs($v) {
-        if ($v == '.') {
-            return Array('.');
-        }
-        return ($v !== '') ? explode('.', $v) : null;
-    }
-
-    /**
      * Internal method used by compile(). Find current json schema target, return childrens.
      *
      * @param array $target current json schema target
@@ -808,11 +793,8 @@ $libstr
      */
     protected static function addJsonSchema(&$context, $var) {
         $target = &self::_jsp($context);
-        $vars = self::_vs($var);
-        if (is_array($vars)) {
-            foreach ($vars as $v) {
-                $target = &self::_jst($target, $v);
-            }
+        foreach (self::getVariablePathList($var, $contest['flags']['advar']) as $v) {
+            $target = &self::_jst($target, $v);
         }
         $target['type'] = Array('string', 'number');
         $target['required'] = true;
@@ -1180,12 +1162,12 @@ $libstr
             $token[self::_mINNERTAG] = $vars[1];
         default:
             if (($vars[0] === 'with') && $context['flags']['with']) {
-                $context['vars'][] = self::_vs($vars[1]);
+                $context['vars'][] = self::getVariablePathList($vars[1], $context['flags']['advar']);
                 $context['stack'][] = 'with';
                 return $context['ops']['seperator'] . self::getFuncName($context, 'wi') . "('{$vars[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
             }
             self::fixVariable($token[self::_mINNERTAG], $context);
-            $context['vars'][] = self::_vs($token[self::_mINNERTAG]);
+            $context['vars'][] = self::getVariablePathList($token[self::_mINNERTAG], $context['flags']['advar']);
             $context['stack'][] = $token[self::_mINNERTAG];
             $context['stack'][] = '#';
             return $context['ops']['seperator'] . self::getFuncName($context, 'sec') . "('{$token[self::_mINNERTAG]}', \$cx, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
