@@ -633,26 +633,6 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Get variable name path
-     *
-     * @param string $vn variable name.
-     * @param integer $adv 0 to disable advanced veriable naming, N to enable a.[0].[#123] style.
-     *
-     * @return array variable path
-     *
-     * @expect Array() when input '', 0
-     * @expect Array('a') when input 'a', 0
-     * @expect Array('[g','h]','i') when input '[g.h].i', 0
-     * @expect Array('g.h','i') when input 'g.h]i', 1
-     */
-    protected static function getVariablePathList($vn, $adv) {
-        if (!$vn) {
-            return Array();
-        }
-        return explode($adv ? ']' : '.', $vn);
-    }
-
-    /**
      * Internal method used by compile(). Get variable names array
      *
      * @param string $vn variable name.
@@ -756,7 +736,7 @@ $libstr
      */
     protected static function addJsonSchema(&$context, $var) {
         $target = &self::_jsp($context);
-        foreach (self::getVariablePathList($var, $context['flags']['advar']) as $v) {
+        foreach ($var as $v) {
             $target = &self::_jst($target, $v);
         }
         $target['type'] = Array('string', 'number');
@@ -973,12 +953,12 @@ $libstr
         }
 
         // detect custom helpers.
-        if (isset($context['helpers'][$vars[0]])) {
+        if (isset($context['helpers'][$vars[0][0]])) {
             return $context['usedFeature']['helper']++;
         }
 
         // validate parent context.
-        if (preg_match('/\\.\\.(\\/.+)*/', $vars[0])) {
+        if (preg_match('/\\.\\.(\\/.+)*/', $vars[0][0])) {
             if (!$context['flags']['parent']) {
                 $context['error'][] = 'do not support {{../var}}, you should do compile with LightnCandy::FLAG_PARENT flag';
             }
@@ -1124,7 +1104,7 @@ $libstr
             $context['stack'][] = 'unless';
             return $context['usedFeature']['parent']
                 ? $context['ops']['seperator'] . self::getFuncName($context, 'unl') . "($v, \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
-                : "{$context['ops']['cnd_start']}(!" . self::getFuncName($context, 'ifvar') . "('$v, \$cx, \$in)){$context['ops']['cnd_then']}";
+                : "{$context['ops']['cnd_start']}(!" . self::getFuncName($context, 'ifvar') . "($v, \$cx, \$in)){$context['ops']['cnd_then']}";
         case 'each':
             $each = 'true';
             array_shift($vars);
@@ -1155,12 +1135,12 @@ $libstr
      */
     public static function compileCustomHelper(&$context, &$vars, $raw) {
         $fn = $raw ? 'raw' : $context['ops']['enc'];
-        if (isset($context['helpers'][$vars[0]])) {
+        if (isset($context['helpers'][$vars[0][0]])) {
             $ch = array_shift($vars);
             foreach ($vars as $var) {
                 self::addJsonSchema($context, $var);
             }
-            return $context['ops']['seperator'] . self::getFuncName($context, 'ch') . "('$ch', Array(" . implode(',', array_map(function ($v) {return "'$v'";}, $vars)) . "), '$fn', \$cx, \$in){$context['ops']['seperator']}";
+            return $context['ops']['seperator'] . self::getFuncName($context, 'ch') . "('$ch[0]', Array(" . implode(',', array_map(function ($v) {return "'$v'";}, $vars)) . "), '$fn', \$cx, \$in){$context['ops']['seperator']}";
         }
     }
 
