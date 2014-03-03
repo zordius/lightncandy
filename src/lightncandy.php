@@ -670,18 +670,19 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Fix the variable name to null when reference to {{this}} or {{.}} . When advanced variable name enabled, convert foo.[ba.r].test to foo]ba.r]test . (Always use ] as name spacing notation)
+     * Internal method used by compile(). Return array presentation for a variable name
      *
      * @param mixed $v variable name to be fixed.
      * @param array $context Current compile content.
      * 
+     *
+     * @return array Return variable name array
      */
-    protected static function fixVariable(&$v, $context) {
+    protected static function fixVariable($v, $context) {
         $v = trim($v);
         if ($context['flags']['this']) {
             if (($v == 'this') || $v == '.') {
-                $v = null;
-                return;
+                return Array(null);
             }
         }
 
@@ -699,7 +700,7 @@ $libstr
             preg_match_all('/([^\\.\\/]+)/', $v, $matched);
             $ret = $matched[1];
         }
-        $v = $ret;
+        return $ret;
     }
 
     /**
@@ -833,7 +834,7 @@ $libstr
                     $context['error'][] = "Wrong variable naming as '$var' in " . self::_tokenString($token) . ' !';
                 }
             }
-            self::fixVariable($var, $context);
+            $var = self::fixVariable($var, $context);
         }
 
         return Array(($token[self::_mBEGINTAG] === '{{{'), $vars);
