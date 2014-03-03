@@ -1344,27 +1344,22 @@ class LCRun {
     public static function val($var, $cx, $in) {
         $levels = 0;
 
-        if ($var === '@index') {
+        if ($var[0] === '@index') {
             return $cx['sp_vars']['index'];
         }
-        if ($var === '@key') {
+        if ($var[0] === '@key') {
             return $cx['sp_vars']['key'];
         }
-        if (preg_match('/^"(.*)"$/', $var, $matched)) {
+
+        // Handle double quoted string
+        if (preg_match('/^"(.*)"$/', $var[0], $matched)) {
             return $matched[1];
         }
 
-        // Deal with ..
-        if ($var === '..') {
-            $var = '';
-            $levels = 1;
+        // trace to parent
+        if (!is_string($var[0]) && is_int($var[0])) {
+            $levels = array_shift($var[0]);
         }
-
-        // Trace to parent for ../ N times
-        $var = preg_replace_callback('/\\.\\.\\//', function() use (&$levels) {
-            $levels++;
-            return '';
-        }, $var);
 
         // response '' when beyand root.
         if ($levels > 0) {
@@ -1376,16 +1371,18 @@ class LCRun {
             }
         }
 
+        $last = array_pop($var);
+
         // path search on objects
-        if (preg_match('/(.+?)\\](.+)/', $var, $matched)) {
-            if (array_key_exists($matched[1], $in)) {
-                return self::val($matched[2], $cx, $in[$matched[1]]);
+        foreach ($var as $p) {
+            if (array_key_exists($p, $in)) {
+                $in = $in[$p];
             } else {
                 return null;
             }
         }
 
-        return ($var === '') ? $in : (is_array($in) && isset($in[$var]) ? $in[$var] : null);
+        return ($last === '') ? $in : (is_array($in) && isset($in[$last]) ? $in[$last] : null);
     }
 
     /**
