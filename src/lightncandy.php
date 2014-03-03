@@ -771,14 +771,14 @@ $libstr
      *
      * @return array Return parsed result
      *
-     * @expect Array(false, Array(Array())) when input Array(0,0,0,0,0,''), Array('flags' => Array('advar' => 0))
-     * @expect Array(true, Array(Array())) when input Array(0,0,'{{{',0,0,''), Array('flags' => Array('advar' => 0))
-     * @expect Array(false, Array(Array('a'))) when input Array(0,0,0,0,0,'a'), Array('flags' => Array('advar' => 0))
-     * @expect Array(false, Array(Array('a'), Array('b'))) when input Array(0,0,0,0,0,'a b'), Array('flags' => Array('advar' => 0))
-     * @expect Array(false, Array(Array('a'), Array('"b'), Array('c"'))) when input Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 0))
-     * @expect Array(false, Array(Array('a'), Array('"b c"'))) when input Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 1))
-     * @expect Array(false, Array(Array('a'), Array('[b'), Array('c]'))) when input Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 0))
-     * @expect Array(false, Array(Array('a'), Array('b c'))) when input Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 1))
+     * @expect Array(false, Array(Array())) when input Array(0,0,0,0,0,''), Array('flags' => Array('advar' => 0, 'this' => 1))
+     * @expect Array(true, Array(Array())) when input Array(0,0,'{{{',0,0,''), Array('flags' => Array('advar' => 0, 'this' => 1))
+     * @expect Array(false, Array(Array('a'))) when input Array(0,0,0,0,0,'a'), Array('flags' => Array('advar' => 0, 'this' => 1))
+     * @expect Array(false, Array(Array('a'), Array('b'))) when input Array(0,0,0,0,0,'a b'), Array('flags' => Array('advar' => 0, 'this' => 1))
+     * @expect Array(false, Array(Array('a'), Array('"b'), Array('c"'))) when input Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 0, 'this' => 1))
+     * @expect Array(false, Array(Array('a'), Array('"b c"'))) when input Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 1, 'this' => 1))
+     * @expect Array(false, Array(Array('a'), Array('[b'), Array('c]'))) when input Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 0, 'this' => 1))
+     * @expect Array(false, Array(Array('a'), Array('b c'))) when input Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 1, 'this' => 1))
      */
     protected static function parseTokenArgs(&$token, &$context) {
         $vars = Array();
@@ -1217,16 +1217,16 @@ class LCRun {
      *
      * @return boolean Return true when the value is not null nor false.
      * 
-     * @expect false when input 'a', Array(), Array()
-     * @expect false when input 'a', Array(), Array('a' => null)
-     * @expect false when input 'a', Array(), Array('a' => 0)
-     * @expect false when input 'a', Array(), Array('a' => false)
-     * @expect true when input 'a', Array(), Array('a' => true)
-     * @expect true when input 'a', Array(), Array('a' => 1)
-     * @expect false when input 'a', Array(), Array('a' => '')
-     * @expect false when input 'a', Array(), Array('a' => Array())
-     * @expect true when input 'a', Array(), Array('a' => Array(''))
-     * @expect true when input 'a', Array(), Array('a' => Array(0))
+     * @expect false when input Array('a'), Array(), Array()
+     * @expect false when input Array('a'), Array(), Array('a' => null)
+     * @expect false when input Array('a'), Array(), Array('a' => 0)
+     * @expect false when input Array('a'), Array(), Array('a' => false)
+     * @expect true when input Array('a'), Array(), Array('a' => true)
+     * @expect true when input Array('a'), Array(), Array('a' => 1)
+     * @expect false when input Array('a'), Array(), Array('a' => '')
+     * @expect false when input Array('a'), Array(), Array('a' => Array())
+     * @expect true when input Array('a'), Array(), Array('a' => Array(''))
+     * @expect true when input Array('a'), Array(), Array('a' => Array(0))
      */
     public static function ifvar($var, $cx, $in) {
         $v = self::val($var, $cx, $in);
@@ -1244,15 +1244,15 @@ class LCRun {
      *
      * @return string The rendered string of the section
      * 
-     * @expect '' when input 'a', Array('scopes' => Array()), Array(), function () {return 'Y';}
-     * @expect 'Y' when input 'a', Array('scopes' => Array()), Array('a' => 1), function () {return 'Y';}
-     * @expect 'N' when input 'a', Array('scopes' => Array()), Array(), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'N' when input 'a', Array('scopes' => Array()), Array('a' => null), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'N' when input 'a', Array('scopes' => Array()), Array('a' => false), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'N' when input 'a', Array('scopes' => Array()), Array('a' => ''), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'N' when input 'a', Array('scopes' => Array()), Array('a' => Array()), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'N' when input 'a', Array('scopes' => Array()), Array('a' => 0), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'Y' when input 'a', Array('scopes' => Array()), Array('a' => Array(0)), function () {return 'Y';}, function () {return 'N';}
+     * @expect '' when input Array('a'), Array('scopes' => Array()), Array(), function () {return 'Y';}
+     * @expect 'Y' when input Array('a'), Array('scopes' => Array()), Array('a' => 1), function () {return 'Y';}
+     * @expect 'N' when input Array('a'), Array('scopes' => Array()), Array(), function () {return 'Y';}, function () {return 'N';}
+     * @expect 'N' when input Array('a'), Array('scopes' => Array()), Array('a' => null), function () {return 'Y';}, function () {return 'N';}
+     * @expect 'N' when input Array('a'), Array('scopes' => Array()), Array('a' => false), function () {return 'Y';}, function () {return 'N';}
+     * @expect 'N' when input Array('a'), Array('scopes' => Array()), Array('a' => ''), function () {return 'Y';}, function () {return 'N';}
+     * @expect 'N' when input Array('a'), Array('scopes' => Array()), Array('a' => Array()), function () {return 'Y';}, function () {return 'N';}
+     * @expect 'N' when input Array('a'), Array('scopes' => Array()), Array('a' => 0), function () {return 'Y';}, function () {return 'N';}
+     * @expect 'Y' when input Array('a'), Array('scopes' => Array()), Array('a' => Array(0)), function () {return 'Y';}, function () {return 'N';}
      */
     public static function ifv($var, $cx, $in, $truecb, $falsecb = null) {
         $v = self::val($var, $cx, $in);
@@ -1282,15 +1282,15 @@ class LCRun {
      *
      * @return string Return rendered string when the value is not null nor false.
      *
-     * @expect 'Y' when input 'a', Array('scopes' => Array()), Array(), function () {return 'Y';}
-     * @expect '' when input 'a', Array('scopes' => Array()), Array('a' => 1), function () {return 'Y';}
-     * @expect 'Y' when input 'a', Array('scopes' => Array()), Array(), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'Y' when input 'a', Array('scopes' => Array()), Array('a' => null), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'Y' when input 'a', Array('scopes' => Array()), Array('a' => false), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'Y' when input 'a', Array('scopes' => Array()), Array('a' => ''), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'Y' when input 'a', Array('scopes' => Array()), Array('a' => Array()), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'Y' when input 'a', Array('scopes' => Array()), Array('a' => 0), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'N' when input 'a', Array('scopes' => Array()), Array('a' => Array(0)), function () {return 'Y';}, function () {return 'N';}
+     * @expect 'Y' when input Array('a'), Array('scopes' => Array()), Array(), function () {return 'Y';}
+     * @expect '' when input Array('a'), Array('scopes' => Array()), Array('a' => 1), function () {return 'Y';}
+     * @expect 'Y' when input Array('a'), Array('scopes' => Array()), Array(), function () {return 'Y';}, function () {return 'N';}
+     * @expect 'Y' when input Array('a'), Array('scopes' => Array()), Array('a' => null), function () {return 'Y';}, function () {return 'N';}
+     * @expect 'Y' when input Array('a'), Array('scopes' => Array()), Array('a' => false), function () {return 'Y';}, function () {return 'N';}
+     * @expect 'Y' when input Array('a'), Array('scopes' => Array()), Array('a' => ''), function () {return 'Y';}, function () {return 'N';}
+     * @expect 'Y' when input Array('a'), Array('scopes' => Array()), Array('a' => Array()), function () {return 'Y';}, function () {return 'N';}
+     * @expect 'Y' when input Array('a'), Array('scopes' => Array()), Array('a' => 0), function () {return 'Y';}, function () {return 'N';}
+     * @expect 'N' when input Array('a'), Array('scopes' => Array()), Array('a' => Array(0)), function () {return 'Y';}, function () {return 'N';}
      */
     public static function unl($var, $cx, $in, $truecb, $falsecb = null) {
         return self::ifv($var, $cx, $in, $falsecb, $truecb);
@@ -1305,11 +1305,11 @@ class LCRun {
      *
      * @return boolean Return true when the value is not null nor false.
      *
-     * @expect true when input 'a', Array(), Array()
-     * @expect false when input 'a', Array(), Array('a' => 0)
-     * @expect true when input 'a', Array(), Array('a' => false)
-     * @expect false when input 'a', Array(), Array('a' => 'false')
-     * @expect true when input 'a', Array(), Array('a' => null)
+     * @expect true when input Array('a'), Array(), Array()
+     * @expect false when input Array('a'), Array(), Array('a' => 0)
+     * @expect true when input Array('a'), Array(), Array('a' => false)
+     * @expect false when input Array('a'), Array(), Array('a' => 'false')
+     * @expect true when input Array('a'), Array(), Array('a' => null)
      */
     public static function isec($var, $cx, $in) {
         $v = self::val($var, $cx, $in);
@@ -1399,19 +1399,19 @@ class LCRun {
      *
      * @return string The raw value of the specified variable
      *
-     * @expect true when input '', Array('flags' => Array('jstrue' => 0)), true
-     * @expect 'true' when input '', Array('flags' => Array('jstrue' => 1)), true
-     * @expect '' when input '', Array('flags' => Array('jstrue' => 0)), false
-     * @expect '' when input '', Array('flags' => Array('jstrue' => 1)), false
-     * @expect 'false' when input '', Array('flags' => Array('jstrue' => 1)), false, true
-     * @expect Array('a', 'b') when input '', Array('flags' => Array('jstrue' => 1, 'jsobj' => 0)), Array('a', 'b')
-     * @expect 'a,b' when input '', Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('a', 'b')
-     * @expect '[object Object]' when input '', Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('a', 'c' => 'b')
-     * @expect '[object Object]' when input '', Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('c' => 'b')
-     * @expect 'a,true' when input '', Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('a', true)
-     * @expect 'a,1' when input '', Array('flags' => Array('jstrue' => 0, 'jsobj' => 1)), Array('a', true)
-     * @expect 'a,' when input '', Array('flags' => Array('jstrue' => 0, 'jsobj' => 1)), Array('a', false)
-     * @expect 'a,false' when input '', Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('a', false)
+     * @expect true when input Array(null), Array('flags' => Array('jstrue' => 0)), true
+     * @expect 'true' when input Array(null), Array('flags' => Array('jstrue' => 1)), true
+     * @expect '' when input Array(null), Array('flags' => Array('jstrue' => 0)), false
+     * @expect '' when input Array(null), Array('flags' => Array('jstrue' => 1)), false
+     * @expect 'false' when input Array(null), Array('flags' => Array('jstrue' => 1)), false, true
+     * @expect Array('a', 'b') when input Array(null), Array('flags' => Array('jstrue' => 1, 'jsobj' => 0)), Array('a', 'b')
+     * @expect 'a,b' when input Array(null), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('a', 'b')
+     * @expect '[object Object]' when input Array(null), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('a', 'c' => 'b')
+     * @expect '[object Object]' when input Array(null), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('c' => 'b')
+     * @expect 'a,true' when input Array(null), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('a', true)
+     * @expect 'a,1' when input Array(null), Array('flags' => Array('jstrue' => 0, 'jsobj' => 1)), Array('a', true)
+     * @expect 'a,' when input Array(null), Array('flags' => Array('jstrue' => 0, 'jsobj' => 1)), Array('a', false)
+     * @expect 'a,false' when input Array(null), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('a', false)
      */
     public static function raw($var, $cx, $in, $loop = false) {
         $v = self::val($var, $cx, $in);
@@ -1435,7 +1435,7 @@ class LCRun {
                 } else {
                     $ret = Array();
                     foreach ($v as $k => $vv) {
-                        $ret[] = self::raw(Array($k), $cx, $v, true);
+                        $ret[] = self::raw(Array('' . $k), $cx, $v, true);
                     }
                     return join(',', $ret);
                 }
@@ -1454,9 +1454,9 @@ class LCRun {
      *
      * @return string The htmlencoded value of the specified variable
      *
-     * @expect 'a' when input '', Array(), 'a'
-     * @expect 'a&amp;b' when input '', Array(), 'a&b'
-     * @expect 'a&#039;b' when input '', Array(), 'a\'b'
+     * @expect 'a' when input Array(null), Array(), 'a'
+     * @expect 'a&amp;b' when input Array(null), Array(), 'a&b'
+     * @expect 'a&#039;b' when input Array(null), Array(), 'a\'b'
      */
     public static function enc($var, $cx, $in) {
         return htmlentities(self::raw($var, $cx, $in), ENT_QUOTES);
@@ -1471,9 +1471,9 @@ class LCRun {
      *
      * @return string The htmlencoded value of the specified variable
      *
-     * @expect 'a' when input '', Array(), 'a'
-     * @expect 'a&amp;b' when input '', Array(), 'a&b'
-     * @expect 'a&#x27;b' when input '', Array(), 'a\'b'
+     * @expect 'a' when input Array(null), Array(), 'a'
+     * @expect 'a&amp;b' when input Array(null), Array(), 'a&b'
+     * @expect 'a&#x27;b' when input Array(null), Array(), 'a\'b'
      */
     public static function encq($var, $cx, $in) {
         return preg_replace('/&#039;/', '&#x27;', htmlentities(self::raw($var, $cx, $in), ENT_QUOTES));
@@ -1490,19 +1490,19 @@ class LCRun {
      *
      * @return string The rendered string of the section
      *
-     * @expect '' when input '', Array(), false, false, function () {return 'A';}
-     * @expect '' when input '', Array(), null, false, function () {return 'A';}
-     * @expect 'A' when input '', Array(), true, false, function () {return 'A';}
-     * @expect 'A' when input '', Array(), 0, false, function () {return 'A';}
-     * @expect '-a=' when input '', Array(), Array('a'), false, function ($c, $i) {return "-$i=";}
-     * @expect '-a=-b=' when input '', Array(), Array('a', 'b'), false, function ($c, $i) {return "-$i=";}
-     * @expect '' when input '', Array(), 'abc', true, function ($c, $i) {return "-$i=";}
-     * @expect '-b=' when input '', Array(), Array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
-     * @expect '' when input 'b', Array(), Array('a' => 'b'), true, function ($c, $i) {return "-{$i['a']}=";}
-     * @expect 0 when input 'a', Array(), Array('a' => 'b'), false, function ($c, $i) {return count($i);}
-     * @expect '1' when input 'a', Array(), Array('a' => 1), false, function ($c, $i) {return print_r($i, true);}
-     * @expect '0' when input 'a', Array(), Array('a' => 0), false, function ($c, $i) {return print_r($i, true);}
-     * @expect '{"b":"c"}' when input 'a', Array(), Array('a' => Array('b' => 'c')), false, function ($c, $i) {return json_encode($i);}
+     * @expect '' when input Array(null), Array(), false, false, function () {return 'A';}
+     * @expect '' when input Array(null), Array(), null, false, function () {return 'A';}
+     * @expect 'A' when input Array(null), Array(), true, false, function () {return 'A';}
+     * @expect 'A' when input Array(null), Array(), 0, false, function () {return 'A';}
+     * @expect '-a=' when input Array(null), Array(), Array('a'), false, function ($c, $i) {return "-$i=";}
+     * @expect '-a=-b=' when input Array(null), Array(), Array('a', 'b'), false, function ($c, $i) {return "-$i=";}
+     * @expect '' when input Array(null), Array(), 'abc', true, function ($c, $i) {return "-$i=";}
+     * @expect '-b=' when input Array(null), Array(), Array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
+     * @expect '' when input Array('b'), Array(), Array('a' => 'b'), true, function ($c, $i) {return "-{$i['a']}=";}
+     * @expect 0 when input Array('a'), Array(), Array('a' => 'b'), false, function ($c, $i) {return count($i);}
+     * @expect '1' when input Array('a'), Array(), Array('a' => 1), false, function ($c, $i) {return print_r($i, true);}
+     * @expect '0' when input Array('a'), Array(), Array('a' => 0), false, function ($c, $i) {return print_r($i, true);}
+     * @expect '{"b":"c"}' when input Array('a'), Array(), Array('a' => Array('b' => 'c')), false, function ($c, $i) {return json_encode($i);}
      */
     public static function sec($var, &$cx, $in, $each, $cb) {
         $v = self::val($var, $cx, $in);
@@ -1568,10 +1568,10 @@ class LCRun {
      *
      * @return string The rendered string of the token
      *
-     * @expect '' when input '', Array(), false, function () {return 'A';}
-     * @expect '' when input '', Array(), null, function () {return 'A';}
-     * @expect '-Array=' when input '', Array(), Array('a' => 'b'), function ($c, $i) {return "-$i=";}
-     * @expect '-b=' when input 'a', Array(), Array('a' => 'b'), function ($c, $i) {return "-$i=";}
+     * @expect '' when input Array(null), Array(), false, function () {return 'A';}
+     * @expect '' when input Array(null), Array(), null, function () {return 'A';}
+     * @expect '-Array=' when input Array(null), Array(), Array('a' => 'b'), function ($c, $i) {return "-$i=";}
+     * @expect '-b=' when input Array('a'), Array(), Array('a' => 'b'), function ($c, $i) {return "-$i=";}
      */
     public static function wi($var, &$cx, $in, $cb) {
         $v = self::val($var, $cx, $in);
@@ -1595,9 +1595,9 @@ class LCRun {
      *
      * @return string The rendered string of the token
      *
-     * @expect '=-=' when input 'a', Array(''), 'raw', Array('helpers' => Array('a' => function ($i) {return "=$i=";})), '-'
-     * @expect '=&amp;=' when input 'a', Array(''), 'enc', Array('helpers' => Array('a' => function ($i) {return "=$i=";})), '&'
-     * @expect '=&#x27;=' when input 'a', Array(''), 'encq', Array('helpers' => Array('a' => function ($i) {return "=$i=";})), '\''
+     * @expect '=-=' when input 'a', Array(Array(null)), 'raw', Array('helpers' => Array('a' => function ($i) {return "=$i=";})), '-'
+     * @expect '=&amp;=' when input 'a', Array(Array(null)), 'enc', Array('helpers' => Array('a' => function ($i) {return "=$i=";})), '&'
+     * @expect '=&#x27;=' when input 'a', Array(Array(null)), 'encq', Array('helpers' => Array('a' => function ($i) {return "=$i=";})), '\''
      */
     public static function ch($ch, $vars, $op, &$cx, $in) {
         $args = Array();
