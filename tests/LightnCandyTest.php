@@ -20,11 +20,11 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(Array('error' => Array('Can not find custom helper function defination abc() !'), 'flags' => Array('exhlp' => 0)), $method->invoke(null,
             Array('error' => Array(), 'flags' => Array('exhlp' => 0)), Array('helpers' => Array('abc'))
         ));
-        $this->assertEquals(Array('flags' => Array('exhlp' => 1), 'helpers' => Array('LCRun::val' => 'LCRun::val')), $method->invoke(null,
-            Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('LCRun::val'))
+        $this->assertEquals(Array('flags' => Array('exhlp' => 1), 'helpers' => Array('LCRun2::val' => 'LCRun2::val')), $method->invoke(null,
+            Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('LCRun2::val'))
         ));
-        $this->assertEquals(Array('flags' => Array('exhlp' => 1), 'helpers' => Array('test' => 'LCRun::val')), $method->invoke(null,
-            Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('test' => 'LCRun::val'))
+        $this->assertEquals(Array('flags' => Array('exhlp' => 1), 'helpers' => Array('test' => 'LCRun2::val')), $method->invoke(null,
+            Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('test' => 'LCRun2::val'))
         ));
     }
     /**
@@ -149,10 +149,10 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
     public function testOn_getFuncName() {
         $method = new ReflectionMethod('LightnCandy', 'getFuncName');
         $method->setAccessible(true);
-        $this->assertEquals('LCRun::test', $method->invoke(null,
+        $this->assertEquals('LCRun2::test', $method->invoke(null,
             Array('flags' => Array('standalone' => 0)), 'test'
         ));
-        $this->assertEquals('LCRun::test2', $method->invoke(null,
+        $this->assertEquals('LCRun2::test2', $method->invoke(null,
             Array('flags' => Array('standalone' => 0)), 'test2'
         ));
         $this->assertEquals("\$cx['funcs']['test3']", $method->invoke(null,

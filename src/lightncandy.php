@@ -247,8 +247,8 @@ $libstr
      * @expect Array() when input Array(), Array()
      * @expect Array('flags' => Array('exhlp' => 1)) when input Array('flags' => Array('exhlp' => 1)), Array('helpers' => Array('abc'))
      * @expect Array('error' => Array('Can not find custom helper function defination abc() !'), 'flags' => Array('exhlp' => 0)) when input Array('error' => Array(), 'flags' => Array('exhlp' => 0)), Array('helpers' => Array('abc'))
-     * @expect Array('flags' => Array('exhlp' => 1), 'helpers' => Array('LCRun::val' => 'LCRun::val')) when input Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('LCRun::val'))
-     * @expect Array('flags' => Array('exhlp' => 1), 'helpers' => Array('test' => 'LCRun::val')) when input Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('test' => 'LCRun::val'))
+     * @expect Array('flags' => Array('exhlp' => 1), 'helpers' => Array('LCRun2::val' => 'LCRun2::val')) when input Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('LCRun2::val'))
+     * @expect Array('flags' => Array('exhlp' => 1), 'helpers' => Array('test' => 'LCRun2::val')) when input Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('test' => 'LCRun2::val'))
      */
     public static function buildHelperTable($context, $options) {
         if (isset($options['helpers']) && is_array($options['helpers'])) {
@@ -420,7 +420,7 @@ $libstr
             return '';
         }
 
-        $class = new ReflectionClass('LCRun');
+        $class = new ReflectionClass('LCRun2');
         $fname = $class->getFileName();
         $lines = file_get_contents($fname);
         $file = new SplFileObject($fname);
@@ -594,12 +594,12 @@ $libstr
      *
      * @return string compiled Function name
      *
-     * @expect 'LCRun::test' when input Array('flags' => Array('standalone' => 0)), 'test'
-     * @expect 'LCRun::test2' when input Array('flags' => Array('standalone' => 0)), 'test2'
+     * @expect 'LCRun2::test' when input Array('flags' => Array('standalone' => 0)), 'test'
+     * @expect 'LCRun2::test2' when input Array('flags' => Array('standalone' => 0)), 'test2'
      * @expect "\$cx['funcs']['test3']" when input Array('flags' => Array('standalone' => 1)), 'test3'
      */
     protected static function getFuncName($context, $name) {
-        return $context['flags']['standalone'] ? "\$cx['funcs']['$name']" : "LCRun::$name";
+        return $context['flags']['standalone'] ? "\$cx['funcs']['$name']" : "LCRun2::$name";
     }
 
     /**
@@ -1207,7 +1207,7 @@ $libstr
 /**
  * LightnCandy static class for compiled template runtime methods.
  */
-class LCRun {
+class LCRun2 {
     /**
      * LightnCandy runtime method for {{#if var}}.
      *

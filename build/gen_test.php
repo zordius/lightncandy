@@ -14,7 +14,7 @@ foreach (Array(
 $datetime = date('Y-m-d H:i:s');
 
 genTestForClass('LightnCandy');
-genTestForClass('LCRun');
+genTestForClass('LCRun2');
 
 function genTestForClass($classname) {
     ob_start();
