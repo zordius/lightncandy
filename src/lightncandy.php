@@ -885,7 +885,7 @@ $libstr
      *
      * @param string[] $token detected handlebars {{ }} token
      * @param array $context current scaning context
-     * @param string[] $vars parsed arguments list
+     * @param array $vars parsed arguments list
      *
      * @return mixed Return true when invalid or detected
      * 
@@ -1026,7 +1026,7 @@ $libstr
      *
      * @param array $token detected handlebars {{ }} token
      * @param array $context current scaning context
-     * @param string[] $vars parsed arguments list
+     * @param array $vars parsed arguments list
      *
      * @return string|null Return compiled code segment for the token when the token is section
      */
@@ -1056,7 +1056,7 @@ $libstr
      *
      * @param array $token detected handlebars {{ }} token
      * @param array $context current scaning context
-     * @param string[] $vars parsed arguments list
+     * @param array $vars parsed arguments list
      *
      * @return string Return compiled code segment for the token
      */
@@ -1107,7 +1107,7 @@ $libstr
      * Internal method used by compile(). Return compiled PHP code partial for a handlebars block begin token.
      *
      * @param array $context current scaning context
-     * @param string[] $vars parsed arguments list
+     * @param array $vars parsed arguments list
      *
      * @return string Return compiled code segment for the token
      */
@@ -1148,7 +1148,7 @@ $libstr
      * Internal method used by compile(). Return compiled PHP code partial for a handlebars custom helper token.
      *
      * @param array $context current scaning context
-     * @param string[] $vars parsed arguments list
+     * @param array $vars parsed arguments list
      * @param boolean $raw is this {{{ token or not
      *
      * @return string|null Return compiled code segment for the token when the token is custom helper
@@ -1168,7 +1168,7 @@ $libstr
      * Internal method used by compile(). Return compiled PHP code partial for a handlebars else token.
      *
      * @param array $context current scaning context
-     * @param string[] $vars parsed arguments list
+     * @param array $vars parsed arguments list
      *
      * @return string|null Return compiled code segment for the token when the token is else
      */
@@ -1183,7 +1183,7 @@ $libstr
      * Internal method used by compile(). Return compiled PHP code partial for a handlebars custom helper token.
      *
      * @param array $context current scaning context
-     * @param string[] $vars parsed arguments list
+     * @param array $vars parsed arguments list
      * @param boolean $raw is this {{{ token or not
      *
      * @return string Return compiled code segment for the token
