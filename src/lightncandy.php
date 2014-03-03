@@ -653,28 +653,6 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Get variable names translated string.
-     *
-     * @param string $vn variable name.
-     * @param integer $adv 0 to disable advanced veriable naming, N to enable a.[0].[#123] style.
-     *
-     * @return string Translated variable name as input array notation.
-     * 
-     * @expect '' when input '', 0
-     * @expect "['a']" when input 'a', 0
-     * @expect "['a']" when input 'a', 1
-     * @expect "['b']['c']" when input 'b.c', 0
-     * @expect "['b']['c']" when input 'b]c', 1
-     * @expect "['d']['e']['f']" when input 'd.e.f', 0
-     * @expect "['d']['e']['f']" when input 'd]e]f', 1
-     * @expect "['[g']['h]']['i']" when input '[g.h].i', 0
-     * @expect "['g.h']['i']" when input 'g.h]i', 1
-     */
-    protected static function getVariableName($vn, $adv) {
-        return $vn ? self::getArrayCode(self::getVariablePathList($vn, $adv)): '';
-    }
-
-    /**
      * Internal method used by compile(). Get variable names array
      *
      * @param string $vn variable name.
@@ -1133,33 +1111,35 @@ $libstr
      */
     public static function compileBlockBegin(&$context, $vars) {
         $each = 'false';
-        switch ($vars[0]) {
+        $v = self::getVariableArray($vars[1]);
+        switch ($vars[0][0]) {
         case 'if':
             $context['stack'][] = 'if';
             return $context['usedFeature']['parent'] 
-                ? $context['ops']['seperator'] . self::getFuncName($context, 'ifv') . "('{$vars[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
-                : "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'ifvar') . "('{$vars[1]}', \$cx, \$in)){$context['ops']['cnd_then']}";
+                ? $context['ops']['seperator'] . self::getFuncName($context, 'ifv') . "($v, \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
+                : "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'ifvar') . "($v, \$cx, \$in)){$context['ops']['cnd_then']}";
         case 'unless':
             $context['stack'][] = 'unless';
             return $context['usedFeature']['parent']
-                ? $context['ops']['seperator'] . self::getFuncName($context, 'unl') . "('{$vars[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
-                : "{$context['ops']['cnd_start']}(!" . self::getFuncName($context, 'ifvar') . "('{$vars[1]}', \$cx, \$in)){$context['ops']['cnd_then']}";
+                ? $context['ops']['seperator'] . self::getFuncName($context, 'unl') . "($v, \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
+                : "{$context['ops']['cnd_start']}(!" . self::getFuncName($context, 'ifvar') . "('$v, \$cx, \$in)){$context['ops']['cnd_then']}";
         case 'each':
             $each = 'true';
             array_shift($vars);
             break;
         case 'with':
             if ($context['flags']['with']) {
-                $context['vars'][] = self::getVariablePathList($vars[1], $context['flags']['advar']);
+                $context['vars'][] = $vars[1];
                 $context['stack'][] = 'with';
-                return $context['ops']['seperator'] . self::getFuncName($context, 'wi') . "('{$vars[1]}', \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
+                return $context['ops']['seperator'] . self::getFuncName($context, 'wi') . "($v, \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
             }
         }
 
-        $context['vars'][] = self::getVariablePathList($vars[0], $context['flags']['advar']);
+        $v = self::getVariableArray($vars[0]);
+        $context['vars'][] = $vars[0];
         $context['stack'][] = $vars[0];
         $context['stack'][] = '#';
-        return $context['ops']['seperator'] . self::getFuncName($context, 'sec') . "('{$vars[0]}', \$cx, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
+        return $context['ops']['seperator'] . self::getFuncName($context, 'sec') . "($v, \$cx, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
     /**
@@ -1191,7 +1171,7 @@ $libstr
      * @return string|null Return compiled code segment for the token when the token is else
      */
     public static function compileElse(&$context, &$vars) {
-        if ($vars[0] ==='else') {
+        if ($vars[0][0] ==='else') {
             $context['stack'][] = ':';
             return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}" : "{$context['ops']['cnd_else']}";
         }
@@ -1209,14 +1189,15 @@ $libstr
     public static function compileVariable(&$context, &$vars, $raw) {
         self::addJsonSchema($context, $vars[0]);
         if ($context['useVar']) {
-            $v = $context['useVar'] . self::getVariableName($vars[0], $context['flags']['advar']);
+            $v = $context['useVar'] . self::getArrayCode($vars[0]);
             if ($context['flags']['jstrue']) {
                 return $raw ? "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}$v{$context['ops']['cnd_end']}" : "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}htmlentities($v, ENT_QUOTES){$context['ops']['cnd_end']}";
             } else {
                 return $raw ? "{$context['ops']['seperator']}$v{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlentities($v, ENT_QUOTES){$context['ops']['seperator']}";
             }
         } else {
-            return $context['ops']['seperator'] . self::getFuncName($context, $raw ? 'raw' : $context['ops']['enc']) . "('{$vars[0]}', \$cx, \$in){$context['ops']['seperator']}";
+            $v = self::getVariableArray($vars[0]);
+            return $context['ops']['seperator'] . self::getFuncName($context, $raw ? 'raw' : $context['ops']['enc']) . "($v, \$cx, \$in){$context['ops']['seperator']}";
         }
     }
 }
