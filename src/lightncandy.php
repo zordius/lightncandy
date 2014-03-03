@@ -1113,7 +1113,7 @@ $libstr
      */
     public static function compileBlockBegin(&$context, $vars) {
         $each = 'false';
-        $v = self::getVariableArray($vars[1]);
+        $v = isset($vars[1]) ? self::getVariableArray($vars[1]) : null;
         switch ($vars[0][0]) {
         case 'if':
             $context['stack'][] = 'if';
