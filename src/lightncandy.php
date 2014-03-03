@@ -675,6 +675,23 @@ $libstr
     }
 
     /**
+     * Internal method used by compile(). Get variable names array
+     *
+     * @param string $vn variable name.
+     *
+     * @return string variable name array as string presentation.
+     *
+     * @expect 'Array(null)' when input Array(null)
+     * @expect "Array(0)" when input Array(0)
+     * @expect "Array('a')" when input Array('a')
+     * @expect "Array('b','c')" when input Array('b','c')
+     * @expect "Array(null,'n',0)" when input Array(null, 'n', 0)
+     */
+    protected static function getVariableArray($vn) {
+        return 'Array(' . implode(',', array_map(function ($v) {return is_string($v) ? "'$v'" : (is_null($v) ? 'null' : $v);}, $vn)) . ')';
+    }
+
+    /**
      * Internal method used by compile(). Fix the variable name to null when reference to {{this}} or {{.}} . When advanced variable name enabled, convert foo.[ba.r].test to foo]ba.r]test . (Always use ] as name spacing notation)
      *
      * @param mixed $v variable name to be fixed.
@@ -690,17 +707,21 @@ $libstr
             }
         }
 
+        $ret = Array();
         if ($context['flags']['advar'] && preg_match('/\\]/', $v)) {
-            $v = substr(preg_replace('/\\]\\.\\[/', ']', preg_replace_callback(self::VARNAME_SEARCH, function ($matches) {
-                if (substr($matches[1], 0, 1) === '[') {
-                    return $matches[1];
+            preg_match_all(self::VARNAME_SEARCH, $v, $matched);
+            foreach ($matched[1] as $m) {
+                if (substr($m, 0, 1) === '[') {
+                    $ret[] = substr($m, 1, -1);
                 } else {
-                    return '[' . $matches[1] . ']';
+                    $ret[] = $m;
                 }
-            }, $v)) , 1, -1);
+            }
         } else {
-            $v = preg_replace('/([^\\.\\/])\\./', '$1]', $v);
+            preg_match_all('/([^\\.\\/]+)/', $v, $matched);
+            $ret = $matched[1];
         }
+        $v = $ret;
     }
 
     /**
@@ -771,14 +792,14 @@ $libstr
      *
      * @return array Return parsed result
      *
-     * @expect Array(false, Array('')) when input Array(0,0,0,0,0,''), Array('flags' => Array('advar' => 0))
-     * @expect Array(true, Array('')) when input Array(0,0,'{{{',0,0,''), Array('flags' => Array('advar' => 0))
-     * @expect Array(false, Array('a')) when input Array(0,0,0,0,0,'a'), Array('flags' => Array('advar' => 0))
-     * @expect Array(false, Array('a', 'b')) when input Array(0,0,0,0,0,'a b'), Array('flags' => Array('advar' => 0))
-     * @expect Array(false, Array('a', '"b', 'c"')) when input Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 0))
-     * @expect Array(false, Array('a', '"b c"')) when input Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 1))
-     * @expect Array(false, Array('a', '[b', 'c]')) when input Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 0))
-     * @expect Array(false, Array('a', 'b c')) when input Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 1))
+     * @expect Array(false, Array(Array())) when input Array(0,0,0,0,0,''), Array('flags' => Array('advar' => 0))
+     * @expect Array(true, Array(Array())) when input Array(0,0,'{{{',0,0,''), Array('flags' => Array('advar' => 0))
+     * @expect Array(false, Array(Array('a'))) when input Array(0,0,0,0,0,'a'), Array('flags' => Array('advar' => 0))
+     * @expect Array(false, Array(Array('a'), Array('b'))) when input Array(0,0,0,0,0,'a b'), Array('flags' => Array('advar' => 0))
+     * @expect Array(false, Array(Array('a'), Array('"b'), Array('c"'))) when input Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 0))
+     * @expect Array(false, Array(Array('a'), Array('"b c"'))) when input Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 1))
+     * @expect Array(false, Array(Array('a'), Array('[b'), Array('c]'))) when input Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 0))
+     * @expect Array(false, Array(Array('a'), Array('b c'))) when input Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 1))
      */
     protected static function parseTokenArgs(&$token, &$context) {
         $vars = Array();
