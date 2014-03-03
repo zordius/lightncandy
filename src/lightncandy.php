@@ -1392,7 +1392,7 @@ class LCRun {
     /**
      * LightnCandy runtime method for {{{var}}} .
      *
-     * @param string $var variable name to get the raw value
+     * @param array $var variable name to get the raw value
      * @param array $cx render time context
      * @param array $in input data with current scope
      * @param boolean $loop true when in loop
@@ -1448,7 +1448,7 @@ class LCRun {
     /**
      * LightnCandy runtime method for {{var}} .
      *
-     * @param string $var variable name to get the htmlencoded value
+     * @param array $var variable name to get the htmlencoded value
      * @param array $cx render time context
      * @param array $in input data with current scope
      *
@@ -1465,7 +1465,7 @@ class LCRun {
     /**
      * LightnCandy runtime method for {{var}} , and deal with single quote to same as handlebars.js .
      *
-     * @param string $var variable name to get the htmlencoded value
+     * @param array $var variable name to get the htmlencoded value
      * @param array $cx render time context
      * @param array $in input data with current scope
      *
@@ -1482,7 +1482,7 @@ class LCRun {
     /**
      * LightnCandy runtime method for {{#var}} section.
      *
-     * @param string $var variable name for section
+     * @param array $var variable name for section
      * @param array $cx render time context
      * @param array $in input data with current scope
      * @param boolean $each true when rendering #each
@@ -1561,7 +1561,7 @@ class LCRun {
     /**
      * LightnCandy runtime method for {{#with var}} .
      *
-     * @param string $var variable name for section
+     * @param array $var variable name for section
      * @param array $cx render time context
      * @param array $in input data with current scope
      * @param function $cb callback function to render child context
