@@ -635,7 +635,7 @@ $libstr
     /**
      * Internal method used by compile(). Get variable names array
      *
-     * @param string $vn variable name.
+     * @param array $vn variable name.
      *
      * @return string variable name array as string presentation.
      *
@@ -752,7 +752,7 @@ $libstr
      * Internal method used by compile(). Define a json schema string/number with provided variable name.
      *
      * @param array $context current compile context
-     * @param string $var current variable name
+     * @param array $var current variable name
      */
     protected static function addJsonSchema(&$context, $var) {
         $target = &self::_jsp($context);
