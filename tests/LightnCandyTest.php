@@ -217,15 +217,49 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         ));
     }
     /**
+     * @covers LightnCandy::fixVariable
+     */
+    public function testOn_fixVariable() {
+        $method = new ReflectionMethod('LightnCandy', 'fixVariable');
+        $method->setAccessible(true);
+        $this->assertEquals(Array('this'), $method->invoke(null,
+            'this', Array('flags' => Array('advar' => 0, 'this' => 0))
+        ));
+        $this->assertEquals(Array(null), $method->invoke(null,
+            'this', Array('flags' => Array('advar' => 0, 'this' => 1))
+        ));
+        $this->assertEquals(Array(1, null), $method->invoke(null,
+            '../', Array('flags' => Array('advar' => 0, 'this' => 1))
+        ));
+        $this->assertEquals(Array(1, null), $method->invoke(null,
+            '../.', Array('flags' => Array('advar' => 0, 'this' => 1))
+        ));
+        $this->assertEquals(Array(1, null), $method->invoke(null,
+            '../this', Array('flags' => Array('advar' => 0, 'this' => 1))
+        ));
+        $this->assertEquals(Array(1, 'a'), $method->invoke(null,
+            '../a', Array('flags' => Array('advar' => 0, 'this' => 1))
+        ));
+        $this->assertEquals(Array(2, 'a', 'b'), $method->invoke(null,
+            '../../a.b', Array('flags' => Array('advar' => 0, 'this' => 0))
+        ));
+        $this->assertEquals(Array(2, '[a]', 'b'), $method->invoke(null,
+            '../../[a].b', Array('flags' => Array('advar' => 0, 'this' => 0))
+        ));
+        $this->assertEquals(Array(2, 'a', 'b'), $method->invoke(null,
+            '../../[a].b', Array('flags' => Array('advar' => 1, 'this' => 0))
+        ));
+    }
+    /**
      * @covers LightnCandy::parseTokenArgs
      */
     public function testOn_parseTokenArgs() {
         $method = new ReflectionMethod('LightnCandy', 'parseTokenArgs');
         $method->setAccessible(true);
-        $this->assertEquals(Array(false, Array(Array())), $method->invoke(null,
+        $this->assertEquals(Array(false, Array(Array(null))), $method->invoke(null,
             Array(0,0,0,0,0,''), Array('flags' => Array('advar' => 0, 'this' => 1))
         ));
-        $this->assertEquals(Array(true, Array(Array())), $method->invoke(null,
+        $this->assertEquals(Array(true, Array(Array(null))), $method->invoke(null,
             Array(0,0,'{{{',0,0,''), Array('flags' => Array('advar' => 0, 'this' => 1))
         ));
         $this->assertEquals(Array(false, Array(Array('a'))), $method->invoke(null,
