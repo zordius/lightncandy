@@ -1211,7 +1211,7 @@ class LCRun {
     /**
      * LightnCandy runtime method for {{#if var}}.
      *
-     * @param string $var variable name to be tested
+     * @param array $var variable name to be tested
      * @param array $cx render time context
      * @param array $in input data with current scope
      *
@@ -1236,7 +1236,7 @@ class LCRun {
     /**
      * LightnCandy runtime method for {{#if var}} when {{../var}} used.
      *
-     * @param string $var variable name to be tested
+     * @param array $var variable name to be tested
      * @param array $cx render time context
      * @param array $in input data with current scope
      * @param function $truecb callback function when test result is true
@@ -1276,7 +1276,7 @@ class LCRun {
     /**
      * LightnCandy runtime method for {{$unless var}} when {{../var}} used.
      *
-     * @param string $var variable name to be tested
+     * @param array $var variable name to be tested
      * @param array $cx render time context
      * @param array $in input data with current scope
      *
@@ -1299,7 +1299,7 @@ class LCRun {
     /**
      * LightnCandy runtime method for {{^var}} inverted section.
      *
-     * @param string $var variable name to be tested
+     * @param array $var variable name to be tested
      * @param array $cx render time context
      * @param array $in input data with current scope
      *
