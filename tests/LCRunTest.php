@@ -135,55 +135,58 @@ class LCRunTest extends PHPUnit_Framework_TestCase
     public function testOn_val() {
         $method = new ReflectionMethod('LCRun', 'val');
         $this->assertEquals(Array(), $method->invoke(null,
-            '', Array(), Array()
+            Array(null), Array(), Array()
+        ));
+        $this->assertEquals(Array('a'), $method->invoke(null,
+            Array(null), Array(), Array('a')
         ));
         $this->assertEquals(null, $method->invoke(null,
-            'a', Array(), Array()
+            Array('a'), Array(), Array()
         ));
         $this->assertEquals('a', $method->invoke(null,
-            '"a"', Array(), Array()
+            Array('"a"'), Array(), Array()
         ));
         $this->assertEquals('a', $method->invoke(null,
-            '@index', Array('sp_vars' => Array('index' => 'a')), Array()
+            Array('@index'), Array('sp_vars' => Array('index' => 'a')), Array()
         ));
         $this->assertEquals('b', $method->invoke(null,
-            '@key', Array('sp_vars' => Array('key' => 'b')), Array()
+            Array('@key'), Array('sp_vars' => Array('key' => 'b')), Array()
         ));
         $this->assertEquals(0, $method->invoke(null,
-            'a', Array(), Array('a' => 0)
+            Array('a'), Array(), Array('a' => 0)
         ));
         $this->assertEquals(false, $method->invoke(null,
-            'a', Array(), Array('a' => false)
+            Array('a'), Array(), Array('a' => false)
         ));
         $this->assertEquals(null, $method->invoke(null,
-            'a]b', Array(), Array('a' => 0)
+            Array('a','b'), Array(), Array('a' => 0)
         ));
         $this->assertEquals(null, $method->invoke(null,
-            'a]b', Array(), Array()
+            Array('a','b'), Array(), Array()
         ));
         $this->assertEquals('Q', $method->invoke(null,
-            'a]b', Array(), Array('a' => Array('b' => 'Q'))
+            Array('a','b'), Array(), Array('a' => Array('b' => 'Q'))
         ));
         $this->assertEquals('', $method->invoke(null,
-            '..', Array('scopes' => Array()), Array()
+            Array(1), Array('scopes' => Array()), Array()
         ));
         $this->assertEquals('Y', $method->invoke(null,
-            '..', Array('scopes' => Array('Y')), Array()
+            Array(1), Array('scopes' => Array('Y')), Array()
         ));
         $this->assertEquals(null, $method->invoke(null,
-            '../a', Array('scopes' => Array('Y')), Array()
+            Array(1, 'a'), Array('scopes' => Array('Y')), Array()
         ));
         $this->assertEquals('q', $method->invoke(null,
-            '../a', Array('scopes' => Array(Array('a' => 'q'))), Array()
+            Array(1, 'a'), Array('scopes' => Array(Array('a' => 'q'))), Array()
         ));
         $this->assertEquals('o', $method->invoke(null,
-            '../../a', Array('scopes' => Array(Array('a' => 'o'), Array('a' => 'p'))), Array()
+            Array(2, 'a'), Array('scopes' => Array(Array('a' => 'o'), Array('a' => 'p'))), Array()
         ));
         $this->assertEquals('x', $method->invoke(null,
-            '../../../', Array('scopes' => Array('x', Array('a' => 'q'), Array('b' => 'r'))), Array()
+            Array(3), Array('scopes' => Array('x', Array('a' => 'q'), Array('b' => 'r'))), Array()
         ));
         $this->assertEquals('o', $method->invoke(null,
-            '../../../c', Array('scopes' => Array(Array('c' => 'o'), Array('a' => 'q'), Array('b' => 'r'))), Array()
+            Array(3, 'c'), Array('scopes' => Array(Array('c' => 'o'), Array('a' => 'q'), Array('b' => 'r'))), Array()
         ));
     }
     /**

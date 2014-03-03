@@ -1319,29 +1319,30 @@ class LCRun {
     /**
      * LightnCandy runtime method to get input value.
      *
-     * @param string $var variable name to get the raw value
+     * @param array $var variable name to get the raw value
      * @param array $cx render time context
      * @param array $in input data with current scope
      *
      * @return mixed The raw value of the specified variable
      *
-     * @expect Array() when input '', Array(), Array()
-     * @expect null when input 'a', Array(), Array()
-     * @expect 'a' when input '"a"', Array(), Array()
-     * @expect 'a' when input '@index', Array('sp_vars' => Array('index' => 'a')), Array()
-     * @expect 'b' when input '@key', Array('sp_vars' => Array('key' => 'b')), Array()
-     * @expect 0 when input 'a', Array(), Array('a' => 0)
-     * @expect false when input 'a', Array(), Array('a' => false)
-     * @expect null when input 'a]b', Array(), Array('a' => 0)
-     * @expect null when input 'a]b', Array(), Array()
-     * @expect 'Q' when input 'a]b', Array(), Array('a' => Array('b' => 'Q'))
-     * @expect '' when input '..', Array('scopes' => Array()), Array()
-     * @expect 'Y' when input '..', Array('scopes' => Array('Y')), Array()
-     * @expect null when input '../a', Array('scopes' => Array('Y')), Array()
-     * @expect 'q' when input '../a', Array('scopes' => Array(Array('a' => 'q'))), Array()
-     * @expect 'o' when input '../../a', Array('scopes' => Array(Array('a' => 'o'), Array('a' => 'p'))), Array()
-     * @expect 'x' when input '../../../', Array('scopes' => Array('x', Array('a' => 'q'), Array('b' => 'r'))), Array()
-     * @expect 'o' when input '../../../c', Array('scopes' => Array(Array('c' => 'o'), Array('a' => 'q'), Array('b' => 'r'))), Array()
+     * @expect Array() when input Array(null), Array(), Array()
+     * @expect Array('a') when input Array(null), Array(), Array('a')
+     * @expect null when input Array('a'), Array(), Array()
+     * @expect 'a' when input Array('"a"'), Array(), Array()
+     * @expect 'a' when input Array('@index'), Array('sp_vars' => Array('index' => 'a')), Array()
+     * @expect 'b' when input Array('@key'), Array('sp_vars' => Array('key' => 'b')), Array()
+     * @expect 0 when input Array('a'), Array(), Array('a' => 0)
+     * @expect false when input Array('a'), Array(), Array('a' => false)
+     * @expect null when input Array('a','b'), Array(), Array('a' => 0)
+     * @expect null when input Array('a','b'), Array(), Array()
+     * @expect 'Q' when input Array('a','b'), Array(), Array('a' => Array('b' => 'Q'))
+     * @expect '' when input Array(1), Array('scopes' => Array()), Array()
+     * @expect 'Y' when input Array(1), Array('scopes' => Array('Y')), Array()
+     * @expect null when input Array(1, 'a'), Array('scopes' => Array('Y')), Array()
+     * @expect 'q' when input Array(1, 'a'), Array('scopes' => Array(Array('a' => 'q'))), Array()
+     * @expect 'o' when input Array(2, 'a'), Array('scopes' => Array(Array('a' => 'o'), Array('a' => 'p'))), Array()
+     * @expect 'x' when input Array(3), Array('scopes' => Array('x', Array('a' => 'q'), Array('b' => 'r'))), Array()
+     * @expect 'o' when input Array(3, 'c'), Array('scopes' => Array(Array('c' => 'o'), Array('a' => 'q'), Array('b' => 'r'))), Array()
      */
     public static function val($var, $cx, $in) {
         $levels = 0;

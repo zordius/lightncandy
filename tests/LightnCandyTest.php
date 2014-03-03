@@ -192,59 +192,6 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         ));
     }
     /**
-     * @covers LightnCandy::getVariablePathList
-     */
-    public function testOn_getVariablePathList() {
-        $method = new ReflectionMethod('LightnCandy', 'getVariablePathList');
-        $method->setAccessible(true);
-        $this->assertEquals(Array(), $method->invoke(null,
-            '', 0
-        ));
-        $this->assertEquals(Array('a'), $method->invoke(null,
-            'a', 0
-        ));
-        $this->assertEquals(Array('[g','h]','i'), $method->invoke(null,
-            '[g.h].i', 0
-        ));
-        $this->assertEquals(Array('g.h','i'), $method->invoke(null,
-            'g.h]i', 1
-        ));
-    }
-    /**
-     * @covers LightnCandy::getVariableName
-     */
-    public function testOn_getVariableName() {
-        $method = new ReflectionMethod('LightnCandy', 'getVariableName');
-        $method->setAccessible(true);
-        $this->assertEquals('', $method->invoke(null,
-            '', 0
-        ));
-        $this->assertEquals("['a']", $method->invoke(null,
-            'a', 0
-        ));
-        $this->assertEquals("['a']", $method->invoke(null,
-            'a', 1
-        ));
-        $this->assertEquals("['b']['c']", $method->invoke(null,
-            'b.c', 0
-        ));
-        $this->assertEquals("['b']['c']", $method->invoke(null,
-            'b]c', 1
-        ));
-        $this->assertEquals("['d']['e']['f']", $method->invoke(null,
-            'd.e.f', 0
-        ));
-        $this->assertEquals("['d']['e']['f']", $method->invoke(null,
-            'd]e]f', 1
-        ));
-        $this->assertEquals("['[g']['h]']['i']", $method->invoke(null,
-            '[g.h].i', 0
-        ));
-        $this->assertEquals("['g.h']['i']", $method->invoke(null,
-            'g.h]i', 1
-        ));
-    }
-    /**
      * @covers LightnCandy::getVariableArray
      */
     public function testOn_getVariableArray() {
@@ -264,6 +211,9 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         ));
         $this->assertEquals("Array(null,'n',0)", $method->invoke(null,
             Array(null, 'n', 0)
+        ));
+        $this->assertEquals("Array(Array('a','b'),'c')", $method->invoke(null,
+            Array(Array('a','b'),'c')
         ));
     }
     /**
