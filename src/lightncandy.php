@@ -1413,6 +1413,7 @@ class LCRun {
      */
     public static function raw($var, $cx, $in, $loop = false) {
         $v = self::val($var, $cx, $in);
+
         if ($v === true) {
             if ($cx['flags']['jstrue']) {
                 return 'true';
@@ -1432,7 +1433,7 @@ class LCRun {
                 } else {
                     $ret = Array();
                     foreach ($v as $k => $vv) {
-                        $ret[] = self::raw($k, $cx, $v, true);
+                        $ret[] = self::raw(Array($k), $cx, $v, true);
                     }
                     return join(',', $ret);
                 }
