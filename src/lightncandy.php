@@ -644,9 +644,19 @@ $libstr
      * @expect "Array('a')" when input Array('a')
      * @expect "Array('b','c')" when input Array('b','c')
      * @expect "Array(null,'n',0)" when input Array(null, 'n', 0)
+     * @expect "Array(Array('a','b'),'c')" when input Array(Array('a','b'),'c')
      */
     protected static function getVariableArray($vn) {
-        return 'Array(' . implode(',', array_map(function ($v) {return is_string($v) ? "'$v'" : (is_null($v) ? 'null' : $v);}, $vn)) . ')';
+        $ret = Array();
+        foreach ($vn as $v) {
+            if (is_array($v)) {
+                $ret[] = self::getVariableArray($v);
+            } else {
+                $ret[] = is_string($v) ? "'$v'" : (is_null($v) ? 'null' : $v);
+            }
+        }
+
+        return 'Array(' . implode(',', $ret) . ')';
     }
 
     /**
@@ -659,27 +669,37 @@ $libstr
      * @return array Return variable name array
      */
     protected static function fixVariable($v, $context) {
-        $v = trim($v);
-        if ($context['flags']['this']) {
-            if (($v == 'this') || $v == '.') {
-                return Array(null);
+        $ret = Array();
+        $levels = 0;
+
+        // Trace to parent for ../ N times
+        $v = preg_replace_callback('/\\.\\.\\//', function() use (&$levels) {
+            $levels++;
+            return '';
+        }, trim($v));
+
+        if ($levels) {
+            $ret[] = $levels;
+        }
+
+        if ($context['flags']['advar'] && preg_match('/\\]/', $v)) {
+            preg_match_all(self::VARNAME_SEARCH, $v, $matched);
+        } else {
+            preg_match_all('/([^\\.\\/]+)/', $v, $matched);
+        }
+
+        if ($v === '.') {
+            $matched = Array(null, Array('.'));
+        }
+
+        foreach ($matched[1] as $m) {
+            if ($context['flags']['advar'] && substr($m, 0, 1) === '[') {
+                $ret[] = substr($m, 1, -1);
+            } else {
+                $ret[] = ($context['flags']['this'] && (($m === 'this') || ($m === '.'))) ? null : $m;
             }
         }
 
-        $ret = Array();
-        if ($context['flags']['advar'] && preg_match('/\\]/', $v)) {
-            preg_match_all(self::VARNAME_SEARCH, $v, $matched);
-            foreach ($matched[1] as $m) {
-                if (substr($m, 0, 1) === '[') {
-                    $ret[] = substr($m, 1, -1);
-                } else {
-                    $ret[] = $m;
-                }
-            }
-        } else {
-            preg_match_all('/([^\\.\\/]+)/', $v, $matched);
-            $ret = $matched[1];
-        }
         return $ret;
     }
 
@@ -1140,7 +1160,7 @@ $libstr
             foreach ($vars as $var) {
                 self::addJsonSchema($context, $var);
             }
-            return $context['ops']['seperator'] . self::getFuncName($context, 'ch') . "('$ch[0]', Array(" . implode(',', array_map(function ($v) {return "'$v'";}, $vars)) . "), '$fn', \$cx, \$in){$context['ops']['seperator']}";
+            return $context['ops']['seperator'] . self::getFuncName($context, 'ch') . "('$ch[0]', " . self::getVariableArray($vars) . ", '$fn', \$cx, \$in){$context['ops']['seperator']}";
         }
     }
 
@@ -1329,6 +1349,7 @@ class LCRun {
         if ($var[0] === '@index') {
             return $cx['sp_vars']['index'];
         }
+
         if ($var[0] === '@key') {
             return $cx['sp_vars']['key'];
         }
@@ -1364,7 +1385,7 @@ class LCRun {
             }
         }
 
-        return ($last === '') ? $in : (is_array($in) && isset($in[$last]) ? $in[$last] : null);
+        return ($last === null) ? $in : (is_array($in) && isset($in[$last]) ? $in[$last] : null);
     }
 
     /**
