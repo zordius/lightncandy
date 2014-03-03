@@ -1361,7 +1361,7 @@ class LCRun {
 
         // trace to parent
         if (!is_string($var[0]) && is_int($var[0])) {
-            $levels = array_shift($var[0]);
+            $levels = array_shift($var);
         }
 
         // response '' when beyand root.
