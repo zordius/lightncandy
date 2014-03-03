@@ -1032,16 +1032,17 @@ $libstr
     public static function compileSection(&$token, &$context, $vars) {
         switch ($token[self::_mOP]) {
         case '^':
-            $context['stack'][] = $token[self::_mINNERTAG];
+            $v = self::getVariableArray($vars[0]);
+            $context['stack'][] = $v;
             $context['stack'][] = '^';
             if ($context['useVar']) {
-                $v = $context['useVar'] . "['{$token[self::_mINNERTAG]}']";
+                $v = $context['useVar'] . "['{$token[self::_mINNERTAG]}']"; //FIXME
                 return "{$context['ops']['cnd_start']}(is_null($v) && ($v !== false)){$context['ops']['cnd_then']}"; 
             } else {
-                return "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'isec') . "('{$token[self::_mINNERTAG]}', \$cx, \$in)){$context['ops']['cnd_then']}";
+                return "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'isec') . "($v, \$cx, \$in)){$context['ops']['cnd_then']}";
             }
         case '/':
-            return self::compileBlockEnd($token, $context);
+            return self::compileBlockEnd($token, $context, $vars);
         case '!':
             return $context['ops']['seperator'];
         case '#':
@@ -1054,10 +1055,11 @@ $libstr
      *
      * @param array $token detected handlebars {{ }} token
      * @param array $context current scaning context
+     * @param string[] $vars parsed arguments list
      *
      * @return string Return compiled code segment for the token
      */
-    public static function compileBlockEnd(&$token, &$context) {
+    public static function compileBlockEnd(&$token, &$context, $vars) {
             $each = false;
             switch ($token[self::_mINNERTAG]) {
             case 'if':
@@ -1079,14 +1081,13 @@ $libstr
                 $each = true;
                 // Continue to same logic {{/each}} === {{/any_value}}
             default:
-                self::fixVariable($token[self::_mINNERTAG], $context);
                 array_pop($context['vars']);
                 $pop = array_pop($context['stack']);
                 switch($pop) {
                 case '#':
                 case '^':
                     $pop2 = array_pop($context['stack']);
-                    if (!$each && ($pop2 !== $token[self::_mINNERTAG])) {
+                    if (!$each && ($pop2 !== self::getVariableArray($vars[0]))) {
                         $context['error'][] = 'Unexpect token ' . self::_tokenString($token) . " ! Previous token $pop$pop2 is not closed";
                         return;
                     }
@@ -1137,7 +1138,7 @@ $libstr
 
         $v = self::getVariableArray($vars[0]);
         $context['vars'][] = $vars[0];
-        $context['stack'][] = $vars[0];
+        $context['stack'][] = $v;
         $context['stack'][] = '#';
         return $context['ops']['seperator'] . self::getFuncName($context, 'sec') . "($v, \$cx, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
