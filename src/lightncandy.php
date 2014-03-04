@@ -728,6 +728,7 @@ $libstr
      * @return array children of new json schema target 
      *
      * @expect Array() when input Array(), false
+     * @expect Array() when input Array(), true
      */
     protected static function &setJSONTarget(&$target, $key = false) {
         if ($key) {
