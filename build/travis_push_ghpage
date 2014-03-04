@@ -9,7 +9,7 @@ fi
 git config user.name "Travis-CI"
 git config user.email "zordius@yahoo-inc.com"
 git commit -a -m "Auto generated tests from Travis"
-git push "https://${GHTK}@github.com/zordius/lightncandy.git" > /dev/null 2>&1
+git push "https://${GHTK}@github.com/zordius/lightncandy.git" HEAD:master > /dev/null 2>&1
 
 build/gen_doc
 cd build/result/docs
