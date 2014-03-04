@@ -8,3 +8,7 @@ script:
   - build/runphp build/gen_test.php
   - phpunit
   - build/gen_doc
+
+env:
+  global:
+    secure: "Wlez8f9yijTGs4heE9YrBWsEssDKwSqKld5pTcgYNwoSOAue8MmG/g/60ayyWXRBXiGmNQfiHsBSGw9v9Stn7vKKXzGROc2T34ERLkBi2AtifFw6vJK0VrK2EpcWTvgHPLeNlln+gIrA/oHliW4AKX9aUwIBV/MTPjd2A85RBn8="
