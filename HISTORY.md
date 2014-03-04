@@ -1,7 +1,14 @@
 HISTORY
 =======
 
-v0.9 current trunk
+v0.10 current trunk
+   * align with handlebars.js 2.0.0-alpha.1
+   * 4c9f681080 file name changed: lightncandy.inc => lightncandy.php
+   * e3de01081c some minor fix for json schema
+   * 1feec458c7 new variable handling logic, save variable name parsing time when render()
+   * 3fa897c98c rename LCRun to LCRun2 for interface changed, old none standalone templates will error with newer version.
+
+v0.9 https://github.com/zordius/lightncandy/tree/v0.9
    * align with handlebars.js 1.3
    * a55f2dd067 support both {{@index}} and {{@key}} when {{#each an_object}}
    * e59f931ea7 add FLAG_JSQUOTE support

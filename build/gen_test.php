@@ -1,12 +1,20 @@
 <?php
 
-require_once 'PHPUnit/Autoload.php';
-include('src/lightncandy.php');
+foreach (Array(
+    'vendor/phpunit/phpunit/PHPUnitPHPUnit/Autoload.php',
+    'PHPUnit/Autoload.php',
+    'src/lightncandy.php'
+) as $inc) {
+    if (file_exists($inc)) {
+       include_once($inc);
+       break;
+    }
+}
 
 $datetime = date('Y-m-d H:i:s');
 
 genTestForClass('LightnCandy');
-genTestForClass('LCRun');
+genTestForClass('LCRun2');
 
 function genTestForClass($classname) {
     ob_start();
