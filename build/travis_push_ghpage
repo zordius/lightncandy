@@ -7,14 +7,14 @@ if [ "${TRAVIS_BUILD_NUMBER}.1" != "${TRAVIS_JOB_NUMBER}" ]; then
 fi
 
 build/gen_doc
-cd build/result/docs/
+cd build/result/docs
 
 if [ "${TRAVIS_BRANCH}" != "master" ]; then
   cd ..
   git init
   git pull --quiet "https://${GHTK}@github.com/zordius/lightncandy.git" gh-pages:master > /dev/null 2>&1
   rm -rf $TRAVIS_BRANCH
-  mv doc $TRAVIS_BRANCH
+  mv docs $TRAVIS_BRANCH
   git add $TRAVIS_BRANCH
 else  
   git init
