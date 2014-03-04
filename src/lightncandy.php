@@ -54,14 +54,14 @@ class LightnCandy {
     const VARNAME_SEARCH = '/(\\[[^\\]]+\\]|[^\\[\\]\\.]+)/';
 
     // Positions of matched token
-    const _mLSPACE = 1;
-    const _mBEGINTAG = 2;
-    const _mLSPACECTL = 3;
-    const _mOP = 4;
-    const _mINNERTAG = 5;
-    const _mRSPACECTL = 6;
-    const _mENDTAG = 7;
-    const _mRSPACE = 8;
+    const POS_LSPACE = 1;
+    const POS_BEGINTAG = 2;
+    const POS_LSPACECTL = 3;
+    const POS_OP = 4;
+    const POS_INNERTAG = 5;
+    const POS_RSPACECTL = 6;
+    const POS_ENDTAG = 7;
+    const POS_RSPACE = 8;
 
     private static $lastContext;
 
@@ -79,7 +79,7 @@ class LightnCandy {
         $context = self::buildContext($options);
 
         // Scan for partial and replace partial with template.
-        $template = LightnCandy::expandPartial($template, $context);
+        $template = self::expandPartial($template, $context);
 
         if (self::handleError($context)) {
             return false;
@@ -105,7 +105,7 @@ class LightnCandy {
         // Do PHP code and json schema generation.
         $code = preg_replace_callback(self::TOKEN_SEARCH, function ($matches) use (&$context) {
             $tmpl = LightnCandy::compileToken($matches, $context);
-            return "{$matches[LightnCandy::_mLSPACE]}'$tmpl'{$matches[LightnCandy::_mRSPACE]}";
+            return "{$matches[LightnCandy::POS_LSPACE]}'$tmpl'{$matches[LightnCandy::POS_RSPACE]}";
         }, addcslashes($template, "'"));
 
         if (self::handleError($context)) {
@@ -568,10 +568,12 @@ $libstr
         if ($tmp_dir) {
             $fn = tempnam($tmp_dir, 'lci_');
             if (!$fn) {
-                die("Can not generate tmp file under $tmp_dir!!\n");
+                error_log("Can not generate tmp file under $tmp_dir!!\n");
+                return false;
             }
             if (!file_put_contents($fn, $php)) {
-                die("Can not include saved temp php code from $fn, you should add $tmp_dir into open_basedir!!\n");
+                error_log("Can not include saved temp php code from $fn, you should add $tmp_dir into open_basedir!!\n");
+                return false;
             }
             return include($fn);
         }
@@ -805,8 +807,8 @@ $libstr
      */
     protected static function parseTokenArgs(&$token, &$context) {
         $vars = Array();
-        trim($token[self::_mINNERTAG]);
-        preg_match_all('/(\s*)([^\s]+)/', $token[self::_mINNERTAG], $matched);
+        trim($token[self::POS_INNERTAG]);
+        preg_match_all('/(\s*)([^\s]+)/', $token[self::POS_INNERTAG], $matched);
 
         // Parse arguments and deal with "..." or [...]
         if (is_array($matched) && $context['flags']['advar']) {
@@ -839,7 +841,7 @@ $libstr
                 $vars[] = $t;
             }
         } else {
-            $vars = explode(' ', $token[self::_mINNERTAG]);
+            $vars = explode(' ', $token[self::POS_INNERTAG]);
         }
 
         // Check for advanced variable.
@@ -860,7 +862,7 @@ $libstr
             $var = self::fixVariable($var, $context);
         }
 
-        return Array(($token[self::_mBEGINTAG] === '{{{'), $vars);
+        return Array(($token[self::POS_BEGINTAG] === '{{{'), $vars);
     }
 
     /**
@@ -892,12 +894,12 @@ $libstr
      */
     protected static function validateStartEnd($token, &$context, $raw) {
         // {{ }}} or {{{ }} are invalid
-        if (strlen($token[self::_mBEGINTAG]) !== strlen($token[self::_mENDTAG])) {
+        if (strlen($token[self::POS_BEGINTAG]) !== strlen($token[self::POS_ENDTAG])) {
             $context['error'][] = 'Bad token ' . self::tokenString($token) . ' ! Do you mean {{ }} or {{{ }}}?';
             return true;
         }
         // {{{# }}} or {{{! }}} or {{{/ }}} or {{{^ }}} are invalid.
-        if ($raw && $token[self::_mOP]) {
+        if ($raw && $token[self::POS_OP]) {
             $context['error'][] = 'Bad token ' . self::tokenString($token) . ' ! Do you mean {{' . self::tokenString($token, 2) . '}}?';
             return true;
         }
@@ -923,9 +925,9 @@ $libstr
      * @expect 8 when input Array(0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('unless' => 7), 'level' => 0), Array('unless')
      */
     protected static function validateOperations($token, &$context, $vars) {
-        switch ($token[self::_mOP]) {
+        switch ($token[self::POS_OP]) {
         case '^':
-            $context['stack'][] = $token[self::_mINNERTAG];
+            $context['stack'][] = $token[self::POS_INNERTAG];
             $context['level']++;
             return ++$context['usedFeature']['isec'];
 
@@ -938,7 +940,7 @@ $libstr
             return ++$context['usedFeature']['comment'];
 
         case '#':
-            $context['stack'][] = $token[self::_mINNERTAG];
+            $context['stack'][] = $token[self::POS_INNERTAG];
             $context['level']++;
             switch ($vars[0]) {
             case 'with':
@@ -1025,12 +1027,12 @@ $libstr
         list($raw, $vars) = self::parseTokenArgs($token, $context);
 
         // Handle space control.
-        if ($token[self::_mLSPACECTL]) {
-            $token[self::_mLSPACE] = '';
+        if ($token[self::POS_LSPACECTL]) {
+            $token[self::POS_LSPACE] = '';
         }
 
-        if ($token[self::_mRSPACECTL]) {
-            $token[self::_mRSPACE] = '';
+        if ($token[self::POS_RSPACECTL]) {
+            $token[self::POS_RSPACE] = '';
         }
 
         if ($ret = self::compileSection($token, $context, $vars)) {
@@ -1060,13 +1062,13 @@ $libstr
      * @codeCoverageIgnore
      */
     protected static function compileSection(&$token, &$context, $vars) {
-        switch ($token[self::_mOP]) {
+        switch ($token[self::POS_OP]) {
         case '^':
             $v = self::getVariableArray($vars[0]);
             $context['stack'][] = $v;
             $context['stack'][] = '^';
             if ($context['useVar']) {
-                $v = $context['useVar'] . "['{$token[self::_mINNERTAG]}']"; //FIXME
+                $v = $context['useVar'] . "['{$token[self::POS_INNERTAG]}']"; //FIXME
                 return "{$context['ops']['cnd_start']}(is_null($v) && ($v !== false)){$context['ops']['cnd_then']}"; 
             } else {
                 return "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'isec') . "($v, \$cx, \$in)){$context['ops']['cnd_then']}";
@@ -1093,7 +1095,7 @@ $libstr
      */
     protected static function compileBlockEnd(&$token, &$context, $vars) {
             $each = false;
-            switch ($token[self::_mINNERTAG]) {
+            switch ($token[self::POS_INNERTAG]) {
             case 'if':
             case 'unless':
                 $pop = array_pop($context['stack']);
