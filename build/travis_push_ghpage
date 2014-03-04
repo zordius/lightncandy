@@ -6,6 +6,9 @@ if [ "${TRAVIS_BUILD_NUMBER}.1" != "${TRAVIS_JOB_NUMBER}" ]; then
   exit 0
 fi
 
+git commit -a -m "Auto generated tests from Travis"
+git push "https://${GHTK}@github.com/zordius/lightncandy.git" > /dev/null 2>&1
+
 build/gen_doc
 cd build/result/docs
 
