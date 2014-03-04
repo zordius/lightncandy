@@ -122,6 +122,8 @@ class LightnCandy {
      * @param string $code generated PHP code
      *
      * @return string Composed PHP code
+     *
+     * @codeCoverageIgnore
      */
     protected static function composePHPRender($context, $code) {
         $flagJStrue = self::getBoolStr($context['flags']['jstrue']);
@@ -153,6 +155,8 @@ $libstr
      * @param mixed $options input options
      *
      * @return array Context from options
+     *
+     * @codeCoverageIgnore
      */
     protected static function buildContext($options) {
         if (!is_array($options)) {
@@ -271,6 +275,9 @@ $libstr
      * @param string $template template string
      *
      * @return string expanded template
+     *
+     * @expect "123\n" when input '{{> test1}}', Array('basedir' => Array('tests'), 'usedFeature' => Array('partial' =>0), 'fileext' => Array('.tmpl'))
+     * @expect "a123\nb\n" when input '{{> test2}}', Array('basedir' => Array('tests'), 'usedFeature' => Array('partial' =>0), 'fileext' => Array('.tmpl'))
      */
     public static function expandPartial($template, &$context) {
         $template = preg_replace_callback(self::PARTIAL_SEARCH, function ($matches) use (&$context) {
