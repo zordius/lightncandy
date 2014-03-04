@@ -6,6 +6,8 @@ if [ "${TRAVIS_BUILD_NUMBER}.1" != "${TRAVIS_JOB_NUMBER}" ]; then
   exit 0
 fi
 
+git config user.name "Travis-CI"
+git config user.email "zordius@yahoo-inc.com"
 git commit -a -m "Auto generated tests from Travis"
 git push "https://${GHTK}@github.com/zordius/lightncandy.git" > /dev/null 2>&1
 

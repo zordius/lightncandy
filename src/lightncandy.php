@@ -720,7 +720,7 @@ $libstr
      *
      * @return array children of new json schema target 
      *
-     * @codeCoverageIgnore
+     * @expect Array() when input Array(), false
      */
     protected static function &setJSONTarget(&$target, $key = false) {
         if ($key) {
