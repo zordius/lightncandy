@@ -12,7 +12,7 @@ cd build/result/docs/
 if [ "${TRAVIS_BRANCH}" != "master" ]; then
   cd ..
   git init
-  git pull git@github.com:zordius/lightncandy gh-pages:master
+  git pull --quiet "https://${GHTK}@github.com/zordius/lightncandy.git" gh-pages:master > /dev/null 2>&1
   rm -rf $TRAVIS_BRANCH
   mv doc $TRAVIS_BRANCH
   git add $TRAVIS_BRANCH
