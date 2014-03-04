@@ -1,12 +1,12 @@
 #!/bin/sh
 echo "DEBUG ENV: ${TRAVIS_JOB_NUMBER} ${TRAVIS_BUILD_NUMBER} ..."
 
-if [ "${TRAVIS_BUILD_NUMBER}" -ne "${TRAVIS_JOB_NUMBER}.1" ]; then
-   echo "ya i will quot...."
+if [ "${TRAVIS_BUILD_NUMBER}.1" != "${TRAVIS_JOB_NUMBER}" ]; then
+  echo "Only push documents 1 time... quot."
+  exit 0
 fi
 
-exit 0
-
+build/gen_doc
 cd build/result/docs/
 git init
 git config user.name "Travis-CI"
