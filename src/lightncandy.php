@@ -250,7 +250,7 @@ $libstr
      * @expect Array('flags' => Array('exhlp' => 1), 'helpers' => Array('LCRun2::val' => 'LCRun2::val')) when input Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('LCRun2::val'))
      * @expect Array('flags' => Array('exhlp' => 1), 'helpers' => Array('test' => 'LCRun2::val')) when input Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('test' => 'LCRun2::val'))
      */
-    public static function buildHelperTable($context, $options) {
+    protected static function buildHelperTable($context, $options) {
         if (isset($options['helpers']) && is_array($options['helpers'])) {
             foreach ($options['helpers'] as $name => $func) {
                 if (is_callable($func)) {
@@ -1051,7 +1051,7 @@ $libstr
      *
      * @codeCoverageIgnore
      */
-    public static function compileSection(&$token, &$context, $vars) {
+    protected static function compileSection(&$token, &$context, $vars) {
         switch ($token[self::_mOP]) {
         case '^':
             $v = self::getVariableArray($vars[0]);
@@ -1083,7 +1083,7 @@ $libstr
      *
      * @codeCoverageIgnore
      */
-    public static function compileBlockEnd(&$token, &$context, $vars) {
+    protected static function compileBlockEnd(&$token, &$context, $vars) {
             $each = false;
             switch ($token[self::_mINNERTAG]) {
             case 'if':
@@ -1136,7 +1136,7 @@ $libstr
      *
      * @codeCoverageIgnore
      */
-    public static function compileBlockBegin(&$context, $vars) {
+    protected static function compileBlockBegin(&$context, $vars) {
         $each = 'false';
         $v = isset($vars[1]) ? self::getVariableArray($vars[1]) : null;
         switch ($vars[0][0]) {
@@ -1180,7 +1180,7 @@ $libstr
      *
      * @codeCoverageIgnore
      */
-    public static function compileCustomHelper(&$context, &$vars, $raw) {
+    protected static function compileCustomHelper(&$context, &$vars, $raw) {
         $fn = $raw ? 'raw' : $context['ops']['enc'];
         if (isset($context['helpers'][$vars[0][0]])) {
             $ch = array_shift($vars);
@@ -1201,7 +1201,7 @@ $libstr
      *
      * @codeCoverageIgnore
      */
-    public static function compileElse(&$context, &$vars) {
+    protected static function compileElse(&$context, &$vars) {
         if ($vars[0][0] ==='else') {
             $context['stack'][] = ':';
             return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}" : "{$context['ops']['cnd_else']}";
@@ -1219,7 +1219,7 @@ $libstr
      *
      * @codeCoverageIgnore
      */
-    public static function compileVariable(&$context, &$vars, $raw) {
+    protected static function compileVariable(&$context, &$vars, $raw) {
         self::addJsonSchema($context, $vars[0]);
         if ($context['useVar']) {
             $v = $context['useVar'] . self::getArrayCode($vars[0]);

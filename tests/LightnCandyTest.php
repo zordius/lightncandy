@@ -11,6 +11,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
      */
     public function testOn_buildHelperTable() {
         $method = new ReflectionMethod('LightnCandy', 'buildHelperTable');
+        $method->setAccessible(true);
         $this->assertEquals(Array(), $method->invoke(null,
             Array(), Array()
         ));
