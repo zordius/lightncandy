@@ -8,6 +8,7 @@ v0.10 current trunk
    * 1feec458c7 new variable handling logic, save variable name parsing time when render() . rendering performance improved 10~30%!
    * 3fa897c98c rename LCRun to LCRun2 for interface changed, old none standalone templates will error with newer version.
    * 43a6d33717 fix for {{../}} php warning message
+   * 9189ebc1e4 now auto push documents from Travis CI
 
 v0.9 https://github.com/zordius/lightncandy/tree/v0.9
    * align with handlebars.js 1.3
