@@ -665,8 +665,17 @@ $libstr
      * @param mixed $v variable name to be fixed.
      * @param array $context Current compile content.
      * 
-     *
      * @return array Return variable name array
+     *
+     * @expect Array('this') when input 'this', Array('flags' => Array('advar' => 0, 'this' => 0))
+     * @expect Array(null) when input 'this', Array('flags' => Array('advar' => 0, 'this' => 1))
+     * @expect Array(1, null) when input '../', Array('flags' => Array('advar' => 0, 'this' => 1))
+     * @expect Array(1, null) when input '../.', Array('flags' => Array('advar' => 0, 'this' => 1))
+     * @expect Array(1, null) when input '../this', Array('flags' => Array('advar' => 0, 'this' => 1))
+     * @expect Array(1, 'a') when input '../a', Array('flags' => Array('advar' => 0, 'this' => 1))
+     * @expect Array(2, 'a', 'b') when input '../../a.b', Array('flags' => Array('advar' => 0, 'this' => 0))
+     * @expect Array(2, '[a]', 'b') when input '../../[a].b', Array('flags' => Array('advar' => 0, 'this' => 0))
+     * @expect Array(2, 'a', 'b') when input '../../[a].b', Array('flags' => Array('advar' => 1, 'this' => 0))
      */
     protected static function fixVariable($v, $context) {
         $ret = Array();
@@ -688,7 +697,7 @@ $libstr
             preg_match_all('/([^\\.\\/]+)/', $v, $matched);
         }
 
-        if ($v === '.') {
+        if (($v === '.') || ($v === '')) {
             $matched = Array(null, Array('.'));
         }
 
@@ -710,6 +719,8 @@ $libstr
      * @param mixed $key move target to child specified with the key
      *
      * @return array children of new json schema target 
+     *
+     * @codeCoverageIgnore
      */
     protected static function &_jst(&$target, $key = false) {
         if ($key) {
@@ -734,6 +745,8 @@ $libstr
      * Internal method used by compile(). Find current json schema target, prepare target parent.
      *
      * @param array $context current compile context
+     *
+     * @codeCoverageIgnore
      */
     protected static function &_jsp(&$context) {
         $target = &$context['jsonSchema'];
@@ -753,6 +766,8 @@ $libstr
      *
      * @param array $context current compile context
      * @param array $var current variable name
+     *
+     * @codeCoverageIgnore
      */
     protected static function addJsonSchema(&$context, $var) {
         $target = &self::_jsp($context);
@@ -771,8 +786,8 @@ $libstr
      *
      * @return array Return parsed result
      *
-     * @expect Array(false, Array(Array())) when input Array(0,0,0,0,0,''), Array('flags' => Array('advar' => 0, 'this' => 1))
-     * @expect Array(true, Array(Array())) when input Array(0,0,'{{{',0,0,''), Array('flags' => Array('advar' => 0, 'this' => 1))
+     * @expect Array(false, Array(Array(null))) when input Array(0,0,0,0,0,''), Array('flags' => Array('advar' => 0, 'this' => 1))
+     * @expect Array(true, Array(Array(null))) when input Array(0,0,'{{{',0,0,''), Array('flags' => Array('advar' => 0, 'this' => 1))
      * @expect Array(false, Array(Array('a'))) when input Array(0,0,0,0,0,'a'), Array('flags' => Array('advar' => 0, 'this' => 1))
      * @expect Array(false, Array(Array('a'), Array('b'))) when input Array(0,0,0,0,0,'a b'), Array('flags' => Array('advar' => 0, 'this' => 1))
      * @expect Array(false, Array(Array('a'), Array('"b'), Array('c"'))) when input Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 0, 'this' => 1))
@@ -942,6 +957,8 @@ $libstr
      *
      * @param string[] $token detected handlebars {{ }} token
      * @param array $context current scaning context
+     *
+     * @codeCoverageIgnore
      */
     protected static function scan($token, &$context) {
         list($raw, $vars) = self::parseTokenArgs($token, $context);
@@ -993,6 +1010,8 @@ $libstr
      * @param array $context current scaning context
      *
      * @return string Return compiled code segment for the token
+     *
+     * @codeCoverageIgnore
      */
     public static function compileToken(&$token, &$context) {
         list($raw, $vars) = self::parseTokenArgs($token, $context);
@@ -1029,6 +1048,8 @@ $libstr
      * @param array $vars parsed arguments list
      *
      * @return string|null Return compiled code segment for the token when the token is section
+     *
+     * @codeCoverageIgnore
      */
     public static function compileSection(&$token, &$context, $vars) {
         switch ($token[self::_mOP]) {
@@ -1059,6 +1080,8 @@ $libstr
      * @param array $vars parsed arguments list
      *
      * @return string Return compiled code segment for the token
+     *
+     * @codeCoverageIgnore
      */
     public static function compileBlockEnd(&$token, &$context, $vars) {
             $each = false;
@@ -1110,6 +1133,8 @@ $libstr
      * @param array $vars parsed arguments list
      *
      * @return string Return compiled code segment for the token
+     *
+     * @codeCoverageIgnore
      */
     public static function compileBlockBegin(&$context, $vars) {
         $each = 'false';
@@ -1152,6 +1177,8 @@ $libstr
      * @param boolean $raw is this {{{ token or not
      *
      * @return string|null Return compiled code segment for the token when the token is custom helper
+     *
+     * @codeCoverageIgnore
      */
     public static function compileCustomHelper(&$context, &$vars, $raw) {
         $fn = $raw ? 'raw' : $context['ops']['enc'];
@@ -1171,6 +1198,8 @@ $libstr
      * @param array $vars parsed arguments list
      *
      * @return string|null Return compiled code segment for the token when the token is else
+     *
+     * @codeCoverageIgnore
      */
     public static function compileElse(&$context, &$vars) {
         if ($vars[0][0] ==='else') {
@@ -1187,6 +1216,8 @@ $libstr
      * @param boolean $raw is this {{{ token or not
      *
      * @return string Return compiled code segment for the token
+     *
+     * @codeCoverageIgnore
      */
     public static function compileVariable(&$context, &$vars, $raw) {
         self::addJsonSchema($context, $vars[0]);
