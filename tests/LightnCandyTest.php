@@ -283,10 +283,10 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         ));
     }
     /**
-     * @covers LightnCandy::_tokenString
+     * @covers LightnCandy::tokenString
      */
-    public function testOn__tokenString() {
-        $method = new ReflectionMethod('LightnCandy', '_tokenString');
+    public function testOn_tokenString() {
+        $method = new ReflectionMethod('LightnCandy', 'tokenString');
         $method->setAccessible(true);
         $this->assertEquals('b', $method->invoke(null,
             Array('a', 'b', 'c')
@@ -296,10 +296,10 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         ));
     }
     /**
-     * @covers LightnCandy::_validateStartEnd
+     * @covers LightnCandy::validateStartEnd
      */
-    public function testOn__validateStartEnd() {
-        $method = new ReflectionMethod('LightnCandy', '_validateStartEnd');
+    public function testOn_validateStartEnd() {
+        $method = new ReflectionMethod('LightnCandy', 'validateStartEnd');
         $method->setAccessible(true);
         $this->assertEquals(null, $method->invoke(null,
             array_fill(0, 8, ''), Array(), true
@@ -309,10 +309,10 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         ));
     }
     /**
-     * @covers LightnCandy::_validateOperations
+     * @covers LightnCandy::validateOperations
      */
-    public function testOn__validateOperations() {
-        $method = new ReflectionMethod('LightnCandy', '_validateOperations');
+    public function testOn_validateOperations() {
+        $method = new ReflectionMethod('LightnCandy', 'validateOperations');
         $method->setAccessible(true);
         $this->assertEquals(null, $method->invoke(null,
             Array(0, 0, 0, 0, ''), Array(), Array()
