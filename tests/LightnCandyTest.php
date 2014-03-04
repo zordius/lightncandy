@@ -252,6 +252,16 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         ));
     }
     /**
+     * @covers LightnCandy::setJSONTarget
+     */
+    public function testOn_setJSONTarget() {
+        $method = new ReflectionMethod('LightnCandy', 'setJSONTarget');
+        $method->setAccessible(true);
+        $this->assertEquals(Array(), $method->invoke(null,
+            Array(), false
+        ));
+    }
+    /**
      * @covers LightnCandy::parseTokenArgs
      */
     public function testOn_parseTokenArgs() {
