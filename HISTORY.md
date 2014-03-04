@@ -5,8 +5,9 @@ v0.10 current trunk
    * align with handlebars.js 2.0.0-alpha.1
    * 4c9f681080 file name changed: lightncandy.inc => lightncandy.php
    * e3de01081c some minor fix for json schema
-   * 1feec458c7 new variable handling logic, save variable name parsing time when render()
+   * 1feec458c7 new variable handling logic, save variable name parsing time when render() . rendering performance improved 10~30%!
    * 3fa897c98c rename LCRun to LCRun2 for interface changed, old none standalone templates will error with newer version.
+   * 43a6d33717 fix for {{../}} php warning message
 
 v0.9 https://github.com/zordius/lightncandy/tree/v0.9
    * align with handlebars.js 1.3
