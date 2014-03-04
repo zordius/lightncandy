@@ -88,7 +88,7 @@ class LightnCandy {
         // Do first time scan to find out used feature, detect template error.
         if (preg_match_all(self::TOKEN_SEARCH, $template, $tokens, PREG_SET_ORDER) > 0) {
             foreach ($tokens as $token) {
-                self::scan($token, $context);
+                self::scanFeatures($token, $context);
             }
         }
 
@@ -722,7 +722,7 @@ $libstr
      *
      * @codeCoverageIgnore
      */
-    protected static function &_jst(&$target, $key = false) {
+    protected static function &setJSONTarget(&$target, $key = false) {
         if ($key) {
             if (!isset($target['properties'])) {
                 $target['type'] = 'object';
@@ -748,15 +748,15 @@ $libstr
      *
      * @codeCoverageIgnore
      */
-    protected static function &_jsp(&$context) {
+    protected static function &setJSONParent(&$context) {
         $target = &$context['jsonSchema'];
         foreach ($context['vars'] as $var) {
             if ($var) {
                 foreach ($var as $v) {
-                    $target = &self::_jst($target, $v);
+                    $target = &self::setJSONTarget($target, $v);
                 }
             }
-            $target = &self::_jst($target);
+            $target = &self::setJSONTarget($target);
         }
         return $target;
     }
@@ -770,16 +770,16 @@ $libstr
      * @codeCoverageIgnore
      */
     protected static function addJsonSchema(&$context, $var) {
-        $target = &self::_jsp($context);
+        $target = &self::setJSONParent($context);
         foreach ($var as $v) {
-            $target = &self::_jst($target, $v);
+            $target = &self::setJSONTarget($target, $v);
         }
         $target['type'] = Array('string', 'number');
         $target['required'] = true;
     }
 
     /**
-     * Internal method used by scan() and compile(). Parse the token and return parsed result.
+     * Internal method used by scanFeatures() and compile(). Parse the token and return parsed result.
      *
      * @param array $token preg_match results
      * @param array $context current compile context
@@ -846,7 +846,7 @@ $libstr
                     // .foo[ Rule 4: middle [ not after .
                     || preg_match('/\\.[^\\]\\[\\.]+\\[/', preg_replace('/\\[[^\\]]+\\]/', '[XXX]', $var))
                 ) {
-                    $context['error'][] = "Wrong variable naming as '$var' in " . self::_tokenString($token) . ' !';
+                    $context['error'][] = "Wrong variable naming as '$var' in " . self::tokenString($token) . ' !';
                 }
             }
             $var = self::fixVariable($var, $context);
@@ -856,7 +856,7 @@ $libstr
     }
 
     /**
-     * Internal method used by scan(). return token string
+     * Internal method used by scanFeatures(). return token string
      *
      * @param string[] $token detected handlebars {{ }} token
      * @param integer $remove remove how many heading and ending token
@@ -866,12 +866,12 @@ $libstr
      * @expect 'b' when input Array('a', 'b', 'c')
      * @expect 'c' when input Array('a', 'b', 'c', 'd', 'e'), 2
      */
-    protected static function _tokenString($token, $remove = 1) {
+    protected static function tokenString($token, $remove = 1) {
         return implode('', array_slice($token, $remove, -$remove));
     }
 
     /**
-     * Internal method used by scan(). Validate start and and.
+     * Internal method used by scanFeatures(). Validate start and and.
      *
      * @param string[] $token detected handlebars {{ }} token
      * @param array $context current scaning context
@@ -882,15 +882,15 @@ $libstr
      * @expect null when input array_fill(0, 8, ''), Array(), true
      * @expect true when input range(0, 7), Array(), true
      */
-    protected static function _validateStartEnd($token, &$context, $raw) {
+    protected static function validateStartEnd($token, &$context, $raw) {
         // {{ }}} or {{{ }} are invalid
         if (strlen($token[self::_mBEGINTAG]) !== strlen($token[self::_mENDTAG])) {
-            $context['error'][] = 'Bad token ' . self::_tokenString($token) . ' ! Do you mean {{ }} or {{{ }}}?';
+            $context['error'][] = 'Bad token ' . self::tokenString($token) . ' ! Do you mean {{ }} or {{{ }}}?';
             return true;
         }
         // {{{# }}} or {{{! }}} or {{{/ }}} or {{{^ }}} are invalid.
         if ($raw && $token[self::_mOP]) {
-            $context['error'][] = 'Bad token ' . self::_tokenString($token) . ' ! Do you mean {{' . self::_tokenString($token, 2) . '}}?';
+            $context['error'][] = 'Bad token ' . self::tokenString($token) . ' ! Do you mean {{' . self::tokenString($token, 2) . '}}?';
             return true;
         }
     }
@@ -914,7 +914,7 @@ $libstr
      * @expect 7 when input Array(0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('each' => 6), 'level' => 0), Array('each')
      * @expect 8 when input Array(0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('unless' => 7), 'level' => 0), Array('unless')
      */
-    protected static function _validateOperations($token, &$context, $vars) {
+    protected static function validateOperations($token, &$context, $vars) {
         switch ($token[self::_mOP]) {
         case '^':
             $context['stack'][] = $token[self::_mINNERTAG];
@@ -960,14 +960,14 @@ $libstr
      *
      * @codeCoverageIgnore
      */
-    protected static function scan($token, &$context) {
+    protected static function scanFeatures($token, &$context) {
         list($raw, $vars) = self::parseTokenArgs($token, $context);
 
-        if (self::_validateStartEnd($token, $context, $raw)) {
+        if (self::validateStartEnd($token, $context, $raw)) {
             return;
         }
 
-        if (self::_validateOperations($token, $context, $vars)) {
+        if (self::validateOperations($token, $context, $vars)) {
             return;
         }
 
@@ -1112,7 +1112,7 @@ $libstr
                 case '^':
                     $pop2 = array_pop($context['stack']);
                     if (!$each && ($pop2 !== self::getVariableArray($vars[0]))) {
-                        $context['error'][] = 'Unexpect token ' . self::_tokenString($token) . " ! Previous token $pop$pop2 is not closed";
+                        $context['error'][] = 'Unexpect token ' . self::tokenString($token) . " ! Previous token $pop$pop2 is not closed";
                         return;
                     }
                     if ($pop == '^') {
@@ -1120,7 +1120,7 @@ $libstr
                     }
                     return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
                 default:
-                    $context['error'][] = 'Unexpect token: ' . self::_tokenString($token) . ' !';
+                    $context['error'][] = 'Unexpect token: ' . self::tokenString($token) . ' !';
                     return;
                 }
             }
