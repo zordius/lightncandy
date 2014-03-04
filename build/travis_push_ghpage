@@ -10,6 +10,7 @@ build/gen_doc
 cd build/result/docs
 
 if [ "${TRAVIS_BRANCH}" != "master" ]; then
+  echo "Document will be pushed here: http://zordius.github.io/lightncandy/${TRAVIS_BRANCH}/"
   cd ..
   git init
   git pull --quiet "https://${GHTK}@github.com/zordius/lightncandy.git" gh-pages:master > /dev/null 2>&1
@@ -17,6 +18,7 @@ if [ "${TRAVIS_BRANCH}" != "master" ]; then
   mv docs $TRAVIS_BRANCH
   git add $TRAVIS_BRANCH
 else  
+  echo "Document will be pushed here: http://zordius.github.io/lightncandy/"
   git init
   git add .
 fi
