@@ -140,6 +140,7 @@ Default is to compile the template as PHP which can be run as fast as possible, 
 * `FLAG_PARENT` : support `{{../var}}` in temlpate. Otherwise, `{{../var}}` will cause template error.
 * `FLAG_JSQUOTE` : encode `'` to `&#x27;` . Otherwise, `'` will encoded as `&#039;` .
 * `FLAG_ADVARNAME` : support `{{foo.[0].[#te#st].bar}}` style advanced variable naming in temlpate.
+* `FLAG_NAMEDARG` : support named arguments for custom helper `{{helper name1=val1 nam2=val2 ...}}.
 * `FLAG_EXTHELPER` : do not including custom helper codes into compiled PHP codes. This reduce the code size, but you need to take care of your helper functions when rendering. If you forget to include required functions when execute rendering function, `undefined function` runtime error will be triggered. **Note: Anonymouse functions will always be placed in generated codes**
 * `FLAG_SPACECTL` : support space control `{{~ }}` or `{{ ~}}` in template. Otherwise, `{{~ }}` or `{{ ~}}` will cause template error. 
 * `FLAG_HANDLEBARSJS` : align with handlebars.js behaviors, same as `FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME`.

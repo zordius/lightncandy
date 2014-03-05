@@ -178,6 +178,7 @@ $libstr
                 'parent' => $flags & self::FLAG_PARENT,
                 'echo' => $flags & self::FLAG_ECHO,
                 'advar' => $flags & self::FLAG_ADVARNAME,
+                'namev' => $flags & self::FLAG_NAMEDARG,
                 'exhlp' => $flags & self::FLAG_EXTHELPER,
             ),
             'level' => 0,
