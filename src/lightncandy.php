@@ -659,9 +659,9 @@ $libstr
      */
     protected static function getVariableArray($vn) {
         $ret = Array();
-        foreach ($vn as $v) {
+        foreach ($vn as $i => $v) {
             if (is_array($v)) {
-                $ret[] = self::getVariableArray($v);
+                $ret[] = (is_string($i) ? "'$i'=>" : '') . self::getVariableArray($v);
             } else {
                 $ret[] = is_string($v) ? "'$v'" : (is_null($v) ? 'null' : $v);
             }
@@ -861,7 +861,6 @@ $libstr
                 if (preg_match('/^((\\[([^\\]]+)\\])|([^=]+))=(.+)$/', $var, $m)) {
                     $idx = $m[3] ? $m[3] : $m[4];
                     $var = $m[5];
-                    print_r($m);
                 }
             }
             if ($context['flags']['advar']) {
@@ -1215,7 +1214,8 @@ $libstr
             foreach ($vars as $var) {
                 self::addJsonSchema($context, $var);
             }
-            return $context['ops']['seperator'] . self::getFuncName($context, 'ch') . "('$ch[0]', " . self::getVariableArray($vars) . ", '$fn', \$cx, \$in){$context['ops']['seperator']}";
+            $named = (count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0) ? ', true' : '';
+            return $context['ops']['seperator'] . self::getFuncName($context, 'ch') . "('$ch[0]', " . self::getVariableArray($vars) . ", '$fn', \$cx, \$in$named){$context['ops']['seperator']}";
         }
     }
 
@@ -1651,6 +1651,7 @@ class LCRun2 {
      * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
      * @param array $cx render time context
      * @param array $in input data with current scope
+     * @param boolean $named input arguments are named
      *
      * @return string The rendered string of the token
      *
@@ -1658,13 +1659,13 @@ class LCRun2 {
      * @expect '=&amp;=' when input 'a', Array(Array(null)), 'enc', Array('helpers' => Array('a' => function ($i) {return "=$i=";})), '&'
      * @expect '=&#x27;=' when input 'a', Array(Array(null)), 'encq', Array('helpers' => Array('a' => function ($i) {return "=$i=";})), '\''
      */
-    public static function ch($ch, $vars, $op, &$cx, $in) {
+    public static function ch($ch, $vars, $op, &$cx, $in, $named = false) {
         $args = Array();
-        foreach ($vars as $v) {
-            $args[] = self::raw($v, $cx, $in);
+        foreach ($vars as $i => $v) {
+            $args[$i] = self::raw($v, $cx, $in);
         }
 
-        $r = call_user_func_array($cx['helpers'][$ch], $args);
+        $r = call_user_func_array($cx['helpers'][$ch], $named ? Array($args) : $args);
         switch ($op) {
             case 'enc': 
                 return htmlentities($r, ENT_QUOTES, 'UTF-8');
