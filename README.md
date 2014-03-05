@@ -48,7 +48,7 @@ wget https://raw.github.com/zordius/lightncandy/master/src/lightncandy.php --no-
 
 **UPGRADE NOTICE**
 
-* Due to big change of variable name handling, the rendering support class LCRun is renamed to LCRun2. If you compile templates as none standalone php code by lightncandy v0.9 or before, you should compile these templates again. Or, you may run into 'LCRun not found' error when you execute these old rendering functions.
+* Due to big change of variable name handling, the rendering support class LCRun is renamed to LCRun2. If you compile templates as none standalone php code by lightncandy v0.9 or before, you should compile these templates again. Or, you may run into `Class 'LCRun' not found` error when you execute these old rendering functions.
 
 * Standalone templates compiled by older lightncandy can be executed safe when you upgrade to any version of lightncandy.
 
@@ -247,6 +247,7 @@ Suggested Handlebars Template Practices
 * use `{{{val}}}` when you do not require HTML encoded output on the value. It is better performance, too.
 * Prevent to use custom helper if you want to reuse your template in different language. Or, you may need to implement different versions of helper in different languages.
 * For best performance, you should only use 'compile on demand' pattern only when you in development stage. Before you go to production, you can `LightnCandy::compile()` on all your templates, save all generated PHP codes, and only deploy these generated files. You may need to maintain a build process for this. Adding cache logic on 'compile on demand' may be good, but it is not the best solution. If you want to build some library or framework based on LightnCandy, think about this scenario.
+* Recompile your temlpates when you upgrade LightnCandy every time.
 
 Detail Feature list
 -------------------
