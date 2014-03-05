@@ -858,7 +858,7 @@ $libstr
         $ret = Array();
         foreach ($vars as $idx => $var) {
             if ($context['flags']['namev']) {
-                if (preg_match('/^((\\[([^\\]]+)\\])|([^=]+))=(.+)$/', $var, $m)) {
+                if (preg_match('/^((\\[([^\\]]+)\\])|([^=^[]+))=(.+)$/', $var, $m)) {
                     $idx = $m[3] ? $m[3] : $m[4];
                     $var = $m[5];
                 }
