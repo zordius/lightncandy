@@ -1234,9 +1234,9 @@ $libstr
         if ($context['useVar']) {
             $v = $context['useVar'] . self::getArrayCode($vars[0]);
             if ($context['flags']['jstrue']) {
-                return $raw ? "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}$v{$context['ops']['cnd_end']}" : "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}htmlentities($v, ENT_QUOTES){$context['ops']['cnd_end']}";
+                return $raw ? "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}$v{$context['ops']['cnd_end']}" : "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}htmlentities($v, ENT_QUOTES, 'UTF-8'){$context['ops']['cnd_end']}";
             } else {
-                return $raw ? "{$context['ops']['seperator']}$v{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlentities($v, ENT_QUOTES){$context['ops']['seperator']}";
+                return $raw ? "{$context['ops']['seperator']}$v{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlentities($v, ENT_QUOTES, 'UTF-8'){$context['ops']['seperator']}";
             }
         } else {
             $v = self::getVariableArray($vars[0]);
@@ -1500,7 +1500,7 @@ class LCRun2 {
      * @expect 'a&#039;b' when input Array(null), Array(), 'a\'b'
      */
     public static function enc($var, $cx, $in) {
-        return htmlentities(self::raw($var, $cx, $in), ENT_QUOTES);
+        return htmlentities(self::raw($var, $cx, $in), ENT_QUOTES, 'UTF-8');
     }
 
     /**
@@ -1517,7 +1517,7 @@ class LCRun2 {
      * @expect 'a&#x27;b' when input Array(null), Array(), 'a\'b'
      */
     public static function encq($var, $cx, $in) {
-        return preg_replace('/&#039;/', '&#x27;', htmlentities(self::raw($var, $cx, $in), ENT_QUOTES));
+        return preg_replace('/&#039;/', '&#x27;', htmlentities(self::raw($var, $cx, $in), ENT_QUOTES, 'UTF-8'));
     }
 
     /**
@@ -1649,9 +1649,9 @@ class LCRun2 {
         $r = call_user_func_array($cx['helpers'][$ch], $args);
         switch ($op) {
             case 'enc': 
-                return htmlentities($r, ENT_QUOTES);
+                return htmlentities($r, ENT_QUOTES, 'UTF-8');
             case 'encq':
-                return preg_replace('/&#039;/', '&#x27;', htmlentities($r, ENT_QUOTES));
+                return preg_replace('/&#039;/', '&#x27;', htmlentities($r, ENT_QUOTES, 'UTF-8'));
             default:
                 return $r;
         }
