@@ -19,7 +19,7 @@ git clone https://github.com/zordius/HandlebarsTest
 cd HandlebarsTest
 echo ${TRAVIS_COMMIT} > lightncandy
 git add lightncandy
-git commit -a -m "Auto test on zordius/lightncandy@SHA: ${TRAVIS_COMMIT}"
+git commit -a -m "Auto test on zordius/lightncandy@${TRAVIS_COMMIT}"
 git push "https://${GHTK}@github.com/zordius/HandlebarsTest.git" > /dev/null 2>&1
 cd ..
 
