@@ -828,13 +828,21 @@ $libstr
                     }
                     continue;
                 }
-                // continue to next match when '"' started without ending '"'
+                // continue to next match when begin with '"' without ending '"'
                 if (preg_match('/^"[^"]+$/', $t)) {
                     $prev = $t;
                     $expect = '"';
                     continue;
                 }
-                // continue to next match when '[' started without ending ']'
+
+                // continue to next match when '="' exists without ending '"'
+                if (preg_match('/="[^"]+$/', $t)) {
+                    $prev = $t;
+                    $expect = '"';
+                    continue;
+                }
+
+                // continue to next match when '[' exists without ending ']'
                 if (preg_match('/\\[[^\\]]+$/', $t)) {
                     $prev = $t;
                     $expect = ']';
@@ -847,7 +855,15 @@ $libstr
         }
 
         // Check for advanced variable.
-        foreach ($vars as &$var) {
+        $ret = Array();
+        foreach ($vars as $idx => $var) {
+            if ($context['flags']['namev']) {
+                if (preg_match('/^((\\[([^\\]]+)\\])|([^=]+))=(.+)$/', $var, $m)) {
+                    $idx = $m[3] ? $m[3] : $m[4];
+                    $var = $m[5];
+                    print_r($m);
+                }
+            }
             if ($context['flags']['advar']) {
                     // foo]  Rule 1: no starting [ or [ not start from head
                 if (preg_match('/^[^\\[\\.]+[\\]\\[]/', $var)
@@ -861,10 +877,10 @@ $libstr
                     $context['error'][] = "Wrong variable naming as '$var' in " . self::tokenString($token) . ' !';
                 }
             }
-            $var = self::fixVariable($var, $context);
+            $ret[$idx] = self::fixVariable($var, $context);
         }
 
-        return Array(($token[self::POS_BEGINTAG] === '{{{'), $vars);
+        return Array(($token[self::POS_BEGINTAG] === '{{{'), $ret);
     }
 
     /**
