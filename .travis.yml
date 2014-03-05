@@ -7,7 +7,7 @@ php:
 script:
   - build/runphp build/gen_test.php
   - phpunit
-  - build/travis_push_ghpage
+  - build/travis_push
 
 env:
   global:
