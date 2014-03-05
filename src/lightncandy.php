@@ -800,7 +800,7 @@ $libstr
      * @expect Array(false, Array(Array(null))) when input Array(0,0,0,0,0,''), Array('flags' => Array('advar' => 0, 'this' => 1))
      * @expect Array(true, Array(Array(null))) when input Array(0,0,'{{{',0,0,''), Array('flags' => Array('advar' => 0, 'this' => 1))
      * @expect Array(false, Array(Array('a'))) when input Array(0,0,0,0,0,'a'), Array('flags' => Array('advar' => 0, 'this' => 1))
-     * @expect Array(false, Array(Array('a'), Array('b'))) when input Array(0,0,0,0,0,'a b'), Array('flags' => Array('advar' => 0, 'this' => 1))
+     * @expect Array(false, Array(Array('a'), Array('b'))) when input Array(0,0,0,0,0,'a  b'), Array('flags' => Array('advar' => 0, 'this' => 1))
      * @expect Array(false, Array(Array('a'), Array('"b'), Array('c"'))) when input Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 0, 'this' => 1))
      * @expect Array(false, Array(Array('a'), Array('"b c"'))) when input Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 1, 'this' => 1))
      * @expect Array(false, Array(Array('a'), Array('[b'), Array('c]'))) when input Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 0, 'this' => 1))
@@ -809,10 +809,10 @@ $libstr
     protected static function parseTokenArgs(&$token, &$context) {
         $vars = Array();
         trim($token[self::POS_INNERTAG]);
-        preg_match_all('/(\s*)([^\s]+)/', $token[self::POS_INNERTAG], $matched);
+        $count = preg_match_all('/(\s*)([^\s]+)/', $token[self::POS_INNERTAG], $matched);
 
         // Parse arguments and deal with "..." or [...]
-        if (is_array($matched) && $context['flags']['advar']) {
+        if (($count > 0) && $context['flags']['advar']) {
             $prev = '';
             $expect = 0;
             foreach ($matched[2] as $index => $t) {
@@ -842,7 +842,7 @@ $libstr
                 $vars[] = $t;
             }
         } else {
-            $vars = explode(' ', $token[self::POS_INNERTAG]);
+            $vars = ($count > 0) ? $matched[2] : explode(' ', $token[self::POS_INNERTAG]);
         }
 
         // Check for advanced variable.

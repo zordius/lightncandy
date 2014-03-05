@@ -292,7 +292,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
             Array(0,0,0,0,0,'a'), Array('flags' => Array('advar' => 0, 'this' => 1))
         ));
         $this->assertEquals(Array(false, Array(Array('a'), Array('b'))), $method->invoke(null,
-            Array(0,0,0,0,0,'a b'), Array('flags' => Array('advar' => 0, 'this' => 1))
+            Array(0,0,0,0,0,'a  b'), Array('flags' => Array('advar' => 0, 'this' => 1))
         ));
         $this->assertEquals(Array(false, Array(Array('a'), Array('"b'), Array('c"'))), $method->invoke(null,
             Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 0, 'this' => 1))
