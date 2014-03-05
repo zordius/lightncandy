@@ -3,9 +3,9 @@ LightnCandy
 
 A PHP library to support almost all features of handlebars ( http://handlebarsjs.com/ ) , target to run as fast as pure PHP.
 
-Travis CI status: [![Build Status](https://travis-ci.org/zordius/lightncandy.png?branch=master)](https://travis-ci.org/zordius/lightncandy)
+Travis CI status: [![Unit testing](https://travis-ci.org/zordius/lightncandy.png?branch=master)](https://travis-ci.org/zordius/lightncandy) [![Regression testing](https://travis-ci.org/zordius/HandlebarsTest.png?branch=master)](https://travis-ci.org/zordius/HandlebarsTest)
 
-Scrutinizer status: [![Code Coverage](https://scrutinizer-ci.com/g/zordius/lightncandy/badges/coverage.png?s=57aaeed149696b16380a79615df2ff83a1c25afa)](https://scrutinizer-ci.com/g/zordius/lightncandy/)
+Scrutinizer CI status: [![Code Coverage](https://scrutinizer-ci.com/g/zordius/lightncandy/badges/coverage.png?s=57aaeed149696b16380a79615df2ff83a1c25afa)](https://scrutinizer-ci.com/g/zordius/lightncandy/)
 
 Features
 --------
