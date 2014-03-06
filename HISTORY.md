@@ -9,6 +9,7 @@ v0.10 current trunk
    * 3fa897c98c rename LCRun to LCRun2 for interface changed, old none standalone templates will error with newer version.
    * 43a6d33717 fix for {{../}} php warning message
    * 9189ebc1e4 now auto push documents from Travis CI
+   * e077d0b631 support named arguments for custom helpers {{helper name=value}}
 
 v0.9 https://github.com/zordius/lightncandy/tree/v0.9
    * align with handlebars.js 1.3
