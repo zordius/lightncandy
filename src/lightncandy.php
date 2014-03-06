@@ -214,6 +214,7 @@ $libstr
                 'comment' => 0,
                 'partial' => 0,
                 'helper' => 0,
+                'bhelper' => 0,
             ),
             'helpers' => Array(),
         );
@@ -977,6 +978,12 @@ $libstr
         case '#':
             $context['stack'][] = $token[self::POS_INNERTAG];
             $context['level']++;
+
+            // detect block custom helpers.
+            if (isset($context['blockhelpers'][$vars[0][0]])) {
+                return ++$context['usedFeature']['bhelper'];
+            }
+
             switch ($vars[0]) {
             case 'with':
                 if (isset($vars[1]) && !$context['flags']['with']) {
