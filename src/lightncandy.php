@@ -1045,7 +1045,7 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Show error message when named arguments used without custom helper.
+     * Internal method used by compile(). Show error message when named arguments appear without custom helper.
      *
      * @param array $token detected handlebars {{ }} token
      * @param array $context current scaning context
