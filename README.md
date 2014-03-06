@@ -307,4 +307,6 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{foo.[ba.r].[#spec].0.ok}}` : reference to $CurrentConext['foo']['ba.r']['#spec'][0]['ok']
 * `{{~any_valid_tag}}` : Space control, remove all previous spacing (includes CR/LF, tab, space; stop on any none spacing charactor) (require `FLAG_SPACECTL`)
 * `{{any_valid_tag~}}` : Space control, remove all next spacing (includes CR/LF, tab, space; stop on any none spacing charactor) (require `FLAG_SPACECTL`)
-
+* `{{{helper var}}}` : Execute custom helper then render the result
+* `{{helper var}}` : Execute custom helper then render the HTML encoded result
+* `{{helper name1=var name2="str"}}` : Execute custom helper with named arguments
