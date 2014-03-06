@@ -1093,7 +1093,6 @@ $libstr
         }
 
         if ($ret = self::compileSection($token, $context, $vars)) {
-            self::noNamedArguments($token, $context, $named);
             return $ret;
         }
 
@@ -1127,6 +1126,7 @@ $libstr
             $v = self::getVariableArray($vars[0]);
             $context['stack'][] = $v;
             $context['stack'][] = '^';
+            self::noNamedArguments($token, $context, $named);
             if ($context['useVar']) {
                 $v = $context['useVar'] . "['{$token[self::POS_INNERTAG]}']"; //FIXME
                 return "{$context['ops']['cnd_start']}(is_null($v) && ($v !== false)){$context['ops']['cnd_then']}"; 
@@ -1142,6 +1142,7 @@ $libstr
             if ($r) {
                 return $r;
             }
+            self::noNamedArguments($token, $context, $named);
             return self::compileBlockBegin($context, $vars);
         }
     }
