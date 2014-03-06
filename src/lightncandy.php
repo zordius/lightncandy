@@ -1070,7 +1070,7 @@ $libstr
      */
     public static function compileToken(&$token, &$context) {
         list($raw, $vars) = self::parseTokenArgs($token, $context);
-        $named = (count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0) ? ', true' : '';
+        $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;
 
         // Handle space control.
         if ($token[self::POS_LSPACECTL]) {
@@ -1247,7 +1247,7 @@ $libstr
             foreach ($vars as $var) {
                 self::addJsonSchema($context, $var);
             }
-            return $context['ops']['seperator'] . self::getFuncName($context, 'ch') . "('$ch[0]', " . self::getVariableArray($vars) . ", '$fn', \$cx, \$in$named){$context['ops']['seperator']}";
+            return $context['ops']['seperator'] . self::getFuncName($context, 'ch') . "('$ch[0]', " . self::getVariableArray($vars) . ", '$fn', \$cx, \$in" . ($named ? ', true' : '') . "){$context['ops']['seperator']}";
         }
     }
 
