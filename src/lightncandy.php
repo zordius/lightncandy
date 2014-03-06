@@ -1161,7 +1161,7 @@ $libstr
             return;
         }
         $context['vars'][] = $vars[0];
-        $context['stack'][] = $vars[0][0];
+        $context['stack'][] = self::getVariableArray($vars[0]);
         $context['stack'][] = '#';
         $ch = array_shift($vars);
         $v = self::getVariableArray($vars);
