@@ -805,7 +805,12 @@ $libstr
      * @expect Array(false, Array(Array('a'), Array('"b'), Array('c"'))) when input Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 0))
      * @expect Array(false, Array(Array('a'), Array('"b c"'))) when input Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 0))
      * @expect Array(false, Array(Array('a'), Array('[b'), Array('c]'))) when input Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 0))
+     * @expect Array(false, Array(Array('a'), Array('[b'), Array('c]'))) when input Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 1))
      * @expect Array(false, Array(Array('a'), Array('b c'))) when input Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 0))
+     * @expect Array(false, Array(Array('a'), Array('b c'))) when input Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 1))
+     * @expect Array(false, Array(Array('a'), 'q' => Array('b c'))) when input Array(0,0,0,0,0,'a q=[b c]'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 1))
+     * @expect Array(false, Array(Array('a'), Array('q=[b c'))) when input Array(0,0,0,0,0,'a [q=[b c]'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 1))
+     * @expect Array(false, Array(Array('a'), 'q' => Array('[b'), Array('c]'))) when input Array(0,0,0,0,0,'a q=[b c]'), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 1))
      */
     protected static function parseTokenArgs(&$token, &$context) {
         $vars = Array();
@@ -856,9 +861,13 @@ $libstr
 
         // Check for advanced variable.
         $ret = Array();
+        $i = 0;
         foreach ($vars as $idx => $var) {
             if ($context['flags']['namev']) {
                 if (preg_match('/^((\\[([^\\]]+)\\])|([^=^[]+))=(.+)$/', $var, $m)) {
+                    if (!$context['flags']['advar'] && $m[3]) {
+                        $context['error'][] = "Wrong argument name as '$m[3]' in " . self::tokenString($token) . ' !';
+                    }
                     $idx = $m[3] ? $m[3] : $m[4];
                     $var = $m[5];
                 }
@@ -876,7 +885,12 @@ $libstr
                     $context['error'][] = "Wrong variable naming as '$var' in " . self::tokenString($token) . ' !';
                 }
             }
-            $ret[$idx] = self::fixVariable($var, $context);
+            if (is_string($idx)) {
+                $ret[$idx] = self::fixVariable($var, $context);
+            } else {
+                $ret[$i] = self::fixVariable($var, $context);
+                $i++;
+            }
         }
 
         return Array(($token[self::POS_BEGINTAG] === '{{{'), $ret);

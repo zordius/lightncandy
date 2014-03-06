@@ -303,8 +303,23 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(Array(false, Array(Array('a'), Array('[b'), Array('c]'))), $method->invoke(null,
             Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 0))
         ));
+        $this->assertEquals(Array(false, Array(Array('a'), Array('[b'), Array('c]'))), $method->invoke(null,
+            Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 1))
+        ));
         $this->assertEquals(Array(false, Array(Array('a'), Array('b c'))), $method->invoke(null,
             Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 0))
+        ));
+        $this->assertEquals(Array(false, Array(Array('a'), Array('b c'))), $method->invoke(null,
+            Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 1))
+        ));
+        $this->assertEquals(Array(false, Array(Array('a'), 'q' => Array('b c'))), $method->invoke(null,
+            Array(0,0,0,0,0,'a q=[b c]'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 1))
+        ));
+        $this->assertEquals(Array(false, Array(Array('a'), Array('q=[b c'))), $method->invoke(null,
+            Array(0,0,0,0,0,'a [q=[b c]'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 1))
+        ));
+        $this->assertEquals(Array(false, Array(Array('a'), 'q' => Array('[b'), Array('c]'))), $method->invoke(null,
+            Array(0,0,0,0,0,'a q=[b c]'), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 1))
         ));
     }
     /**
