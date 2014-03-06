@@ -132,6 +132,7 @@ class LightnCandy {
 
         $libstr = self::exportLCRun($context);
         $helpers = self::exportHelper($context);
+        $bhelpers = self::exportHelper($context, 'blockhelpers');
 
         // Return generated PHP code string.
         return "<?php return function (\$in) {
@@ -141,6 +142,7 @@ class LightnCandy {
             'jsobj' => $flagJSObj,
         ),
         'helpers' => $helpers,
+        'blockhelpers' => $bhelpers,
         'scopes' => Array(\$in),
         'path' => Array(),
 $libstr
@@ -239,7 +241,7 @@ $libstr
         );
 
         $context['ops']['enc'] = $context['flags']['jsquote'] ? 'encq' : 'enc';
-        return self::buildHelperTable($context, $options);
+        return self::buildHelperTable(self::buildHelperTable($context, $options), $options, 'blockhelpers');
     }
 
     /**
@@ -247,6 +249,7 @@ $libstr
      *
      * @param array $context prepared context
      * @param mixed $options input options
+     * @param string $tname helper table name
      *
      * @return array context with generated helper table
      *
@@ -256,11 +259,11 @@ $libstr
      * @expect Array('flags' => Array('exhlp' => 1), 'helpers' => Array('LCRun2::val' => 'LCRun2::val')) when input Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('LCRun2::val'))
      * @expect Array('flags' => Array('exhlp' => 1), 'helpers' => Array('test' => 'LCRun2::val')) when input Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('test' => 'LCRun2::val'))
      */
-    protected static function buildHelperTable($context, $options) {
-        if (isset($options['helpers']) && is_array($options['helpers'])) {
-            foreach ($options['helpers'] as $name => $func) {
+    protected static function buildHelperTable($context, $options, $tname = 'helpers') {
+        if (isset($options[$tname]) && is_array($options[$tname])) {
+            foreach ($options[$tname] as $name => $func) {
                 if (is_callable($func)) {
-                    $context['helpers'][is_int($name) ? $func : $name] = $func;
+                    $context[$tname][is_int($name) ? $func : $name] = $func;
                 } else {
                     if (!$context['flags']['exhlp']) {
                         $context['error'][] = "Can not find custom helper function defination $func() !";
@@ -399,14 +402,15 @@ $libstr
 
     /**
      * Internal method used by compile(). Export required custom helper functions.
+     * @param string $tname helper table name
      *
      * @param array $context current scaning context
      *
      * @codeCoverageIgnore
      */
-    protected static function exportHelper($context) {
+    protected static function exportHelper($context, $tname = 'helpers') {
         $ret = '';
-        foreach ($context['helpers'] as $name => $func) {
+        foreach ($context[$tname] as $name => $func) {
             if ((is_object($func) && ($func instanceof Closure)) || ($context['flags']['exhlp'] == 0)) {
                 $ret .= ("            '$name' => " . self::getPHPCode($func) . ",\n");
                 continue;
