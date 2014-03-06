@@ -891,7 +891,7 @@ $libstr
                 }
             }
             if (is_string($idx)) {
-                $ret[$idx] = self::fixVariable(is_numeric($var) ? '"' . $var . '"' : $var, $context);
+                $ret[$idx] = is_numeric($var) ? Array('"' . $var . '"') : self::fixVariable($var, $context);
             } else {
                 $ret[$i] = self::fixVariable($var, $context);
                 $i++;
