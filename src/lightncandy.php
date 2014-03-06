@@ -1045,6 +1045,20 @@ $libstr
     }
 
     /**
+     * Internal method used by compile(). Show error message when named arguments used without custom helper.
+     *
+     * @param array $token detected handlebars {{ }} token
+     * @param array $context current scaning context
+     * @param boolean $named is named arguments
+     *
+     */
+    public static function noNamedArguments($token, &$context, $named) {
+        if ($named) {
+            $context['error'][] = 'do not support name=value in ' . self::tokenString($token) . '!';
+        }
+    }
+
+    /**
      * Internal method used by compile(). Return compiled PHP code partial for a handlebars token.
      *
      * @param array $token detected handlebars {{ }} token
@@ -1056,6 +1070,7 @@ $libstr
      */
     public static function compileToken(&$token, &$context) {
         list($raw, $vars) = self::parseTokenArgs($token, $context);
+        $named = (count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0) ? ', true' : '';
 
         // Handle space control.
         if ($token[self::POS_LSPACECTL]) {
@@ -1067,16 +1082,19 @@ $libstr
         }
 
         if ($ret = self::compileSection($token, $context, $vars)) {
+            self::noNamedArguments($token, $context, $named);
             return $ret;
         }
 
-        if ($ret = self::compileCustomHelper($context, $vars, $raw)) {
+        if ($ret = self::compileCustomHelper($context, $vars, $raw, $named)) {
             return $ret;
         }
 
         if ($ret = self::compileElse($context, $vars)) {
             return $ret;
         }
+
+        self::noNamedArguments($token, $context, $named);
 
         return self::compileVariable($context, $vars, $raw);
     }
@@ -1216,19 +1234,19 @@ $libstr
      * @param array $context current scaning context
      * @param array $vars parsed arguments list
      * @param boolean $raw is this {{{ token or not
+     * @param boolean $named is named arguments or not
      *
      * @return string|null Return compiled code segment for the token when the token is custom helper
      *
      * @codeCoverageIgnore
      */
-    protected static function compileCustomHelper(&$context, &$vars, $raw) {
+    protected static function compileCustomHelper(&$context, &$vars, $raw, $named) {
         $fn = $raw ? 'raw' : $context['ops']['enc'];
         if (isset($context['helpers'][$vars[0][0]])) {
             $ch = array_shift($vars);
             foreach ($vars as $var) {
                 self::addJsonSchema($context, $var);
             }
-            $named = (count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0) ? ', true' : '';
             return $context['ops']['seperator'] . self::getFuncName($context, 'ch') . "('$ch[0]', " . self::getVariableArray($vars) . ", '$fn', \$cx, \$in$named){$context['ops']['seperator']}";
         }
     }
