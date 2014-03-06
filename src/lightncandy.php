@@ -38,15 +38,16 @@ class LightnCandy {
     const FLAG_JSQUOTE = 256;
     const FLAG_ADVARNAME = 512;
     const FLAG_SPACECTL = 1024;
+    const FLAG_NAMEDARG = 2048;
 
     // Custom helper options
-    const FLAG_EXTHELPER = 2048;
+    const FLAG_EXTHELPER = 4096;
 
     // PHP performance flags
-    const FLAG_ECHO = 4096;
+    const FLAG_ECHO = 8192;
 
-    const FLAG_BESTPERFORMANCE = 4096; // FLAG_ECHO
-    const FLAG_HANDLEBARSJS = 2040; // FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME + FLAG_SPACECTL
+    const FLAG_BESTPERFORMANCE = 8192; // FLAG_ECHO
+    const FLAG_HANDLEBARSJS = 4088; // FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME + FLAG_SPACECTL + FLAG_NAMEDARG
 
     // RegExps
     const PARTIAL_SEARCH = '/\\{\\{>[ \\t]*(.+?)[ \\t]*\\}\\}/s';
@@ -178,6 +179,7 @@ $libstr
                 'parent' => $flags & self::FLAG_PARENT,
                 'echo' => $flags & self::FLAG_ECHO,
                 'advar' => $flags & self::FLAG_ADVARNAME,
+                'namev' => $flags & self::FLAG_NAMEDARG,
                 'exhlp' => $flags & self::FLAG_EXTHELPER,
             ),
             'level' => 0,
@@ -657,9 +659,9 @@ $libstr
      */
     protected static function getVariableArray($vn) {
         $ret = Array();
-        foreach ($vn as $v) {
+        foreach ($vn as $i => $v) {
             if (is_array($v)) {
-                $ret[] = self::getVariableArray($v);
+                $ret[] = (is_string($i) ? "'$i'=>" : '') . self::getVariableArray($v);
             } else {
                 $ret[] = is_string($v) ? "'$v'" : (is_null($v) ? 'null' : $v);
             }
@@ -796,22 +798,27 @@ $libstr
      *
      * @return array Return parsed result
      *
-     * @expect Array(false, Array(Array(null))) when input Array(0,0,0,0,0,''), Array('flags' => Array('advar' => 0, 'this' => 1))
-     * @expect Array(true, Array(Array(null))) when input Array(0,0,'{{{',0,0,''), Array('flags' => Array('advar' => 0, 'this' => 1))
-     * @expect Array(false, Array(Array('a'))) when input Array(0,0,0,0,0,'a'), Array('flags' => Array('advar' => 0, 'this' => 1))
-     * @expect Array(false, Array(Array('a'), Array('b'))) when input Array(0,0,0,0,0,'a b'), Array('flags' => Array('advar' => 0, 'this' => 1))
-     * @expect Array(false, Array(Array('a'), Array('"b'), Array('c"'))) when input Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 0, 'this' => 1))
-     * @expect Array(false, Array(Array('a'), Array('"b c"'))) when input Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 1, 'this' => 1))
-     * @expect Array(false, Array(Array('a'), Array('[b'), Array('c]'))) when input Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 0, 'this' => 1))
-     * @expect Array(false, Array(Array('a'), Array('b c'))) when input Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 1, 'this' => 1))
+     * @expect Array(false, Array(Array(null))) when input Array(0,0,0,0,0,''), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 0))
+     * @expect Array(true, Array(Array(null))) when input Array(0,0,'{{{',0,0,''), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 0))
+     * @expect Array(false, Array(Array('a'))) when input Array(0,0,0,0,0,'a'), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 0))
+     * @expect Array(false, Array(Array('a'), Array('b'))) when input Array(0,0,0,0,0,'a  b'), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 0))
+     * @expect Array(false, Array(Array('a'), Array('"b'), Array('c"'))) when input Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 0))
+     * @expect Array(false, Array(Array('a'), Array('"b c"'))) when input Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 0))
+     * @expect Array(false, Array(Array('a'), Array('[b'), Array('c]'))) when input Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 0))
+     * @expect Array(false, Array(Array('a'), Array('[b'), Array('c]'))) when input Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 1))
+     * @expect Array(false, Array(Array('a'), Array('b c'))) when input Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 0))
+     * @expect Array(false, Array(Array('a'), Array('b c'))) when input Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 1))
+     * @expect Array(false, Array(Array('a'), 'q' => Array('b c'))) when input Array(0,0,0,0,0,'a q=[b c]'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 1))
+     * @expect Array(false, Array(Array('a'), Array('q=[b c'))) when input Array(0,0,0,0,0,'a [q=[b c]'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 1))
+     * @expect Array(false, Array(Array('a'), 'q' => Array('[b'), Array('c]'))) when input Array(0,0,0,0,0,'a q=[b c]'), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 1))
      */
     protected static function parseTokenArgs(&$token, &$context) {
         $vars = Array();
         trim($token[self::POS_INNERTAG]);
-        preg_match_all('/(\s*)([^\s]+)/', $token[self::POS_INNERTAG], $matched);
+        $count = preg_match_all('/(\s*)([^\s]+)/', $token[self::POS_INNERTAG], $matched);
 
         // Parse arguments and deal with "..." or [...]
-        if (is_array($matched) && $context['flags']['advar']) {
+        if (($count > 0) && $context['flags']['advar']) {
             $prev = '';
             $expect = 0;
             foreach ($matched[2] as $index => $t) {
@@ -826,13 +833,21 @@ $libstr
                     }
                     continue;
                 }
-                // continue to next match when '"' started without ending '"'
+                // continue to next match when begin with '"' without ending '"'
                 if (preg_match('/^"[^"]+$/', $t)) {
                     $prev = $t;
                     $expect = '"';
                     continue;
                 }
-                // continue to next match when '[' started without ending ']'
+
+                // continue to next match when '="' exists without ending '"'
+                if (preg_match('/="[^"]+$/', $t)) {
+                    $prev = $t;
+                    $expect = '"';
+                    continue;
+                }
+
+                // continue to next match when '[' exists without ending ']'
                 if (preg_match('/\\[[^\\]]+$/', $t)) {
                     $prev = $t;
                     $expect = ']';
@@ -841,11 +856,22 @@ $libstr
                 $vars[] = $t;
             }
         } else {
-            $vars = explode(' ', $token[self::POS_INNERTAG]);
+            $vars = ($count > 0) ? $matched[2] : explode(' ', $token[self::POS_INNERTAG]);
         }
 
         // Check for advanced variable.
-        foreach ($vars as &$var) {
+        $ret = Array();
+        $i = 0;
+        foreach ($vars as $idx => $var) {
+            if ($context['flags']['namev']) {
+                if (preg_match('/^((\\[([^\\]]+)\\])|([^=^[]+))=(.+)$/', $var, $m)) {
+                    if (!$context['flags']['advar'] && $m[3]) {
+                        $context['error'][] = "Wrong argument name as '$m[3]' in " . self::tokenString($token) . ' !';
+                    }
+                    $idx = $m[3] ? $m[3] : $m[4];
+                    $var = $m[5];
+                }
+            }
             if ($context['flags']['advar']) {
                     // foo]  Rule 1: no starting [ or [ not start from head
                 if (preg_match('/^[^\\[\\.]+[\\]\\[]/', $var)
@@ -859,10 +885,15 @@ $libstr
                     $context['error'][] = "Wrong variable naming as '$var' in " . self::tokenString($token) . ' !';
                 }
             }
-            $var = self::fixVariable($var, $context);
+            if (is_string($idx)) {
+                $ret[$idx] = self::fixVariable($var, $context);
+            } else {
+                $ret[$i] = self::fixVariable($var, $context);
+                $i++;
+            }
         }
 
-        return Array(($token[self::POS_BEGINTAG] === '{{{'), $vars);
+        return Array(($token[self::POS_BEGINTAG] === '{{{'), $ret);
     }
 
     /**
@@ -1014,6 +1045,20 @@ $libstr
     }
 
     /**
+     * Internal method used by compile(). Show error message when named arguments appear without custom helper.
+     *
+     * @param array $token detected handlebars {{ }} token
+     * @param array $context current scaning context
+     * @param boolean $named is named arguments
+     *
+     */
+    public static function noNamedArguments($token, &$context, $named) {
+        if ($named) {
+            $context['error'][] = 'do not support name=value in ' . self::tokenString($token) . '!';
+        }
+    }
+
+    /**
      * Internal method used by compile(). Return compiled PHP code partial for a handlebars token.
      *
      * @param array $token detected handlebars {{ }} token
@@ -1025,6 +1070,7 @@ $libstr
      */
     public static function compileToken(&$token, &$context) {
         list($raw, $vars) = self::parseTokenArgs($token, $context);
+        $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;
 
         // Handle space control.
         if ($token[self::POS_LSPACECTL]) {
@@ -1036,16 +1082,19 @@ $libstr
         }
 
         if ($ret = self::compileSection($token, $context, $vars)) {
+            self::noNamedArguments($token, $context, $named);
             return $ret;
         }
 
-        if ($ret = self::compileCustomHelper($context, $vars, $raw)) {
+        if ($ret = self::compileCustomHelper($context, $vars, $raw, $named)) {
             return $ret;
         }
 
         if ($ret = self::compileElse($context, $vars)) {
             return $ret;
         }
+
+        self::noNamedArguments($token, $context, $named);
 
         return self::compileVariable($context, $vars, $raw);
     }
@@ -1185,19 +1234,20 @@ $libstr
      * @param array $context current scaning context
      * @param array $vars parsed arguments list
      * @param boolean $raw is this {{{ token or not
+     * @param boolean $named is named arguments or not
      *
      * @return string|null Return compiled code segment for the token when the token is custom helper
      *
      * @codeCoverageIgnore
      */
-    protected static function compileCustomHelper(&$context, &$vars, $raw) {
+    protected static function compileCustomHelper(&$context, &$vars, $raw, $named) {
         $fn = $raw ? 'raw' : $context['ops']['enc'];
         if (isset($context['helpers'][$vars[0][0]])) {
             $ch = array_shift($vars);
             foreach ($vars as $var) {
                 self::addJsonSchema($context, $var);
             }
-            return $context['ops']['seperator'] . self::getFuncName($context, 'ch') . "('$ch[0]', " . self::getVariableArray($vars) . ", '$fn', \$cx, \$in){$context['ops']['seperator']}";
+            return $context['ops']['seperator'] . self::getFuncName($context, 'ch') . "('$ch[0]', " . self::getVariableArray($vars) . ", '$fn', \$cx, \$in" . ($named ? ', true' : '') . "){$context['ops']['seperator']}";
         }
     }
 
@@ -1633,6 +1683,7 @@ class LCRun2 {
      * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
      * @param array $cx render time context
      * @param array $in input data with current scope
+     * @param boolean $named input arguments are named
      *
      * @return string The rendered string of the token
      *
@@ -1640,13 +1691,13 @@ class LCRun2 {
      * @expect '=&amp;=' when input 'a', Array(Array(null)), 'enc', Array('helpers' => Array('a' => function ($i) {return "=$i=";})), '&'
      * @expect '=&#x27;=' when input 'a', Array(Array(null)), 'encq', Array('helpers' => Array('a' => function ($i) {return "=$i=";})), '\''
      */
-    public static function ch($ch, $vars, $op, &$cx, $in) {
+    public static function ch($ch, $vars, $op, &$cx, $in, $named = false) {
         $args = Array();
-        foreach ($vars as $v) {
-            $args[] = self::raw($v, $cx, $in);
+        foreach ($vars as $i => $v) {
+            $args[$i] = self::raw($v, $cx, $in);
         }
 
-        $r = call_user_func_array($cx['helpers'][$ch], $args);
+        $r = call_user_func_array($cx['helpers'][$ch], $named ? Array($args) : $args);
         switch ($op) {
             case 'enc': 
                 return htmlentities($r, ENT_QUOTES, 'UTF-8');

@@ -48,7 +48,7 @@ wget https://raw.github.com/zordius/lightncandy/master/src/lightncandy.php --no-
 
 **UPGRADE NOTICE**
 
-* Due to big change of variable name handling, the rendering support class LCRun is renamed to LCRun2. If you compile templates as none standalone php code by lightncandy v0.9 or before, you should compile these templates again. Or, you may run into 'LCRun not found' error when you execute these old rendering functions.
+* Due to big change of variable name handling, the rendering support class LCRun is renamed to LCRun2. If you compile templates as none standalone php code by lightncandy v0.9 or before, you should compile these templates again. Or, you may run into `Class 'LCRun' not found` error when you execute these old rendering functions.
 
 * Standalone templates compiled by older lightncandy can be executed safe when you upgrade to any version of lightncandy.
 
@@ -140,9 +140,10 @@ Default is to compile the template as PHP which can be run as fast as possible, 
 * `FLAG_PARENT` : support `{{../var}}` in temlpate. Otherwise, `{{../var}}` will cause template error.
 * `FLAG_JSQUOTE` : encode `'` to `&#x27;` . Otherwise, `'` will encoded as `&#039;` .
 * `FLAG_ADVARNAME` : support `{{foo.[0].[#te#st].bar}}` style advanced variable naming in temlpate.
+* `FLAG_NAMEDARG` : support named arguments for custom helper `{{helper name1=val1 nam2=val2 ...}}.
 * `FLAG_EXTHELPER` : do not including custom helper codes into compiled PHP codes. This reduce the code size, but you need to take care of your helper functions when rendering. If you forget to include required functions when execute rendering function, `undefined function` runtime error will be triggered. **Note: Anonymouse functions will always be placed in generated codes**
 * `FLAG_SPACECTL` : support space control `{{~ }}` or `{{ ~}}` in template. Otherwise, `{{~ }}` or `{{ ~}}` will cause template error. 
-* `FLAG_HANDLEBARSJS` : align with handlebars.js behaviors, same as `FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME`.
+* `FLAG_HANDLEBARSJS` : align with handlebars.js behaviors, same as `FLAG_JSTRUE` + `FLAG_JSOBJECT` + `FLAG_THIS` + `FLAG_WITH` + `FLAG_PARENT` + `FLAG_JSQUOTE` + `FLAG_ADVARNAME` + `FLAG_NAMEDARG`.
 * `FLAG_ECHO` (experimental): compile to `echo 'a', $b, 'c';` to improve performance. This will slow down rendering when the template and data are simple, but will improve 1% ~ 7% when the data is big and looping in the template.
 * `FLAG_BESTPERFORMANCE` : same as `FLAG_ECHO` now. This flag may be changed base on performance testing result in the future.
 
@@ -213,25 +214,38 @@ LightnCandy::compile($template, Array(
 ));
 ```
 
-The input parameters are processed by LightnCandy automatically, you do not need to worry about variable name processing or current context. You can also use double quoted string as input, for example:
+Custom Helper Interface
+-----------------------
+
+The input arguments are processed by LightnCandy automatically, you do not need to worry about variable name processing or current context. You can also use double quoted string as input, for example:
 
 ```
-{{{helper name}}}           // This send processed {{name}} into the helper
-{{{helper ../name}}}        // This send processed {{../name}} into the helper
+{{{helper name}}}           // This send processed {{{name}}} into the helper
+{{{helper ../name}}}        // This send processed {{{../name}}} into the helper
 {{{helper "Test"}}}         // This send the string "Test" into the helper
 {{helper "Test"}}           // This send the string "Test" into the helper and HTML encode the helper result
 {{{helper "Test" ../name}}} // This send string "Test" as first param,
-                            // and processed {{../name}} as second param into the helper
+                            // and processed {{{../name}}} as second param into the helper
 ```
 
-When your custom helper be executed from {{ }} , the return value will be HTML encoded. You may execute your helper by {{{ }}} , then the original helper return value will be output directly.
+The return value of your custom helper should be a string. When your custom helper be executed from {{ }} , the return value will be HTML encoded. You may execute your helper by {{{ }}} , then the original helper return value will be output directly.
+
+When you pass arguments as `name=value` pairs, The input to your custom helper will turn into only one associative array. for example when your custom helper is `function ($input) {...}`:
+
+```
+{{{helper name=value}}        // This send processed {{{value}}} into $input['name']
+{{{helper name="value"}}      // This send the string "value" into $input['name']
+{{{helper [na me]="value"}}   // You can still protect the name with [ ]
+                              // so you get $input['na me'] as string "value"
+{{{helper url name="value"}}  // This send processed {{{url}}}  into $input[0]
+                              // and the string "value" into $input['name']
 
 Unsupported Feature (so far)
 ----------------------------
 
 * [NEVER] `{{foo/bar}}` style variable name, it is deprecated in offical handlebars.js document.
 * [Plan to support] set delimiter (change delimiter from `{{ }}` to custom string, for example `<% then %>`)
-* [Possible] input as Object and methods (now only accept associated array data structure)
+* [Possible] input as Object and methods (now only accept associative array data structure)
 
 Lightncandy Design Concept
 --------------------------
@@ -247,6 +261,7 @@ Suggested Handlebars Template Practices
 * use `{{{val}}}` when you do not require HTML encoded output on the value. It is better performance, too.
 * Prevent to use custom helper if you want to reuse your template in different language. Or, you may need to implement different versions of helper in different languages.
 * For best performance, you should only use 'compile on demand' pattern only when you in development stage. Before you go to production, you can `LightnCandy::compile()` on all your templates, save all generated PHP codes, and only deploy these generated files. You may need to maintain a build process for this. Adding cache logic on 'compile on demand' may be good, but it is not the best solution. If you want to build some library or framework based on LightnCandy, think about this scenario.
+* Recompile your temlpates when you upgrade LightnCandy every time.
 
 Detail Feature list
 -------------------

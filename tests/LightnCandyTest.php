@@ -283,28 +283,43 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $method = new ReflectionMethod('LightnCandy', 'parseTokenArgs');
         $method->setAccessible(true);
         $this->assertEquals(Array(false, Array(Array(null))), $method->invoke(null,
-            Array(0,0,0,0,0,''), Array('flags' => Array('advar' => 0, 'this' => 1))
+            Array(0,0,0,0,0,''), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 0))
         ));
         $this->assertEquals(Array(true, Array(Array(null))), $method->invoke(null,
-            Array(0,0,'{{{',0,0,''), Array('flags' => Array('advar' => 0, 'this' => 1))
+            Array(0,0,'{{{',0,0,''), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 0))
         ));
         $this->assertEquals(Array(false, Array(Array('a'))), $method->invoke(null,
-            Array(0,0,0,0,0,'a'), Array('flags' => Array('advar' => 0, 'this' => 1))
+            Array(0,0,0,0,0,'a'), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 0))
         ));
         $this->assertEquals(Array(false, Array(Array('a'), Array('b'))), $method->invoke(null,
-            Array(0,0,0,0,0,'a b'), Array('flags' => Array('advar' => 0, 'this' => 1))
+            Array(0,0,0,0,0,'a  b'), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 0))
         ));
         $this->assertEquals(Array(false, Array(Array('a'), Array('"b'), Array('c"'))), $method->invoke(null,
-            Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 0, 'this' => 1))
+            Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 0))
         ));
         $this->assertEquals(Array(false, Array(Array('a'), Array('"b c"'))), $method->invoke(null,
-            Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 1, 'this' => 1))
+            Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 0))
         ));
         $this->assertEquals(Array(false, Array(Array('a'), Array('[b'), Array('c]'))), $method->invoke(null,
-            Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 0, 'this' => 1))
+            Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 0))
+        ));
+        $this->assertEquals(Array(false, Array(Array('a'), Array('[b'), Array('c]'))), $method->invoke(null,
+            Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 1))
         ));
         $this->assertEquals(Array(false, Array(Array('a'), Array('b c'))), $method->invoke(null,
-            Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 1, 'this' => 1))
+            Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 0))
+        ));
+        $this->assertEquals(Array(false, Array(Array('a'), Array('b c'))), $method->invoke(null,
+            Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 1))
+        ));
+        $this->assertEquals(Array(false, Array(Array('a'), 'q' => Array('b c'))), $method->invoke(null,
+            Array(0,0,0,0,0,'a q=[b c]'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 1))
+        ));
+        $this->assertEquals(Array(false, Array(Array('a'), Array('q=[b c'))), $method->invoke(null,
+            Array(0,0,0,0,0,'a [q=[b c]'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 1))
+        ));
+        $this->assertEquals(Array(false, Array(Array('a'), 'q' => Array('[b'), Array('c]'))), $method->invoke(null,
+            Array(0,0,0,0,0,'a q=[b c]'), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 1))
         ));
     }
     /**
