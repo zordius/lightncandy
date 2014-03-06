@@ -1762,8 +1762,8 @@ class LCRun2 {
             $args[$i] = self::raw($v, $cx, $in);
         }
 
-        $r = call_user_func($cx['helpers'][$ch], $in, $args);
-        if (is_null($r) || $r === false) {
+        $r = call_user_func($cx['blockhelpers'][$ch], $in, $args);
+        if (is_null($r) || ($r === false)) {
             return '';
         }
 
