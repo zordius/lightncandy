@@ -214,25 +214,38 @@ LightnCandy::compile($template, Array(
 ));
 ```
 
-The input parameters are processed by LightnCandy automatically, you do not need to worry about variable name processing or current context. You can also use double quoted string as input, for example:
+Custom Helper interface
+-----------------------
+
+The input arguments are processed by LightnCandy automatically, you do not need to worry about variable name processing or current context. You can also use double quoted string as input, for example:
 
 ```
-{{{helper name}}}           // This send processed {{name}} into the helper
-{{{helper ../name}}}        // This send processed {{../name}} into the helper
+{{{helper name}}}           // This send processed {{{name}}} into the helper
+{{{helper ../name}}}        // This send processed {{{../name}}} into the helper
 {{{helper "Test"}}}         // This send the string "Test" into the helper
 {{helper "Test"}}           // This send the string "Test" into the helper and HTML encode the helper result
 {{{helper "Test" ../name}}} // This send string "Test" as first param,
-                            // and processed {{../name}} as second param into the helper
+                            // and processed {{{../name}}} as second param into the helper
 ```
 
-When your custom helper be executed from {{ }} , the return value will be HTML encoded. You may execute your helper by {{{ }}} , then the original helper return value will be output directly.
+The return value of your custom helper should be a string. When your custom helper be executed from {{ }} , the return value will be HTML encoded. You may execute your helper by {{{ }}} , then the original helper return value will be output directly.
+
+When you pass arguments as `name=value` pairs, The input to your custom helper will turn into only one associative array. for example when your custom helper is `function ($input) {...}`:
+
+```
+{{{helper name=value}}        // This send processed {{{value}}} into $input['name']
+{{{helper name="value"}}      // This send the string "value" into $input['name']
+{{{helper [na me]="value"}}   // You can still protect the name with [ ]
+                              // so you get $input['na me'] as string "value"
+{{{helper url name="value"}}  // This send processed {{{url}}}  into $input[0]
+                              // and the string "value" into $input['name']
 
 Unsupported Feature (so far)
 ----------------------------
 
 * [NEVER] `{{foo/bar}}` style variable name, it is deprecated in offical handlebars.js document.
 * [Plan to support] set delimiter (change delimiter from `{{ }}` to custom string, for example `<% then %>`)
-* [Possible] input as Object and methods (now only accept associated array data structure)
+* [Possible] input as Object and methods (now only accept associative array data structure)
 
 Lightncandy Design Concept
 --------------------------
