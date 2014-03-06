@@ -214,7 +214,7 @@ LightnCandy::compile($template, Array(
 ));
 ```
 
-Custom Helper interface
+Custom Helper Interface
 -----------------------
 
 The input arguments are processed by LightnCandy automatically, you do not need to worry about variable name processing or current context. You can also use double quoted string as input, for example:
