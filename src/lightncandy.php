@@ -1767,7 +1767,7 @@ class LCRun2 {
             return '';
         }
 
-        $cx['scopes'][] = $r;
+        $cx['scopes'][] = $in;
         $ret = $cb($cx, $r);
         array_pop($cx['scopes']);
         return $ret;
