@@ -1138,8 +1138,34 @@ $libstr
         case '!':
             return $context['ops']['seperator'];
         case '#':
+            $r = self::compileBlockCustomHelper($context, $vars);
+            if ($r) {
+                return $r;
+            }
             return self::compileBlockBegin($context, $vars);
         }
+    }
+
+    /**
+     * Internal method used by compile(). Return compiled PHP code partial for a handlebars block begin token.
+     *
+     * @param array $context current scaning context
+     * @param array $vars parsed arguments list
+     *
+     * @return string Return compiled code segment for the token
+     *
+     * @codeCoverageIgnore
+     */
+    protected static function compileBlockCustomHelper(&$context, $vars) {
+        if (!isset($context['blockhelpers'][$vars[0][0]])) {
+            return;
+        }
+        $context['vars'][] = $vars[0];
+        $context['stack'][] = $vars[0][0];
+        $context['stack'][] = '#';
+        $ch = array_shift($vars);
+        $v = self::getVariableArray($vars);
+        return $context['ops']['seperator'] . self::getFuncName($context, 'bch') . "('$ch[0]', $v, \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
     /**
@@ -1717,6 +1743,34 @@ class LCRun2 {
             default:
                 return $r;
         }
+    }
+
+    /**
+     * LightnCandy runtime method for block custom helpers.
+     *
+     * @param string $ch the name of custom helper to be executed
+     * @param array $vars variable names for helpers
+     * @param array $cx render time context
+     * @param array $in input data with current scope
+     * @param function $cb callback function to render child context
+     *
+     * @return string The rendered string of the token
+     */
+    public static function bch($ch, $vars, &$cx, $in, $cb) {
+        $args = Array();
+        foreach ($vars as $i => $v) {
+            $args[$i] = self::raw($v, $cx, $in);
+        }
+
+        $r = call_user_func($cx['helpers'][$ch], $in, $args);
+        if (is_null($r) || $r === false) {
+            return '';
+        }
+
+        $cx['scopes'][] = $r;
+        $ret = $cb($cx, $r);
+        array_pop($cx['scopes']);
+        return $ret;
     }
 }
 ?>
