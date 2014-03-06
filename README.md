@@ -239,6 +239,7 @@ When you pass arguments as `name=value` pairs, The input to your custom helper w
                               // so you get $input['na me'] as string "value"
 {{{helper url name="value"}}  // This send processed {{{url}}}  into $input[0]
                               // and the string "value" into $input['name']
+```
 
 Unsupported Feature (so far)
 ----------------------------
