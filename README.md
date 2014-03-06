@@ -119,8 +119,7 @@ Welcome Peter , You win $1000 dollars!!
 CONSTANTS
 ---------
 
-You can apply more flags by running `LightnCandy::compile($php, $options)`
-for example:
+You can apply more flags by running `LightnCandy::compile($php, $options)` , for example:
 
 ```php
 LightnCandy::compile($template, Array(
@@ -194,17 +193,17 @@ LightnCandy::compile($template, Array(
         //    Tempalte: {{myClass::myStaticMethod ....}}
         'myClass::myStaticMethod',
 
-        // 3. You may also provide an alias for helper name
+        // 3. You may also provide an alias name for helper function
         //    This help you to mapping different function to a prefered helper name
         //    Tempalte: {{helper_name ....}}
         'helper_name' => 'my_other_helper',
 
-        // 4. Alias also works well for static call from a class
+        // 4. Alias also works well for static call of a class
         //    This help you to mapping different function to a prefered helper name
         //    Tempalte: {{helper_name2 ....}}
         'helper_name2' => 'myClass::func',
 
-        // 5. Anonymouse function should be provided with helper name
+        // 5. Anonymouse function should be provided with alias
         //    The function will be included in generaed code always
         //    Tempalte: {{helper_name3 ....}}
         'helper_name3' => function ($arg1, $arg2) {
@@ -230,7 +229,7 @@ The input arguments are processed by LightnCandy automatically, you do not need 
 
 The return value of your custom helper should be a string. When your custom helper be executed from {{ }} , the return value will be HTML encoded. You may execute your helper by {{{ }}} , then the original helper return value will be output directly.
 
-When you pass arguments as `name=value` pairs, The input to your custom helper will turn into only one associative array. for example when your custom helper is `function ($input) {...}`:
+When you pass arguments as `name=value` pairs, The input to your custom helper will turn into only one associative array. For example, when your custom helper is `function ($input) {...}`:
 
 ```
 {{{helper name=value}}        // This send processed {{{value}}} into $input['name']
