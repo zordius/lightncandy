@@ -1166,7 +1166,7 @@ $libstr
             $context['stack'][] = implode('-', $vars[0]);
             $context['stack'][] = '^';
             self::noNamedArguments($token, $context, $named);
-            return "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'isec') . "($v, \$cx, \$in)){$context['ops']['cnd_then']}";
+            return "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'isec') . "($v)){$context['ops']['cnd_then']}";
         case '/':
             return self::compileBlockEnd($token, $context, $vars);
         case '!':
@@ -1275,12 +1275,12 @@ $libstr
             $context['stack'][] = 'if';
             return $context['usedFeature']['parent'] 
                 ? $context['ops']['seperator'] . self::getFuncName($context, 'ifv') . "($v, \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
-                : "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'ifvar') . "($v, \$cx, \$in)){$context['ops']['cnd_then']}";
+                : "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'ifvar') . "($v)){$context['ops']['cnd_then']}";
         case 'unless':
             $context['stack'][] = 'unless';
             return $context['usedFeature']['parent']
                 ? $context['ops']['seperator'] . self::getFuncName($context, 'unl') . "($v, \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
-                : "{$context['ops']['cnd_start']}(!" . self::getFuncName($context, 'ifvar') . "($v, \$cx, \$in)){$context['ops']['cnd_then']}";
+                : "{$context['ops']['cnd_start']}(!" . self::getFuncName($context, 'ifvar') . "($v)){$context['ops']['cnd_then']}";
         case 'each':
             $each = 'true';
             array_shift($vars);
@@ -1319,7 +1319,7 @@ $libstr
             foreach ($vars as $var) {
                 self::addJsonSchema($context, $var);
             }
-            return $context['ops']['seperator'] . self::getFuncName($context, 'ch') . "('$ch[0]', " . self::getVariableNames($vars, $context) . ", '$fn', \$cx, \$in" . ($named ? ', true' : '') . "){$context['ops']['seperator']}";
+            return $context['ops']['seperator'] . self::getFuncName($context, 'ch') . "('$ch[0]', " . self::getVariableNames($vars, $context) . ", '$fn', \$cx" . ($named ? ', true' : '') . "){$context['ops']['seperator']}";
         }
     }
 
@@ -1355,7 +1355,7 @@ $libstr
         self::addJsonSchema($context, $vars[0]);
         $v = self::getVariableName($vars[0], $context);
         if ($context['flags']['jsobj'] || $context['flags']['jstrue']) {
-            return $context['ops']['seperator'] . self::getFuncName($context, $raw ? 'raw' : $context['ops']['enc']) . "($v, \$cx, \$in){$context['ops']['seperator']}";
+            return $context['ops']['seperator'] . self::getFuncName($context, $raw ? 'raw' : $context['ops']['enc']) . "($v, \$cx){$context['ops']['seperator']}";
         } else {
             return $raw ? "{$context['ops']['seperator']}$v{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlentities($v, ENT_QUOTES, 'UTF-8'){$context['ops']['seperator']}";
         }
