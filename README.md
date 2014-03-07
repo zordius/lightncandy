@@ -313,13 +313,6 @@ Unsupported Feature (so far)
 * [Plan to support] set delimiter (change delimiter from `{{ }}` to custom string, for example `<% then %>`)
 * [Possible] input as Object and methods (now only accept associative array data structure)
 
-Lightncandy Design Concept
---------------------------
-
-* Do not OO everywhere. Single inc file, keep it simple and fast.
-* Simulate all handlebars/javascript behavior, including true, false, Object, Array output behavior.
-* Make almost everything happened in compile time, including partial support.
-
 Suggested Handlebars Template Practices
 ---------------------------------------
 
