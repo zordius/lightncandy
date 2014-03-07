@@ -48,7 +48,7 @@ wget https://raw.github.com/zordius/lightncandy/master/src/lightncandy.php --no-
 
 **UPGRADE NOTICE**
 
-* Due to big change of variable name handling, the rendering support class LCRun is renamed to LCRun2. If you compile templates as none standalone php code by lightncandy v0.9 or before, you should compile these templates again. Or, you may run into `Class 'LCRun' not found` error when you execute these old rendering functions.
+* Due to big change of variable name handling, the rendering support class `LCRun` is renamed to `LCRun2`. If you compile templates as none standalone php code by lightncandy v0.9 or before, you should compile these templates again. Or, you may run into `Class 'LCRun' not found` error when you execute these old rendering functions.
 
 * Standalone templates compiled by older lightncandy can be executed safe when you upgrade to any version of lightncandy.
 
