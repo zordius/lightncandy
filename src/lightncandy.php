@@ -642,33 +642,6 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Get variable names array
-     *
-     * @param array $vn variable name.
-     *
-     * @return string variable name array as string presentation.
-     *
-     * @expect 'Array(null)' when input Array(null)
-     * @expect "Array(0)" when input Array(0)
-     * @expect "Array('a')" when input Array('a')
-     * @expect "Array('b','c')" when input Array('b','c')
-     * @expect "Array(null,'n',0)" when input Array(null, 'n', 0)
-     * @expect "Array(Array('a','b'),'c')" when input Array(Array('a','b'),'c')
-     */
-    protected static function getVariableArray($vn) {
-        $ret = Array();
-        foreach ($vn as $i => $v) {
-            if (is_array($v)) {
-                $ret[] = (is_string($i) ? "'$i'=>" : '') . self::getVariableArray($v);
-            } else {
-                $ret[] = is_string($v) ? "'$v'" : (is_null($v) ? 'null' : $v);
-            }
-        }
-
-        return 'Array(' . implode(',', $ret) . ')';
-    }
-
-    /**
      * Internal method used by compile(). Get variable names from current context
      *
      * @param array $vn variable name.
@@ -753,7 +726,7 @@ $libstr
      * @expect Array(2, '[a]', 'b') when input '../../[a].b', Array('flags' => Array('advar' => 0, 'this' => 0))
      * @expect Array(2, 'a', 'b') when input '../../[a].b', Array('flags' => Array('advar' => 1, 'this' => 0))
      */
-    protected static function fixVariable($v, $context) {
+    protected static function fixVariable($v, &$context) {
         $ret = Array();
         $levels = 0;
 
@@ -765,6 +738,10 @@ $libstr
 
         if ($levels) {
             $ret[] = $levels;
+            if (!$context['flags']['parent']) {
+                $context['error'][] = 'do not support {{../var}}, you should do compile with LightnCandy::FLAG_PARENT flag';
+            }
+            return $context['usedFeature']['parent']++;
         }
 
         if ($context['flags']['advar'] && preg_match('/\\]/', $v)) {
@@ -1105,14 +1082,6 @@ $libstr
         if (isset($context['helpers'][$vars[0][0]])) {
             return $context['usedFeature']['helper']++;
         }
-
-        // validate parent context.
-        if (preg_match('/\\.\\.(\\/.+)*/', $vars[0][0])) {
-            if (!$context['flags']['parent']) {
-                $context['error'][] = 'do not support {{../var}}, you should do compile with LightnCandy::FLAG_PARENT flag';
-            }
-            return $context['usedFeature']['parent']++;
-        }
     }
 
     /**
@@ -1218,7 +1187,7 @@ $libstr
             return;
         }
         $context['vars'][] = $vars[0];
-        $context['stack'][] = self::getVariableName($vars[0], $context);
+        $context['stack'][] = implode('-', $vars[0]);
         $context['stack'][] = '#';
         $ch = array_shift($vars);
         $v = self::getVariableNames($vars, $context);
@@ -1264,7 +1233,7 @@ $libstr
                 case '#':
                 case '^':
                     $pop2 = array_pop($context['stack']);
-                    if (!$each && ($pop2 !== self::getVariableName($vars[0], $context))) {
+                    if (!$each && ($pop2 !== implode('-', $vars[0]))) {
                         $context['error'][] = 'Unexpect token ' . self::tokenString($token) . " ! Previous token $pop$pop2 is not closed";
                         return;
                     }
@@ -1317,7 +1286,7 @@ $libstr
 
         $v = self::getVariableName($vars[0], $context);
         $context['vars'][] = $vars[0];
-        $context['stack'][] = $v;
+        $context['stack'][] = implode('-', $vars[0]);
         $context['stack'][] = '#';
         return $context['ops']['seperator'] . self::getFuncName($context, 'sec') . "($v, \$cx, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
