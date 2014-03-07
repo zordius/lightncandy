@@ -1092,7 +1092,7 @@ $libstr
             $token[self::POS_RSPACE] = '';
         }
 
-        if ($ret = self::compileSection($token, $context, $vars)) {
+        if ($ret = self::compileSection($token, $context, $vars, $named)) {
             return $ret;
         }
 
@@ -1115,12 +1115,13 @@ $libstr
      * @param array $token detected handlebars {{ }} token
      * @param array $context current scaning context
      * @param array $vars parsed arguments list
+     * @param boolean $named is named arguments or not
      *
      * @return string|null Return compiled code segment for the token when the token is section
      *
      * @codeCoverageIgnore
      */
-    protected static function compileSection(&$token, &$context, $vars) {
+    protected static function compileSection(&$token, &$context, $vars, $named) {
         switch ($token[self::POS_OP]) {
         case '^':
             $v = self::getVariableArray($vars[0]);
