@@ -250,8 +250,8 @@ $libstr
      * @expect Array() when input Array(), Array()
      * @expect Array('flags' => Array('exhlp' => 1)) when input Array('flags' => Array('exhlp' => 1)), Array('helpers' => Array('abc'))
      * @expect Array('error' => Array('Can not find custom helper function defination abc() !'), 'flags' => Array('exhlp' => 0)) when input Array('error' => Array(), 'flags' => Array('exhlp' => 0)), Array('helpers' => Array('abc'))
-     * @expect Array('flags' => Array('exhlp' => 1), 'helpers' => Array('LCRun2::val' => 'LCRun2::val')) when input Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('LCRun2::val'))
-     * @expect Array('flags' => Array('exhlp' => 1), 'helpers' => Array('test' => 'LCRun2::val')) when input Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('test' => 'LCRun2::val'))
+     * @expect Array('flags' => Array('exhlp' => 1), 'helpers' => Array('LCRun2::raw' => 'LCRun2::raw')) when input Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('LCRun2::raw'))
+     * @expect Array('flags' => Array('exhlp' => 1), 'helpers' => Array('test' => 'LCRun2::raw')) when input Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('test' => 'LCRun2::raw'))
      */
     protected static function buildHelperTable($context, $options, $tname = 'helpers') {
         if (isset($options[$tname]) && is_array($options[$tname])) {
@@ -664,6 +664,15 @@ $libstr
      * @param array $context Current context of compiler progress.
      *
      * @return array variable names
+     *
+     * @expect '$in' when input Array(null), Array()
+     * @expect '$cx[\'sp_vars\'][\'index\']' when input Array('@index'), Array()
+     * @expect '$cx[\'sp_vars\'][\'key\']' when input Array('@key'), Array()
+     * @expect 'null' when input Array(3,Array(null)), Array(), Array('scopes'=>Array())
+     * @expect '\'a\'' when input Array('"a"'), Array(), Array()
+     * @expect '(is_array($in) ? $in[\'a\'] : null)' when input Array('a'), Array()
+     * @expect '(is_array($cx[\'scopes\'][0]) ? $cx[\'scopes\'][0][\'a\'] : null)' when input Array(1,'a'), Array('vars'=>Array(1))
+     * @expect '(is_array($cx[\'scopes\'][1]) ? $cx[\'scopes\'][1][\'a\'] : null)' when input Array(1,'a'), Array('vars'=>Array(1,2))
      */
     protected static function getVariableName($var, $context) {
         $levels = 0;
@@ -741,7 +750,7 @@ $libstr
             if (!$context['flags']['parent']) {
                 $context['error'][] = 'do not support {{../var}}, you should do compile with LightnCandy::FLAG_PARENT flag';
             }
-            return $context['usedFeature']['parent']++;
+            $context['usedFeature']['parent']++;
         }
 
         if ($context['flags']['advar'] && preg_match('/\\]/', $v)) {
@@ -1149,25 +1158,6 @@ $libstr
      * @return string|null Return compiled code segment for the token when the token is section
      *
      * @codeCoverageIgnore
-     *
-     * @expect Array() when input Array(null), Array(), Array()
-     * @expect Array('a') when input Array(null), Array(), Array('a')
-     * @expect null when input Array('a'), Array(), Array()
-     * @expect 'a' when input Array('"a"'), Array(), Array()
-     * @expect 'a' when input Array('@index'), Array('sp_vars' => Array('index' => 'a')), Array()
-     * @expect 'b' when input Array('@key'), Array('sp_vars' => Array('key' => 'b')), Array()
-     * @expect 0 when input Array('a'), Array(), Array('a' => 0)
-     * @expect false when input Array('a'), Array(), Array('a' => false)
-     * @expect null when input Array('a','b'), Array(), Array('a' => 0)
-     * @expect null when input Array('a','b'), Array(), Array()
-     * @expect 'Q' when input Array('a','b'), Array(), Array('a' => Array('b' => 'Q'))
-     * @expect '' when input Array(1), Array('scopes' => Array()), Array()
-     * @expect 'Y' when input Array(1), Array('scopes' => Array('Y')), Array()
-     * @expect null when input Array(1, 'a'), Array('scopes' => Array('Y')), Array()
-     * @expect 'q' when input Array(1, 'a'), Array('scopes' => Array(Array('a' => 'q'))), Array()
-     * @expect 'o' when input Array(2, 'a'), Array('scopes' => Array(Array('a' => 'o'), Array('a' => 'p'))), Array()
-     * @expect 'x' when input Array(3), Array('scopes' => Array('x', Array('a' => 'q'), Array('b' => 'r'))), Array()
-     * @expect 'o' when input Array(3, 'c'), Array('scopes' => Array(Array('c' => 'o'), Array('a' => 'q'), Array('b' => 'r'))), Array()
      */
     protected static function compileSection(&$token, &$context, $vars, $named) {
         switch ($token[self::POS_OP]) {
@@ -1524,16 +1514,15 @@ class LCRun2 {
      *
      * @param array $var variable name to get the htmlencoded value
      * @param array $cx render time context
-     * @param array $in input data with current scope
      *
      * @return string The htmlencoded value of the specified variable
      *
-     * @expect 'a' when input Array(null), Array(), 'a'
-     * @expect 'a&amp;b' when input Array(null), Array(), 'a&b'
-     * @expect 'a&#039;b' when input Array(null), Array(), 'a\'b'
+     * @expect 'a' when input 'a', Array()
+     * @expect 'a&amp;b' when input 'a&b', Array()
+     * @expect 'a&#039;b' when input 'a\'b', Array()
      */
-    public static function enc($var, $cx, $in) {
-        return htmlentities(self::raw($var, $cx, $in), ENT_QUOTES, 'UTF-8');
+    public static function enc($var, $cx) {
+        return htmlentities(self::raw($var, $cx), ENT_QUOTES, 'UTF-8');
     }
 
     /**
@@ -1541,16 +1530,15 @@ class LCRun2 {
      *
      * @param array $var variable name to get the htmlencoded value
      * @param array $cx render time context
-     * @param array $in input data with current scope
      *
      * @return string The htmlencoded value of the specified variable
      *
-     * @expect 'a' when input Array(null), Array(), 'a'
-     * @expect 'a&amp;b' when input Array(null), Array(), 'a&b'
-     * @expect 'a&#x27;b' when input Array(null), Array(), 'a\'b'
+     * @expect 'a' when input 'a', Array()
+     * @expect 'a&amp;b' when input 'a&b', Array()
+     * @expect 'a&#x27;b' when input 'a\'b', Array()
      */
-    public static function encq($var, $cx, $in) {
-        return preg_replace('/&#039;/', '&#x27;', htmlentities(self::raw($var, $cx, $in), ENT_QUOTES, 'UTF-8'));
+    public static function encq($var, $cx) {
+        return preg_replace('/&#039;/', '&#x27;', htmlentities(self::raw($var, $cx), ENT_QUOTES, 'UTF-8'));
     }
 
     /**
@@ -1564,19 +1552,18 @@ class LCRun2 {
      *
      * @return string The rendered string of the section
      *
-     * @expect '' when input Array(null), Array(), false, false, function () {return 'A';}
-     * @expect '' when input Array(null), Array(), null, false, function () {return 'A';}
-     * @expect 'A' when input Array(null), Array(), true, false, function () {return 'A';}
-     * @expect 'A' when input Array(null), Array(), 0, false, function () {return 'A';}
-     * @expect '-a=' when input Array(null), Array(), Array('a'), false, function ($c, $i) {return "-$i=";}
-     * @expect '-a=-b=' when input Array(null), Array(), Array('a', 'b'), false, function ($c, $i) {return "-$i=";}
-     * @expect '' when input Array(null), Array(), 'abc', true, function ($c, $i) {return "-$i=";}
-     * @expect '-b=' when input Array(null), Array(), Array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
-     * @expect '' when input Array('b'), Array(), Array('a' => 'b'), true, function ($c, $i) {return "-{$i['a']}=";}
-     * @expect 0 when input Array('a'), Array(), Array('a' => 'b'), false, function ($c, $i) {return count($i);}
-     * @expect '1' when input Array('a'), Array(), Array('a' => 1), false, function ($c, $i) {return print_r($i, true);}
-     * @expect '0' when input Array('a'), Array(), Array('a' => 0), false, function ($c, $i) {return print_r($i, true);}
-     * @expect '{"b":"c"}' when input Array('a'), Array(), Array('a' => Array('b' => 'c')), false, function ($c, $i) {return json_encode($i);}
+     * @expect '' when input false, Array(), false, false, function () {return 'A';}
+     * @expect '' when input null, Array(), null, false, function () {return 'A';}
+     * @expect 'A' when input true, Array(), true, false, function () {return 'A';}
+     * @expect 'A' when input 0, Array(), 0, false, function () {return 'A';}
+     * @expect '-a=' when input Array('a'), Array(), Array('a'), false, function ($c, $i) {return "-$i=";}
+     * @expect '-a=-b=' when input Array('a','b'), Array(), Array('a','b'), false, function ($c, $i) {return "-$i=";}
+     * @expect '' when input 'abc', Array(), 'abc', true, function ($c, $i) {return "-$i=";}
+     * @expect '-b=' when input Array('a'=>'b'), Array(), Array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
+     * @expect 0 when input 'b', Array(), 'b', false, function ($c, $i) {return count($i);}
+     * @expect '1' when input 1, Array(), 1, false, function ($c, $i) {return print_r($i, true);}
+     * @expect '0' when input 0, Array(), 0, false, function ($c, $i) {return print_r($i, true);}
+     * @expect '{"b":"c"}' when input Array('b'=>'c'), Array(), Array('b' => 'c'), false, function ($c, $i) {return json_encode($i);}
      */
     public static function sec($v, &$cx, $in, $each, $cb) {
         $isary = is_array($v);
@@ -1641,10 +1628,10 @@ class LCRun2 {
      *
      * @return string The rendered string of the token
      *
-     * @expect '' when input Array(null), Array(), false, function () {return 'A';}
-     * @expect '' when input Array(null), Array(), null, function () {return 'A';}
-     * @expect '-Array=' when input Array(null), Array(), Array('a' => 'b'), function ($c, $i) {return "-$i=";}
-     * @expect '-b=' when input Array('a'), Array(), Array('a' => 'b'), function ($c, $i) {return "-$i=";}
+     * @expect '' when input false, Array(), false, function () {return 'A';}
+     * @expect '' when input null, Array(), null, function () {return 'A';}
+     * @expect '-Array=' when input Array('a'=>'b'), Array(), Array('a' => 'b'), function ($c, $i) {return "-$i=";}
+     * @expect '-b=' when input 'b', Array(), Array('a' => 'b'), function ($c, $i) {return "-$i=";}
      */
     public static function wi($v, &$cx, $in, $cb) {
         if (($v === false) || ($v === null)) {
@@ -1663,19 +1650,19 @@ class LCRun2 {
      * @param array $vars variable names for helpers
      * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
      * @param array $cx render time context
-     * @param array $in input data with current scope
      * @param boolean $named input arguments are named
      *
      * @return string The rendered string of the token
      *
-     * @expect '=-=' when input 'a', Array(Array(null)), 'raw', Array('helpers' => Array('a' => function ($i) {return "=$i=";})), '-'
-     * @expect '=&amp;=' when input 'a', Array(Array(null)), 'enc', Array('helpers' => Array('a' => function ($i) {return "=$i=";})), '&'
-     * @expect '=&#x27;=' when input 'a', Array(Array(null)), 'encq', Array('helpers' => Array('a' => function ($i) {return "=$i=";})), '\''
+     * @expect '=-=' when input 'a', Array('-'), 'raw', Array('helpers' => Array('a' => function ($i) {return "=$i=";}))
+     * @expect '=&amp;=' when input 'a', Array('&'), 'enc', Array('helpers' => Array('a' => function ($i) {return "=$i=";}))
+     * @expect '=&#x27;=' when input 'a', Array('\''), 'encq', Array('helpers' => Array('a' => function ($i) {return "=$i=";}))
+     * @expect '=b=' when input 'a', Array('a' => 'b'), 'raw', Array('helpers' => Array('a' => function ($i) {return "={$i['a']}=";})), true
      */
-    public static function ch($ch, $vars, $op, &$cx, $in, $named = false) {
+    public static function ch($ch, $vars, $op, &$cx, $named = false) {
         $args = Array();
         foreach ($vars as $i => $v) {
-            $args[$i] = self::raw($v, $cx, $in);
+            $args[$i] = self::raw($v, $cx);
         }
 
         $r = call_user_func_array($cx['helpers'][$ch], $named ? Array($args) : $args);
@@ -1703,7 +1690,7 @@ class LCRun2 {
     public static function bch($ch, $vars, &$cx, $in, $cb) {
         $args = Array();
         foreach ($vars as $i => $v) {
-            $args[$i] = self::raw($v, $cx, $in);
+            $args[$i] = self::raw($v, $cx);
         }
 
         $r = call_user_func($cx['blockhelpers'][$ch], $in, $args);

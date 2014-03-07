@@ -147,13 +147,13 @@ class LCRun2Test extends PHPUnit_Framework_TestCase
     public function testOn_enc() {
         $method = new ReflectionMethod('LCRun2', 'enc');
         $this->assertEquals('a', $method->invoke(null,
-            Array(null), Array(), 'a'
+            'a', Array()
         ));
         $this->assertEquals('a&amp;b', $method->invoke(null,
-            Array(null), Array(), 'a&b'
+            'a&b', Array()
         ));
         $this->assertEquals('a&#039;b', $method->invoke(null,
-            Array(null), Array(), 'a\'b'
+            'a\'b', Array()
         ));
     }
     /**
@@ -162,13 +162,13 @@ class LCRun2Test extends PHPUnit_Framework_TestCase
     public function testOn_encq() {
         $method = new ReflectionMethod('LCRun2', 'encq');
         $this->assertEquals('a', $method->invoke(null,
-            Array(null), Array(), 'a'
+            'a', Array()
         ));
         $this->assertEquals('a&amp;b', $method->invoke(null,
-            Array(null), Array(), 'a&b'
+            'a&b', Array()
         ));
         $this->assertEquals('a&#x27;b', $method->invoke(null,
-            Array(null), Array(), 'a\'b'
+            'a\'b', Array()
         ));
     }
     /**
@@ -177,43 +177,40 @@ class LCRun2Test extends PHPUnit_Framework_TestCase
     public function testOn_sec() {
         $method = new ReflectionMethod('LCRun2', 'sec');
         $this->assertEquals('', $method->invoke(null,
-            Array(null), Array(), false, false, function () {return 'A';}
+            false, Array(), false, false, function () {return 'A';}
         ));
         $this->assertEquals('', $method->invoke(null,
-            Array(null), Array(), null, false, function () {return 'A';}
+            null, Array(), null, false, function () {return 'A';}
         ));
         $this->assertEquals('A', $method->invoke(null,
-            Array(null), Array(), true, false, function () {return 'A';}
+            true, Array(), true, false, function () {return 'A';}
         ));
         $this->assertEquals('A', $method->invoke(null,
-            Array(null), Array(), 0, false, function () {return 'A';}
+            0, Array(), 0, false, function () {return 'A';}
         ));
         $this->assertEquals('-a=', $method->invoke(null,
-            Array(null), Array(), Array('a'), false, function ($c, $i) {return "-$i=";}
+            Array('a'), Array(), Array('a'), false, function ($c, $i) {return "-$i=";}
         ));
         $this->assertEquals('-a=-b=', $method->invoke(null,
-            Array(null), Array(), Array('a', 'b'), false, function ($c, $i) {return "-$i=";}
+            Array('a','b'), Array(), Array('a','b'), false, function ($c, $i) {return "-$i=";}
         ));
         $this->assertEquals('', $method->invoke(null,
-            Array(null), Array(), 'abc', true, function ($c, $i) {return "-$i=";}
+            'abc', Array(), 'abc', true, function ($c, $i) {return "-$i=";}
         ));
         $this->assertEquals('-b=', $method->invoke(null,
-            Array(null), Array(), Array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
-        ));
-        $this->assertEquals('', $method->invoke(null,
-            Array('b'), Array(), Array('a' => 'b'), true, function ($c, $i) {return "-{$i['a']}=";}
+            Array('a'=>'b'), Array(), Array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
         ));
         $this->assertEquals(0, $method->invoke(null,
-            Array('a'), Array(), Array('a' => 'b'), false, function ($c, $i) {return count($i);}
+            'b', Array(), 'b', false, function ($c, $i) {return count($i);}
         ));
         $this->assertEquals('1', $method->invoke(null,
-            Array('a'), Array(), Array('a' => 1), false, function ($c, $i) {return print_r($i, true);}
+            1, Array(), 1, false, function ($c, $i) {return print_r($i, true);}
         ));
         $this->assertEquals('0', $method->invoke(null,
-            Array('a'), Array(), Array('a' => 0), false, function ($c, $i) {return print_r($i, true);}
+            0, Array(), 0, false, function ($c, $i) {return print_r($i, true);}
         ));
         $this->assertEquals('{"b":"c"}', $method->invoke(null,
-            Array('a'), Array(), Array('a' => Array('b' => 'c')), false, function ($c, $i) {return json_encode($i);}
+            Array('b'=>'c'), Array(), Array('b' => 'c'), false, function ($c, $i) {return json_encode($i);}
         ));
     }
     /**
@@ -222,16 +219,16 @@ class LCRun2Test extends PHPUnit_Framework_TestCase
     public function testOn_wi() {
         $method = new ReflectionMethod('LCRun2', 'wi');
         $this->assertEquals('', $method->invoke(null,
-            Array(null), Array(), false, function () {return 'A';}
+            false, Array(), false, function () {return 'A';}
         ));
         $this->assertEquals('', $method->invoke(null,
-            Array(null), Array(), null, function () {return 'A';}
+            null, Array(), null, function () {return 'A';}
         ));
         $this->assertEquals('-Array=', $method->invoke(null,
-            Array(null), Array(), Array('a' => 'b'), function ($c, $i) {return "-$i=";}
+            Array('a'=>'b'), Array(), Array('a' => 'b'), function ($c, $i) {return "-$i=";}
         ));
         $this->assertEquals('-b=', $method->invoke(null,
-            Array('a'), Array(), Array('a' => 'b'), function ($c, $i) {return "-$i=";}
+            'b', Array(), Array('a' => 'b'), function ($c, $i) {return "-$i=";}
         ));
     }
     /**
@@ -240,13 +237,16 @@ class LCRun2Test extends PHPUnit_Framework_TestCase
     public function testOn_ch() {
         $method = new ReflectionMethod('LCRun2', 'ch');
         $this->assertEquals('=-=', $method->invoke(null,
-            'a', Array(Array(null)), 'raw', Array('helpers' => Array('a' => function ($i) {return "=$i=";})), '-'
+            'a', Array('-'), 'raw', Array('helpers' => Array('a' => function ($i) {return "=$i=";}))
         ));
         $this->assertEquals('=&amp;=', $method->invoke(null,
-            'a', Array(Array(null)), 'enc', Array('helpers' => Array('a' => function ($i) {return "=$i=";})), '&'
+            'a', Array('&'), 'enc', Array('helpers' => Array('a' => function ($i) {return "=$i=";}))
         ));
         $this->assertEquals('=&#x27;=', $method->invoke(null,
-            'a', Array(Array(null)), 'encq', Array('helpers' => Array('a' => function ($i) {return "=$i=";})), '\''
+            'a', Array('\''), 'encq', Array('helpers' => Array('a' => function ($i) {return "=$i=";}))
+        ));
+        $this->assertEquals('=b=', $method->invoke(null,
+            'a', Array('a' => 'b'), 'raw', Array('helpers' => Array('a' => function ($i) {return "={$i['a']}=";})), true
         ));
     }
 }
