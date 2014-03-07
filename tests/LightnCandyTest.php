@@ -205,31 +205,6 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         ));
     }
     /**
-     * @covers LightnCandy::getVariableArray
-     */
-    public function testOn_getVariableArray() {
-        $method = new ReflectionMethod('LightnCandy', 'getVariableArray');
-        $method->setAccessible(true);
-        $this->assertEquals('Array(null)', $method->invoke(null,
-            Array(null)
-        ));
-        $this->assertEquals("Array(0)", $method->invoke(null,
-            Array(0)
-        ));
-        $this->assertEquals("Array('a')", $method->invoke(null,
-            Array('a')
-        ));
-        $this->assertEquals("Array('b','c')", $method->invoke(null,
-            Array('b','c')
-        ));
-        $this->assertEquals("Array(null,'n',0)", $method->invoke(null,
-            Array(null, 'n', 0)
-        ));
-        $this->assertEquals("Array(Array('a','b'),'c')", $method->invoke(null,
-            Array(Array('a','b'),'c')
-        ));
-    }
-    /**
      * @covers LightnCandy::fixVariable
      */
     public function testOn_fixVariable() {
@@ -380,6 +355,67 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         ));
         $this->assertEquals(8, $method->invoke(null,
             Array(0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('unless' => 7), 'level' => 0), Array('unless')
+        ));
+    }
+    /**
+     * @covers LightnCandy::compileSection
+     */
+    public function testOn_compileSection() {
+        $method = new ReflectionMethod('LightnCandy', 'compileSection');
+        $method->setAccessible(true);
+        $this->assertEquals(Array(), $method->invoke(null,
+            Array(null), Array(), Array()
+        ));
+        $this->assertEquals(Array('a'), $method->invoke(null,
+            Array(null), Array(), Array('a')
+        ));
+        $this->assertEquals(null, $method->invoke(null,
+            Array('a'), Array(), Array()
+        ));
+        $this->assertEquals('a', $method->invoke(null,
+            Array('"a"'), Array(), Array()
+        ));
+        $this->assertEquals('a', $method->invoke(null,
+            Array('@index'), Array('sp_vars' => Array('index' => 'a')), Array()
+        ));
+        $this->assertEquals('b', $method->invoke(null,
+            Array('@key'), Array('sp_vars' => Array('key' => 'b')), Array()
+        ));
+        $this->assertEquals(0, $method->invoke(null,
+            Array('a'), Array(), Array('a' => 0)
+        ));
+        $this->assertEquals(false, $method->invoke(null,
+            Array('a'), Array(), Array('a' => false)
+        ));
+        $this->assertEquals(null, $method->invoke(null,
+            Array('a','b'), Array(), Array('a' => 0)
+        ));
+        $this->assertEquals(null, $method->invoke(null,
+            Array('a','b'), Array(), Array()
+        ));
+        $this->assertEquals('Q', $method->invoke(null,
+            Array('a','b'), Array(), Array('a' => Array('b' => 'Q'))
+        ));
+        $this->assertEquals('', $method->invoke(null,
+            Array(1), Array('scopes' => Array()), Array()
+        ));
+        $this->assertEquals('Y', $method->invoke(null,
+            Array(1), Array('scopes' => Array('Y')), Array()
+        ));
+        $this->assertEquals(null, $method->invoke(null,
+            Array(1, 'a'), Array('scopes' => Array('Y')), Array()
+        ));
+        $this->assertEquals('q', $method->invoke(null,
+            Array(1, 'a'), Array('scopes' => Array(Array('a' => 'q'))), Array()
+        ));
+        $this->assertEquals('o', $method->invoke(null,
+            Array(2, 'a'), Array('scopes' => Array(Array('a' => 'o'), Array('a' => 'p'))), Array()
+        ));
+        $this->assertEquals('x', $method->invoke(null,
+            Array(3), Array('scopes' => Array('x', Array('a' => 'q'), Array('b' => 'r'))), Array()
+        ));
+        $this->assertEquals('o', $method->invoke(null,
+            Array(3, 'c'), Array('scopes' => Array(Array('c' => 'o'), Array('a' => 'q'), Array('b' => 'r'))), Array()
         ));
     }
 }

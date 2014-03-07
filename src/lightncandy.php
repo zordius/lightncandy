@@ -693,7 +693,7 @@ $libstr
             if ($pos >= 0) {
                 $base = "\$cx['scopes'][$pos]";
             } else {
-                return "null";
+                return 'null';
             }
         }
 
@@ -1149,6 +1149,25 @@ $libstr
      * @return string|null Return compiled code segment for the token when the token is section
      *
      * @codeCoverageIgnore
+     *
+     * @expect Array() when input Array(null), Array(), Array()
+     * @expect Array('a') when input Array(null), Array(), Array('a')
+     * @expect null when input Array('a'), Array(), Array()
+     * @expect 'a' when input Array('"a"'), Array(), Array()
+     * @expect 'a' when input Array('@index'), Array('sp_vars' => Array('index' => 'a')), Array()
+     * @expect 'b' when input Array('@key'), Array('sp_vars' => Array('key' => 'b')), Array()
+     * @expect 0 when input Array('a'), Array(), Array('a' => 0)
+     * @expect false when input Array('a'), Array(), Array('a' => false)
+     * @expect null when input Array('a','b'), Array(), Array('a' => 0)
+     * @expect null when input Array('a','b'), Array(), Array()
+     * @expect 'Q' when input Array('a','b'), Array(), Array('a' => Array('b' => 'Q'))
+     * @expect '' when input Array(1), Array('scopes' => Array()), Array()
+     * @expect 'Y' when input Array(1), Array('scopes' => Array('Y')), Array()
+     * @expect null when input Array(1, 'a'), Array('scopes' => Array('Y')), Array()
+     * @expect 'q' when input Array(1, 'a'), Array('scopes' => Array(Array('a' => 'q'))), Array()
+     * @expect 'o' when input Array(2, 'a'), Array('scopes' => Array(Array('a' => 'o'), Array('a' => 'p'))), Array()
+     * @expect 'x' when input Array(3), Array('scopes' => Array('x', Array('a' => 'q'), Array('b' => 'r'))), Array()
+     * @expect 'o' when input Array(3, 'c'), Array('scopes' => Array(Array('c' => 'o'), Array('a' => 'q'), Array('b' => 'r'))), Array()
      */
     protected static function compileSection(&$token, &$context, $vars, $named) {
         switch ($token[self::POS_OP]) {
@@ -1361,23 +1380,20 @@ class LCRun2 {
      * LightnCandy runtime method for {{#if var}}.
      *
      * @param array $v variable name to be tested
-     * @param array $cx render time context
-     * @param array $in input data with current scope
      *
      * @return boolean Return true when the value is not null nor false.
      * 
-     * @expect false when input Array('a'), Array(), Array()
-     * @expect false when input Array('a'), Array(), Array('a' => null)
-     * @expect false when input Array('a'), Array(), Array('a' => 0)
-     * @expect false when input Array('a'), Array(), Array('a' => false)
-     * @expect true when input Array('a'), Array(), Array('a' => true)
-     * @expect true when input Array('a'), Array(), Array('a' => 1)
-     * @expect false when input Array('a'), Array(), Array('a' => '')
-     * @expect false when input Array('a'), Array(), Array('a' => Array())
-     * @expect true when input Array('a'), Array(), Array('a' => Array(''))
-     * @expect true when input Array('a'), Array(), Array('a' => Array(0))
+     * @expect false when input null
+     * @expect false when input 0
+     * @expect false when input false
+     * @expect true when input true
+     * @expect true when input 1
+     * @expect false when input ''
+     * @expect false when input Array()
+     * @expect true when input Array('')
+     * @expect true when input Array(0)
      */
-    public static function ifvar($v, $cx, $in) {
+    public static function ifvar($v) {
         return !is_null($v) && ($v !== false) && ($v !== 0) && ($v !== '') && (is_array($v) ? (count($v) > 0) : true);
     }
 
@@ -1392,28 +1408,23 @@ class LCRun2 {
      *
      * @return string The rendered string of the section
      * 
-     * @expect '' when input Array('a'), Array('scopes' => Array()), Array(), function () {return 'Y';}
-     * @expect 'Y' when input Array('a'), Array('scopes' => Array()), Array('a' => 1), function () {return 'Y';}
-     * @expect 'N' when input Array('a'), Array('scopes' => Array()), Array(), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'N' when input Array('a'), Array('scopes' => Array()), Array('a' => null), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'N' when input Array('a'), Array('scopes' => Array()), Array('a' => false), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'N' when input Array('a'), Array('scopes' => Array()), Array('a' => ''), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'N' when input Array('a'), Array('scopes' => Array()), Array('a' => Array()), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'N' when input Array('a'), Array('scopes' => Array()), Array('a' => 0), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'Y' when input Array('a'), Array('scopes' => Array()), Array('a' => Array(0)), function () {return 'Y';}, function () {return 'N';}
+     * @expect '' when input null, Array('scopes' => Array()), Array(), null
+     * @expect '' when input null, Array('scopes' => Array()), Array(), function () {return 'Y';}
+     * @expect 'Y' when input 1, Array('scopes' => Array()), Array(), function () {return 'Y';}
+     * @expect 'N' when input null, Array('scopes' => Array()), Array(), function () {return 'Y';}, function () {return 'N';}
      */
     public static function ifv($v, $cx, $in, $truecb, $falsecb = null) {
         $ret = '';
-        if (is_null($v) || ($v === false) || ($v === 0) || ($v === '') || (is_array($v) && (count($v) == 0))) {
-            if ($falsecb) {
-                $cx['scopes'][] = $in;
-                $ret = $falsecb($cx, $in);
-                array_pop($cx['scopes']);
-            }
-        } else {
+        if (self::ifvar($v)) {
             if ($truecb) {
                 $cx['scopes'][] = $in;
                 $ret = $truecb($cx, $in);
+                array_pop($cx['scopes']);
+            }
+        } else {
+            if ($falsecb) {
+                $cx['scopes'][] = $in;
+                $ret = $falsecb($cx, $in);
                 array_pop($cx['scopes']);
             }
         }
@@ -1429,15 +1440,11 @@ class LCRun2 {
      *
      * @return string Return rendered string when the value is not null nor false.
      *
-     * @expect 'Y' when input Array('a'), Array('scopes' => Array()), Array(), function () {return 'Y';}
-     * @expect '' when input Array('a'), Array('scopes' => Array()), Array('a' => 1), function () {return 'Y';}
-     * @expect 'Y' when input Array('a'), Array('scopes' => Array()), Array(), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'Y' when input Array('a'), Array('scopes' => Array()), Array('a' => null), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'Y' when input Array('a'), Array('scopes' => Array()), Array('a' => false), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'Y' when input Array('a'), Array('scopes' => Array()), Array('a' => ''), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'Y' when input Array('a'), Array('scopes' => Array()), Array('a' => Array()), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'Y' when input Array('a'), Array('scopes' => Array()), Array('a' => 0), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'N' when input Array('a'), Array('scopes' => Array()), Array('a' => Array(0)), function () {return 'Y';}, function () {return 'N';}
+     * @expect '' when input null, Array('scopes' => Array()), Array(), null
+     * @expect 'Y' when input null, Array('scopes' => Array()), Array(), function () {return 'Y';}
+     * @expect '' when input 1, Array('scopes' => Array()), Array(), function () {return 'Y';}
+     * @expect 'Y' when input null, Array('scopes' => Array()), Array(), function () {return 'Y';}, function () {return 'N';}
+     * @expect 'N' when input true, Array('scopes' => Array()), Array(), function () {return 'Y';}, function () {return 'N';}
      */
     public static function unl($var, $cx, $in, $truecb, $falsecb = null) {
         return self::ifv($var, $cx, $in, $falsecb, $truecb);
@@ -1447,75 +1454,42 @@ class LCRun2 {
      * LightnCandy runtime method for {{^var}} inverted section.
      *
      * @param array $v variable name to be tested
-     * @param array $cx render time context
-     * @param array $in input data with current scope
      *
      * @return boolean Return true when the value is not null nor false.
      *
-     * @expect true when input Array('a'), Array(), Array()
-     * @expect false when input Array('a'), Array(), Array('a' => 0)
-     * @expect true when input Array('a'), Array(), Array('a' => false)
-     * @expect false when input Array('a'), Array(), Array('a' => 'false')
-     * @expect true when input Array('a'), Array(), Array('a' => null)
+     * @expect true when input null
+     * @expect false when input 0
+     * @expect true when input false
+     * @expect false when input 'false'
      */
-    public static function isec($v, $cx, $in) {
+    public static function isec($v) {
         return is_null($v) || ($v === false);
     }
-
-    /**
-     * LightnCandy runtime method to get input value.
-     *
-     * @param array $var variable name to get the raw value
-     * @param array $cx render time context
-     * @param array $in input data with current scope
-     *
-     * @return mixed The raw value of the specified variable
-     *
-     * @expect Array() when input Array(null), Array(), Array()
-     * @expect Array('a') when input Array(null), Array(), Array('a')
-     * @expect null when input Array('a'), Array(), Array()
-     * @expect 'a' when input Array('"a"'), Array(), Array()
-     * @expect 'a' when input Array('@index'), Array('sp_vars' => Array('index' => 'a')), Array()
-     * @expect 'b' when input Array('@key'), Array('sp_vars' => Array('key' => 'b')), Array()
-     * @expect 0 when input Array('a'), Array(), Array('a' => 0)
-     * @expect false when input Array('a'), Array(), Array('a' => false)
-     * @expect null when input Array('a','b'), Array(), Array('a' => 0)
-     * @expect null when input Array('a','b'), Array(), Array()
-     * @expect 'Q' when input Array('a','b'), Array(), Array('a' => Array('b' => 'Q'))
-     * @expect '' when input Array(1), Array('scopes' => Array()), Array()
-     * @expect 'Y' when input Array(1), Array('scopes' => Array('Y')), Array()
-     * @expect null when input Array(1, 'a'), Array('scopes' => Array('Y')), Array()
-     * @expect 'q' when input Array(1, 'a'), Array('scopes' => Array(Array('a' => 'q'))), Array()
-     * @expect 'o' when input Array(2, 'a'), Array('scopes' => Array(Array('a' => 'o'), Array('a' => 'p'))), Array()
-     * @expect 'x' when input Array(3), Array('scopes' => Array('x', Array('a' => 'q'), Array('b' => 'r'))), Array()
-     * @expect 'o' when input Array(3, 'c'), Array('scopes' => Array(Array('c' => 'o'), Array('a' => 'q'), Array('b' => 'r'))), Array()
-     */
 
     /**
      * LightnCandy runtime method for {{{var}}} .
      *
      * @param array $v variable name to get the raw value
      * @param array $cx render time context
-     * @param array $in input data with current scope
      * @param boolean $loop true when in loop
      *
      * @return string The raw value of the specified variable
      *
-     * @expect true when input Array(null), Array('flags' => Array('jstrue' => 0)), true
-     * @expect 'true' when input Array(null), Array('flags' => Array('jstrue' => 1)), true
-     * @expect '' when input Array(null), Array('flags' => Array('jstrue' => 0)), false
-     * @expect '' when input Array(null), Array('flags' => Array('jstrue' => 1)), false
-     * @expect 'false' when input Array(null), Array('flags' => Array('jstrue' => 1)), false, true
-     * @expect Array('a', 'b') when input Array(null), Array('flags' => Array('jstrue' => 1, 'jsobj' => 0)), Array('a', 'b')
-     * @expect 'a,b' when input Array(null), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('a', 'b')
-     * @expect '[object Object]' when input Array(null), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('a', 'c' => 'b')
-     * @expect '[object Object]' when input Array(null), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('c' => 'b')
-     * @expect 'a,true' when input Array(null), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('a', true)
-     * @expect 'a,1' when input Array(null), Array('flags' => Array('jstrue' => 0, 'jsobj' => 1)), Array('a', true)
-     * @expect 'a,' when input Array(null), Array('flags' => Array('jstrue' => 0, 'jsobj' => 1)), Array('a', false)
-     * @expect 'a,false' when input Array(null), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('a', false)
+     * @expect true when input true, Array('flags' => Array('jstrue' => 0))
+     * @expect 'true' when input true, Array('flags' => Array('jstrue' => 1))
+     * @expect '' when input false, Array('flags' => Array('jstrue' => 0))
+     * @expect '' when input false, Array('flags' => Array('jstrue' => 1))
+     * @expect 'false' when input false, Array('flags' => Array('jstrue' => 1)), true
+     * @expect Array('a', 'b') when input Array('a', 'b'), Array('flags' => Array('jstrue' => 1, 'jsobj' => 0))
+     * @expect 'a,b' when input Array('a','b'), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1))
+     * @expect '[object Object]' when input Array('a', 'c' => 'b'), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1))
+     * @expect '[object Object]' when input Array('c' => 'b'), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1))
+     * @expect 'a,true' when input Array('a', true), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1))
+     * @expect 'a,1' when input Array('a',true), Array('flags' => Array('jstrue' => 0, 'jsobj' => 1))
+     * @expect 'a,' when input Array('a',false), Array('flags' => Array('jstrue' => 0, 'jsobj' => 1))
+     * @expect 'a,false' when input Array('a',false), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1))
      */
-    public static function raw($v, $cx, $in, $loop = false) {
+    public static function raw($v, $cx, $loop = false) {
         if ($v === true) {
             if ($cx['flags']['jstrue']) {
                 return 'true';

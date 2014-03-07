@@ -12,34 +12,31 @@ class LCRun2Test extends PHPUnit_Framework_TestCase
     public function testOn_ifvar() {
         $method = new ReflectionMethod('LCRun2', 'ifvar');
         $this->assertEquals(false, $method->invoke(null,
-            Array('a'), Array(), Array()
+            null
         ));
         $this->assertEquals(false, $method->invoke(null,
-            Array('a'), Array(), Array('a' => null)
+            0
         ));
         $this->assertEquals(false, $method->invoke(null,
-            Array('a'), Array(), Array('a' => 0)
-        ));
-        $this->assertEquals(false, $method->invoke(null,
-            Array('a'), Array(), Array('a' => false)
+            false
         ));
         $this->assertEquals(true, $method->invoke(null,
-            Array('a'), Array(), Array('a' => true)
+            true
         ));
         $this->assertEquals(true, $method->invoke(null,
-            Array('a'), Array(), Array('a' => 1)
+            1
         ));
         $this->assertEquals(false, $method->invoke(null,
-            Array('a'), Array(), Array('a' => '')
+            ''
         ));
         $this->assertEquals(false, $method->invoke(null,
-            Array('a'), Array(), Array('a' => Array())
+            Array()
         ));
         $this->assertEquals(true, $method->invoke(null,
-            Array('a'), Array(), Array('a' => Array(''))
+            Array('')
         ));
         $this->assertEquals(true, $method->invoke(null,
-            Array('a'), Array(), Array('a' => Array(0))
+            Array(0)
         ));
     }
     /**
@@ -48,31 +45,16 @@ class LCRun2Test extends PHPUnit_Framework_TestCase
     public function testOn_ifv() {
         $method = new ReflectionMethod('LCRun2', 'ifv');
         $this->assertEquals('', $method->invoke(null,
-            Array('a'), Array('scopes' => Array()), Array(), function () {return 'Y';}
+            null, Array('scopes' => Array()), Array(), null
+        ));
+        $this->assertEquals('', $method->invoke(null,
+            null, Array('scopes' => Array()), Array(), function () {return 'Y';}
         ));
         $this->assertEquals('Y', $method->invoke(null,
-            Array('a'), Array('scopes' => Array()), Array('a' => 1), function () {return 'Y';}
+            1, Array('scopes' => Array()), Array(), function () {return 'Y';}
         ));
         $this->assertEquals('N', $method->invoke(null,
-            Array('a'), Array('scopes' => Array()), Array(), function () {return 'Y';}, function () {return 'N';}
-        ));
-        $this->assertEquals('N', $method->invoke(null,
-            Array('a'), Array('scopes' => Array()), Array('a' => null), function () {return 'Y';}, function () {return 'N';}
-        ));
-        $this->assertEquals('N', $method->invoke(null,
-            Array('a'), Array('scopes' => Array()), Array('a' => false), function () {return 'Y';}, function () {return 'N';}
-        ));
-        $this->assertEquals('N', $method->invoke(null,
-            Array('a'), Array('scopes' => Array()), Array('a' => ''), function () {return 'Y';}, function () {return 'N';}
-        ));
-        $this->assertEquals('N', $method->invoke(null,
-            Array('a'), Array('scopes' => Array()), Array('a' => Array()), function () {return 'Y';}, function () {return 'N';}
-        ));
-        $this->assertEquals('N', $method->invoke(null,
-            Array('a'), Array('scopes' => Array()), Array('a' => 0), function () {return 'Y';}, function () {return 'N';}
-        ));
-        $this->assertEquals('Y', $method->invoke(null,
-            Array('a'), Array('scopes' => Array()), Array('a' => Array(0)), function () {return 'Y';}, function () {return 'N';}
+            null, Array('scopes' => Array()), Array(), function () {return 'Y';}, function () {return 'N';}
         ));
     }
     /**
@@ -80,32 +62,20 @@ class LCRun2Test extends PHPUnit_Framework_TestCase
      */
     public function testOn_unl() {
         $method = new ReflectionMethod('LCRun2', 'unl');
+        $this->assertEquals('', $method->invoke(null,
+            null, Array('scopes' => Array()), Array(), null
+        ));
         $this->assertEquals('Y', $method->invoke(null,
-            Array('a'), Array('scopes' => Array()), Array(), function () {return 'Y';}
+            null, Array('scopes' => Array()), Array(), function () {return 'Y';}
         ));
         $this->assertEquals('', $method->invoke(null,
-            Array('a'), Array('scopes' => Array()), Array('a' => 1), function () {return 'Y';}
+            1, Array('scopes' => Array()), Array(), function () {return 'Y';}
         ));
         $this->assertEquals('Y', $method->invoke(null,
-            Array('a'), Array('scopes' => Array()), Array(), function () {return 'Y';}, function () {return 'N';}
-        ));
-        $this->assertEquals('Y', $method->invoke(null,
-            Array('a'), Array('scopes' => Array()), Array('a' => null), function () {return 'Y';}, function () {return 'N';}
-        ));
-        $this->assertEquals('Y', $method->invoke(null,
-            Array('a'), Array('scopes' => Array()), Array('a' => false), function () {return 'Y';}, function () {return 'N';}
-        ));
-        $this->assertEquals('Y', $method->invoke(null,
-            Array('a'), Array('scopes' => Array()), Array('a' => ''), function () {return 'Y';}, function () {return 'N';}
-        ));
-        $this->assertEquals('Y', $method->invoke(null,
-            Array('a'), Array('scopes' => Array()), Array('a' => Array()), function () {return 'Y';}, function () {return 'N';}
-        ));
-        $this->assertEquals('Y', $method->invoke(null,
-            Array('a'), Array('scopes' => Array()), Array('a' => 0), function () {return 'Y';}, function () {return 'N';}
+            null, Array('scopes' => Array()), Array(), function () {return 'Y';}, function () {return 'N';}
         ));
         $this->assertEquals('N', $method->invoke(null,
-            Array('a'), Array('scopes' => Array()), Array('a' => Array(0)), function () {return 'Y';}, function () {return 'N';}
+            true, Array('scopes' => Array()), Array(), function () {return 'Y';}, function () {return 'N';}
         ));
     }
     /**
@@ -114,79 +84,16 @@ class LCRun2Test extends PHPUnit_Framework_TestCase
     public function testOn_isec() {
         $method = new ReflectionMethod('LCRun2', 'isec');
         $this->assertEquals(true, $method->invoke(null,
-            Array('a'), Array(), Array()
+            null
         ));
         $this->assertEquals(false, $method->invoke(null,
-            Array('a'), Array(), Array('a' => 0)
+            0
         ));
         $this->assertEquals(true, $method->invoke(null,
-            Array('a'), Array(), Array('a' => false)
+            false
         ));
         $this->assertEquals(false, $method->invoke(null,
-            Array('a'), Array(), Array('a' => 'false')
-        ));
-        $this->assertEquals(true, $method->invoke(null,
-            Array('a'), Array(), Array('a' => null)
-        ));
-    }
-    /**
-     * @covers LCRun2::val
-     */
-    public function testOn_val() {
-        $method = new ReflectionMethod('LCRun2', 'val');
-        $this->assertEquals(Array(), $method->invoke(null,
-            Array(null), Array(), Array()
-        ));
-        $this->assertEquals(Array('a'), $method->invoke(null,
-            Array(null), Array(), Array('a')
-        ));
-        $this->assertEquals(null, $method->invoke(null,
-            Array('a'), Array(), Array()
-        ));
-        $this->assertEquals('a', $method->invoke(null,
-            Array('"a"'), Array(), Array()
-        ));
-        $this->assertEquals('a', $method->invoke(null,
-            Array('@index'), Array('sp_vars' => Array('index' => 'a')), Array()
-        ));
-        $this->assertEquals('b', $method->invoke(null,
-            Array('@key'), Array('sp_vars' => Array('key' => 'b')), Array()
-        ));
-        $this->assertEquals(0, $method->invoke(null,
-            Array('a'), Array(), Array('a' => 0)
-        ));
-        $this->assertEquals(false, $method->invoke(null,
-            Array('a'), Array(), Array('a' => false)
-        ));
-        $this->assertEquals(null, $method->invoke(null,
-            Array('a','b'), Array(), Array('a' => 0)
-        ));
-        $this->assertEquals(null, $method->invoke(null,
-            Array('a','b'), Array(), Array()
-        ));
-        $this->assertEquals('Q', $method->invoke(null,
-            Array('a','b'), Array(), Array('a' => Array('b' => 'Q'))
-        ));
-        $this->assertEquals('', $method->invoke(null,
-            Array(1), Array('scopes' => Array()), Array()
-        ));
-        $this->assertEquals('Y', $method->invoke(null,
-            Array(1), Array('scopes' => Array('Y')), Array()
-        ));
-        $this->assertEquals(null, $method->invoke(null,
-            Array(1, 'a'), Array('scopes' => Array('Y')), Array()
-        ));
-        $this->assertEquals('q', $method->invoke(null,
-            Array(1, 'a'), Array('scopes' => Array(Array('a' => 'q'))), Array()
-        ));
-        $this->assertEquals('o', $method->invoke(null,
-            Array(2, 'a'), Array('scopes' => Array(Array('a' => 'o'), Array('a' => 'p'))), Array()
-        ));
-        $this->assertEquals('x', $method->invoke(null,
-            Array(3), Array('scopes' => Array('x', Array('a' => 'q'), Array('b' => 'r'))), Array()
-        ));
-        $this->assertEquals('o', $method->invoke(null,
-            Array(3, 'c'), Array('scopes' => Array(Array('c' => 'o'), Array('a' => 'q'), Array('b' => 'r'))), Array()
+            'false'
         ));
     }
     /**
@@ -195,43 +102,43 @@ class LCRun2Test extends PHPUnit_Framework_TestCase
     public function testOn_raw() {
         $method = new ReflectionMethod('LCRun2', 'raw');
         $this->assertEquals(true, $method->invoke(null,
-            Array(null), Array('flags' => Array('jstrue' => 0)), true
+            true, Array('flags' => Array('jstrue' => 0))
         ));
         $this->assertEquals('true', $method->invoke(null,
-            Array(null), Array('flags' => Array('jstrue' => 1)), true
+            true, Array('flags' => Array('jstrue' => 1))
         ));
         $this->assertEquals('', $method->invoke(null,
-            Array(null), Array('flags' => Array('jstrue' => 0)), false
+            false, Array('flags' => Array('jstrue' => 0))
         ));
         $this->assertEquals('', $method->invoke(null,
-            Array(null), Array('flags' => Array('jstrue' => 1)), false
+            false, Array('flags' => Array('jstrue' => 1))
         ));
         $this->assertEquals('false', $method->invoke(null,
-            Array(null), Array('flags' => Array('jstrue' => 1)), false, true
+            false, Array('flags' => Array('jstrue' => 1)), true
         ));
         $this->assertEquals(Array('a', 'b'), $method->invoke(null,
-            Array(null), Array('flags' => Array('jstrue' => 1, 'jsobj' => 0)), Array('a', 'b')
+            Array('a', 'b'), Array('flags' => Array('jstrue' => 1, 'jsobj' => 0))
         ));
         $this->assertEquals('a,b', $method->invoke(null,
-            Array(null), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('a', 'b')
+            Array('a','b'), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1))
         ));
         $this->assertEquals('[object Object]', $method->invoke(null,
-            Array(null), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('a', 'c' => 'b')
+            Array('a', 'c' => 'b'), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1))
         ));
         $this->assertEquals('[object Object]', $method->invoke(null,
-            Array(null), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('c' => 'b')
+            Array('c' => 'b'), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1))
         ));
         $this->assertEquals('a,true', $method->invoke(null,
-            Array(null), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('a', true)
+            Array('a', true), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1))
         ));
         $this->assertEquals('a,1', $method->invoke(null,
-            Array(null), Array('flags' => Array('jstrue' => 0, 'jsobj' => 1)), Array('a', true)
+            Array('a',true), Array('flags' => Array('jstrue' => 0, 'jsobj' => 1))
         ));
         $this->assertEquals('a,', $method->invoke(null,
-            Array(null), Array('flags' => Array('jstrue' => 0, 'jsobj' => 1)), Array('a', false)
+            Array('a',false), Array('flags' => Array('jstrue' => 0, 'jsobj' => 1))
         ));
         $this->assertEquals('a,false', $method->invoke(null,
-            Array(null), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('a', false)
+            Array('a',false), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1))
         ));
     }
     /**
