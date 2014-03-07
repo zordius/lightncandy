@@ -1163,7 +1163,7 @@ $libstr
         switch ($token[self::POS_OP]) {
         case '^':
             $v = self::getVariableName($vars[0], $context);
-            $context['stack'][] = $v;
+            $context['stack'][] = implode('-', $vars[0]);
             $context['stack'][] = '^';
             self::noNamedArguments($token, $context, $named);
             return "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'isec') . "($v, \$cx, \$in)){$context['ops']['cnd_then']}";
