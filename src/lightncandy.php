@@ -132,6 +132,7 @@ class LightnCandy {
 
         $libstr = self::exportLCRun($context);
         $helpers = self::exportHelper($context);
+        $bhelpers = self::exportHelper($context, 'blockhelpers');
 
         // Return generated PHP code string.
         return "<?php return function (\$in) {
@@ -141,6 +142,7 @@ class LightnCandy {
             'jsobj' => $flagJSObj,
         ),
         'helpers' => $helpers,
+        'blockhelpers' => $bhelpers,
         'scopes' => Array(\$in),
         'path' => Array(),
 $libstr
@@ -212,6 +214,7 @@ $libstr
                 'comment' => 0,
                 'partial' => 0,
                 'helper' => 0,
+                'bhelper' => 0,
             ),
             'helpers' => Array(),
         );
@@ -239,7 +242,7 @@ $libstr
         );
 
         $context['ops']['enc'] = $context['flags']['jsquote'] ? 'encq' : 'enc';
-        return self::buildHelperTable($context, $options);
+        return self::buildHelperTable(self::buildHelperTable($context, $options), $options, 'blockhelpers');
     }
 
     /**
@@ -247,6 +250,7 @@ $libstr
      *
      * @param array $context prepared context
      * @param mixed $options input options
+     * @param string $tname helper table name
      *
      * @return array context with generated helper table
      *
@@ -256,11 +260,11 @@ $libstr
      * @expect Array('flags' => Array('exhlp' => 1), 'helpers' => Array('LCRun2::val' => 'LCRun2::val')) when input Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('LCRun2::val'))
      * @expect Array('flags' => Array('exhlp' => 1), 'helpers' => Array('test' => 'LCRun2::val')) when input Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('test' => 'LCRun2::val'))
      */
-    protected static function buildHelperTable($context, $options) {
-        if (isset($options['helpers']) && is_array($options['helpers'])) {
-            foreach ($options['helpers'] as $name => $func) {
+    protected static function buildHelperTable($context, $options, $tname = 'helpers') {
+        if (isset($options[$tname]) && is_array($options[$tname])) {
+            foreach ($options[$tname] as $name => $func) {
                 if (is_callable($func)) {
-                    $context['helpers'][is_int($name) ? $func : $name] = $func;
+                    $context[$tname][is_int($name) ? $func : $name] = $func;
                 } else {
                     if (!$context['flags']['exhlp']) {
                         $context['error'][] = "Can not find custom helper function defination $func() !";
@@ -399,14 +403,15 @@ $libstr
 
     /**
      * Internal method used by compile(). Export required custom helper functions.
+     * @param string $tname helper table name
      *
      * @param array $context current scaning context
      *
      * @codeCoverageIgnore
      */
-    protected static function exportHelper($context) {
+    protected static function exportHelper($context, $tname = 'helpers') {
         $ret = '';
-        foreach ($context['helpers'] as $name => $func) {
+        foreach ($context[$tname] as $name => $func) {
             if ((is_object($func) && ($func instanceof Closure)) || ($context['flags']['exhlp'] == 0)) {
                 $ret .= ("            '$name' => " . self::getPHPCode($func) . ",\n");
                 continue;
@@ -886,7 +891,7 @@ $libstr
                 }
             }
             if (is_string($idx)) {
-                $ret[$idx] = self::fixVariable($var, $context);
+                $ret[$idx] = is_numeric($var) ? Array('"' . $var . '"') : self::fixVariable($var, $context);
             } else {
                 $ret[$i] = self::fixVariable($var, $context);
                 $i++;
@@ -973,6 +978,12 @@ $libstr
         case '#':
             $context['stack'][] = $token[self::POS_INNERTAG];
             $context['level']++;
+
+            // detect block custom helpers.
+            if (isset($context['blockhelpers'][$vars[0][0]])) {
+                return ++$context['usedFeature']['bhelper'];
+            }
+
             switch ($vars[0]) {
             case 'with':
                 if (isset($vars[1]) && !$context['flags']['with']) {
@@ -1081,8 +1092,7 @@ $libstr
             $token[self::POS_RSPACE] = '';
         }
 
-        if ($ret = self::compileSection($token, $context, $vars)) {
-            self::noNamedArguments($token, $context, $named);
+        if ($ret = self::compileSection($token, $context, $vars, $named)) {
             return $ret;
         }
 
@@ -1105,17 +1115,19 @@ $libstr
      * @param array $token detected handlebars {{ }} token
      * @param array $context current scaning context
      * @param array $vars parsed arguments list
+     * @param boolean $named is named arguments or not
      *
      * @return string|null Return compiled code segment for the token when the token is section
      *
      * @codeCoverageIgnore
      */
-    protected static function compileSection(&$token, &$context, $vars) {
+    protected static function compileSection(&$token, &$context, $vars, $named) {
         switch ($token[self::POS_OP]) {
         case '^':
             $v = self::getVariableArray($vars[0]);
             $context['stack'][] = $v;
             $context['stack'][] = '^';
+            self::noNamedArguments($token, $context, $named);
             if ($context['useVar']) {
                 $v = $context['useVar'] . "['{$token[self::POS_INNERTAG]}']"; //FIXME
                 return "{$context['ops']['cnd_start']}(is_null($v) && ($v !== false)){$context['ops']['cnd_then']}"; 
@@ -1127,8 +1139,35 @@ $libstr
         case '!':
             return $context['ops']['seperator'];
         case '#':
+            $r = self::compileBlockCustomHelper($context, $vars);
+            if ($r) {
+                return $r;
+            }
+            self::noNamedArguments($token, $context, $named);
             return self::compileBlockBegin($context, $vars);
         }
+    }
+
+    /**
+     * Internal method used by compile(). Return compiled PHP code partial for a handlebars block begin token.
+     *
+     * @param array $context current scaning context
+     * @param array $vars parsed arguments list
+     *
+     * @return string Return compiled code segment for the token
+     *
+     * @codeCoverageIgnore
+     */
+    protected static function compileBlockCustomHelper(&$context, $vars) {
+        if (!isset($context['blockhelpers'][$vars[0][0]])) {
+            return;
+        }
+        $context['vars'][] = $vars[0];
+        $context['stack'][] = self::getVariableArray($vars[0]);
+        $context['stack'][] = '#';
+        $ch = array_shift($vars);
+        $v = self::getVariableArray($vars);
+        return $context['ops']['seperator'] . self::getFuncName($context, 'bch') . "('$ch[0]', $v, \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
     /**
@@ -1706,6 +1745,34 @@ class LCRun2 {
             default:
                 return $r;
         }
+    }
+
+    /**
+     * LightnCandy runtime method for block custom helpers.
+     *
+     * @param string $ch the name of custom helper to be executed
+     * @param array $vars variable names for helpers
+     * @param array $cx render time context
+     * @param array $in input data with current scope
+     * @param function $cb callback function to render child context
+     *
+     * @return string The rendered string of the token
+     */
+    public static function bch($ch, $vars, &$cx, $in, $cb) {
+        $args = Array();
+        foreach ($vars as $i => $v) {
+            $args[$i] = self::raw($v, $cx, $in);
+        }
+
+        $r = call_user_func($cx['blockhelpers'][$ch], $in, $args);
+        if (is_null($r)) {
+            return '';
+        }
+
+        $cx['scopes'][] = $in;
+        $ret = $cb($cx, $r);
+        array_pop($cx['scopes']);
+        return $ret;
     }
 }
 ?>

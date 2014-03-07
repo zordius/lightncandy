@@ -10,6 +10,8 @@ v0.10 current trunk
    * 43a6d33717 fix for {{../}} php warning message
    * 9189ebc1e4 now auto push documents from Travis CI
    * e077d0b631 support named arguments for custom helpers {{helper name=value}}
+   * 2331b6fe55 support block custom helpers
+   * 4fedaa25f7 support number value as named arguments
 
 v0.9 https://github.com/zordius/lightncandy/tree/v0.9
    * align with handlebars.js 1.3
