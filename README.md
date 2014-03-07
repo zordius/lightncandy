@@ -140,10 +140,10 @@ Default is to compile the template as PHP which can be run as fast as possible, 
 * `FLAG_JSQUOTE` : encode `'` to `&#x27;` . Otherwise, `'` will encoded as `&#039;` .
 * `FLAG_ADVARNAME` : support `{{foo.[0].[#te#st].bar}}` style advanced variable naming in temlpate.
 * `FLAG_NAMEDARG` : support named arguments for custom helper `{{helper name1=val1 nam2=val2 ...}}.
-* `FLAG_EXTHELPER` : do not including custom helper codes into compiled PHP codes. This reduce the code size, but you need to take care of your helper functions when rendering. If you forget to include required functions when execute rendering function, `undefined function` runtime error will be triggered. **Note: Anonymouse functions will always be placed in generated codes**
+* `FLAG_EXTHELPER` : do not including custom helper codes into compiled PHP codes. This reduce the code size, but you need to take care of your helper functions when rendering. If you forget to include required functions when execute rendering function, `undefined function` runtime error will be triggered. NOTE: Anonymouse functions will always be placed into generated codes.
 * `FLAG_SPACECTL` : support space control `{{~ }}` or `{{ ~}}` in template. Otherwise, `{{~ }}` or `{{ ~}}` will cause template error. 
 * `FLAG_HANDLEBARSJS` : align with handlebars.js behaviors, same as `FLAG_JSTRUE` + `FLAG_JSOBJECT` + `FLAG_THIS` + `FLAG_WITH` + `FLAG_PARENT` + `FLAG_JSQUOTE` + `FLAG_ADVARNAME` + `FLAG_NAMEDARG`.
-* `FLAG_ECHO` (experimental): compile to `echo 'a', $b, 'c';` to improve performance. This will slow down rendering when the template and data are simple, but will improve 1% ~ 7% when the data is big and looping in the template.
+* `FLAG_ECHO` : compile to `echo 'a', $b, 'c';` to improve performance. This will slow down rendering when the template and data are simple, but will improve 1% ~ 7% when the data is big and looping in the template.
 * `FLAG_BESTPERFORMANCE` : same as `FLAG_ECHO` now. This flag may be changed base on performance testing result in the future.
 
 Partial Support
@@ -227,7 +227,7 @@ The input arguments are processed by LightnCandy automatically, you do not need 
                             // and processed {{{../name}}} as second param into the helper
 ```
 
-The return value of your custom helper should be a string. When your custom helper be executed from {{ }} , the return value will be HTML encoded. You may execute your helper by {{{ }}} , then the original helper return value will be output directly.
+The return value of your custom helper should be a string. When your custom helper be executed from {{ }} , the return value will be HTML encoded. You may execute your helper by {{{ }}} , then the original helper return value will be outputed directly.
 
 When you pass arguments as `name=value` pairs, The input to your custom helper will turn into only one associative array. For example, when your custom helper is `function ($input) {...}`:
 
@@ -235,7 +235,7 @@ When you pass arguments as `name=value` pairs, The input to your custom helper w
 {{{helper name=value}}        // This send processed {{{value}}} into $input['name']
 {{{helper name="value"}}      // This send the string "value" into $input['name']
 {{{helper [na me]="value"}}   // You can still protect the name with [ ]
-                              // so you get $input['na me'] as string "value"
+                              // so you get $input['na me'] as the string 'value'
 {{{helper url name="value"}}  // This send processed {{{url}}}  into $input[0]
                               // and the string "value" into $input['name']
 ```
