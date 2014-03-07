@@ -714,17 +714,17 @@ $libstr
             $levels = array_shift($var);
         }
 
-        // response '' when beyand root.
+        // response 'null' when beyand root.
         if ($levels > 0) {
             $pos = count($cx['scopes']) - $levels;
             if ($pos >= 0) {
                 $base = "\$cx['scopes'][$pos]";
             } else {
-                return "''";
+                return "null";
             }
         }
 
-        return $base . self::getArrayCode($var);
+        return $base . (is_null($var[0]) ? '' : self::getArrayCode($var));
     }
 
     /**
