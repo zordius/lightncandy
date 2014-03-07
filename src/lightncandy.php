@@ -716,7 +716,7 @@ $libstr
 
         // response 'null' when beyand root.
         if ($levels > 0) {
-            $pos = count($cx['scopes']) - $levels;
+            $pos = count($context['vars']) - $levels;
             if ($pos >= 0) {
                 $base = "\$cx['scopes'][$pos]";
             } else {
