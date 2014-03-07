@@ -698,7 +698,7 @@ $libstr
 
         // response 'null' when beyand root.
         if ($levels > 0) {
-            $pos = count($context['vars']) - $levels;
+            $pos = $context['level'] - $levels;
             if ($pos >= 0) {
                 $base = "\$cx['scopes'][$pos]";
             } else {
@@ -1162,16 +1162,19 @@ $libstr
     protected static function compileSection(&$token, &$context, $vars, $named) {
         switch ($token[self::POS_OP]) {
         case '^':
+            $context['level']++;
             $v = self::getVariableName($vars[0], $context);
             $context['stack'][] = implode('-', $vars[0]);
             $context['stack'][] = '^';
             self::noNamedArguments($token, $context, $named);
             return "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'isec') . "($v)){$context['ops']['cnd_then']}";
         case '/':
+            $context['level']--;
             return self::compileBlockEnd($token, $context, $vars);
         case '!':
             return $context['ops']['seperator'];
         case '#':
+            $context['level']++;
             $r = self::compileBlockCustomHelper($context, $vars);
             if ($r) {
                 return $r;
@@ -1216,17 +1219,16 @@ $libstr
      */
     protected static function compileBlockEnd(&$token, &$context, $vars) {
             $each = false;
+            $pop = array_pop($context['stack']);
             switch ($token[self::POS_INNERTAG]) {
             case 'if':
             case 'unless':
-                $pop = array_pop($context['stack']);
                 if ($pop == ':') {
                     array_pop($context['stack']);
                     return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}){$context['ops']['seperator']}" : "{$context['ops']['cnd_end']}";
                 }
                 return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}){$context['ops']['seperator']}" : "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
             case 'with':
-                $pop = array_pop($context['stack']);
                 if ($pop !== 'with') {
                    $context['error'][] = 'Unexpect token /with !';
                    return;
@@ -1237,7 +1239,6 @@ $libstr
                 // Continue to same logic {{/each}} === {{/any_value}}
             default:
                 array_pop($context['vars']);
-                $pop = array_pop($context['stack']);
                 switch($pop) {
                 case '#':
                 case '^':
