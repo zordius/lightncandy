@@ -724,7 +724,15 @@ $libstr
             }
         }
 
-        return $base . (is_null($var[0]) ? '' : self::getArrayCode($var));
+        if (is_null($var[0])) {
+            return $base;
+        }
+
+        $n = self::getArrayCode($var);
+        array_pop($var);
+        $p = count($var) ? self::getArrayCode($var) : '';
+
+        return "(is_array($base$p) ? $base$n : null)";
     }
 
     /**
