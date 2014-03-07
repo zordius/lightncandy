@@ -1765,7 +1765,7 @@ class LCRun2 {
         }
 
         $r = call_user_func($cx['blockhelpers'][$ch], $in, $args);
-        if (is_null($r) || ($r === false)) {
+        if (is_null($r)) {
             return '';
         }
 

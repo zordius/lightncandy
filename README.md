@@ -240,6 +240,72 @@ When you pass arguments as `name=value` pairs, The input to your custom helper w
                               // and the string "value" into $input['name']
 ```
 
+Block Custom Helper
+-------------------
+
+Block custom helper must be used as a section, the section is started with `{{#helper_name ...}}` and ended with `{{/helper_name}}`.
+
+You may use block custom helper to:
+
+1. Provide advanced condition logic which is different from `{{#if ...}}` ... `{{/if}}` .
+2. Modification of current context for inner block.
+3. Provide different context to inner block.
+
+Block Custom Helper Interface
+-----------------------------
+
+LightnCandy handled all input arguments for you, you will receive current context and parsed arguments. The return value of helper function will become new context then be passed into inner block. If you do not return any value, or return null, the inner block will not be rendered. For example:
+
+```php
+// Only render inner block when input > 5
+// {{#helper_iffivemore people.length}}More then 5 people, discount!{{/helper_iffivemore}}
+function helper_iffivemore($cx, $args) {
+    return $args[0] > 5 ? $cx : null;
+}
+
+// You can use named arguments, too
+// {{#helper_if value=people logic="more" tovalue=5}}Yes the logic is true{{/helper_if}}
+function helper_if($cx, $args) {
+    switch ($args['logic']) {
+    case 'more':
+        return $args['value'] > $args['tovalue'] ? $cx : null;
+    case 'less':
+        return $args['value'] < $args['tovalue'] ? $cx : null;
+    case 'eq':
+        return $args['value'] == $args['tovalue'] ? $cx : null;
+    }
+}
+
+// Provide default values for name and salary
+// {{#helper_defaultpeople}}Hello, {{name}} ....Your salary will be {{salary}}{{/helper_defaultpeople}}
+function helper_defaultpeople($cx, $args) {
+    if (!isset($cx['name'])) {
+        $cx['name'] = 'Sir';
+    }
+    $cx['salary'] = isset($cx['salary']) ? '$' . $cx['salary'] : 'unknown';
+    return $cx;
+}
+
+// Provide specific context to innerblock
+// {{#helper_sample}}Preview Name:{{name}} , Salary:{{salary}}.{{/helper_sample}}
+function helper_sample($cx, $args) {
+    return Array('name' => 'Sample Name', 'salary' => 'Sample Salary');
+}
+```
+
+You can not provide new rendered result or handle loop in block custom helper. To provide diffetent rendering result,
+ you should use normal custom helper. To handle loop, you should use `{{#each}}` . For example:
+
+```php
+// Provide specific context to innerblock
+// {{#helper_categories}}{{#each .}}<li><a href="?id={{id}}">{{name}}</a></li>{{/each}}{{/helper_categories}}
+function helper_categories($cx, $args) {
+    return getMyCategories(); // Array('category1', 'category2', ...)
+}
+```
+
+The mission of a block custom helper is only focus on providing different context or logic to inner block, nothing else.
+
 Unsupported Feature (so far)
 ----------------------------
 
