@@ -97,12 +97,6 @@ class LightnCandy {
             return false;
         }
 
-        // Check used features and compile flags. If the template is simple enough,
-        // we can generate best performance code with enable 'useVar' internal flag.
-        if (!$context['flags']['jsobj'] && (($context['usedFeature']['sec'] + $context['usedFeature']['parent'] < 1) || !$context['flags']['jsobj'])) {
-            $context['useVar'] = '$in';
-        }
-
         // Do PHP code and json schema generation.
         $code = preg_replace_callback(self::TOKEN_SEARCH, function ($matches) use (&$context) {
             $tmpl = LightnCandy::compileToken($matches, $context);
@@ -187,7 +181,6 @@ $libstr
             'level' => 0,
             'stack' => Array(),
             'error' => Array(),
-            'useVar' => false,
             'vars' => Array(),
             'sp_vars' => Array(),
             'jsonSchema' => Array(
@@ -1128,12 +1121,7 @@ $libstr
             $context['stack'][] = $v;
             $context['stack'][] = '^';
             self::noNamedArguments($token, $context, $named);
-            if ($context['useVar']) {
-                $v = $context['useVar'] . "['{$token[self::POS_INNERTAG]}']"; //FIXME
-                return "{$context['ops']['cnd_start']}(is_null($v) && ($v !== false)){$context['ops']['cnd_then']}"; 
-            } else {
-                return "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'isec') . "($v, \$cx, \$in)){$context['ops']['cnd_then']}";
-            }
+            return "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'isec') . "($v, \$cx, \$in)){$context['ops']['cnd_then']}";
         case '/':
             return self::compileBlockEnd($token, $context, $vars);
         case '!':
@@ -1320,16 +1308,12 @@ $libstr
      */
     protected static function compileVariable(&$context, &$vars, $raw) {
         self::addJsonSchema($context, $vars[0]);
-        if ($context['useVar']) {
-            $v = $context['useVar'] . self::getArrayCode($vars[0]);
-            if ($context['flags']['jstrue']) {
-                return $raw ? "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}$v{$context['ops']['cnd_end']}" : "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}htmlentities($v, ENT_QUOTES, 'UTF-8'){$context['ops']['cnd_end']}";
-            } else {
-                return $raw ? "{$context['ops']['seperator']}$v{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlentities($v, ENT_QUOTES, 'UTF-8'){$context['ops']['seperator']}";
-            }
-        } else {
+        if ($context['flags']['jsobj'] || $context['flags']['jstrue']) {
             $v = self::getVariableArray($vars[0]);
             return $context['ops']['seperator'] . self::getFuncName($context, $raw ? 'raw' : $context['ops']['enc']) . "($v, \$cx, \$in){$context['ops']['seperator']}";
+        } else {
+            $v = '$in'. self::getArrayCode($vars[0]); // FIXME: later...
+            return $raw ? "{$context['ops']['seperator']}$v{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlentities($v, ENT_QUOTES, 'UTF-8'){$context['ops']['seperator']}";
         }
     }
 }
