@@ -137,6 +137,7 @@ class LightnCandy {
         ),
         'helpers' => $helpers,
         'blockhelpers' => $bhelpers,
+        'secdec' => 0,
         'scopes' => Array(\$in),
         'path' => Array(),
 $libstr
@@ -179,6 +180,7 @@ $libstr
                 'exhlp' => $flags & self::FLAG_EXTHELPER,
             ),
             'level' => 0,
+            'seclvl' => 0,
             'stack' => Array(),
             'error' => Array(),
             'vars' => Array(),
@@ -696,13 +698,13 @@ $libstr
             $levels = array_shift($var);
         }
 
-        // response 'null' when beyand root.
+        // change base when trace to parent
         if ($levels > 0) {
             $pos = $context['level'] - $levels;
-            if ($pos >= 0) {
-                $base = "\$cx['scopes'][$pos]";
+            if ($context['seclvl']) {
+                $base = "\$cx['scopes'][$pos+\$cx['secdec']]";
             } else {
-                return 'null';
+                $base = "\$cx['scopes'][$pos]";
             }
         }
 
@@ -1242,6 +1244,7 @@ $libstr
                 switch($pop) {
                 case '#':
                 case '^':
+                    $context['seclvl']--;
                     $pop2 = array_pop($context['stack']);
                     if (!$each && ($pop2 !== implode('-', $vars[0]))) {
                         $context['error'][] = 'Unexpect token ' . self::tokenString($token) . " ! Previous token $pop$pop2 is not closed";
@@ -1283,6 +1286,7 @@ $libstr
                 ? $context['ops']['seperator'] . self::getFuncName($context, 'unl') . "($v, \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
                 : "{$context['ops']['cnd_start']}(!" . self::getFuncName($context, 'ifvar') . "($v)){$context['ops']['cnd_then']}";
         case 'each':
+            $context['seclvl']--;
             $each = 'true';
             array_shift($vars);
             break;
@@ -1296,6 +1300,7 @@ $libstr
 
         $v = self::getVariableName($vars[0], $context);
         $context['vars'][] = $vars[0];
+        $context['seclvl']++;
         $context['stack'][] = implode('-', $vars[0]);
         $context['stack'][] = '#';
         return $context['ops']['seperator'] . self::getFuncName($context, 'sec') . "($v, \$cx, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
@@ -1607,16 +1612,21 @@ class LCRun2 {
             array_pop($cx['scopes']);
             return $ret;
         }
+
+        $cx['secdec']++;
+        $ret = '';
+
         if ($v === true) {
-            return $cb($cx, $in);
+            $ret = $cb($cx, $in);
+        } else if (is_string($v)) {
+            $ret = $cb($cx, Array());
+        } else if (!is_null($v) && ($v !== false)) {
+            $ret = $cb($cx, $v);
         }
-        if (is_string($v)) {
-            return $cb($cx, Array());
-        }
-        if (!is_null($v) && ($v !== false)) {
-            return $cb($cx, $v);
-        }
-        return '';
+
+        $cx['secdec']--;
+
+        return $ret;
     }
 
     /**
