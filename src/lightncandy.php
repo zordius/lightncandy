@@ -137,7 +137,6 @@ class LightnCandy {
         ),
         'helpers' => $helpers,
         'blockhelpers' => $bhelpers,
-        'secdec' => 0,
         'scopes' => Array(\$in),
         'path' => Array(),
 $libstr
@@ -1700,9 +1699,7 @@ class LCRun2 {
         }
 
         $cx['scopes'][] = $in;
-        $cx['secdec']++;
         $ret = $cb($cx, $r);
-        $cx['secdec']--;
         array_pop($cx['scopes']);
         return $ret;
     }
