@@ -60,11 +60,7 @@ Usage
 require('src/lightncandy.php');
 
 $template = "Welcome {{name}} , You win \${{value}} dollars!!\n";
-$phpStr = LightnCandy::compile($template);
-
-echo "Template is:\n$template\n\n";
-echo "Rendered PHP code is:\n$phpStr\n\n";
-
+$phpStr = LightnCandy::compile($template);  // Rendered PHP code in $phpStr
 
 // Step 2A. (Usage 1) use LightnCandy::prepare to get render function
 //   Do not suggested this way, because it may require PHP setting allow_url_fopen=1 ,
@@ -84,6 +80,7 @@ $renderer = include($php_inc);
 
 
 // Step 3. run native PHP render function any time
+echo "Template is:\n$template\n\n";
 echo $renderer(Array('name' => 'John', 'value' => 10000));
 echo $renderer(Array('name' => 'Peter', 'value' => 1000));
 ```
@@ -94,23 +91,6 @@ The output will be:
 Template is:
 Welcome {{name}} , You win ${{value}} dollars!!
 
-
-Rendered PHP code is:
-<?php return function ($in) {
-    $cx = Array(
-        'flags' => Array(
-            'jstrue' => false,
-            'jsobj' => false,
-        ),
-        'helpers' => Array(),
-        'scopes' => Array($in),
-        'path' => Array(),
-
-    );
-    ob_start();echo 'Welcome ',htmlentities($in['name'], ENT_QUOTES),' , You win $',htmlentities($in['value'], ENT_QUOTES),' dollars!!
-';return ob_get_clean();
-}
-?>
 
 Welcome John , You win $10000 dollars!!
 Welcome Peter , You win $1000 dollars!!
