@@ -672,11 +672,10 @@ $libstr
      * @expect '$in' when input Array(null), Array()
      * @expect '$cx[\'sp_vars\'][\'index\']' when input Array('@index'), Array()
      * @expect '$cx[\'sp_vars\'][\'key\']' when input Array('@key'), Array()
-     * @expect 'null' when input Array(3,Array(null)), Array(), Array('scopes'=>Array())
      * @expect '\'a\'' when input Array('"a"'), Array(), Array()
      * @expect '(is_array($in) ? $in[\'a\'] : null)' when input Array('a'), Array()
-     * @expect '(is_array($cx[\'scopes\'][0]) ? $cx[\'scopes\'][0][\'a\'] : null)' when input Array(1,'a'), Array('vars'=>Array(1))
-     * @expect '(is_array($cx[\'scopes\'][1]) ? $cx[\'scopes\'][1][\'a\'] : null)' when input Array(1,'a'), Array('vars'=>Array(1,2))
+     * @expect '(is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1]) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)' when input Array(1,'a'), Array()
+     * @expect '(is_array($cx[\'scopes\'][count($cx[\'scopes\'])-3]) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)' when input Array(3,'a'), Array()
      */
     protected static function getVariableName($var, $context) {
         $levels = 0;
