@@ -268,6 +268,9 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(Array(2, 'a', 'b'), $method->invoke(null,
             '../../[a].b', Array('flags' => Array('advar' => 1, 'this' => 0))
         ));
+        $this->assertEquals(Array('"a.b"'), $method->invoke(null,
+            '"a.b"', Array('flags' => Array('advar' => 1, 'this' => 0))
+        ));
     }
     /**
      * @covers LightnCandy::setJSONTarget

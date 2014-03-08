@@ -76,7 +76,7 @@ class LightnCandy {
      *
      * @codeCoverageIgnore
      */
-    public static function compile($template, $options) {
+    public static function compile($template, $options = Array('flags' => self::FLAG_BESTPERFORMANCE)) {
         $context = self::buildContext($options);
 
         // Scan for partial and replace partial with template.
@@ -403,6 +403,10 @@ $libstr
      * @codeCoverageIgnore
      */
     protected static function exportHelper($context, $tname = 'helpers') {
+        if (!isset($context[$tname])) {
+            return 'Array()';
+        }
+
         $ret = '';
         foreach ($context[$tname] as $name => $func) {
             if ((is_object($func) && ($func instanceof Closure)) || ($context['flags']['exhlp'] == 0)) {
@@ -558,9 +562,9 @@ $libstr
      *
      * @codeCoverageIgnore
      */
-    public static function prepare($php, $tmp_dir) {
+    public static function prepare($php, $tmp_dir = false) {
         if (!ini_get('allow_url_include') || !ini_get('allow_url_fopen')) {
-            if (!is_dir($tmp_dir)) {
+            if (!$tmp_dir || !is_dir($tmp_dir)) {
                 $tmp_dir = sys_get_temp_dir();
             }
         }
@@ -729,10 +733,16 @@ $libstr
      * @expect Array(2, 'a', 'b') when input '../../a.b', Array('flags' => Array('advar' => 0, 'this' => 0))
      * @expect Array(2, '[a]', 'b') when input '../../[a].b', Array('flags' => Array('advar' => 0, 'this' => 0))
      * @expect Array(2, 'a', 'b') when input '../../[a].b', Array('flags' => Array('advar' => 1, 'this' => 0))
+     * @expect Array('"a.b"') when input '"a.b"', Array('flags' => Array('advar' => 1, 'this' => 0))
      */
     protected static function fixVariable($v, &$context) {
         $ret = Array();
         $levels = 0;
+
+        // handle double quoted string
+        if (preg_match('/^"(.*)"$/', $v, $matched)) {
+            return Array($v);
+        }
 
         // Trace to parent for ../ N times
         $v = preg_replace_callback('/\\.\\.\\//', function() use (&$levels) {
@@ -931,6 +941,7 @@ $libstr
                     $context['error'][] = "Wrong variable naming as '$var' in " . self::tokenString($token) . ' !';
                 }
             }
+
             if (is_string($idx)) {
                 $ret[$idx] = is_numeric($var) ? Array('"' . $var . '"') : self::fixVariable($var, $context);
             } else {
