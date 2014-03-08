@@ -180,7 +180,6 @@ $libstr
                 'exhlp' => $flags & self::FLAG_EXTHELPER,
             ),
             'level' => 0,
-            'seclvl' => 0,
             'stack' => Array(),
             'error' => Array(),
             'vars' => Array(),
@@ -700,12 +699,7 @@ $libstr
 
         // change base when trace to parent
         if ($levels > 0) {
-            $pos = $context['level'] - $levels;
-            if ($context['seclvl']) {
-                $base = "\$cx['scopes'][$pos+\$cx['secdec']]";
-            } else {
-                $base = "\$cx['scopes'][$pos]";
-            }
+            $base = "\$cx['scopes'][count(\$cx['scopes'])-$levels]";
         }
 
         if (is_null($var[0])) {
@@ -1222,7 +1216,6 @@ $libstr
     protected static function compileBlockEnd(&$token, &$context, $vars) {
             $each = false;
             $pop = array_pop($context['stack']);
-            $context['seclvl']--;
             switch ($token[self::POS_INNERTAG]) {
             case 'if':
             case 'unless':
@@ -1274,7 +1267,6 @@ $libstr
     protected static function compileBlockBegin(&$context, $vars) {
         $each = 'false';
         $v = isset($vars[1]) ? self::getVariableName($vars[1], $context) : null;
-        $context['seclvl']++;
         switch ($vars[0][0]) {
         case 'if':
             $context['stack'][] = 'if';
@@ -1612,20 +1604,19 @@ class LCRun2 {
             return $ret;
         }
 
-        $cx['secdec']++;
-        $ret = '';
-
         if ($v === true) {
-            $ret = $cb($cx, $in);
-        } else if (is_string($v)) {
-            $ret = $cb($cx, Array());
-        } else if (!is_null($v) && ($v !== false)) {
-            $ret = $cb($cx, $v);
+            return $cb($cx, $in);
+        } 
+
+        if (is_string($v)) {
+            return $cb($cx, Array());
         }
 
-        $cx['secdec']--;
+        if (!is_null($v) && ($v !== false)) {
+            return $cb($cx, $v);
+        }
 
-        return $ret;
+        return '';
     }
 
     /**
