@@ -1222,6 +1222,7 @@ $libstr
     protected static function compileBlockEnd(&$token, &$context, $vars) {
             $each = false;
             $pop = array_pop($context['stack']);
+            $context['seclvl']--;
             switch ($token[self::POS_INNERTAG]) {
             case 'if':
             case 'unless':
@@ -1244,7 +1245,6 @@ $libstr
                 switch($pop) {
                 case '#':
                 case '^':
-                    $context['seclvl']--;
                     $pop2 = array_pop($context['stack']);
                     if (!$each && ($pop2 !== implode('-', $vars[0]))) {
                         $context['error'][] = 'Unexpect token ' . self::tokenString($token) . " ! Previous token $pop$pop2 is not closed";
@@ -1274,6 +1274,7 @@ $libstr
     protected static function compileBlockBegin(&$context, $vars) {
         $each = 'false';
         $v = isset($vars[1]) ? self::getVariableName($vars[1], $context) : null;
+        $context['seclvl']++;
         switch ($vars[0][0]) {
         case 'if':
             $context['stack'][] = 'if';
@@ -1286,7 +1287,6 @@ $libstr
                 ? $context['ops']['seperator'] . self::getFuncName($context, 'unl') . "($v, \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
                 : "{$context['ops']['cnd_start']}(!" . self::getFuncName($context, 'ifvar') . "($v)){$context['ops']['cnd_then']}";
         case 'each':
-            $context['seclvl']--;
             $each = 'true';
             array_shift($vars);
             break;
@@ -1300,7 +1300,6 @@ $libstr
 
         $v = self::getVariableName($vars[0], $context);
         $context['vars'][] = $vars[0];
-        $context['seclvl']++;
         $context['stack'][] = implode('-', $vars[0]);
         $context['stack'][] = '#';
         return $context['ops']['seperator'] . self::getFuncName($context, 'sec') . "($v, \$cx, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";

@@ -248,8 +248,8 @@ Block custom helper must be used as a section, the section is started with `{{#h
 You may use block custom helper to:
 
 1. Provide advanced condition logic which is different from `{{#if ...}}` ... `{{/if}}` .
-2. Modification of current context for inner block.
-3. Provide different context to inner block.
+2. Modify current context for the inner block.
+3. Provide different context to the inner block.
 
 Block Custom Helper Interface
 -----------------------------
