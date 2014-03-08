@@ -1710,7 +1710,9 @@ class LCRun2 {
         }
 
         $cx['scopes'][] = $in;
+        $cx['secdec']++;
         $ret = $cb($cx, $r);
+        $cx['secdec']--;
         array_pop($cx['scopes']);
         return $ret;
     }
