@@ -76,7 +76,7 @@ class LightnCandy {
      *
      * @codeCoverageIgnore
      */
-    public static function compile($template, $options) {
+    public static function compile($template, $options = Array('flags' => LightnCandy::FLAG_BESTPERFORMANCE)) {
         $context = self::buildContext($options);
 
         // Scan for partial and replace partial with template.
@@ -411,12 +411,14 @@ $libstr
      */
     protected static function exportHelper($context, $tname = 'helpers') {
         $ret = '';
-        foreach ($context[$tname] as $name => $func) {
-            if ((is_object($func) && ($func instanceof Closure)) || ($context['flags']['exhlp'] == 0)) {
-                $ret .= ("            '$name' => " . self::getPHPCode($func) . ",\n");
-                continue;
+        if(isset($context[$tname])){
+            foreach ($context[$tname] as $name => $func) {
+                if ((is_object($func) && ($func instanceof Closure)) || ($context['flags']['exhlp'] == 0)) {
+                    $ret .= ("            '$name' => " . self::getPHPCode($func) . ",\n");
+                    continue;
+                }
+                $ret .= "            '$name' => '$func',\n";
             }
-            $ret .= "            '$name' => '$func',\n";
         }
 
         return "Array($ret)";
@@ -565,7 +567,7 @@ $libstr
      *
      * @codeCoverageIgnore
      */
-    public static function prepare($php, $tmp_dir) {
+    public static function prepare($php, $tmp_dir = false) {
         if (!ini_get('allow_url_include') || !ini_get('allow_url_fopen')) {
             if (!is_dir($tmp_dir)) {
                 $tmp_dir = sys_get_temp_dir();
