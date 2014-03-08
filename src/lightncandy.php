@@ -692,10 +692,16 @@ $libstr
      * @expect Array(2, 'a', 'b') when input '../../a.b', Array('flags' => Array('advar' => 0, 'this' => 0))
      * @expect Array(2, '[a]', 'b') when input '../../[a].b', Array('flags' => Array('advar' => 0, 'this' => 0))
      * @expect Array(2, 'a', 'b') when input '../../[a].b', Array('flags' => Array('advar' => 1, 'this' => 0))
+     * @expect Array('"a.b"') when input '"a.b"', Array('flags' => Array('advar' => 1, 'this' => 0))
      */
     protected static function fixVariable($v, $context) {
         $ret = Array();
         $levels = 0;
+
+        // handle double quoted string
+        if (preg_match('/^"(.*)"$/', $v, $matched)) {
+            return Array($v);
+        }
 
         // Trace to parent for ../ N times
         $v = preg_replace_callback('/\\.\\.\\//', function() use (&$levels) {
@@ -890,6 +896,7 @@ $libstr
                     $context['error'][] = "Wrong variable naming as '$var' in " . self::tokenString($token) . ' !';
                 }
             }
+
             if (is_string($idx)) {
                 $ret[$idx] = is_numeric($var) ? Array('"' . $var . '"') : self::fixVariable($var, $context);
             } else {
