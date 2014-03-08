@@ -653,10 +653,10 @@ $libstr
      *
      * @return array variable names
      */
-    protected static function getVariableNames($vn, $context) {
+    protected static function getVariableNames($vn) {
         $ret = Array();
         foreach ($vn as $i => $v) {
-            $ret[] = (is_string($i) ? "'$i'=>" : '') . self::getVariableName($v, $context);
+            $ret[] = (is_string($i) ? "'$i'=>" : '') . self::getVariableName($v);
         }
         return 'Array(' . implode(',', $ret) . ')';
     }
@@ -677,7 +677,7 @@ $libstr
      * @expect '(is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1]) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)' when input Array(1,'a'), Array()
      * @expect '(is_array($cx[\'scopes\'][count($cx[\'scopes\'])-3]) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)' when input Array(3,'a'), Array()
      */
-    protected static function getVariableName($var, $context) {
+    protected static function getVariableName($var) {
         $levels = 0;
 
         if ($var[0] === '@index') {
@@ -1168,7 +1168,7 @@ $libstr
         switch ($token[self::POS_OP]) {
         case '^':
             $context['level']++;
-            $v = self::getVariableName($vars[0], $context);
+            $v = self::getVariableName($vars[0]);
             $context['stack'][] = implode('-', $vars[0]);
             $context['stack'][] = '^';
             self::noNamedArguments($token, $context, $named);
@@ -1207,7 +1207,7 @@ $libstr
         $context['stack'][] = implode('-', $vars[0]);
         $context['stack'][] = '#';
         $ch = array_shift($vars);
-        $v = self::getVariableNames($vars, $context);
+        $v = self::getVariableNames($vars);
         return $context['ops']['seperator'] . self::getFuncName($context, 'bch') . "('$ch[0]', $v, \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
@@ -1275,7 +1275,7 @@ $libstr
      */
     protected static function compileBlockBegin(&$context, $vars) {
         $each = 'false';
-        $v = isset($vars[1]) ? self::getVariableName($vars[1], $context) : null;
+        $v = isset($vars[1]) ? self::getVariableName($vars[1]) : null;
         switch ($vars[0][0]) {
         case 'if':
             $context['stack'][] = 'if';
@@ -1299,7 +1299,7 @@ $libstr
             }
         }
 
-        $v = self::getVariableName($vars[0], $context);
+        $v = self::getVariableName($vars[0]);
         $context['vars'][] = $vars[0];
         $context['stack'][] = implode('-', $vars[0]);
         $context['stack'][] = '#';
@@ -1325,7 +1325,7 @@ $libstr
             foreach ($vars as $var) {
                 self::addJsonSchema($context, $var);
             }
-            return $context['ops']['seperator'] . self::getFuncName($context, 'ch') . "('$ch[0]', " . self::getVariableNames($vars, $context) . ", '$fn', \$cx" . ($named ? ', true' : '') . "){$context['ops']['seperator']}";
+            return $context['ops']['seperator'] . self::getFuncName($context, 'ch') . "('$ch[0]', " . self::getVariableNames($vars) . ", '$fn', \$cx" . ($named ? ', true' : '') . "){$context['ops']['seperator']}";
         }
     }
 
@@ -1359,7 +1359,7 @@ $libstr
      */
     protected static function compileVariable(&$context, &$vars, $raw) {
         self::addJsonSchema($context, $vars[0]);
-        $v = self::getVariableName($vars[0], $context);
+        $v = self::getVariableName($vars[0]);
         if ($context['flags']['jsobj'] || $context['flags']['jstrue']) {
             return $context['ops']['seperator'] . self::getFuncName($context, $raw ? 'raw' : $context['ops']['enc']) . "($v, \$cx){$context['ops']['seperator']}";
         } else {
@@ -1505,7 +1505,7 @@ class LCRun2 {
                 } else {
                     $ret = Array();
                     foreach ($v as $k => $vv) {
-                        $ret[] = self::raw($vv, $cx, $v, true);
+                        $ret[] = self::raw($vv, $cx, true);
                     }
                     return join(',', $ret);
                 }
