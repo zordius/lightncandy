@@ -29,9 +29,11 @@ class LightnCandy {
     // Compile the template as standalone php code which can execute without including LightnCandy
     const FLAG_STANDALONE = 4;
 
-    // Handlebars.js compatibility
+    // JavaScript compatibility
     const FLAG_JSTRUE = 8;
     const FLAG_JSOBJECT = 16;
+
+    // Handlebars.js compatibility
     const FLAG_THIS = 32;
     const FLAG_WITH = 64;
     const FLAG_PARENT = 128;
@@ -40,14 +42,15 @@ class LightnCandy {
     const FLAG_SPACECTL = 1024;
     const FLAG_NAMEDARG = 2048;
 
-    // Custom helper options
+    // PHP performenace flags
     const FLAG_EXTHELPER = 4096;
-
-    // PHP performance flags
     const FLAG_ECHO = 8192;
 
+    // alias flags
     const FLAG_BESTPERFORMANCE = 8192; // FLAG_ECHO
-    const FLAG_HANDLEBARSJS = 4088; // FLAG_JSTRUE + FLAG_JSOBJECT + FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME + FLAG_SPACECTL + FLAG_NAMEDARG
+    const FLAG_JS = 24; // FLAG_ECHO
+    const FLAG_HANDLEBARS = 4064; // FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME + FLAG_SPACECTL + FLAG_NAMEDARG
+    const FLAG_HANDLEBARSJS = 4088; // FLAG_JS + FLAG_HANDLEBARS
 
     // RegExps
     const PARTIAL_SEARCH = '/\\{\\{>[ \\t]*(.+?)[ \\t]*\\}\\}/s';
