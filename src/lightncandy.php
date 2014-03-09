@@ -651,9 +651,9 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Get variable names from current context
+     * Internal method used by compile().
      *
-     * @param array $vn variable name.
+     * @param array $vn variable name array.
      *
      * @return string variable names
      */
@@ -666,7 +666,7 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Get variable name from current context
+     * Internal method used by compile().
      *
      * @param array $var variable name.
      *
@@ -1171,7 +1171,7 @@ $libstr
         switch ($token[self::POS_OP]) {
         case '^':
             $v = self::getVariableName($vars[0]);
-            $context['stack'][] = implode('-', $vars[0]);
+            $context['stack'][] = self::getArrayCode($vars[0]);
             $context['stack'][] = '^';
             self::noNamedArguments($token, $context, $named);
             return "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'isec') . "($v)){$context['ops']['cnd_then']}";
@@ -1204,7 +1204,7 @@ $libstr
             return;
         }
         $context['vars'][] = $vars[0];
-        $context['stack'][] = implode('-', $vars[0]);
+        $context['stack'][] = self::getArrayCode($vars[0]);
         $context['stack'][] = '#';
         $ch = array_shift($vars);
         self::addUsageCount($context, 'blockhelpers', $ch[0]);
@@ -1249,7 +1249,7 @@ $libstr
                 case '#':
                 case '^':
                     $pop2 = array_pop($context['stack']);
-                    if (!$each && ($pop2 !== implode('-', $vars[0]))) {
+                    if (!$each && ($pop2 !== self::getArrayCode($vars[0]))) {
                         $context['error'][] = 'Unexpect token ' . self::tokenString($token) . " ! Previous token $pop$pop2 is not closed";
                         return;
                     }
