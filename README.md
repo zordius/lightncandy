@@ -60,11 +60,7 @@ Usage
 require('src/lightncandy.php');
 
 $template = "Welcome {{name}} , You win \${{value}} dollars!!\n";
-$phpStr = LightnCandy::compile($template);
-
-echo "Template is:\n$template\n\n";
-echo "Rendered PHP code is:\n$phpStr\n\n";
-
+$phpStr = LightnCandy::compile($template);  // Rendered PHP code in $phpStr
 
 // Step 2A. (Usage 1) use LightnCandy::prepare to get render function
 //   Do not suggested this way, because it may require PHP setting allow_url_fopen=1 ,
@@ -84,6 +80,7 @@ $renderer = include($php_inc);
 
 
 // Step 3. run native PHP render function any time
+echo "Template is:\n$template\n\n";
 echo $renderer(Array('name' => 'John', 'value' => 10000));
 echo $renderer(Array('name' => 'Peter', 'value' => 1000));
 ```
@@ -94,23 +91,6 @@ The output will be:
 Template is:
 Welcome {{name}} , You win ${{value}} dollars!!
 
-
-Rendered PHP code is:
-<?php return function ($in) {
-    $cx = Array(
-        'flags' => Array(
-            'jstrue' => false,
-            'jsobj' => false,
-        ),
-        'helpers' => Array(),
-        'scopes' => Array($in),
-        'path' => Array(),
-
-    );
-    ob_start();echo 'Welcome ',htmlentities($in['name'], ENT_QUOTES),' , You win $',htmlentities($in['value'], ENT_QUOTES),' dollars!!
-';return ob_get_clean();
-}
-?>
 
 Welcome John , You win $10000 dollars!!
 Welcome Peter , You win $1000 dollars!!
@@ -248,8 +228,8 @@ Block custom helper must be used as a section, the section is started with `{{#h
 You may use block custom helper to:
 
 1. Provide advanced condition logic which is different from `{{#if ...}}` ... `{{/if}}` .
-2. Modification of current context for inner block.
-3. Provide different context to inner block.
+2. Modify current context for the inner block.
+3. Provide different context to the inner block.
 
 Block Custom Helper Interface
 -----------------------------
@@ -312,13 +292,6 @@ Unsupported Feature (so far)
 * [NEVER] `{{foo/bar}}` style variable name, it is deprecated in offical handlebars.js document.
 * [Plan to support] set delimiter (change delimiter from `{{ }}` to custom string, for example `<% then %>`)
 * [Possible] input as Object and methods (now only accept associative array data structure)
-
-Lightncandy Design Concept
---------------------------
-
-* Do not OO everywhere. Single inc file, keep it simple and fast.
-* Simulate all handlebars/javascript behavior, including true, false, Object, Array output behavior.
-* Make almost everything happened in compile time, including partial support.
 
 Suggested Handlebars Template Practices
 ---------------------------------------

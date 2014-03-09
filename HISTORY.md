@@ -1,7 +1,11 @@
 HISTORY
 =======
 
-v0.10 current trunk
+v0.11 current trunk
+   * align with handlebars.js 2.0.0-alpha.1
+   * a275d52c97 use php array, remove val().
+
+v0.10 https://github.com/zordius/lightncandy/tree/v0.10
    * align with handlebars.js 2.0.0-alpha.1
    * 4c9f681080 file name changed: lightncandy.inc => lightncandy.php
    * e3de01081c some minor fix for json schema
@@ -12,6 +16,8 @@ v0.10 current trunk
    * e077d0b631 support named arguments for custom helpers {{helper name=value}}
    * 2331b6fe55 support block custom helpers
    * 4fedaa25f7 support number value as named arguments
+   * 6a91ab93d2 fix for default options and php warnings
+   * fc157fde62 fix for doblue quoted arguments (issue #15)
 
 v0.9 https://github.com/zordius/lightncandy/tree/v0.9
    * align with handlebars.js 1.3

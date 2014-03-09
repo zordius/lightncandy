@@ -21,11 +21,11 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(Array('error' => Array('Can not find custom helper function defination abc() !'), 'flags' => Array('exhlp' => 0)), $method->invoke(null,
             Array('error' => Array(), 'flags' => Array('exhlp' => 0)), Array('helpers' => Array('abc'))
         ));
-        $this->assertEquals(Array('flags' => Array('exhlp' => 1), 'helpers' => Array('LCRun2::val' => 'LCRun2::val')), $method->invoke(null,
-            Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('LCRun2::val'))
+        $this->assertEquals(Array('flags' => Array('exhlp' => 1), 'helpers' => Array('LCRun2::raw' => 'LCRun2::raw')), $method->invoke(null,
+            Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('LCRun2::raw'))
         ));
-        $this->assertEquals(Array('flags' => Array('exhlp' => 1), 'helpers' => Array('test' => 'LCRun2::val')), $method->invoke(null,
-            Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('test' => 'LCRun2::val'))
+        $this->assertEquals(Array('flags' => Array('exhlp' => 1), 'helpers' => Array('test' => 'LCRun2::raw')), $method->invoke(null,
+            Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('test' => 'LCRun2::raw'))
         ));
     }
     /**
@@ -205,28 +205,31 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         ));
     }
     /**
-     * @covers LightnCandy::getVariableArray
+     * @covers LightnCandy::getVariableName
      */
-    public function testOn_getVariableArray() {
-        $method = new ReflectionMethod('LightnCandy', 'getVariableArray');
+    public function testOn_getVariableName() {
+        $method = new ReflectionMethod('LightnCandy', 'getVariableName');
         $method->setAccessible(true);
-        $this->assertEquals('Array(null)', $method->invoke(null,
-            Array(null)
+        $this->assertEquals('$in', $method->invoke(null,
+            Array(null), Array()
         ));
-        $this->assertEquals("Array(0)", $method->invoke(null,
-            Array(0)
+        $this->assertEquals('$cx[\'sp_vars\'][\'index\']', $method->invoke(null,
+            Array('@index'), Array()
         ));
-        $this->assertEquals("Array('a')", $method->invoke(null,
-            Array('a')
+        $this->assertEquals('$cx[\'sp_vars\'][\'key\']', $method->invoke(null,
+            Array('@key'), Array()
         ));
-        $this->assertEquals("Array('b','c')", $method->invoke(null,
-            Array('b','c')
+        $this->assertEquals('\'a\'', $method->invoke(null,
+            Array('"a"'), Array(), Array()
         ));
-        $this->assertEquals("Array(null,'n',0)", $method->invoke(null,
-            Array(null, 'n', 0)
+        $this->assertEquals('(is_array($in) ? $in[\'a\'] : null)', $method->invoke(null,
+            Array('a'), Array()
         ));
-        $this->assertEquals("Array(Array('a','b'),'c')", $method->invoke(null,
-            Array(Array('a','b'),'c')
+        $this->assertEquals('(is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1]) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)', $method->invoke(null,
+            Array(1,'a'), Array()
+        ));
+        $this->assertEquals('(is_array($cx[\'scopes\'][count($cx[\'scopes\'])-3]) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)', $method->invoke(null,
+            Array(3,'a'), Array()
         ));
     }
     /**

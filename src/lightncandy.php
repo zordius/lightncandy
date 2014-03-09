@@ -97,12 +97,6 @@ class LightnCandy {
             return false;
         }
 
-        // Check used features and compile flags. If the template is simple enough,
-        // we can generate best performance code with enable 'useVar' internal flag.
-        if (!$context['flags']['jsobj'] && (($context['usedFeature']['sec'] + $context['usedFeature']['parent'] < 1) || !$context['flags']['jsobj'])) {
-            $context['useVar'] = '$in';
-        }
-
         // Do PHP code and json schema generation.
         $code = preg_replace_callback(self::TOKEN_SEARCH, function ($matches) use (&$context) {
             $tmpl = LightnCandy::compileToken($matches, $context);
@@ -187,7 +181,6 @@ $libstr
             'level' => 0,
             'stack' => Array(),
             'error' => Array(),
-            'useVar' => false,
             'vars' => Array(),
             'sp_vars' => Array(),
             'jsonSchema' => Array(
@@ -216,7 +209,13 @@ $libstr
                 'helper' => 0,
                 'bhelper' => 0,
             ),
+            'usedCount' => Array(
+                'var' => Array(),
+                'helpers' => Array(),
+                'blockhelpers' => Array(),
+            ),
             'helpers' => Array(),
+            'blockhelpers' => Array(),
         );
 
         $context['ops'] = $context['flags']['echo'] ? Array(
@@ -257,8 +256,8 @@ $libstr
      * @expect Array() when input Array(), Array()
      * @expect Array('flags' => Array('exhlp' => 1)) when input Array('flags' => Array('exhlp' => 1)), Array('helpers' => Array('abc'))
      * @expect Array('error' => Array('Can not find custom helper function defination abc() !'), 'flags' => Array('exhlp' => 0)) when input Array('error' => Array(), 'flags' => Array('exhlp' => 0)), Array('helpers' => Array('abc'))
-     * @expect Array('flags' => Array('exhlp' => 1), 'helpers' => Array('LCRun2::val' => 'LCRun2::val')) when input Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('LCRun2::val'))
-     * @expect Array('flags' => Array('exhlp' => 1), 'helpers' => Array('test' => 'LCRun2::val')) when input Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('test' => 'LCRun2::val'))
+     * @expect Array('flags' => Array('exhlp' => 1), 'helpers' => Array('LCRun2::raw' => 'LCRun2::raw')) when input Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('LCRun2::raw'))
+     * @expect Array('flags' => Array('exhlp' => 1), 'helpers' => Array('test' => 'LCRun2::raw')) when input Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('test' => 'LCRun2::raw'))
      */
     protected static function buildHelperTable($context, $options, $tname = 'helpers') {
         if (isset($options[$tname]) && is_array($options[$tname])) {
@@ -410,12 +409,11 @@ $libstr
      * @codeCoverageIgnore
      */
     protected static function exportHelper($context, $tname = 'helpers') {
-        if (!isset($context[$tname])) {
-            return 'Array()';
-        }
-
         $ret = '';
         foreach ($context[$tname] as $name => $func) {
+            if (!isset($context['usedCount'][$tname][$name])) {
+                continue;
+            }
             if ((is_object($func) && ($func instanceof Closure)) || ($context['flags']['exhlp'] == 0)) {
                 $ret .= ("            '$name' => " . self::getPHPCode($func) . ",\n");
                 continue;
@@ -653,30 +651,71 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Get variable names array
+     * Internal method used by compile().
      *
-     * @param array $vn variable name.
+     * @param array $vn variable name array.
      *
-     * @return string variable name array as string presentation.
-     *
-     * @expect 'Array(null)' when input Array(null)
-     * @expect "Array(0)" when input Array(0)
-     * @expect "Array('a')" when input Array('a')
-     * @expect "Array('b','c')" when input Array('b','c')
-     * @expect "Array(null,'n',0)" when input Array(null, 'n', 0)
-     * @expect "Array(Array('a','b'),'c')" when input Array(Array('a','b'),'c')
+     * @return string variable names
      */
-    protected static function getVariableArray($vn) {
+    protected static function getVariableNames($vn) {
         $ret = Array();
         foreach ($vn as $i => $v) {
-            if (is_array($v)) {
-                $ret[] = (is_string($i) ? "'$i'=>" : '') . self::getVariableArray($v);
-            } else {
-                $ret[] = is_string($v) ? "'$v'" : (is_null($v) ? 'null' : $v);
-            }
+            $ret[] = (is_string($i) ? "'$i'=>" : '') . self::getVariableName($v);
+        }
+        return 'Array(' . implode(',', $ret) . ')';
+    }
+
+    /**
+     * Internal method used by compile().
+     *
+     * @param array $var variable name.
+     *
+     * @return array variable names
+     *
+     * @expect '$in' when input Array(null), Array()
+     * @expect '$cx[\'sp_vars\'][\'index\']' when input Array('@index'), Array()
+     * @expect '$cx[\'sp_vars\'][\'key\']' when input Array('@key'), Array()
+     * @expect '\'a\'' when input Array('"a"'), Array(), Array()
+     * @expect '(is_array($in) ? $in[\'a\'] : null)' when input Array('a'), Array()
+     * @expect '(is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1]) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)' when input Array(1,'a'), Array()
+     * @expect '(is_array($cx[\'scopes\'][count($cx[\'scopes\'])-3]) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)' when input Array(3,'a'), Array()
+     */
+    protected static function getVariableName($var) {
+        $levels = 0;
+
+        if ($var[0] === '@index') {
+            return "\$cx['sp_vars']['index']";
         }
 
-        return 'Array(' . implode(',', $ret) . ')';
+        if ($var[0] === '@key') {
+            return "\$cx['sp_vars']['key']";
+        }
+
+        // Handle double quoted string
+        if (preg_match('/^"(.*)"$/', $var[0], $matched)) {
+            return "'{$matched[1]}'";
+        }
+
+        $base = '$in';
+        // trace to parent
+        if (!is_string($var[0]) && is_int($var[0])) {
+            $levels = array_shift($var);
+        }
+
+        // change base when trace to parent
+        if ($levels > 0) {
+            $base = "\$cx['scopes'][count(\$cx['scopes'])-$levels]";
+        }
+
+        if (is_null($var[0])) {
+            return $base;
+        }
+
+        $n = self::getArrayCode($var);
+        array_pop($var);
+        $p = count($var) ? self::getArrayCode($var) : '';
+
+        return "(is_array($base$p) ? $base$n : null)";
     }
 
     /**
@@ -698,7 +737,7 @@ $libstr
      * @expect Array(2, 'a', 'b') when input '../../[a].b', Array('flags' => Array('advar' => 1, 'this' => 0))
      * @expect Array('"a.b"') when input '"a.b"', Array('flags' => Array('advar' => 1, 'this' => 0))
      */
-    protected static function fixVariable($v, $context) {
+    protected static function fixVariable($v, &$context) {
         $ret = Array();
         $levels = 0;
 
@@ -715,6 +754,10 @@ $libstr
 
         if ($levels) {
             $ret[] = $levels;
+            if (!$context['flags']['parent']) {
+                $context['error'][] = 'do not support {{../var}}, you should do compile with LightnCandy::FLAG_PARENT flag';
+            }
+            $context['usedFeature']['parent']++;
         }
 
         if ($context['flags']['advar'] && preg_match('/\\]/', $v)) {
@@ -1056,14 +1099,6 @@ $libstr
         if (isset($context['helpers'][$vars[0][0]])) {
             return $context['usedFeature']['helper']++;
         }
-
-        // validate parent context.
-        if (preg_match('/\\.\\.(\\/.+)*/', $vars[0][0])) {
-            if (!$context['flags']['parent']) {
-                $context['error'][] = 'do not support {{../var}}, you should do compile with LightnCandy::FLAG_PARENT flag';
-            }
-            return $context['usedFeature']['parent']++;
-        }
     }
 
     /**
@@ -1135,16 +1170,11 @@ $libstr
     protected static function compileSection(&$token, &$context, $vars, $named) {
         switch ($token[self::POS_OP]) {
         case '^':
-            $v = self::getVariableArray($vars[0]);
-            $context['stack'][] = $v;
+            $v = self::getVariableName($vars[0]);
+            $context['stack'][] = self::getArrayCode($vars[0]);
             $context['stack'][] = '^';
             self::noNamedArguments($token, $context, $named);
-            if ($context['useVar']) {
-                $v = $context['useVar'] . "['{$token[self::POS_INNERTAG]}']"; //FIXME
-                return "{$context['ops']['cnd_start']}(is_null($v) && ($v !== false)){$context['ops']['cnd_then']}"; 
-            } else {
-                return "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'isec') . "($v, \$cx, \$in)){$context['ops']['cnd_then']}";
-            }
+            return "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'isec') . "($v)){$context['ops']['cnd_then']}";
         case '/':
             return self::compileBlockEnd($token, $context, $vars);
         case '!':
@@ -1174,10 +1204,11 @@ $libstr
             return;
         }
         $context['vars'][] = $vars[0];
-        $context['stack'][] = self::getVariableArray($vars[0]);
+        $context['stack'][] = self::getArrayCode($vars[0]);
         $context['stack'][] = '#';
         $ch = array_shift($vars);
-        $v = self::getVariableArray($vars);
+        self::addUsageCount($context, 'blockhelpers', $ch[0]);
+        $v = self::getVariableNames($vars);
         return $context['ops']['seperator'] . self::getFuncName($context, 'bch') . "('$ch[0]', $v, \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
@@ -1194,17 +1225,16 @@ $libstr
      */
     protected static function compileBlockEnd(&$token, &$context, $vars) {
             $each = false;
+            $pop = array_pop($context['stack']);
             switch ($token[self::POS_INNERTAG]) {
             case 'if':
             case 'unless':
-                $pop = array_pop($context['stack']);
                 if ($pop == ':') {
                     array_pop($context['stack']);
                     return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}){$context['ops']['seperator']}" : "{$context['ops']['cnd_end']}";
                 }
                 return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}){$context['ops']['seperator']}" : "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
             case 'with':
-                $pop = array_pop($context['stack']);
                 if ($pop !== 'with') {
                    $context['error'][] = 'Unexpect token /with !';
                    return;
@@ -1215,12 +1245,11 @@ $libstr
                 // Continue to same logic {{/each}} === {{/any_value}}
             default:
                 array_pop($context['vars']);
-                $pop = array_pop($context['stack']);
                 switch($pop) {
                 case '#':
                 case '^':
                     $pop2 = array_pop($context['stack']);
-                    if (!$each && ($pop2 !== self::getVariableArray($vars[0]))) {
+                    if (!$each && ($pop2 !== self::getArrayCode($vars[0]))) {
                         $context['error'][] = 'Unexpect token ' . self::tokenString($token) . " ! Previous token $pop$pop2 is not closed";
                         return;
                     }
@@ -1247,18 +1276,18 @@ $libstr
      */
     protected static function compileBlockBegin(&$context, $vars) {
         $each = 'false';
-        $v = isset($vars[1]) ? self::getVariableArray($vars[1]) : null;
+        $v = isset($vars[1]) ? self::getVariableName($vars[1]) : null;
         switch ($vars[0][0]) {
         case 'if':
             $context['stack'][] = 'if';
             return $context['usedFeature']['parent'] 
                 ? $context['ops']['seperator'] . self::getFuncName($context, 'ifv') . "($v, \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
-                : "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'ifvar') . "($v, \$cx, \$in)){$context['ops']['cnd_then']}";
+                : "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'ifvar') . "($v)){$context['ops']['cnd_then']}";
         case 'unless':
             $context['stack'][] = 'unless';
             return $context['usedFeature']['parent']
                 ? $context['ops']['seperator'] . self::getFuncName($context, 'unl') . "($v, \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
-                : "{$context['ops']['cnd_start']}(!" . self::getFuncName($context, 'ifvar') . "($v, \$cx, \$in)){$context['ops']['cnd_then']}";
+                : "{$context['ops']['cnd_start']}(!" . self::getFuncName($context, 'ifvar') . "($v)){$context['ops']['cnd_then']}";
         case 'each':
             $each = 'true';
             array_shift($vars);
@@ -1271,9 +1300,9 @@ $libstr
             }
         }
 
-        $v = self::getVariableArray($vars[0]);
+        $v = self::getVariableName($vars[0]);
         $context['vars'][] = $vars[0];
-        $context['stack'][] = $v;
+        $context['stack'][] = self::getArrayCode($vars[0]);
         $context['stack'][] = '#';
         return $context['ops']['seperator'] . self::getFuncName($context, 'sec') . "($v, \$cx, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
@@ -1294,10 +1323,11 @@ $libstr
         $fn = $raw ? 'raw' : $context['ops']['enc'];
         if (isset($context['helpers'][$vars[0][0]])) {
             $ch = array_shift($vars);
+            self::addUsageCount($context, 'helpers', $ch[0]);
             foreach ($vars as $var) {
                 self::addJsonSchema($context, $var);
             }
-            return $context['ops']['seperator'] . self::getFuncName($context, 'ch') . "('$ch[0]', " . self::getVariableArray($vars) . ", '$fn', \$cx, \$in" . ($named ? ', true' : '') . "){$context['ops']['seperator']}";
+            return $context['ops']['seperator'] . self::getFuncName($context, 'ch') . "('$ch[0]', " . self::getVariableNames($vars) . ", '$fn', \$cx" . ($named ? ', true' : '') . "){$context['ops']['seperator']}";
         }
     }
 
@@ -1331,17 +1361,28 @@ $libstr
      */
     protected static function compileVariable(&$context, &$vars, $raw) {
         self::addJsonSchema($context, $vars[0]);
-        if ($context['useVar']) {
-            $v = $context['useVar'] . self::getArrayCode($vars[0]);
-            if ($context['flags']['jstrue']) {
-                return $raw ? "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}$v{$context['ops']['cnd_end']}" : "{$context['ops']['cnd_start']}($v === true){$context['ops']['cnd_then']}'true'{$context['ops']['cnd_else']}htmlentities($v, ENT_QUOTES, 'UTF-8'){$context['ops']['cnd_end']}";
-            } else {
-                return $raw ? "{$context['ops']['seperator']}$v{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlentities($v, ENT_QUOTES, 'UTF-8'){$context['ops']['seperator']}";
-            }
+        $v = self::getVariableName($vars[0]);
+        if ($context['flags']['jsobj'] || $context['flags']['jstrue']) {
+            return $context['ops']['seperator'] . self::getFuncName($context, $raw ? 'raw' : $context['ops']['enc']) . "($v, \$cx){$context['ops']['seperator']}";
         } else {
-            $v = self::getVariableArray($vars[0]);
-            return $context['ops']['seperator'] . self::getFuncName($context, $raw ? 'raw' : $context['ops']['enc']) . "($v, \$cx, \$in){$context['ops']['seperator']}";
+            return $raw ? "{$context['ops']['seperator']}$v{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlentities($v, ENT_QUOTES, 'UTF-8'){$context['ops']['seperator']}";
         }
+    }
+
+   /**
+     * Internal method used by compile(). Add usage count to context
+     *
+     * @param array $context current context
+     * @param string $category ctegory name, can be one of: 'var', 'helpers', 'blockhelpers'
+     * @param string $name used name
+     *
+     * @codeCoverageIgnore
+     */
+    protected static function addUsageCount(&$context, $category, $name) {
+         if (!isset($context['usedCount'][$category][$name])) {
+             $context['usedCount'][$category][$name] = 0;
+         }
+         $context['usedCount'][$category][$name]++;
     }
 }
 
@@ -1352,32 +1393,28 @@ class LCRun2 {
     /**
      * LightnCandy runtime method for {{#if var}}.
      *
-     * @param array $var variable name to be tested
-     * @param array $cx render time context
-     * @param array $in input data with current scope
+     * @param mixed $v value to be tested
      *
      * @return boolean Return true when the value is not null nor false.
      * 
-     * @expect false when input Array('a'), Array(), Array()
-     * @expect false when input Array('a'), Array(), Array('a' => null)
-     * @expect false when input Array('a'), Array(), Array('a' => 0)
-     * @expect false when input Array('a'), Array(), Array('a' => false)
-     * @expect true when input Array('a'), Array(), Array('a' => true)
-     * @expect true when input Array('a'), Array(), Array('a' => 1)
-     * @expect false when input Array('a'), Array(), Array('a' => '')
-     * @expect false when input Array('a'), Array(), Array('a' => Array())
-     * @expect true when input Array('a'), Array(), Array('a' => Array(''))
-     * @expect true when input Array('a'), Array(), Array('a' => Array(0))
+     * @expect false when input null
+     * @expect false when input 0
+     * @expect false when input false
+     * @expect true when input true
+     * @expect true when input 1
+     * @expect false when input ''
+     * @expect false when input Array()
+     * @expect true when input Array('')
+     * @expect true when input Array(0)
      */
-    public static function ifvar($var, $cx, $in) {
-        $v = self::val($var, $cx, $in);
+    public static function ifvar($v) {
         return !is_null($v) && ($v !== false) && ($v !== 0) && ($v !== '') && (is_array($v) ? (count($v) > 0) : true);
     }
 
     /**
      * LightnCandy runtime method for {{#if var}} when {{../var}} used.
      *
-     * @param array $var variable name to be tested
+     * @param array $v value to be tested
      * @param array $cx render time context
      * @param array $in input data with current scope
      * @param function $truecb callback function when test result is true
@@ -1385,29 +1422,23 @@ class LCRun2 {
      *
      * @return string The rendered string of the section
      * 
-     * @expect '' when input Array('a'), Array('scopes' => Array()), Array(), function () {return 'Y';}
-     * @expect 'Y' when input Array('a'), Array('scopes' => Array()), Array('a' => 1), function () {return 'Y';}
-     * @expect 'N' when input Array('a'), Array('scopes' => Array()), Array(), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'N' when input Array('a'), Array('scopes' => Array()), Array('a' => null), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'N' when input Array('a'), Array('scopes' => Array()), Array('a' => false), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'N' when input Array('a'), Array('scopes' => Array()), Array('a' => ''), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'N' when input Array('a'), Array('scopes' => Array()), Array('a' => Array()), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'N' when input Array('a'), Array('scopes' => Array()), Array('a' => 0), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'Y' when input Array('a'), Array('scopes' => Array()), Array('a' => Array(0)), function () {return 'Y';}, function () {return 'N';}
+     * @expect '' when input null, Array('scopes' => Array()), Array(), null
+     * @expect '' when input null, Array('scopes' => Array()), Array(), function () {return 'Y';}
+     * @expect 'Y' when input 1, Array('scopes' => Array()), Array(), function () {return 'Y';}
+     * @expect 'N' when input null, Array('scopes' => Array()), Array(), function () {return 'Y';}, function () {return 'N';}
      */
-    public static function ifv($var, $cx, $in, $truecb, $falsecb = null) {
-        $v = self::val($var, $cx, $in);
+    public static function ifv($v, $cx, $in, $truecb, $falsecb = null) {
         $ret = '';
-        if (is_null($v) || ($v === false) || ($v === 0) || ($v === '') || (is_array($v) && (count($v) == 0))) {
-            if ($falsecb) {
-                $cx['scopes'][] = $in;
-                $ret = $falsecb($cx, $in);
-                array_pop($cx['scopes']);
-            }
-        } else {
+        if (self::ifvar($v)) {
             if ($truecb) {
                 $cx['scopes'][] = $in;
                 $ret = $truecb($cx, $in);
+                array_pop($cx['scopes']);
+            }
+        } else {
+            if ($falsecb) {
+                $cx['scopes'][] = $in;
+                $ret = $falsecb($cx, $in);
                 array_pop($cx['scopes']);
             }
         }
@@ -1417,21 +1448,17 @@ class LCRun2 {
     /**
      * LightnCandy runtime method for {{$unless var}} when {{../var}} used.
      *
-     * @param array $var variable name to be tested
+     * @param mixed $var value be tested
      * @param array $cx render time context
      * @param array $in input data with current scope
      *
      * @return string Return rendered string when the value is not null nor false.
      *
-     * @expect 'Y' when input Array('a'), Array('scopes' => Array()), Array(), function () {return 'Y';}
-     * @expect '' when input Array('a'), Array('scopes' => Array()), Array('a' => 1), function () {return 'Y';}
-     * @expect 'Y' when input Array('a'), Array('scopes' => Array()), Array(), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'Y' when input Array('a'), Array('scopes' => Array()), Array('a' => null), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'Y' when input Array('a'), Array('scopes' => Array()), Array('a' => false), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'Y' when input Array('a'), Array('scopes' => Array()), Array('a' => ''), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'Y' when input Array('a'), Array('scopes' => Array()), Array('a' => Array()), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'Y' when input Array('a'), Array('scopes' => Array()), Array('a' => 0), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'N' when input Array('a'), Array('scopes' => Array()), Array('a' => Array(0)), function () {return 'Y';}, function () {return 'N';}
+     * @expect '' when input null, Array('scopes' => Array()), Array(), null
+     * @expect 'Y' when input null, Array('scopes' => Array()), Array(), function () {return 'Y';}
+     * @expect '' when input 1, Array('scopes' => Array()), Array(), function () {return 'Y';}
+     * @expect 'Y' when input null, Array('scopes' => Array()), Array(), function () {return 'Y';}, function () {return 'N';}
+     * @expect 'N' when input true, Array('scopes' => Array()), Array(), function () {return 'Y';}, function () {return 'N';}
      */
     public static function unl($var, $cx, $in, $truecb, $falsecb = null) {
         return self::ifv($var, $cx, $in, $falsecb, $truecb);
@@ -1440,123 +1467,43 @@ class LCRun2 {
     /**
      * LightnCandy runtime method for {{^var}} inverted section.
      *
-     * @param array $var variable name to be tested
-     * @param array $cx render time context
-     * @param array $in input data with current scope
+     * @param mixed $v value to be tested
      *
      * @return boolean Return true when the value is not null nor false.
      *
-     * @expect true when input Array('a'), Array(), Array()
-     * @expect false when input Array('a'), Array(), Array('a' => 0)
-     * @expect true when input Array('a'), Array(), Array('a' => false)
-     * @expect false when input Array('a'), Array(), Array('a' => 'false')
-     * @expect true when input Array('a'), Array(), Array('a' => null)
+     * @expect true when input null
+     * @expect false when input 0
+     * @expect true when input false
+     * @expect false when input 'false'
      */
-    public static function isec($var, $cx, $in) {
-        $v = self::val($var, $cx, $in);
+    public static function isec($v) {
         return is_null($v) || ($v === false);
-    }
-
-    /**
-     * LightnCandy runtime method to get input value.
-     *
-     * @param array $var variable name to get the raw value
-     * @param array $cx render time context
-     * @param array $in input data with current scope
-     *
-     * @return mixed The raw value of the specified variable
-     *
-     * @expect Array() when input Array(null), Array(), Array()
-     * @expect Array('a') when input Array(null), Array(), Array('a')
-     * @expect null when input Array('a'), Array(), Array()
-     * @expect 'a' when input Array('"a"'), Array(), Array()
-     * @expect 'a' when input Array('@index'), Array('sp_vars' => Array('index' => 'a')), Array()
-     * @expect 'b' when input Array('@key'), Array('sp_vars' => Array('key' => 'b')), Array()
-     * @expect 0 when input Array('a'), Array(), Array('a' => 0)
-     * @expect false when input Array('a'), Array(), Array('a' => false)
-     * @expect null when input Array('a','b'), Array(), Array('a' => 0)
-     * @expect null when input Array('a','b'), Array(), Array()
-     * @expect 'Q' when input Array('a','b'), Array(), Array('a' => Array('b' => 'Q'))
-     * @expect '' when input Array(1), Array('scopes' => Array()), Array()
-     * @expect 'Y' when input Array(1), Array('scopes' => Array('Y')), Array()
-     * @expect null when input Array(1, 'a'), Array('scopes' => Array('Y')), Array()
-     * @expect 'q' when input Array(1, 'a'), Array('scopes' => Array(Array('a' => 'q'))), Array()
-     * @expect 'o' when input Array(2, 'a'), Array('scopes' => Array(Array('a' => 'o'), Array('a' => 'p'))), Array()
-     * @expect 'x' when input Array(3), Array('scopes' => Array('x', Array('a' => 'q'), Array('b' => 'r'))), Array()
-     * @expect 'o' when input Array(3, 'c'), Array('scopes' => Array(Array('c' => 'o'), Array('a' => 'q'), Array('b' => 'r'))), Array()
-     */
-    public static function val($var, $cx, $in) {
-        $levels = 0;
-
-        if ($var[0] === '@index') {
-            return $cx['sp_vars']['index'];
-        }
-
-        if ($var[0] === '@key') {
-            return $cx['sp_vars']['key'];
-        }
-
-        // Handle double quoted string
-        if (preg_match('/^"(.*)"$/', $var[0], $matched)) {
-            return $matched[1];
-        }
-
-        // trace to parent
-        if (!is_string($var[0]) && is_int($var[0])) {
-            $levels = array_shift($var);
-        }
-
-        // response '' when beyand root.
-        if ($levels > 0) {
-            $pos = count($cx['scopes']) - $levels;
-            if ($pos >= 0) {
-                $in = $cx['scopes'][$pos];
-            } else {
-                return '';
-            }
-        }
-
-        $last = array_pop($var);
-
-        // path search on objects
-        foreach ($var as $p) {
-            if (array_key_exists($p, $in)) {
-                $in = $in[$p];
-            } else {
-                return null;
-            }
-        }
-
-        return ($last === null) ? $in : (is_array($in) && isset($in[$last]) ? $in[$last] : null);
     }
 
     /**
      * LightnCandy runtime method for {{{var}}} .
      *
-     * @param array $var variable name to get the raw value
+     * @param mixed $v value to be output
      * @param array $cx render time context
-     * @param array $in input data with current scope
      * @param boolean $loop true when in loop
      *
      * @return string The raw value of the specified variable
      *
-     * @expect true when input Array(null), Array('flags' => Array('jstrue' => 0)), true
-     * @expect 'true' when input Array(null), Array('flags' => Array('jstrue' => 1)), true
-     * @expect '' when input Array(null), Array('flags' => Array('jstrue' => 0)), false
-     * @expect '' when input Array(null), Array('flags' => Array('jstrue' => 1)), false
-     * @expect 'false' when input Array(null), Array('flags' => Array('jstrue' => 1)), false, true
-     * @expect Array('a', 'b') when input Array(null), Array('flags' => Array('jstrue' => 1, 'jsobj' => 0)), Array('a', 'b')
-     * @expect 'a,b' when input Array(null), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('a', 'b')
-     * @expect '[object Object]' when input Array(null), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('a', 'c' => 'b')
-     * @expect '[object Object]' when input Array(null), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('c' => 'b')
-     * @expect 'a,true' when input Array(null), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('a', true)
-     * @expect 'a,1' when input Array(null), Array('flags' => Array('jstrue' => 0, 'jsobj' => 1)), Array('a', true)
-     * @expect 'a,' when input Array(null), Array('flags' => Array('jstrue' => 0, 'jsobj' => 1)), Array('a', false)
-     * @expect 'a,false' when input Array(null), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1)), Array('a', false)
+     * @expect true when input true, Array('flags' => Array('jstrue' => 0))
+     * @expect 'true' when input true, Array('flags' => Array('jstrue' => 1))
+     * @expect '' when input false, Array('flags' => Array('jstrue' => 0))
+     * @expect '' when input false, Array('flags' => Array('jstrue' => 1))
+     * @expect 'false' when input false, Array('flags' => Array('jstrue' => 1)), true
+     * @expect Array('a', 'b') when input Array('a', 'b'), Array('flags' => Array('jstrue' => 1, 'jsobj' => 0))
+     * @expect 'a,b' when input Array('a','b'), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1))
+     * @expect '[object Object]' when input Array('a', 'c' => 'b'), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1))
+     * @expect '[object Object]' when input Array('c' => 'b'), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1))
+     * @expect 'a,true' when input Array('a', true), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1))
+     * @expect 'a,1' when input Array('a',true), Array('flags' => Array('jstrue' => 0, 'jsobj' => 1))
+     * @expect 'a,' when input Array('a',false), Array('flags' => Array('jstrue' => 0, 'jsobj' => 1))
+     * @expect 'a,false' when input Array('a',false), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1))
      */
-    public static function raw($var, $cx, $in, $loop = false) {
-        $v = self::val($var, $cx, $in);
-
+    public static function raw($v, $cx, $loop = false) {
         if ($v === true) {
             if ($cx['flags']['jstrue']) {
                 return 'true';
@@ -1576,7 +1523,7 @@ class LCRun2 {
                 } else {
                     $ret = Array();
                     foreach ($v as $k => $vv) {
-                        $ret[] = self::raw(Array('' . $k), $cx, $v, true);
+                        $ret[] = self::raw($vv, $cx, true);
                     }
                     return join(',', $ret);
                 }
@@ -1589,41 +1536,39 @@ class LCRun2 {
     /**
      * LightnCandy runtime method for {{var}} .
      *
-     * @param array $var variable name to get the htmlencoded value
+     * @param mixed $var value to be htmlencoded
      * @param array $cx render time context
-     * @param array $in input data with current scope
      *
      * @return string The htmlencoded value of the specified variable
      *
-     * @expect 'a' when input Array(null), Array(), 'a'
-     * @expect 'a&amp;b' when input Array(null), Array(), 'a&b'
-     * @expect 'a&#039;b' when input Array(null), Array(), 'a\'b'
+     * @expect 'a' when input 'a', Array()
+     * @expect 'a&amp;b' when input 'a&b', Array()
+     * @expect 'a&#039;b' when input 'a\'b', Array()
      */
-    public static function enc($var, $cx, $in) {
-        return htmlentities(self::raw($var, $cx, $in), ENT_QUOTES, 'UTF-8');
+    public static function enc($var, $cx) {
+        return htmlentities(self::raw($var, $cx), ENT_QUOTES, 'UTF-8');
     }
 
     /**
      * LightnCandy runtime method for {{var}} , and deal with single quote to same as handlebars.js .
      *
-     * @param array $var variable name to get the htmlencoded value
+     * @param mixed $var value to be htmlencoded
      * @param array $cx render time context
-     * @param array $in input data with current scope
      *
      * @return string The htmlencoded value of the specified variable
      *
-     * @expect 'a' when input Array(null), Array(), 'a'
-     * @expect 'a&amp;b' when input Array(null), Array(), 'a&b'
-     * @expect 'a&#x27;b' when input Array(null), Array(), 'a\'b'
+     * @expect 'a' when input 'a', Array()
+     * @expect 'a&amp;b' when input 'a&b', Array()
+     * @expect 'a&#x27;b' when input 'a\'b', Array()
      */
-    public static function encq($var, $cx, $in) {
-        return preg_replace('/&#039;/', '&#x27;', htmlentities(self::raw($var, $cx, $in), ENT_QUOTES, 'UTF-8'));
+    public static function encq($var, $cx) {
+        return preg_replace('/&#039;/', '&#x27;', htmlentities(self::raw($var, $cx), ENT_QUOTES, 'UTF-8'));
     }
 
     /**
      * LightnCandy runtime method for {{#var}} section.
      *
-     * @param array $var variable name for section
+     * @param mixed $v value for the section
      * @param array $cx render time context
      * @param array $in input data with current scope
      * @param boolean $each true when rendering #each
@@ -1631,22 +1576,20 @@ class LCRun2 {
      *
      * @return string The rendered string of the section
      *
-     * @expect '' when input Array(null), Array(), false, false, function () {return 'A';}
-     * @expect '' when input Array(null), Array(), null, false, function () {return 'A';}
-     * @expect 'A' when input Array(null), Array(), true, false, function () {return 'A';}
-     * @expect 'A' when input Array(null), Array(), 0, false, function () {return 'A';}
-     * @expect '-a=' when input Array(null), Array(), Array('a'), false, function ($c, $i) {return "-$i=";}
-     * @expect '-a=-b=' when input Array(null), Array(), Array('a', 'b'), false, function ($c, $i) {return "-$i=";}
-     * @expect '' when input Array(null), Array(), 'abc', true, function ($c, $i) {return "-$i=";}
-     * @expect '-b=' when input Array(null), Array(), Array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
-     * @expect '' when input Array('b'), Array(), Array('a' => 'b'), true, function ($c, $i) {return "-{$i['a']}=";}
-     * @expect 0 when input Array('a'), Array(), Array('a' => 'b'), false, function ($c, $i) {return count($i);}
-     * @expect '1' when input Array('a'), Array(), Array('a' => 1), false, function ($c, $i) {return print_r($i, true);}
-     * @expect '0' when input Array('a'), Array(), Array('a' => 0), false, function ($c, $i) {return print_r($i, true);}
-     * @expect '{"b":"c"}' when input Array('a'), Array(), Array('a' => Array('b' => 'c')), false, function ($c, $i) {return json_encode($i);}
+     * @expect '' when input false, Array(), false, false, function () {return 'A';}
+     * @expect '' when input null, Array(), null, false, function () {return 'A';}
+     * @expect 'A' when input true, Array(), true, false, function () {return 'A';}
+     * @expect 'A' when input 0, Array(), 0, false, function () {return 'A';}
+     * @expect '-a=' when input Array('a'), Array(), Array('a'), false, function ($c, $i) {return "-$i=";}
+     * @expect '-a=-b=' when input Array('a','b'), Array(), Array('a','b'), false, function ($c, $i) {return "-$i=";}
+     * @expect '' when input 'abc', Array(), 'abc', true, function ($c, $i) {return "-$i=";}
+     * @expect '-b=' when input Array('a'=>'b'), Array(), Array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
+     * @expect 0 when input 'b', Array(), 'b', false, function ($c, $i) {return count($i);}
+     * @expect '1' when input 1, Array(), 1, false, function ($c, $i) {return print_r($i, true);}
+     * @expect '0' when input 0, Array(), 0, false, function ($c, $i) {return print_r($i, true);}
+     * @expect '{"b":"c"}' when input Array('b'=>'c'), Array(), Array('b' => 'c'), false, function ($c, $i) {return json_encode($i);}
      */
-    public static function sec($var, &$cx, $in, $each, $cb) {
-        $v = self::val($var, $cx, $in);
+    public static function sec($v, &$cx, $in, $each, $cb) {
         $isary = is_array($v);
         $loop = $each;
         if (!$loop && $isary) {
@@ -1687,35 +1630,38 @@ class LCRun2 {
             array_pop($cx['scopes']);
             return $ret;
         }
+
         if ($v === true) {
             return $cb($cx, $in);
-        }
+        } 
+
         if (is_string($v)) {
             return $cb($cx, Array());
         }
+
         if (!is_null($v) && ($v !== false)) {
             return $cb($cx, $v);
         }
+
         return '';
     }
 
     /**
      * LightnCandy runtime method for {{#with var}} .
      *
-     * @param array $var variable name for section
+     * @param mixed $v value to be the new context
      * @param array $cx render time context
      * @param array $in input data with current scope
      * @param function $cb callback function to render child context
      *
      * @return string The rendered string of the token
      *
-     * @expect '' when input Array(null), Array(), false, function () {return 'A';}
-     * @expect '' when input Array(null), Array(), null, function () {return 'A';}
-     * @expect '-Array=' when input Array(null), Array(), Array('a' => 'b'), function ($c, $i) {return "-$i=";}
-     * @expect '-b=' when input Array('a'), Array(), Array('a' => 'b'), function ($c, $i) {return "-$i=";}
+     * @expect '' when input false, Array(), false, function () {return 'A';}
+     * @expect '' when input null, Array(), null, function () {return 'A';}
+     * @expect '-Array=' when input Array('a'=>'b'), Array(), Array('a' => 'b'), function ($c, $i) {return "-$i=";}
+     * @expect '-b=' when input 'b', Array(), Array('a' => 'b'), function ($c, $i) {return "-$i=";}
      */
-    public static function wi($var, &$cx, $in, $cb) {
-        $v = self::val($var, $cx, $in);
+    public static function wi($v, &$cx, $in, $cb) {
         if (($v === false) || ($v === null)) {
             return '';
         }
@@ -1729,22 +1675,22 @@ class LCRun2 {
      * LightnCandy runtime method for custom helpers.
      *
      * @param string $ch the name of custom helper to be executed
-     * @param array $vars variable names for helpers
+     * @param array $vars variables for the helper
      * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
      * @param array $cx render time context
-     * @param array $in input data with current scope
      * @param boolean $named input arguments are named
      *
      * @return string The rendered string of the token
      *
-     * @expect '=-=' when input 'a', Array(Array(null)), 'raw', Array('helpers' => Array('a' => function ($i) {return "=$i=";})), '-'
-     * @expect '=&amp;=' when input 'a', Array(Array(null)), 'enc', Array('helpers' => Array('a' => function ($i) {return "=$i=";})), '&'
-     * @expect '=&#x27;=' when input 'a', Array(Array(null)), 'encq', Array('helpers' => Array('a' => function ($i) {return "=$i=";})), '\''
+     * @expect '=-=' when input 'a', Array('-'), 'raw', Array('helpers' => Array('a' => function ($i) {return "=$i=";}))
+     * @expect '=&amp;=' when input 'a', Array('&'), 'enc', Array('helpers' => Array('a' => function ($i) {return "=$i=";}))
+     * @expect '=&#x27;=' when input 'a', Array('\''), 'encq', Array('helpers' => Array('a' => function ($i) {return "=$i=";}))
+     * @expect '=b=' when input 'a', Array('a' => 'b'), 'raw', Array('helpers' => Array('a' => function ($i) {return "={$i['a']}=";})), true
      */
-    public static function ch($ch, $vars, $op, &$cx, $in, $named = false) {
+    public static function ch($ch, $vars, $op, &$cx, $named = false) {
         $args = Array();
         foreach ($vars as $i => $v) {
-            $args[$i] = self::raw($v, $cx, $in);
+            $args[$i] = self::raw($v, $cx);
         }
 
         $r = call_user_func_array($cx['helpers'][$ch], $named ? Array($args) : $args);
@@ -1762,7 +1708,7 @@ class LCRun2 {
      * LightnCandy runtime method for block custom helpers.
      *
      * @param string $ch the name of custom helper to be executed
-     * @param array $vars variable names for helpers
+     * @param array $vars variables for the helper
      * @param array $cx render time context
      * @param array $in input data with current scope
      * @param function $cb callback function to render child context
@@ -1772,7 +1718,7 @@ class LCRun2 {
     public static function bch($ch, $vars, &$cx, $in, $cb) {
         $args = Array();
         foreach ($vars as $i => $v) {
-            $args[$i] = self::raw($v, $cx, $in);
+            $args[$i] = self::raw($v, $cx);
         }
 
         $r = call_user_func($cx['blockhelpers'][$ch], $in, $args);
