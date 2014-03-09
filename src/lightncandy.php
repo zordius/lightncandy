@@ -1172,19 +1172,16 @@ $libstr
     protected static function compileSection(&$token, &$context, $vars, $named) {
         switch ($token[self::POS_OP]) {
         case '^':
-            $context['level']++;
             $v = self::getVariableName($vars[0]);
             $context['stack'][] = implode('-', $vars[0]);
             $context['stack'][] = '^';
             self::noNamedArguments($token, $context, $named);
             return "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'isec') . "($v)){$context['ops']['cnd_then']}";
         case '/':
-            $context['level']--;
             return self::compileBlockEnd($token, $context, $vars);
         case '!':
             return $context['ops']['seperator'];
         case '#':
-            $context['level']++;
             $r = self::compileBlockCustomHelper($context, $vars);
             if ($r) {
                 return $r;
