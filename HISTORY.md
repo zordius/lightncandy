@@ -2,7 +2,7 @@ HISTORY
 =======
 
 v0.11 current trunk
-   * align with handlebars.js 2.0.0-alpha.1
+   * align with handlebars.js 2.0.0-alpha.2
    * a275d52c97 use php array, remove val().
 
 v0.10 https://github.com/zordius/lightncandy/tree/v0.10
