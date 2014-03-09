@@ -1302,7 +1302,7 @@ $libstr
 
         $v = self::getVariableName($vars[0]);
         $context['vars'][] = $vars[0];
-        $context['stack'][] = implode('-', $vars[0]);
+        $context['stack'][] = self::getArrayCode($vars[0]);
         $context['stack'][] = '#';
         return $context['ops']['seperator'] . self::getFuncName($context, 'sec') . "($v, \$cx, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
