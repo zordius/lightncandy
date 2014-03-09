@@ -209,6 +209,11 @@ $libstr
                 'helper' => 0,
                 'bhelper' => 0,
             ),
+            'usedCount' => Array(
+                'var' => Array(),
+                'helper' => Array(),
+                'bhelper' => Array(),
+            ),
             'helpers' => Array(),
         );
 
@@ -1207,6 +1212,7 @@ $libstr
         $context['stack'][] = implode('-', $vars[0]);
         $context['stack'][] = '#';
         $ch = array_shift($vars);
+        self::addUsageCount($context, 'bhelper', $ch[0]);
         $v = self::getVariableNames($vars);
         return $context['ops']['seperator'] . self::getFuncName($context, 'bch') . "('$ch[0]', $v, \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
@@ -1322,6 +1328,7 @@ $libstr
         $fn = $raw ? 'raw' : $context['ops']['enc'];
         if (isset($context['helpers'][$vars[0][0]])) {
             $ch = array_shift($vars);
+            self::addUsageCount($context, 'helper', $ch[0]);
             foreach ($vars as $var) {
                 self::addJsonSchema($context, $var);
             }
@@ -1365,6 +1372,22 @@ $libstr
         } else {
             return $raw ? "{$context['ops']['seperator']}$v{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlentities($v, ENT_QUOTES, 'UTF-8'){$context['ops']['seperator']}";
         }
+    }
+
+   /**
+     * Internal method used by compile(). Add usage count to context
+     *
+     * @param array $context current context
+     * @param string $category ctegory name, can be one of: 'var', 'helper', 'bhelper'
+     * @param string $name used name
+     *
+     * @codeCoverageIgnore
+     */
+    protected static function addUsageCount(&$context, $category, $name) {
+         if (!isset($context['usedCount'][$category][$name])) {
+             $context['usedCount'][$category][$name] = 0;
+         }
+         $context['usedCount'][$category][$name]++;
     }
 }
 
