@@ -728,14 +728,14 @@ $libstr
      *
      * @expect Array('this') when input 'this', Array('flags' => Array('advar' => 0, 'this' => 0))
      * @expect Array(null) when input 'this', Array('flags' => Array('advar' => 0, 'this' => 1))
-     * @expect Array(1, null) when input '../', Array('flags' => Array('advar' => 0, 'this' => 1))
-     * @expect Array(1, null) when input '../.', Array('flags' => Array('advar' => 0, 'this' => 1))
-     * @expect Array(1, null) when input '../this', Array('flags' => Array('advar' => 0, 'this' => 1))
-     * @expect Array(1, 'a') when input '../a', Array('flags' => Array('advar' => 0, 'this' => 1))
-     * @expect Array(2, 'a', 'b') when input '../../a.b', Array('flags' => Array('advar' => 0, 'this' => 0))
-     * @expect Array(2, '[a]', 'b') when input '../../[a].b', Array('flags' => Array('advar' => 0, 'this' => 0))
-     * @expect Array(2, 'a', 'b') when input '../../[a].b', Array('flags' => Array('advar' => 1, 'this' => 0))
-     * @expect Array('"a.b"') when input '"a.b"', Array('flags' => Array('advar' => 1, 'this' => 0))
+     * @expect Array(1, null) when input '../', Array('flags' => Array('advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => Array('parent' => 0))
+     * @expect Array(1, null) when input '../.', Array('flags' => Array('advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => Array('parent' => 0))
+     * @expect Array(1, null) when input '../this', Array('flags' => Array('advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => Array('parent' => 0))
+     * @expect Array(1, 'a') when input '../a', Array('flags' => Array('advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => Array('parent' => 0))
+     * @expect Array(2, 'a', 'b') when input '../../a.b', Array('flags' => Array('advar' => 0, 'this' => 0, 'parent' => 1), 'usedFeature' => Array('parent' => 0))
+     * @expect Array(2, '[a]', 'b') when input '../../[a].b', Array('flags' => Array('advar' => 0, 'this' => 0, 'parent' => 1), 'usedFeature' => Array('parent' => 0))
+     * @expect Array(2, 'a', 'b') when input '../../[a].b', Array('flags' => Array('advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => Array('parent' => 0))
+     * @expect Array('"a.b"') when input '"a.b"', Array('flags' => Array('advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => Array('parent' => 0))
      */
     protected static function fixVariable($v, &$context) {
         $ret = Array();

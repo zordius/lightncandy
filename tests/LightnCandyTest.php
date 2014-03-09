@@ -245,28 +245,28 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
             'this', Array('flags' => Array('advar' => 0, 'this' => 1))
         ));
         $this->assertEquals(Array(1, null), $method->invoke(null,
-            '../', Array('flags' => Array('advar' => 0, 'this' => 1))
+            '../', Array('flags' => Array('advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => Array('parent' => 0))
         ));
         $this->assertEquals(Array(1, null), $method->invoke(null,
-            '../.', Array('flags' => Array('advar' => 0, 'this' => 1))
+            '../.', Array('flags' => Array('advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => Array('parent' => 0))
         ));
         $this->assertEquals(Array(1, null), $method->invoke(null,
-            '../this', Array('flags' => Array('advar' => 0, 'this' => 1))
+            '../this', Array('flags' => Array('advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => Array('parent' => 0))
         ));
         $this->assertEquals(Array(1, 'a'), $method->invoke(null,
-            '../a', Array('flags' => Array('advar' => 0, 'this' => 1))
+            '../a', Array('flags' => Array('advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => Array('parent' => 0))
         ));
         $this->assertEquals(Array(2, 'a', 'b'), $method->invoke(null,
-            '../../a.b', Array('flags' => Array('advar' => 0, 'this' => 0))
+            '../../a.b', Array('flags' => Array('advar' => 0, 'this' => 0, 'parent' => 1), 'usedFeature' => Array('parent' => 0))
         ));
         $this->assertEquals(Array(2, '[a]', 'b'), $method->invoke(null,
-            '../../[a].b', Array('flags' => Array('advar' => 0, 'this' => 0))
+            '../../[a].b', Array('flags' => Array('advar' => 0, 'this' => 0, 'parent' => 1), 'usedFeature' => Array('parent' => 0))
         ));
         $this->assertEquals(Array(2, 'a', 'b'), $method->invoke(null,
-            '../../[a].b', Array('flags' => Array('advar' => 1, 'this' => 0))
+            '../../[a].b', Array('flags' => Array('advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => Array('parent' => 0))
         ));
         $this->assertEquals(Array('"a.b"'), $method->invoke(null,
-            '"a.b"', Array('flags' => Array('advar' => 1, 'this' => 0))
+            '"a.b"', Array('flags' => Array('advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => Array('parent' => 0))
         ));
     }
     /**

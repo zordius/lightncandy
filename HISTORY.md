@@ -4,6 +4,7 @@ HISTORY
 v0.11 current trunk
    * align with handlebars.js 2.0.0-alpha.1
    * a275d52c97 use php array, remove val().
+   * 8834914c2a only export used custom helper into render function now
 
 v0.10 https://github.com/zordius/lightncandy/tree/v0.10
    * align with handlebars.js 2.0.0-alpha.1
