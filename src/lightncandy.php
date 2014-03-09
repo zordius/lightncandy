@@ -654,9 +654,8 @@ $libstr
      * Internal method used by compile(). Get variable names from current context
      *
      * @param array $vn variable name.
-     * @param array $context Current context of compiler progress.
      *
-     * @return array variable names
+     * @return string variable names
      */
     protected static function getVariableNames($vn) {
         $ret = Array();
@@ -670,7 +669,6 @@ $libstr
      * Internal method used by compile(). Get variable name from current context
      *
      * @param array $var variable name.
-     * @param array $context Current context of compiler progress.
      *
      * @return array variable names
      *
@@ -1570,7 +1568,7 @@ class LCRun2 {
     /**
      * LightnCandy runtime method for {{#var}} section.
      *
-     * @param mixed $var value for the section
+     * @param mixed $v value for the section
      * @param array $cx render time context
      * @param array $in input data with current scope
      * @param boolean $each true when rendering #each
