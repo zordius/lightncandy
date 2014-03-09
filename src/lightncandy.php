@@ -1190,7 +1190,7 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Return compiled PHP code partial for a handlebars block begin token.
+     * Internal method used by compile(). Return compiled PHP code partial for a handlebars block custom helper begin token.
      *
      * @param array $context current scaning context
      * @param array $vars parsed arguments list
@@ -1349,7 +1349,7 @@ $libstr
     }
 
    /**
-     * Internal method used by compile(). Return compiled PHP code partial for a handlebars custom helper token.
+     * Internal method used by compile(). Return compiled PHP code partial for a handlebars variable token.
      *
      * @param array $context current scaning context
      * @param array $vars parsed arguments list
@@ -1446,7 +1446,7 @@ class LCRun2 {
     }
 
     /**
-     * LightnCandy runtime method for {{$unless var}} when {{../var}} used.
+     * LightnCandy runtime method for {{#unless var}} when {{../var}} used.
      *
      * @param mixed $var value be tested
      * @param array $cx render time context
