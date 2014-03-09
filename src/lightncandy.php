@@ -1395,7 +1395,7 @@ class LCRun2 {
     /**
      * LightnCandy runtime method for {{#if var}}.
      *
-     * @param array $v variable name to be tested
+     * @param mixed $v value to be tested
      *
      * @return boolean Return true when the value is not null nor false.
      * 
@@ -1416,7 +1416,7 @@ class LCRun2 {
     /**
      * LightnCandy runtime method for {{#if var}} when {{../var}} used.
      *
-     * @param array $v variable name to be tested
+     * @param array $v value to be tested
      * @param array $cx render time context
      * @param array $in input data with current scope
      * @param function $truecb callback function when test result is true
@@ -1450,7 +1450,7 @@ class LCRun2 {
     /**
      * LightnCandy runtime method for {{$unless var}} when {{../var}} used.
      *
-     * @param array $var variable name to be tested
+     * @param mixed $var value be tested
      * @param array $cx render time context
      * @param array $in input data with current scope
      *
@@ -1469,7 +1469,7 @@ class LCRun2 {
     /**
      * LightnCandy runtime method for {{^var}} inverted section.
      *
-     * @param array $v variable name to be tested
+     * @param mixed $v value to be tested
      *
      * @return boolean Return true when the value is not null nor false.
      *
@@ -1485,7 +1485,7 @@ class LCRun2 {
     /**
      * LightnCandy runtime method for {{{var}}} .
      *
-     * @param array $v variable name to get the raw value
+     * @param mixed $v value to be output
      * @param array $cx render time context
      * @param boolean $loop true when in loop
      *
@@ -1538,7 +1538,7 @@ class LCRun2 {
     /**
      * LightnCandy runtime method for {{var}} .
      *
-     * @param array $var variable name to get the htmlencoded value
+     * @param mixed $var value to be htmlencoded
      * @param array $cx render time context
      *
      * @return string The htmlencoded value of the specified variable
@@ -1554,7 +1554,7 @@ class LCRun2 {
     /**
      * LightnCandy runtime method for {{var}} , and deal with single quote to same as handlebars.js .
      *
-     * @param array $var variable name to get the htmlencoded value
+     * @param mixed $var value to be htmlencoded
      * @param array $cx render time context
      *
      * @return string The htmlencoded value of the specified variable
@@ -1570,7 +1570,7 @@ class LCRun2 {
     /**
      * LightnCandy runtime method for {{#var}} section.
      *
-     * @param array $v variable name for section
+     * @param mixed $var value for the section
      * @param array $cx render time context
      * @param array $in input data with current scope
      * @param boolean $each true when rendering #each
@@ -1651,7 +1651,7 @@ class LCRun2 {
     /**
      * LightnCandy runtime method for {{#with var}} .
      *
-     * @param array $v variable name for section
+     * @param mixed $v value to be the new context
      * @param array $cx render time context
      * @param array $in input data with current scope
      * @param function $cb callback function to render child context
@@ -1677,7 +1677,7 @@ class LCRun2 {
      * LightnCandy runtime method for custom helpers.
      *
      * @param string $ch the name of custom helper to be executed
-     * @param array $vars variable names for helpers
+     * @param array $vars variables for the helper
      * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
      * @param array $cx render time context
      * @param boolean $named input arguments are named
@@ -1710,7 +1710,7 @@ class LCRun2 {
      * LightnCandy runtime method for block custom helpers.
      *
      * @param string $ch the name of custom helper to be executed
-     * @param array $vars variable names for helpers
+     * @param array $vars variables for the helper
      * @param array $cx render time context
      * @param array $in input data with current scope
      * @param function $cb callback function to render child context
