@@ -211,10 +211,11 @@ $libstr
             ),
             'usedCount' => Array(
                 'var' => Array(),
-                'helper' => Array(),
-                'bhelper' => Array(),
+                'helpers' => Array(),
+                'blockhelpers' => Array(),
             ),
             'helpers' => Array(),
+            'blockhelpers' => Array(),
         );
 
         $context['ops'] = $context['flags']['echo'] ? Array(
@@ -408,12 +409,11 @@ $libstr
      * @codeCoverageIgnore
      */
     protected static function exportHelper($context, $tname = 'helpers') {
-        if (!isset($context[$tname])) {
-            return 'Array()';
-        }
-
         $ret = '';
         foreach ($context[$tname] as $name => $func) {
+            if (!isset($context['usedCount'][$tname][$name])) {
+                continue;
+            }
             if ((is_object($func) && ($func instanceof Closure)) || ($context['flags']['exhlp'] == 0)) {
                 $ret .= ("            '$name' => " . self::getPHPCode($func) . ",\n");
                 continue;
@@ -1209,7 +1209,7 @@ $libstr
         $context['stack'][] = implode('-', $vars[0]);
         $context['stack'][] = '#';
         $ch = array_shift($vars);
-        self::addUsageCount($context, 'bhelper', $ch[0]);
+        self::addUsageCount($context, 'blockhelpers', $ch[0]);
         $v = self::getVariableNames($vars);
         return $context['ops']['seperator'] . self::getFuncName($context, 'bch') . "('$ch[0]', $v, \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
@@ -1325,7 +1325,7 @@ $libstr
         $fn = $raw ? 'raw' : $context['ops']['enc'];
         if (isset($context['helpers'][$vars[0][0]])) {
             $ch = array_shift($vars);
-            self::addUsageCount($context, 'helper', $ch[0]);
+            self::addUsageCount($context, 'helpers', $ch[0]);
             foreach ($vars as $var) {
                 self::addJsonSchema($context, $var);
             }
@@ -1375,7 +1375,7 @@ $libstr
      * Internal method used by compile(). Add usage count to context
      *
      * @param array $context current context
-     * @param string $category ctegory name, can be one of: 'var', 'helper', 'bhelper'
+     * @param string $category ctegory name, can be one of: 'var', 'helpers', 'blockhelpers'
      * @param string $name used name
      *
      * @codeCoverageIgnore
