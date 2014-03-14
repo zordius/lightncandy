@@ -282,6 +282,8 @@ $libstr
      *
      * @param string $template template string
      *
+     * @param mixed $context
+     *
      * @return string expanded template
      *
      * @expect "123\n" when input '{{> test1}}', Array('basedir' => Array('tests'), 'usedFeature' => Array('partial' =>0), 'fileext' => Array('.tmpl'))
@@ -376,8 +378,9 @@ $libstr
      *
      * @param object $closure Closure object
      *
+     * @return string
      * @expect 'function($a) {return;}' when input function ($a) {return;}
-     * @expect 'function($a) {return;}' when input  	function ($a) {return;} 
+     * @expect 'function($a) {return;}' when input    function ($a) {return;}
      * @expect '' when input 'Directory::close'
      */
     protected static function getPHPCode($closure) {
@@ -405,10 +408,12 @@ $libstr
 
     /**
      * Internal method used by compile(). Export required custom helper functions.
-     * @param string $tname helper table name
      *
-     * @param array $context current scaning context
+     * @param string $tname   helper table name
      *
+     * @param array  $context current scaning context
+     *
+     * @return string
      * @codeCoverageIgnore
      */
     protected static function exportHelper($context, $tname = 'helpers') {
@@ -432,6 +437,7 @@ $libstr
      *
      * @param array $context current scaning context
      *
+     * @return string
      * @codeCoverageIgnore
      */
     protected static function exportLCRun($context) {
@@ -461,6 +467,7 @@ $libstr
      *
      * @param array $context Current context of compiler progress.
      *
+     * @throws Exception
      * @return boolean True when error detected
      *
      * @expect true when input Array('level' => 1, 'stack' => Array('X'), 'flags' => Array('errorlog' => 0, 'exception' => 0), 'error' => Array())
@@ -563,14 +570,14 @@ $libstr
     /**
      * Get a working render function by a string of PHP code. This method may requires php setting allow_url_include=1 and allow_url_fopen=1 , or access right to tmp file system.
      *
-     * @param string $php php codes
-     * @param string $tmp_dir optional, change temp directory for php include file saved by prepare() when can not include php code with data:// format.
+     * @param string      $php PHP code
+     * @param string|null $tmp_dir Optional, change temp directory for php include file saved by prepare() when can not include php code with data:// format.
      *
-     * @return mixed result of include()
+     * @return Closure result of include()
      *
      * @codeCoverageIgnore
      */
-    public static function prepare($php, $tmp_dir = false) {
+    public static function prepare($php, $tmp_dir = null) {
         if (!ini_get('allow_url_include') || !ini_get('allow_url_fopen')) {
             if (!$tmp_dir || !is_dir($tmp_dir)) {
                 $tmp_dir = sys_get_temp_dir();
@@ -598,11 +605,14 @@ $libstr
      *
      * @param string $compiled compiled template php file name
      *
+     * @param mixed $data
+     *
      * @return string rendered result
      *
      * @codeCoverageIgnore
      */
     public static function render($compiled, $data) {
+        /** @var Closure $func */
         $func = include($compiled);
         return $func($data);
     }
@@ -1420,8 +1430,8 @@ class LCRun2 {
      * @param array $v value to be tested
      * @param array $cx render time context
      * @param array $in input data with current scope
-     * @param function $truecb callback function when test result is true
-     * @param function $falsecb callback function when test result is false
+     * @param Closure $truecb callback function when test result is true
+     * @param Closure $falsecb callback function when test result is false
      *
      * @return string The rendered string of the section
      * 
@@ -1575,7 +1585,7 @@ class LCRun2 {
      * @param array $cx render time context
      * @param array $in input data with current scope
      * @param boolean $each true when rendering #each
-     * @param function $cb callback function to render child context
+     * @param Closure $cb callback function to render child context
      *
      * @return string The rendered string of the section
      *
@@ -1655,7 +1665,7 @@ class LCRun2 {
      * @param mixed $v value to be the new context
      * @param array $cx render time context
      * @param array $in input data with current scope
-     * @param function $cb callback function to render child context
+     * @param Closure $cb callback function to render child context
      *
      * @return string The rendered string of the token
      *
@@ -1714,7 +1724,7 @@ class LCRun2 {
      * @param array $vars variables for the helper
      * @param array $cx render time context
      * @param array $in input data with current scope
-     * @param function $cb callback function to render child context
+     * @param Closure $cb callback function to render child context
      *
      * @return string The rendered string of the token
      */
