@@ -115,7 +115,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
             function ($a) {return;}
         ));
         $this->assertEquals('function($a) {return;}', $method->invoke(null,
-             	function ($a) {return;} 
+               function ($a) {return;}
         ));
         $this->assertEquals('', $method->invoke(null,
             'Directory::close'
