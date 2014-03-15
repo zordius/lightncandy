@@ -124,7 +124,7 @@ Default is to compile the template as PHP which can be run as fast as possible (
 * `FLAG_JSQUOTE` : encode `'` to `&#x27;` . Otherwise, `'` will encoded as `&#039;` .
 * `FLAG_ADVARNAME` : support `{{foo.[0].[#te#st].bar}}` style advanced variable naming in temlpate.
 * `FLAG_NAMEDARG` : support named arguments for custom helper `{{helper name1=val1 nam2=val2 ...}}.
-* `FLAG_EXTHELPER` : do not including custom helper codes into compiled PHP codes. This reduce the code size, but you need to take care of your helper functions when rendering. If you forget to include required functions when execute rendering function, `undefined function` runtime error will be triggered. NOTE: Anonymouse functions will always be placed into generated codes.
+* `FLAG_EXTHELPER` : do not including custom helper codes into compiled PHP codes. This reduce the code size, but you need to take care of your helper functions when rendering. If you forget to include required functions when execute rendering function, `undefined function` runtime error will be triggered. NOTE: Anonymous functions will always be placed into generated codes.
 * `FLAG_SPACECTL` : support space control `{{~ }}` or `{{ ~}}` in template. Otherwise, `{{~ }}` or `{{ ~}}` will cause template error. 
 * `FLAG_JS` : simulate all JavaScript string conversion behavior, same with `FLAG_JSTRUE` + `FLAG_JSOBJECT`.
 * `FLAG_HANDLEBARS` : support all handlebars extensions (which mustache do not supports) , same with `FLAG_THIS` + `FLAG_WITH` + `FLAG_PARENT` + `FLAG_JSQUOTE` + `FLAG_ADVARNAME` + `FLAG_NAMEDARG`.
@@ -190,7 +190,7 @@ LightnCandy::compile($template, Array(
         //    Tempalte: {{helper_name2 ....}}
         'helper_name2' => 'myClass::func',
 
-        // 5. Anonymouse function should be provided with alias
+        // 5. Anonymous function should be provided with alias
         //    The function will be included in generaed code always
         //    Tempalte: {{helper_name3 ....}}
         'helper_name3' => function ($arg1, $arg2) {
