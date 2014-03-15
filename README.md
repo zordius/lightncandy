@@ -107,7 +107,7 @@ LightnCandy::compile($template, Array(
 ));
 ```
 
-Default is to compile the template as PHP which can be run as fast as possible, all flags are off.
+Default is to compile the template as PHP which can be run as fast as possible (flags = `FLAG_BESTPERFORMANCE`).
 
 * `FLAG_ERROR_LOG` : output error_log when found any template error
 * `FLAG_ERROR_EXCEPTION` : throw exception when found any template error
