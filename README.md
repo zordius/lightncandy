@@ -153,11 +153,12 @@ LightnCandy supports parent context access in partial (access `{{../vars}}` insi
 Custom Helper
 -------------
 
-Custom helper can help you deal with common template tasks, for example: provide URL and text then generate a link. To know more about custom helper, you can read original handlebars.js document here: http://handlebarsjs.com/expressions.html . **NOTICE: custom helpers to handle single tag `{{xxx}}` or a section `{{#yyy}} ... {{/yyy}}` are absolutely different in LightnCandy. Too know more about creating custom helpers to handle `{{#yyy}} ... {{/yyy}}`, please refer to <a href="#block-custom-helper">Block Custom Helper</a>.**
+Custom helper can help you deal with common template tasks, for example: provide URL and text then generate a link. To know more about custom helper, you can read original handlebars.js document here: http://handlebarsjs.com/expressions.html . 
 
-When `compile()`, LightnCandy will lookup helpers from generated custom helper name table. You can register custom helpers with `helpers` option.
+**NOTICE**: custom helpers to handle single tag `{{xxx}}` or a section `{{#yyy}} ... {{/yyy}}` are absolutely different in LightnCandy. Too know more about creating custom helpers to handle `{{#yyy}} ... {{/yyy}}`, please refer to <a href="#block-custom-helper">Block Custom Helper</a>.
 
-for exmample:
+When `compile()`, LightnCandy will lookup helpers from generated custom helper name table. You can register custom helpers with `helpers` option.  For exmample:
+
 ```php
 LightnCandy::compile($template, Array(
     'helpers' => Array(
