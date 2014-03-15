@@ -22,6 +22,8 @@ Features
    * runs 4~10 times faster than https://github.com/dingram/mustache-php
    * runs 10~30 times faster than https://github.com/XaminProject/handlebars.php
    * NOTE: Detail performance test reports can be found here: https://github.com/zordius/HandlebarsTest
+* **SMALL**
+   * single php file, only 70K!
 * Context generation
    * Analyze used feature from your template
    * generate **Json Schema** [BUGGY NOW]
@@ -45,6 +47,8 @@ Or, download LightnCandy from github:
 ```
 wget https://raw.github.com/zordius/lightncandy/master/src/lightncandy.php --no-check-certificate
 ```
+
+Requirement: php 5.3+ with JSON suppport
 
 **UPGRADE NOTICE**
 
