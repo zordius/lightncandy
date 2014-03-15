@@ -291,11 +291,10 @@ function helper_sample($cx, $args) {
 }
 ```
 
-You can not provide new rendered result or handle loop in block custom helper. To provide diffetent rendering result,
- you should use normal custom helper. To handle loop, you should use `{{#each}}` . For example:
+You can not provide new rendered result, nor handle loop in your block custom helper. To provide diffetent rendering result, you should use <a href="#custom-helper">custom helper</a>. To handle loop, you should use `{{#each}}` . For example:
 
 ```php
-// Provide specific context to innerblock
+// Provide specific context to innerblock, then loop on it.
 // {{#helper_categories}}{{#each .}}<li><a href="?id={{id}}">{{name}}</a></li>{{/each}}{{/helper_categories}}
 function helper_categories($cx, $args) {
     return getMyCategories(); // Array('category1', 'category2', ...)
