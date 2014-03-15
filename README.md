@@ -23,7 +23,7 @@ Features
    * runs 10~30 times faster than https://github.com/XaminProject/handlebars.php
    * NOTE: Detail performance test reports can be found here: https://github.com/zordius/HandlebarsTest
 * **SMALL**
-   * single php file, only 70K!
+   * single PHP file, only 70K!
 * Context generation
    * Analyze used feature from your template
    * generate **Json Schema** [BUGGY NOW]
@@ -48,11 +48,11 @@ Or, download LightnCandy from github:
 wget https://raw.github.com/zordius/lightncandy/master/src/lightncandy.php --no-check-certificate
 ```
 
-Requirement: php 5.3+ with JSON suppport
+LightnCandy requirement: PHP 5.3.0+ , json_encode() (optional for `LightnCandy::getJsonSchema()`)
 
 **UPGRADE NOTICE**
 
-* Due to big change of variable name handling, the rendering support class `LCRun` is renamed to `LCRun2`. If you compile templates as none standalone php code by lightncandy v0.9 or before, you should compile these templates again. Or, you may run into `Class 'LCRun' not found` error when you execute these old rendering functions.
+* Due to big change of variable name handling, the rendering support class `LCRun` is renamed to `LCRun2`. If you compile templates as none standalone PHP code by lightncandy v0.9 or before, you should compile these templates again. Or, you may run into `Class 'LCRun' not found` error when you execute these old rendering functions.
 
 * Standalone templates compiled by older lightncandy can be executed safe when you upgrade to any new version of lightncandy.
 
