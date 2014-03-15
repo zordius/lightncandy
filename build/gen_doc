@@ -2,5 +2,5 @@
 wget https://github.com/downloads/apigen/apigen/ApiGen-2.8.0-standalone.zip --no-check-certificate
 unzip -oq ApiGen-2.8.0-standalone.zip
 rm ApiGen-2.8.0-standalone.zip
-php -dopen_basedir=/ apigen/apigen.php --source src/ --destination build/result/docs/ --template-config apigen/templates/bootstrap/config.neon
+php -dopen_basedir=/ apigen/apigen.php --source src/ --destination build/result/docs/ --template-config apigen/templates/bootstrap/config.neon --deprecated yes
 rm -rf apigen
