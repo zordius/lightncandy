@@ -575,6 +575,7 @@ $libstr
      *
      * @return Closure result of include()
      *
+     * @deprecated
      * @codeCoverageIgnore
      */
     public static function prepare($php, $tmp_dir = null) {

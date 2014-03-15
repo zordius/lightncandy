@@ -50,7 +50,7 @@ wget https://raw.github.com/zordius/lightncandy/master/src/lightncandy.php --no-
 
 * Due to big change of variable name handling, the rendering support class `LCRun` is renamed to `LCRun2`. If you compile templates as none standalone php code by lightncandy v0.9 or before, you should compile these templates again. Or, you may run into `Class 'LCRun' not found` error when you execute these old rendering functions.
 
-* Standalone templates compiled by older lightncandy can be executed safe when you upgrade to any version of lightncandy.
+* Standalone templates compiled by older lightncandy can be executed safe when you upgrade to any new version of lightncandy.
 
 Usage
 -----
@@ -63,7 +63,7 @@ $template = "Welcome {{name}} , You win \${{value}} dollars!!\n";
 $phpStr = LightnCandy::compile($template);  // Rendered PHP code in $phpStr
 
 // Step 2A. (Usage 1) use LightnCandy::prepare to get render function
-//   Do not suggested this way, because it may require PHP setting allow_url_fopen=1 ,
+//   DEPRECATED , it may require PHP setting allow_url_fopen=1 ,
 //   and allow_url_fopen=1 is not secure .
 //   When allow_url_fopen = 0, prepare() will create tmp file then include it, 
 //   you will need to add your tmp directory into open_basedir.
