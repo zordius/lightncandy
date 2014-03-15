@@ -231,6 +231,17 @@ You may use block custom helper to:
 2. Modify current context for the inner block.
 3. Provide different context to the inner block.
 
+You can register custom helpers with `blockhelpers` option.  For exmample:
+
+```php
+LightnCandy::compile($template, Array(
+    'blockhelpers' => Array(    // The usage of blockhelpers option is similar with helpers option.
+        'my_helper_function',   // You can use function name, class name with static method,
+        ...                     // and choose prefered helper name by providing key name.
+    )
+));
+```
+
 Block Custom Helper Interface
 -----------------------------
 
