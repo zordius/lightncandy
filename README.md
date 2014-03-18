@@ -3,8 +3,6 @@ LightnCandy
 
 A PHP library to support almost all features of handlebars ( http://handlebarsjs.com/ ) , target to run as fast as pure PHP.
 
-<a href="http://zordius.github.io/HandlebarsTest/"><img src="http://zordius.github.io/HandlebarsTest/chart.png" alt="click for more detail" style="width:50%;float:right"></a>
-
 Travis CI status: [![Unit testing](https://travis-ci.org/zordius/lightncandy.png?branch=master)](https://travis-ci.org/zordius/lightncandy) [![Regression testing](https://travis-ci.org/zordius/HandlebarsTest.png?branch=master)](https://travis-ci.org/zordius/HandlebarsTest)
 
 Scrutinizer CI status: [![Code Coverage](https://scrutinizer-ci.com/g/zordius/lightncandy/badges/coverage.png?s=57aaeed149696b16380a79615df2ff83a1c25afa)](https://scrutinizer-ci.com/g/zordius/lightncandy/)
@@ -23,7 +21,7 @@ Features
    * runs 4~6 times faster than https://github.com/bobthecow/mustache.php
    * runs 4~10 times faster than https://github.com/dingram/mustache-php
    * runs 10~30 times faster than https://github.com/XaminProject/handlebars.php
-   * NOTE: Detail performance test reports can be found here: https://github.com/zordius/HandlebarsTest
+   * NOTE: Detail performance test reports can be found here: https://github.com/zordius/HandlebarsTest , charts can be found here: http://zordius.github.io/HandlebarsTest/
 * **SMALL**
    * single PHP file, only 70K!
 * Context generation
