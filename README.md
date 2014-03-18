@@ -11,17 +11,15 @@ Features
 --------
 
 * Logicless template: mustache ( http://mustache.github.com/ ) or handlebars ( http://handlebarsjs.com/ ) .
-* Compile template to **pure PHP** code.
-   * Examples:
-      * <a href="https://github.com/zordius/HandlebarsTest/blob/master/fixture/001-simple-vars.tmpl">Template</a> generated <a href="https://github.com/zordius/HandlebarsTest/blob/master/fixture/001-simple-vars.php">PHP</a>
-      * <a href="https://github.com/zordius/HandlebarsTest/blob/master/fixture/016-hb-eachthis.tmpl">Template</a> generated <a href="https://github.com/zordius/HandlebarsTest/blob/master/fixture/016-hb-eachthis.php">PHP</a>
+* Compile template to **pure PHP** code. Examples:
+   * <a href="https://github.com/zordius/HandlebarsTest/blob/master/fixture/001-simple-vars.tmpl">Template A</a> generated <a href="https://github.com/zordius/HandlebarsTest/blob/master/fixture/001-simple-vars.php">PHP A</a>
+   * <a href="https://github.com/zordius/HandlebarsTest/blob/master/fixture/016-hb-eachthis.tmpl">Template B</a> generated <a href="https://github.com/zordius/HandlebarsTest/blob/master/fixture/016-hb-eachthis.php">PHP B</a>
 * **FAST!**
    * runs 4~6 times faster than <a href="https://github.com/bobthecow/mustache.php">mustache.php</a>
    * runs 4~10 times faster than <a href="https://github.com/dingram/mustache-php">mustache-php</a>
    * runs 10~30 times faster than <a href="https://github.com/XaminProject/handlebars.php">handlebars.php</a>
    * Detail performance test reports can be found <a href="https://github.com/zordius/HandlebarsTest">here</a>, go http://zordius.github.io/HandlebarsTest/ to see charts.
-* **SMALL**
-   * single PHP file, only 70K!
+* **SMALL** single PHP file, only 70K!
 * Context generation
    * Analyze used feature from your template
    * generate **Json Schema** [BUGGY NOW]
