@@ -26,7 +26,7 @@ class LightnCandy {
     const FLAG_ERROR_LOG = 1;
     const FLAG_ERROR_EXCEPTION = 2;
 
-    // Compile the template as standalone php code which can execute without including LightnCandy
+    // Compile the template as standalone PHP code which can execute without including LightnCandy
     const FLAG_STANDALONE = 4;
 
     // JavaScript compatibility
@@ -42,7 +42,7 @@ class LightnCandy {
     const FLAG_SPACECTL = 1024;
     const FLAG_NAMEDARG = 2048;
 
-    // PHP performenace flags
+    // PHP performance flags
     const FLAG_EXTHELPER = 4096;
     const FLAG_ECHO = 8192;
 
@@ -114,7 +114,7 @@ class LightnCandy {
     }
 
     /**
-     * Compose LightnCandy render codes for incllude()
+     * Compose LightnCandy render codes for include()
      *
      * @param array $context Current context
      * @param string $code generated PHP code
@@ -571,7 +571,7 @@ $libstr
      * Get a working render function by a string of PHP code. This method may requires php setting allow_url_include=1 and allow_url_fopen=1 , or access right to tmp file system.
      *
      * @param string      $php PHP code
-     * @param string|null $tmp_dir Optional, change temp directory for php include file saved by prepare() when can not include php code with data:// format.
+     * @param string|null $tmp_dir Optional, change temp directory for php include file saved by prepare() when cannot include PHP code with data:// format.
      *
      * @return Closure result of include()
      *
@@ -619,7 +619,7 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Get function name for standalone or none standalone tempalte.
+     * Internal method used by compile(). Get function name for standalone or none standalone template.
      *
      * @param array $context Current context of compiler progress.
      * @param string $name base function name
@@ -801,7 +801,7 @@ $libstr
      * @param array $target current json schema target
      * @param mixed $key move target to child specified with the key
      *
-     * @return array children of new json schema target 
+     * @return array children of new JSON schema target 
      *
      * @expect Array() when input Array(), false
      * @expect Array() when input Array(), true
@@ -826,7 +826,7 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Find current json schema target, prepare target parent.
+     * Internal method used by compile(). Find current JSON schema target, prepare target parent.
      *
      * @param array $context current compile context
      *
@@ -846,7 +846,7 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Define a json schema string/number with provided variable name.
+     * Internal method used by compile(). Define a JSON schema string/number with provided variable name.
      *
      * @param array $context current compile context
      * @param array $var current variable name
