@@ -487,7 +487,7 @@ $libstr
                 error_log(implode("\n", $context['error']));
             }
             if ($context['flags']['exception']) {
-                throw new Exception($context['error']);
+                throw new Exception(implode("\n", $context['error']));
             }
             return true;
         }
@@ -1092,6 +1092,10 @@ $libstr
         }
 
         $context['usedFeature'][$raw ? 'raw' : 'enc']++;
+
+        if (count($vars) == 0) {
+            return $context['error'][] = 'Wrong variable naming in ' . self::tokenString($token);
+        }
 
         // validate else and this.
         switch ($vars[0]) {
