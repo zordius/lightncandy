@@ -60,7 +60,7 @@ Usage
 require('src/lightncandy.php');
 
 $template = "Welcome {{name}} , You win \${{value}} dollars!!\n";
-$phpStr = LightnCandy::compile($template);  // Rendered PHP code in $phpStr
+$phpStr = LightnCandy::compile($template);  // compiled PHP code in $phpStr
 
 // Step 2A. (Usage 1) use LightnCandy::prepare to get render function
 //   DEPRECATED , it may require PHP setting allow_url_fopen=1 ,
