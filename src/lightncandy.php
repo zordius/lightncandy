@@ -729,7 +729,7 @@ $libstr
         array_pop($var);
         $p = count($var) ? self::getArrayCode($var) : '';
 
-        return "(is_array($base$p) ? $base$n : null)";
+        return "(is_array($base$p) && isset($base$n) !== FALSE ? $base$n : null)";
     }
 
     /**
