@@ -5,6 +5,11 @@ v0.11 current trunk
    * align with handlebars.js 2.0.0-alpha.2
    * a275d52c97 use php array, remove val().
    * 8834914c2a only export used custom helper into render function now
+   * eb6d82d871 refine option flag consts
+   * fc437295ed refine comments for phpdoc
+   * fbf116c3e2 fix for tailing ; after helper functions
+   * f47a2d5014 fix for wrong param when new Exception 
+   * 94e71ebcbd add isset() check for input value
 
 v0.10 https://github.com/zordius/lightncandy/tree/v0.10
    * align with handlebars.js 2.0.0-alpha.1
