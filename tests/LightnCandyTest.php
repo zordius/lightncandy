@@ -222,13 +222,13 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('\'a\'', $method->invoke(null,
             Array('"a"'), Array(), Array()
         ));
-        $this->assertEquals('(is_array($in) ? $in[\'a\'] : null)', $method->invoke(null,
+        $this->assertEquals('((is_array($in) && isset($in[\'a\'])) ? $in[\'a\'] : null)', $method->invoke(null,
             Array('a'), Array()
         ));
-        $this->assertEquals('(is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1]) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)', $method->invoke(null,
+        $this->assertEquals('((is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)', $method->invoke(null,
             Array(1,'a'), Array()
         ));
-        $this->assertEquals('(is_array($cx[\'scopes\'][count($cx[\'scopes\'])-3]) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)', $method->invoke(null,
+        $this->assertEquals('((is_array($cx[\'scopes\'][count($cx[\'scopes\'])-3]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)', $method->invoke(null,
             Array(3,'a'), Array()
         ));
     }
