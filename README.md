@@ -131,7 +131,7 @@ Default is to compile the template as PHP which can be run as fast as possible (
 Partial Support
 ---------------
 
-LightnCandy supports partial when compile time. When `compile()`, LightnCandy will search template file in current directory by default. You can define more then 1 template directories with `basedir` option. Default template file name is `*.tmpl`, you can change or add more template file extensions with `fileext` option. 
+LightnCandy supports partial when compile time. When `compile()`, LightnCandy will search template file in current directory by default. You can define more then one template directory with `basedir` option. Default template file name is `*.tmpl`, you can change or add more template file extensions with `fileext` option. 
 
 for example:
 ```php
@@ -150,7 +150,18 @@ LightnCandy::compile($template, Array(
 ));
 ```
 
-LightnCandy supports parent context access in partial (access `{{../vars}}` inside the template), so far no other PHP/JavaScript library can handle this correctly.
+With this setting, when you include a partial by `{{> partial_name}}`, LightnCandy will search in this order:
+* /usr/local/share/handlebars/templates/partial_name.tmpl
+* /usr/local/share/handlebars/templates/partial_name.mustache
+* /usr/local/share/handlebars/templates/partial_name.handlebars
+* /usr/local/share/my_project/templates/partial_name.tmpl
+* /usr/local/share/my_project/templates/partial_name.mustache
+* /usr/local/share/my_project/templates/partial_name.handlebars
+* /usr/local/share/my_project/partials/partial_name.tmpl
+* /usr/local/share/my_project/partials/partial_name.mustache
+* /usr/local/share/my_project/partials/partial_name.handlebars
+
+LightnCandy supports parent context access in partial (access `{{../vars}}` inside the partial), so far no other PHP/JavaScript library can handle this correctly.
 
 Custom Helper
 -------------
