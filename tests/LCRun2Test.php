@@ -212,6 +212,36 @@ class LCRun2Test extends PHPUnit_Framework_TestCase
         $this->assertEquals('{"b":"c"}', $method->invoke(null,
             Array('b'=>'c'), Array(), Array('b' => 'c'), false, function ($c, $i) {return json_encode($i);}
         ));
+        $this->assertEquals('inv', $method->invoke(null,
+            Array(), Array(), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+        ));
+        $this->assertEquals('inv', $method->invoke(null,
+            Array(), Array(), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+        ));
+        $this->assertEquals('inv', $method->invoke(null,
+            false, Array(), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+        ));
+        $this->assertEquals('inv', $method->invoke(null,
+            false, Array(), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+        ));
+        $this->assertEquals('inv', $method->invoke(null,
+            '', Array(), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+        ));
+        $this->assertEquals('cb', $method->invoke(null,
+            '', Array(), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+        ));
+        $this->assertEquals('inv', $method->invoke(null,
+            0, Array(), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+        ));
+        $this->assertEquals('cb', $method->invoke(null,
+            0, Array(), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+        ));
+        $this->assertEquals('inv', $method->invoke(null,
+            new stdClass, Array(), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+        ));
+        $this->assertEquals('cb', $method->invoke(null,
+            new stdClass, Array(), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+        ));
     }
     /**
      * @covers LCRun2::wi
