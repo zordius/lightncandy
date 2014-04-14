@@ -693,7 +693,7 @@ $libstr
      * @expect '$in' when input Array(null), Array()
      * @expect '$cx[\'sp_vars\'][\'index\']' when input Array('@index'), Array()
      * @expect '$cx[\'sp_vars\'][\'key\']' when input Array('@key'), Array()
-     * @expect '$cx[\'scopes'\]' when input Array('@root'), Array()
+     * @expect '$cx[\'scopes\'][0]' when input Array('@root'), Array()
      * @expect '\'a\'' when input Array('"a"'), Array(), Array()
      * @expect '((is_array($in) && isset($in[\'a\'])) ? $in[\'a\'] : null)' when input Array('a'), Array()
      * @expect '((is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)' when input Array(1,'a'), Array()
@@ -1371,8 +1371,8 @@ $libstr
      * @codeCoverageIgnore
      */
     protected static function compileElse(&$context, &$vars) {
-        if ($vars[0][0] ==='else') {
-            switch ($context['stack'][count($context['stack'])-1]) {
+        if ($vars[0][0] === 'else') {
+            switch ($context['stack'][count($context['stack']) - 1]) {
             case 'if':
             case 'unless':
                 $context['stack'][] = ':';

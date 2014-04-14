@@ -219,7 +219,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('$cx[\'sp_vars\'][\'key\']', $method->invoke(null,
             Array('@key'), Array()
         ));
-        $this->assertEquals('reset($cx[\'scopes'\])', $method->invoke(null,
+        $this->assertEquals('$cx[\'scopes\'][0]', $method->invoke(null,
             Array('@root'), Array()
         ));
         $this->assertEquals('\'a\'', $method->invoke(null,
