@@ -693,6 +693,7 @@ $libstr
      * @expect '$in' when input Array(null), Array()
      * @expect '$cx[\'sp_vars\'][\'index\']' when input Array('@index'), Array()
      * @expect '$cx[\'sp_vars\'][\'key\']' when input Array('@key'), Array()
+     * @expect 'reset($cx[\'scopes'\])' when input Array('@root'), Array()
      * @expect '\'a\'' when input Array('"a"'), Array(), Array()
      * @expect '((is_array($in) && isset($in[\'a\'])) ? $in[\'a\'] : null)' when input Array('a'), Array()
      * @expect '((is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)' when input Array(1,'a'), Array()
@@ -707,6 +708,10 @@ $libstr
 
         if ($var[0] === '@key') {
             return "\$cx['sp_vars']['key']";
+        }
+
+        if ($var[0] === '@root') {
+            return "reset(\$cx['scopes'])";
         }
 
         // Handle double quoted string
