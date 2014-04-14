@@ -12,6 +12,7 @@ v0.11 current trunk
    * 94e71ebcbd add isset() check for input value
    * a826b8a1ab support {{else}} in {{#each}} now
    * 25dac11bb7 support {{!-- comments --}} now (this extension allow }} apperas in the comments)
+   * e142b6e116 support {{@root}} or {{@root.foo.bar}} now
 
 v0.10 https://github.com/zordius/lightncandy/tree/v0.10
    * align with handlebars.js 2.0.0-alpha.1
