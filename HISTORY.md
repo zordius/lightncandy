@@ -10,6 +10,8 @@ v0.11 current trunk
    * fbf116c3e2 fix for tailing ; after helper functions
    * f47a2d5014 fix for wrong param when new Exception 
    * 94e71ebcbd add isset() check for input value
+   * a826b8a1ab support {{else}} in {{#each}} now
+   * 25dac11bb7 support {{!-- comments --}} now (this extension allow }} apperas in the comments)
 
 v0.10 https://github.com/zordius/lightncandy/tree/v0.10
    * align with handlebars.js 2.0.0-alpha.1

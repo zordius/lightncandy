@@ -693,7 +693,7 @@ $libstr
      * @expect '$in' when input Array(null), Array()
      * @expect '$cx[\'sp_vars\'][\'index\']' when input Array('@index'), Array()
      * @expect '$cx[\'sp_vars\'][\'key\']' when input Array('@key'), Array()
-     * @expect 'reset($cx[\'scopes'\])' when input Array('@root'), Array()
+     * @expect '$cx[\'scopes'\]' when input Array('@root'), Array()
      * @expect '\'a\'' when input Array('"a"'), Array(), Array()
      * @expect '((is_array($in) && isset($in[\'a\'])) ? $in[\'a\'] : null)' when input Array('a'), Array()
      * @expect '((is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)' when input Array(1,'a'), Array()
@@ -710,10 +710,6 @@ $libstr
             return "\$cx['sp_vars']['key']";
         }
 
-        if ($var[0] === '@root') {
-            return "reset(\$cx['scopes'])";
-        }
-
         // Handle double quoted string
         if (preg_match('/^"(.*)"$/', $var[0], $matched)) {
             return "'{$matched[1]}'";
@@ -728,6 +724,12 @@ $libstr
         // change base when trace to parent
         if ($levels > 0) {
             $base = "\$cx['scopes'][count(\$cx['scopes'])-$levels]";
+        }
+
+        // Handle @root
+        if ($var[0] === '@root') {
+            array_shift($var);
+            $base = '$cx[\'scopes\'][0]';
         }
 
         if (is_null($var[0])) {
