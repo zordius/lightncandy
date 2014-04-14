@@ -356,17 +356,20 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
    * false, undefined and null will run the section with original scope
    * All others will skip the section (includes 0, 1, -1, '', '1', '0', '-1', 'false', Array, ...)
 * `{{! comment}}` : comment
+* `{{!-- comment or {{ or }} --}}` : extended comment that can contain }} or {{ .
 * `{{#each var}}` : each loop
 * `{{/each}}` : end loop
 * `{{#if var}}` : run if logic with original scope (null, false, empty Array and '' will skip this block)
 * `{{/if}}` : end if
-* `{{else}}` : run else logic, should between `{{#if var}}` and `{{/if}}` , or between `{{#unless var}}` and `{{/unless}}`
+* `{{else}}` : run else logic, should between `{{#if var}}` and `{{/if}}` ; or between `{{#unless var}}` and `{{/unless}}`; or between `{{#foo}}` and `{{/foo}}`; or between `{{#each var}}` and `{{/each}}`.
 * `{{#unless var}}` : run unless logic with original scope (null, false, empty Array and '' will render this block)
 * `{{#with var}}` : change context scope. If the var is false, skip included section. (require `FLAG_WITH`)
 * `{{../var}}` : parent template scope. (require `FLAG_PARENT`)
 * `{{> file}}` : partial; include another template inside a template.
 * `{{@index}}` : reference to current index in a `{{#each}}` loop on an array.
 * `{{@key}}` : reference to current key in a `{{#each}}` loop on an object.
+* `{{@root}}` : reference to root context.
+* `{{@root.path.to.value}}` : reference to root context then follow the path.
 * `{{foo.[ba.r].[#spec].0.ok}}` : reference to $CurrentConext['foo']['ba.r']['#spec'][0]['ok'] (require `FLAG_ADVARNAME`)
 * `{{~any_valid_tag}}` : Space control, remove all previous spacing (includes CR/LF, tab, space; stop on any none spacing character) (require `FLAG_SPACECTL`)
 * `{{any_valid_tag~}}` : Space control, remove all next spacing (includes CR/LF, tab, space; stop on any none spacing character) (require `FLAG_SPACECTL`)
