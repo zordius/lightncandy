@@ -732,7 +732,7 @@ $libstr
             $base = '$cx[\'scopes\'][0]';
         }
 
-        if (is_null($var[0])) {
+        if ((count($var) == 0) || is_null($var[0])) {
             return $base;
         }
 
@@ -1747,12 +1747,17 @@ class LCRun2 {
      * @param array $cx render time context
      * @param boolean $named input arguments are named
      *
-     * @return string The rendered string of the token
+     * @return mixed The rendered string of the token, or Array with the rendered string and encode_flag
      *
      * @expect '=-=' when input 'a', Array('-'), 'raw', Array('helpers' => Array('a' => function ($i) {return "=$i=";}))
      * @expect '=&amp;=' when input 'a', Array('&'), 'enc', Array('helpers' => Array('a' => function ($i) {return "=$i=";}))
      * @expect '=&#x27;=' when input 'a', Array('\''), 'encq', Array('helpers' => Array('a' => function ($i) {return "=$i=";}))
      * @expect '=b=' when input 'a', Array('a' => 'b'), 'raw', Array('helpers' => Array('a' => function ($i) {return "={$i['a']}=";})), true
+     * @expect '=&=' when input 'a', Array('&'), 'raw', Array('helpers' => Array('a' => function ($i) {return Array("=$i=");}))
+     * @expect '=&amp;=' when input 'a', Array('&'), 'enc', Array('helpers' => Array('a' => function ($i) {return Array("=$i=");}))
+     * @expect '=&=' when input 'a', Array('&'), 'raw', Array('helpers' => Array('a' => function ($i) {return Array("=$i=");}))
+     * @expect '=&amp;&#039;&quot;=' when input 'a', Array('&\'"'), 'raw', Array('helpers' => Array('a' => function ($i) {return Array("=$i=", 'enc');}))
+     * @expect '=&amp;&#x27;&quot;=' when input 'a', Array('&\'"'), 'raw', Array('helpers' => Array('a' => function ($i) {return Array("=$i=", 'encq');}))
      */
     public static function ch($ch, $vars, $op, &$cx, $named = false) {
         $args = Array();
@@ -1761,11 +1766,24 @@ class LCRun2 {
         }
 
         $r = call_user_func_array($cx['helpers'][$ch], $named ? Array($args) : $args);
+
+        if (is_array($r)) {
+            if (isset($r[1])) {
+                if ($r[1]) {
+                    $op = $r[1];
+                } else {
+                    return $r;
+                }
+            }
+            $r = $r[0];
+        }
+
         switch ($op) {
             case 'enc': 
                 return htmlentities($r, ENT_QUOTES, 'UTF-8');
             case 'encq':
                 return preg_replace('/&#039;/', '&#x27;', htmlentities($r, ENT_QUOTES, 'UTF-8'));
+            case 'raw':
             default:
                 return $r;
         }

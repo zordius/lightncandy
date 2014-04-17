@@ -278,6 +278,21 @@ class LCRun2Test extends PHPUnit_Framework_TestCase
         $this->assertEquals('=b=', $method->invoke(null,
             'a', Array('a' => 'b'), 'raw', Array('helpers' => Array('a' => function ($i) {return "={$i['a']}=";})), true
         ));
+        $this->assertEquals('=&=', $method->invoke(null,
+            'a', Array('&'), 'raw', Array('helpers' => Array('a' => function ($i) {return Array("=$i=");}))
+        ));
+        $this->assertEquals('=&amp;=', $method->invoke(null,
+            'a', Array('&'), 'enc', Array('helpers' => Array('a' => function ($i) {return Array("=$i=");}))
+        ));
+        $this->assertEquals('=&=', $method->invoke(null,
+            'a', Array('&'), 'raw', Array('helpers' => Array('a' => function ($i) {return Array("=$i=");}))
+        ));
+        $this->assertEquals('=&amp;&#039;&quot;=', $method->invoke(null,
+            'a', Array('&\'"'), 'raw', Array('helpers' => Array('a' => function ($i) {return Array("=$i=", 'enc');}))
+        ));
+        $this->assertEquals('=&amp;&#x27;&quot;=', $method->invoke(null,
+            'a', Array('&\'"'), 'raw', Array('helpers' => Array('a' => function ($i) {return Array("=$i=", 'encq');}))
+        ));
     }
 }
 ?>
