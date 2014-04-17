@@ -221,8 +221,6 @@ The input arguments are processed by LightnCandy automatically, you do not need 
                             // and processed {{{../name}}} as second parameter into the helper
 ```
 
-The return value of your custom helper should be a string. When your custom helper be executed from {{ }} , the return value will be HTML encoded. You may execute your helper by {{{ }}} , then the original helper return value will be outputted directly.
-
 When you pass arguments as `name=value` pairs, the input to your custom helper will turn into only one associative array. For example, when your custom helper is `function ($input) {...}`:
 
 ```
@@ -232,6 +230,35 @@ When you pass arguments as `name=value` pairs, the input to your custom helper w
                               // so you get $input['na me'] as the string 'value'
 {{{helper url name="value"}}  // This send processed {{{url}}}  into $input[0]
                               // and the string "value" into $input['name']
+```
+
+The return value of your custom helper should be a string. When your custom helper be executed from {{ }} , the return value will be HTML encoded. You may execute your helper by {{{ }}} , then the original helper return value will be outputted directly.
+
+When you need to do different escaping or encoding logic, you can return extended information by Array($responseString, $escape_flag) , here are some custom helper return value cases:
+
+```php
+// encode is handled by lightncandy and decided by template
+// if the helper is in {{ }} , you get 'The U&amp;ME Helper is ececuted!'
+// if the helper is in {{{ }}} , you get 'The U&ME Helper is executed!'
+return 'The U&ME Helper is executed!';
+
+// Same as above because the escape_flag is DEFAULT
+// 0, false, null, undefined, or '' means DEFAULT
+return Array('The U&ME Helper is executed!');
+return Array('The U&ME Helper is executed!', false);
+return Array('The U&ME Helper is executed!', 0);
+
+// encoding is handled by the helper, lightncandy will do nothing
+// No matter in {{ }} or {{{ }}} , you get 'Exact&Same output \' \" Ya!'
+return Array('Exact&Same output \' " Ya!', 'raw');
+
+// force lightncandy html_encoded the helper result
+// No matter in {{ }} or {{{ }}} , you get 'Not&amp;Same output &#039; &quot; Ya!'
+return Array('Not&Same output \' " Ya!', 'enc');
+
+// force lightncandy encoded the helper result in handlebars.js way
+// No matter in {{ }} or {{{ }}} , you get 'Not&amp;Same output &#x27; &quot; Ya!'
+return Array('Not&Same output \' " Ya!', 'encq');
 ```
 
 Block Custom Helper
