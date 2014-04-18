@@ -178,28 +178,28 @@ LightnCandy::compile($template, Array(
         // 1. You may pass your function name
         //    When the function is not exist, you get compile time error
         //    In this case, the helper name is same with function name
-        //    Tempalte: {{my_helper_functoin ....}}
+        //    Template: {{my_helper_functoin ....}}
         'my_helper_function',
 
         // 2. You may also provide a static call from a class
         //    In this case, the helper name is same with provided full name
         //    **DEPRECATED** It is not valid in handlebars.js 
-        //    Tempalte: {{myClass::myStaticMethod ....}}
+        //    Template: {{myClass::myStaticMethod ....}}
         'myClass::myStaticMethod',
 
         // 3. You may also provide an alias name for helper function
         //    This help you to mapping different function to a preferred helper name
-        //    Tempalte: {{helper_name ....}}
+        //    Template: {{helper_name ....}}
         'helper_name' => 'my_other_helper',
 
         // 4. Alias also works well for static call of a class
         //    This help you to mapping different function to a preferred helper name
-        //    Tempalte: {{helper_name2 ....}}
+        //    Template: {{helper_name2 ....}}
         'helper_name2' => 'myClass::func',
 
         // 5. Anonymous function should be provided with alias
         //    The function will be included in generaed code always
-        //    Tempalte: {{helper_name3 ....}}
+        //    Template: {{helper_name3 ....}}
         'helper_name3' => function ($arg1, $arg2) {
             return "<a href=\"{$arg1}\">{$arg2}</a>";
         }
