@@ -1,7 +1,11 @@
 HISTORY
 =======
 
-v0.11 current trunk
+v0.12 current trunk
+   * align with handlebars.js 2.0.0-alpha.2
+   * ...
+
+v0.11 https://github.com/zordius/lightncandy/tree/v0.11
    * align with handlebars.js 2.0.0-alpha.2
    * a275d52c97 use php array, remove val().
    * 8834914c2a only export used custom helper into render function now
