@@ -41,6 +41,7 @@ class LightnCandy {
     const FLAG_ADVARNAME = 512;
     const FLAG_SPACECTL = 1024;
     const FLAG_NAMEDARG = 2048;
+    const FLAG_SAFESTRING = 16384;
 
     // PHP performance flags
     const FLAG_EXTHELPER = 4096;
@@ -50,7 +51,7 @@ class LightnCandy {
     const FLAG_BESTPERFORMANCE = 8192; // FLAG_ECHO
     const FLAG_JS = 24; // FLAG_JSTRUE + FLAG_JSOBJECT
     const FLAG_HANDLEBARS = 4064; // FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME + FLAG_SPACECTL + FLAG_NAMEDARG
-    const FLAG_HANDLEBARSJS = 4088; // FLAG_JS + FLAG_HANDLEBARS
+    const FLAG_HANDLEBARSJS = 20472; // FLAG_JS + FLAG_SAFESTRING + FLAG_HANDLEBARS
 
     // RegExps
     const PARTIAL_SEARCH = '/\\{\\{>[ \\t]*(.+?)[ \\t]*\\}\\}/s';
@@ -184,6 +185,7 @@ $libstr
                 'advar' => $flags & self::FLAG_ADVARNAME,
                 'namev' => $flags & self::FLAG_NAMEDARG,
                 'exhlp' => $flags & self::FLAG_EXTHELPER,
+                'safestring' => $flags & self::FLAG_SAFESTRING,
             ),
             'level' => 0,
             'stack' => Array(),
@@ -248,6 +250,10 @@ $libstr
         );
 
         $context['ops']['enc'] = $context['flags']['jsquote'] ? 'encq' : 'enc';
+        if ( $context['flags']['safestring'] ) {
+            $context['ops']['enc'] = 's' . $context['ops']['enc'];
+
+        }
         return self::buildHelperTable(self::buildHelperTable($context, $options), $options, 'blockhelpers');
     }
 
@@ -1403,7 +1409,13 @@ $libstr
         if ($context['flags']['jsobj'] || $context['flags']['jstrue']) {
             return $context['ops']['seperator'] . self::getFuncName($context, $raw ? 'raw' : $context['ops']['enc']) . "($v, \$cx){$context['ops']['seperator']}";
         } else {
-            return $raw ? "{$context['ops']['seperator']}$v{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlentities($v, ENT_QUOTES, 'UTF-8'){$context['ops']['seperator']}";
+            if ($context['flags']['safestring']) {
+                $inner = $raw ? '\$t' : "htmlentities(\$t, ENT_QUOTES, 'UTF-8')";
+                $v = "((\$t = $v && \$t instanceof LCSafeString) ? \$t->string : $inner)";
+            } elseif (!$raw) {
+                $v = "htmlentities($v, ENT_QUOTES, 'UTF-8)";
+            }
+            return "{$context['ops']['seperator']}$v{$context['ops']['seperator']}";
         }
     }
 
@@ -1554,6 +1566,12 @@ class LCRun2 {
             }
         }
 
+        if ($v instanceof LCSafeString) {
+            if ($cx['flags']['safestring']) {
+                return $v->string;
+            }
+        }
+
         if (is_array($v)) {
             if ($cx['flags']['jsobj']) {
                 if (count(array_diff_key($v, array_keys(array_keys($v)))) > 0) {
@@ -1588,6 +1606,25 @@ class LCRun2 {
     }
 
     /**
+     * LightnCandy runtime method for {{var}} with SAFESTRING feature enabled.
+     *
+     * @param mixed $var value to be htmlencoded
+     * @param array $cx render time context
+     *
+     * @return string The htmlencoded value of the specified variable
+     *
+     * @expect 'a' when input 'a', Array()
+     * @expect 'a&amp;b' when input 'a&b', Array()
+     * @expect 'a&#039;b' when input 'a\'b', Array()
+     * @expect 'a&b' when input new LCSafeString('a&b'), Array()
+     */
+    public static function senc($var, $cx) {
+        return $var instanceof LCSafeString
+            ? $var->string
+            : htmlentities(self::raw($var, $cx), ENT_QUOTES, 'UTF-8');
+    }
+
+    /**
      * LightnCandy runtime method for {{var}} , and deal with single quote to same as handlebars.js .
      *
      * @param mixed $var value to be htmlencoded
@@ -1601,6 +1638,27 @@ class LCRun2 {
      */
     public static function encq($var, $cx) {
         return preg_replace('/&#039;/', '&#x27;', htmlentities(self::raw($var, $cx), ENT_QUOTES, 'UTF-8'));
+    }
+
+    /**
+     * LightnCandy runtime method for {{var}} , and deal with single quote to same as handlebars.js
+     * with the SAFESTRING feature enabled.
+     *
+     * @param mixed $var value to be htmlencoded
+     * @param array $cx render time context
+     *
+     * @return string The htmlencoded value of the specified variable
+     *
+     * @expect 'a' when input 'a', Array()
+     * @expect 'a&amp;b' when input 'a&b', Array()
+     * @expect 'a&#x27;b' when input 'a\'b', Array()
+     * @expect 'a&b' when input new LCSafeString('a&b'), Array()
+     */
+    public static function sencq($var, $cx) {
+        return $var instanceof LCSafeString
+            ? $var->string
+            : preg_replace('/&#039;/', '&#x27;', htmlentities(self::raw($var, $cx), ENT_QUOTES, 'UTF-8'));
+
     }
 
     /**
@@ -1751,7 +1809,11 @@ class LCRun2 {
      *
      * @expect '=-=' when input 'a', Array('-'), 'raw', Array('helpers' => Array('a' => function ($i) {return "=$i=";}))
      * @expect '=&amp;=' when input 'a', Array('&'), 'enc', Array('helpers' => Array('a' => function ($i) {return "=$i=";}))
+     * @expect '=&amp;=' when input 'a', Array('&'), 'senc', Array('helpers' => Array('a' => function ($i) {return "=$i=";}))
+     * @expect '=&=' when input 'a', Array('&'), 'senc', Array('helpers' => Array('a' => function ($i) {return new LCSafeString("=$i=");}))
      * @expect '=&#x27;=' when input 'a', Array('\''), 'encq', Array('helpers' => Array('a' => function ($i) {return "=$i=";}))
+     * @expect '=&#x27;=' when input 'a', Array('\''), 'sencq', Array('helpers' => Array('a' => function ($i) {return "=$i=";}))
+     * @expect '=\'=' when input 'a', Array('\''), 'sencq', Array('helpers' => Array('a' => function ($i) {return new LCSafeString("=$i=");}))
      * @expect '=b=' when input 'a', Array('a' => 'b'), 'raw', Array('helpers' => Array('a' => function ($i) {return "={$i['a']}=";})), true
      * @expect '=&=' when input 'a', Array('&'), 'raw', Array('helpers' => Array('a' => function ($i) {return Array("=$i=");}))
      * @expect '=&amp;=' when input 'a', Array('&'), 'enc', Array('helpers' => Array('a' => function ($i) {return Array("=$i=");}))
@@ -1779,8 +1841,18 @@ class LCRun2 {
         }
 
         switch ($op) {
+            case 'senc':
+                if ($r instanceof LCSafeString) {
+                    return $r->string;
+                }
+                // fall through
             case 'enc': 
                 return htmlentities($r, ENT_QUOTES, 'UTF-8');
+            case 'sencq':
+                if ($r instanceof LCSafeString) {
+                    return $r->string;
+                }
+                //fall through
             case 'encq':
                 return preg_replace('/&#039;/', '&#x27;', htmlentities($r, ENT_QUOTES, 'UTF-8'));
             case 'raw':
@@ -1815,6 +1887,13 @@ class LCRun2 {
         $ret = $cb($cx, $r);
         array_pop($cx['scopes']);
         return $ret;
+    }
+}
+
+class LCSafeString {
+    public $string;
+    public function __construct($string) {
+        $this->string = $string;
     }
 }
 ?>

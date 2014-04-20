@@ -157,6 +157,24 @@ class LCRun2Test extends PHPUnit_Framework_TestCase
         ));
     }
     /**
+     * @covers LCRun2::senc
+     */
+    public function testOn_senc() {
+        $method = new ReflectionMethod('LCRun2', 'senc');
+        $this->assertEquals('a', $method->invoke(null,
+            'a', Array()
+        ));
+        $this->assertEquals('a&amp;b', $method->invoke(null,
+            'a&b', Array()
+        ));
+        $this->assertEquals('a&#039;b', $method->invoke(null,
+            'a\'b', Array()
+        ));
+        $this->assertEquals('a&b', $method->invoke(null,
+            new LCSafeString('a&b'), Array()
+        ));
+    }
+    /**
      * @covers LCRun2::encq
      */
     public function testOn_encq() {
@@ -169,6 +187,24 @@ class LCRun2Test extends PHPUnit_Framework_TestCase
         ));
         $this->assertEquals('a&#x27;b', $method->invoke(null,
             'a\'b', Array()
+        ));
+    }
+    /**
+     * @covers LCRun2::sencq
+     */
+    public function testOn_sencq() {
+        $method = new ReflectionMethod('LCRun2', 'sencq');
+        $this->assertEquals('a', $method->invoke(null,
+            'a', Array()
+        ));
+        $this->assertEquals('a&amp;b', $method->invoke(null,
+            'a&b', Array()
+        ));
+        $this->assertEquals('a&#x27;b', $method->invoke(null,
+            'a\'b', Array()
+        ));
+        $this->assertEquals('a&b', $method->invoke(null,
+            new LCSafeString('a&b'), Array()
         ));
     }
     /**
@@ -272,8 +308,20 @@ class LCRun2Test extends PHPUnit_Framework_TestCase
         $this->assertEquals('=&amp;=', $method->invoke(null,
             'a', Array('&'), 'enc', Array('helpers' => Array('a' => function ($i) {return "=$i=";}))
         ));
+        $this->assertEquals('=&amp;=', $method->invoke(null,
+            'a', Array('&'), 'senc', Array('helpers' => Array('a' => function ($i) {return "=$i=";}))
+        ));
+        $this->assertEquals('=&=', $method->invoke(null,
+            'a', Array('&'), 'senc', Array('helpers' => Array('a' => function ($i) {return new LCSafeString("=$i=");}))
+        ));
         $this->assertEquals('=&#x27;=', $method->invoke(null,
             'a', Array('\''), 'encq', Array('helpers' => Array('a' => function ($i) {return "=$i=";}))
+        ));
+        $this->assertEquals('=&#x27;=', $method->invoke(null,
+            'a', Array('\''), 'sencq', Array('helpers' => Array('a' => function ($i) {return "=$i=";}))
+        ));
+        $this->assertEquals('=\'=', $method->invoke(null,
+            'a', Array('\''), 'sencq', Array('helpers' => Array('a' => function ($i) {return new LCSafeString("=$i=");}))
         ));
         $this->assertEquals('=b=', $method->invoke(null,
             'a', Array('a' => 'b'), 'raw', Array('helpers' => Array('a' => function ($i) {return "={$i['a']}=";})), true
