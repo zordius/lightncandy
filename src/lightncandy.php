@@ -693,6 +693,8 @@ $libstr
      * @expect '$in' when input Array(null), Array()
      * @expect '$cx[\'sp_vars\'][\'index\']' when input Array('@index'), Array()
      * @expect '$cx[\'sp_vars\'][\'key\']' when input Array('@key'), Array()
+     * @expect '$cx[\'sp_vars\'][\'first\']' when input Array('@first'), Array()
+     * @expect '$cx[\'sp_vars\'][\'last\']' when input Array('@last'), Array()
      * @expect '$cx[\'scopes\'][0]' when input Array('@root'), Array()
      * @expect '\'a\'' when input Array('"a"'), Array(), Array()
      * @expect '((is_array($in) && isset($in[\'a\'])) ? $in[\'a\'] : null)' when input Array('a'), Array()
@@ -702,12 +704,12 @@ $libstr
     protected static function getVariableName($var) {
         $levels = 0;
 
-        if ($var[0] === '@index') {
-            return "\$cx['sp_vars']['index']";
-        }
-
-        if ($var[0] === '@key') {
-            return "\$cx['sp_vars']['key']";
+        switch ($var[0]) {
+        case '@index':
+        case '@first':
+        case '@last':
+        case '@key':
+            return "\$cx['sp_vars']['" . substr($var[0], 1) . "']";
         }
 
         // Handle double quoted string
@@ -1640,6 +1642,9 @@ class LCRun2 {
     public static function sec($v, &$cx, $in, $each, $cb, $inv = null) {
         $isary = is_array($v);
         $loop = $each;
+        $keys = $isary ? array_keys($v) : Array();
+        $last = count($keys) - 1;
+
         if ($isary && $inv !== null && count($v) === 0) {
             $cx['scopes'][] = $in;
             $ret = $inv($cx, $v);
@@ -1647,11 +1652,11 @@ class LCRun2 {
             return $ret;
         }
         if (!$loop && $isary) {
-            $loop = (count(array_diff_key($v, array_keys(array_keys($v)))) == 0);
+            $loop = (count(array_diff_key($v, array_keys($keys))) == 0);
         }
         if ($loop && $isary) {
             if ($each) {
-                $is_obj = count(array_diff_key($v, array_keys(array_keys($v)))) > 0;
+                $is_obj = count(array_diff_key($v, array_keys($keys))) > 0;
             } else {
                 $is_obj = false;
             }
@@ -1659,6 +1664,10 @@ class LCRun2 {
             $cx['scopes'][] = $in;
             $i = 0;
             foreach ($v as $index => $raw) {
+                $cx['sp_vars']['first'] = ($i == 0);
+                if (!$is_obj) {
+                    $cx['sp_vars']['last'] = ($i == $last);
+                }
                 if ($is_obj) {
                     $cx['sp_vars']['key'] = $index;
                     $cx['sp_vars']['index'] = $i;
@@ -1670,8 +1679,11 @@ class LCRun2 {
             }
             if ($is_obj) {
                 unset($cx['sp_vars']['key']);
+            } else {
+                unset($cx['sp_vars']['last']);
             }
             unset($cx['sp_vars']['index']);
+            unset($cx['sp_vars']['first']);
             array_pop($cx['scopes']);
             return join('', $ret);
         }
