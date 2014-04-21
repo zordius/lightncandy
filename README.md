@@ -117,7 +117,7 @@ Default is to compile the template as PHP which can be run as fast as possible (
 * `FLAG_THIS` : support `{{this}}` or `{{.}}` in template. Otherwise, `{{this}}` and `{{.}}` will cause template error.
 * `FLAG_WITH` : support `{{#with var}}` in template. Otherwise, `{{#with var}}` will cause template error.
 * `FLAG_PARENT` : support `{{../var}}` in template. Otherwise, `{{../var}}` will cause template error.
-* `FLAG_JSQUOTE` : encode `'` to `&#x27;` . Otherwise, `'` will encoded as `&#039;` .
+* `FLAG_JSQUOTE` : escape `'` to `&#x27;` . Otherwise, `'` will be escaped to `&#039;` .
 * `FLAG_ADVARNAME` : support `{{foo.[0].[#te#st].bar}}` style advanced variable naming in template.
 * `FLAG_NAMEDARG` : support named arguments for custom helper `{{helper name1=val1 nam2=val2 ...}}.
 * `FLAG_EXTHELPER` : do not including custom helper codes into compiled PHP codes. This reduces the code size, but you need to take care of your helper functions when rendering. If you forget to include required functions when execute rendering function, `undefined function` runtime error will be triggered. NOTE: Anonymous functions will always be placed into generated codes.
@@ -217,7 +217,7 @@ The input arguments are processed by LightnCandy automatically, you do not need 
 {{{helper name}}}           // This send processed {{{name}}} into the helper
 {{{helper ../name}}}        // This send processed {{{../name}}} into the helper
 {{{helper "Test"}}}         // This send the string "Test" into the helper
-{{helper "Test"}}           // This send the string "Test" into the helper and HTML encode the helper result
+{{helper "Test"}}           // This send the string "Test" into the helper and escape the helper result
 {{{helper "Test" ../name}}} // This send string "Test" as first parameter,
                             // and processed {{{../name}}} as second parameter into the helper
 ```
@@ -233,12 +233,12 @@ When you pass arguments as `name=value` pairs, the input to your custom helper w
                               // and the string "value" into $input['name']
 ```
 
-The return value of your custom helper should be a string. When your custom helper be executed from {{ }} , the return value will be HTML encoded. You may execute your helper by {{{ }}} , then the original helper return value will be outputted directly.
+The return value of your custom helper should be a string. When your custom helper be executed from {{ }} , the return value will be HTML escaped. You may execute your helper by {{{ }}} , then the original helper return value will be outputted directly.
 
-When you need to do different escaping or encoding logic, you can return extended information by Array($responseString, $escape_flag) , here are some custom helper return value cases:
+When you need to do different escaping logic, you can return extended information by Array($responseString, $escape_flag) , here are some custom helper return value cases:
 
 ```php
-// encode is handled by lightncandy and decided by template
+// escaping is handled by lightncandy and decided by template
 // if the helper is in {{ }} , you get 'The U&amp;ME Helper is ececuted!'
 // if the helper is in {{{ }}} , you get 'The U&ME Helper is executed!'
 return 'The U&ME Helper is executed!';
@@ -249,15 +249,15 @@ return Array('The U&ME Helper is executed!');
 return Array('The U&ME Helper is executed!', false);
 return Array('The U&ME Helper is executed!', 0);
 
-// encoding is handled by the helper, lightncandy will do nothing
+// escaping is handled by the helper, lightncandy will do nothing
 // No matter in {{ }} or {{{ }}} , you get 'Exact&Same output \' \" Ya!'
 return Array('Exact&Same output \' " Ya!', 'raw');
 
-// force lightncandy html_encoded the helper result
+// force lightncandy escaping the helper result
 // No matter in {{ }} or {{{ }}} , you get 'Not&amp;Same output &#039; &quot; Ya!'
 return Array('Not&Same output \' " Ya!', 'enc');
 
-// force lightncandy encoded the helper result in handlebars.js way
+// force lightncandy escaping the helper result in handlebars.js way
 // No matter in {{ }} or {{{ }}} , you get 'Not&amp;Same output &#x27; &quot; Ya!'
 return Array('Not&Same output \' " Ya!', 'encq');
 ```
@@ -349,7 +349,7 @@ Suggested Handlebars Template Practices
 ---------------------------------------
 
 * Prevent to use `{{#with}}` . I think `{{path.to.val}}` is more readable then `{{#with path.to}}{{val}}{{/with}}`; when using `{{#with}}` you will confusing on scope changing. `{{#with}}` only save you very little time when you access many variables under same path, but cost you a lot time when you need to understand then maintain a template.
-* use `{{{val}}}` when you do not require HTML encoded output on the value. It is better performance, too.
+* use `{{{val}}}` when you do not require HTML escaped output on the value. It is better performance, too.
 * Prevent to use custom helper if you want to reuse your template in different language. Or, you may need to implement different versions of helper in different languages.
 * For best performance, you should only use 'compile on demand' pattern when you are in development stage. Before you go to production, you can `LightnCandy::compile()` on all your templates, save all generated PHP codes, and deploy these generated files (You may need to maintain a build process for this) . **DO NOT COMPILE ON PRODUCTION** , it also a best practice for security. Adding cache for 'compile on demand' is not the best solution. If you want to build some library or framework based on LightnCandy, think about this scenario.
 * Recompile your templates when you upgrade LightnCandy every time.
@@ -366,13 +366,13 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{{value}}}` : raw variable
    * true as 'true' (require `FLAG_JSTRUE`)
    * false as ''
-* `{{value}}` : HTML encoded variable
+* `{{value}}` : HTML escaped variable
    * true as 'true' (require `FLAG_JSTRUE`)
    * false as ''
 * `{{{path.to.value}}}` : dot notation, raw
-* `{{path.to.value}}` : dot notation, HTML encoded
-* `{{.}}` : current context, HTML encoded (require `FLAG_THIS`)
-* `{{this}}` : current context, HTML encoded (require `FLAG_THIS`)
+* `{{path.to.value}}` : dot notation, HTML escaped 
+* `{{.}}` : current context, HTML escaped (require `FLAG_THIS`)
+* `{{this}}` : current context, HTML escaped (require `FLAG_THIS`)
 * `{{{.}}}` : current context, raw (require `FLAG_THIS`)
 * `{{{this}}}` : current context, raw (require `FLAG_THIS`)
 * `{{#value}}` : section
@@ -404,6 +404,6 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{~any_valid_tag}}` : Space control, remove all previous spacing (includes CR/LF, tab, space; stop on any none spacing character) (require `FLAG_SPACECTL`)
 * `{{any_valid_tag~}}` : Space control, remove all next spacing (includes CR/LF, tab, space; stop on any none spacing character) (require `FLAG_SPACECTL`)
 * `{{{helper var}}}` : Execute custom helper then render the result
-* `{{helper var}}` : Execute custom helper then render the HTML encoded result
+* `{{helper var}}` : Execute custom helper then render the HTML escaped result
 * `{{helper name1=var name2="str"}}` : Execute custom helper with named arguments
 * `{{#helper ...}}...{{/helper}}` : Execute block custom helper
