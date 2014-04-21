@@ -3,7 +3,7 @@ HISTORY
 
 v0.12 current trunk
    * align with handlebars.js 2.0.0-alpha.2
-   * ...
+   * 64db34cf65 support {{@first}} and {{@last}}
 
 v0.11 https://github.com/zordius/lightncandy/tree/v0.11
    * align with handlebars.js 2.0.0-alpha.2
