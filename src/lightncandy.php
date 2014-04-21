@@ -41,16 +41,17 @@ class LightnCandy {
     const FLAG_ADVARNAME = 512;
     const FLAG_SPACECTL = 1024;
     const FLAG_NAMEDARG = 2048;
+    const FLAG_SPVARS = 4096;
 
     // PHP performance flags
-    const FLAG_EXTHELPER = 4096;
-    const FLAG_ECHO = 8192;
+    const FLAG_EXTHELPER = 8192;
+    const FLAG_ECHO = 16384;
 
     // alias flags
-    const FLAG_BESTPERFORMANCE = 8192; // FLAG_ECHO
+    const FLAG_BESTPERFORMANCE = 16384; // FLAG_ECHO
     const FLAG_JS = 24; // FLAG_JSTRUE + FLAG_JSOBJECT
-    const FLAG_HANDLEBARS = 4064; // FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME + FLAG_SPACECTL + FLAG_NAMEDARG
-    const FLAG_HANDLEBARSJS = 4088; // FLAG_JS + FLAG_HANDLEBARS
+    const FLAG_HANDLEBARS = 8160; // FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME + FLAG_SPACECTL + FLAG_NAMEDARG + FLAG_SPVARS
+    const FLAG_HANDLEBARSJS = 8184; // FLAG_JS + FLAG_HANDLEBARS
 
     // RegExps
     const PARTIAL_SEARCH = '/\\{\\{>[ \\t]*(.+?)[ \\t]*\\}\\}/s';
@@ -183,6 +184,7 @@ $libstr
                 'echo' => $flags & self::FLAG_ECHO,
                 'advar' => $flags & self::FLAG_ADVARNAME,
                 'namev' => $flags & self::FLAG_NAMEDARG,
+                'spvar' => $flags & self::FLAG_SPVARS,
                 'exhlp' => $flags & self::FLAG_EXTHELPER,
             ),
             'level' => 0,
@@ -415,7 +417,7 @@ $libstr
      *
      * @param string $tname   helper table name
      *
-     * @param array  $context current scaning context
+     * @param array  $context current compile context
      *
      * @return string
      * @codeCoverageIgnore
@@ -439,7 +441,7 @@ $libstr
     /**
      * Internal method used by compile(). Export required standalone functions.
      *
-     * @param array $context current scaning context
+     * @param array $context current compile context
      *
      * @return string
      * @codeCoverageIgnore
@@ -672,6 +674,7 @@ $libstr
      * Internal method used by compile().
      *
      * @param array $vn variable name array.
+     * @param array $context current compile context
      *
      * @return string variable names
      */
@@ -1001,7 +1004,7 @@ $libstr
      * Internal method used by scanFeatures(). Validate start and and.
      *
      * @param string[] $token detected handlebars {{ }} token
-     * @param array $context current scaning context
+     * @param array $context current compile context
      * @param boolean $raw the token is started with {{{ or not
      *
      * @return boolean|null Return true when invalid
@@ -1026,7 +1029,7 @@ $libstr
      * Internal method used by compile(). Collect handlebars usage information, detect template error.
      *
      * @param string[] $token detected handlebars {{ }} token
-     * @param array $context current scaning context
+     * @param array $context current compile context
      * @param array $vars parsed arguments list
      *
      * @return mixed Return true when invalid or detected
@@ -1089,7 +1092,7 @@ $libstr
      * Internal method used by compile(). Collect handlebars usage information, detect template error.
      *
      * @param string[] $token detected handlebars {{ }} token
-     * @param array $context current scaning context
+     * @param array $context current compile context
      *
      * @codeCoverageIgnore
      */
@@ -1136,7 +1139,7 @@ $libstr
      * Internal method used by compile(). Show error message when named arguments appear without custom helper.
      *
      * @param array $token detected handlebars {{ }} token
-     * @param array $context current scaning context
+     * @param array $context current compile context
      * @param boolean $named is named arguments
      *
      */
@@ -1150,7 +1153,7 @@ $libstr
      * Internal method used by compile(). Return compiled PHP code partial for a handlebars token.
      *
      * @param array $token detected handlebars {{ }} token
-     * @param array $context current scaning context
+     * @param array $context current compile context
      *
      * @return string Return compiled code segment for the token
      *
@@ -1190,7 +1193,7 @@ $libstr
      * Internal method used by compile(). Return compiled PHP code partial for a handlebars section token.
      *
      * @param array $token detected handlebars {{ }} token
-     * @param array $context current scaning context
+     * @param array $context current compile context
      * @param array $vars parsed arguments list
      * @param boolean $named is named arguments or not
      *
@@ -1223,7 +1226,7 @@ $libstr
     /**
      * Internal method used by compile(). Return compiled PHP code partial for a handlebars block custom helper begin token.
      *
-     * @param array $context current scaning context
+     * @param array $context current compile context
      * @param array $vars parsed arguments list
      *
      * @return string Return compiled code segment for the token
@@ -1247,7 +1250,7 @@ $libstr
      * Internal method used by compile(). Return compiled PHP code partial for a handlebars block end token.
      *
      * @param array $token detected handlebars {{ }} token
-     * @param array $context current scaning context
+     * @param array $context current compile context
      * @param array $vars parsed arguments list
      *
      * @return string Return compiled code segment for the token
@@ -1298,7 +1301,7 @@ $libstr
     /**
      * Internal method used by compile(). Return compiled PHP code partial for a handlebars block begin token.
      *
-     * @param array $context current scaning context
+     * @param array $context current compile context
      * @param array $vars parsed arguments list
      *
      * @return string Return compiled code segment for the token
@@ -1341,7 +1344,7 @@ $libstr
     /**
      * Internal method used by compile(). Return compiled PHP code partial for a handlebars custom helper token.
      *
-     * @param array $context current scaning context
+     * @param array $context current compile context
      * @param array $vars parsed arguments list
      * @param boolean $raw is this {{{ token or not
      * @param boolean $named is named arguments or not
@@ -1365,7 +1368,7 @@ $libstr
    /**
      * Internal method used by compile(). Return compiled PHP code partial for a handlebars else token.
      *
-     * @param array $context current scaning context
+     * @param array $context current compile context
      * @param array $vars parsed arguments list
      *
      * @return string|null Return compiled code segment for the token when the token is else
@@ -1391,7 +1394,7 @@ $libstr
    /**
      * Internal method used by compile(). Return compiled PHP code partial for a handlebars variable token.
      *
-     * @param array $context current scaning context
+     * @param array $context current compile context
      * @param array $vars parsed arguments list
      * @param boolean $raw is this {{{ token or not
      *
