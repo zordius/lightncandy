@@ -1664,17 +1664,17 @@ class LCRun2 {
             $cx['scopes'][] = $in;
             $i = 0;
             foreach ($v as $index => $raw) {
-                $cx['sp_vars']['first'] = ($i == 0);
+                $cx['sp_vars']['first'] = ($i === 0);
                 if (!$is_obj) {
                     $cx['sp_vars']['last'] = ($i == $last);
                 }
                 if ($is_obj) {
                     $cx['sp_vars']['key'] = $index;
                     $cx['sp_vars']['index'] = $i;
-                    $i++;
                 } else {
                     $cx['sp_vars']['index'] = $index;
                 }
+                $i++;
                 $ret[] = $cb($cx, $raw);
             }
             if ($is_obj) {
