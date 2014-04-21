@@ -396,6 +396,8 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{@index}}` : reference to current index in a `{{#each}}` loop on an array.
 * `{{@key}}` : reference to current key in a `{{#each}}` loop on an object.
 * `{{@root}}` : reference to root context.
+* `{{@first}}` : true when looping at first item
+* `{{@last}}` : true when looping at last item
 * `{{@root.path.to.value}}` : reference to root context then follow the path.
 * `{{foo.[ba.r].[#spec].0.ok}}` : reference to $CurrentConext['foo']['ba.r']['#spec'][0]['ok'] . (require `FLAG_ADVARNAME`)
 * `{{~any_valid_tag}}` : Space control, remove all previous spacing (includes CR/LF, tab, space; stop on any none spacing character) (require `FLAG_SPACECTL`)
