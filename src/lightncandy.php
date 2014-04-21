@@ -1654,7 +1654,7 @@ class LCRun2 {
     public static function sec($v, &$cx, $in, $each, $cb, $inv = null) {
         $isary = is_array($v);
         $loop = $each;
-        $is_obj = null;
+        $keys = null;
 
         if ($isary && $inv !== null && count($v) === 0) {
             $cx['scopes'][] = $in;
@@ -1663,18 +1663,25 @@ class LCRun2 {
             return $ret;
         }
         if (!$loop && $isary) {
-            $loop = (count(array_diff_key($v, array_keys(array_keys($v)))) == 0);
+            $keys = array_keys($v);
+            $loop = (count(array_diff_key($v, array_keys($keys))) == 0);
             $is_obj = !$loop;
         }
         if ($loop && $isary) {
             if ($each) {
-                $is_obj = count(array_diff_key($v, array_keys(array_keys($v)))) > 0;
+                if ($keys == null) {
+                    $keys = array_keys($v);
+                    $is_obj = (count(array_diff_key($v, array_keys($keys))) > 0);
+                }
             } else {
                 $is_obj = false;
             }
             $ret = Array();
             $cx['scopes'][] = $in;
             $i = 0;
+            if ($cx['flags']['spvar']) {
+                $last = count($keys) - 1;
+            }
             foreach ($v as $index => $raw) {
                 if ($cx['flags']['spvar']) {
                     $cx['sp_vars']['first'] = ($i === 0);
