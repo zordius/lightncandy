@@ -194,10 +194,6 @@ $libstr
             'stack' => Array(),
             'error' => Array(),
             'vars' => Array(),
-            'jsonSchema' => Array(
-                '$schema' => 'http://json-schema.org/draft-03/schema',
-                'description' => 'Template Json Schema'
-            ),
             'basedir' => self::buildCXBasedir($options),
             'fileext' => self::buildCXFileext($options),
             'usedPartial' => Array(),
@@ -530,52 +526,6 @@ $libstr
     }
 
     /**
-     * Get JsonSchema of last compiled handlebars template.
-     *
-     * @return array JsonSchema data
-     *
-     * @codeCoverageIgnore
-     */
-    public static function getJsonSchema() {
-        return self::$lastContext['jsonSchema'];
-    }
-
-    /**
-     * Get JsonSchema of last compiled handlebars template as pretty printed string.
-     *
-     * @param string $indent indent string.
-     *
-     * @return string JsonSchema string
-     *
-     * @codeCoverageIgnore
-     */
-    public static function getJsonSchemaString($indent = '  ') {
-        $level = 0;
-        return preg_replace_callback('/\\{|\\[|,|\\]|\\}|:/', function ($matches) use (&$level, $indent) {
-            switch ($matches[0]) {
-                case '}':
-                case ']':
-                    $level--;
-                    $is = str_repeat($indent, $level);
-                    return "\n$is{$matches[0]}";
-                case ':':
-                    return ': ';
-            }
-            $br = '';
-            switch ($matches[0]) {
-                case '{':
-                case '[':
-                    $level++;
-                    // Continue to add CR
-                case ',':
-                    $br = "\n";
-            }
-            $is = str_repeat($indent, $level);
-            return "{$matches[0]}$br$is";
-        }, json_encode(self::getJsonSchema()));
-    }
-
-    /**
      * Get a working render function by a string of PHP code. This method may requires php setting allow_url_include=1 and allow_url_fopen=1 , or access right to tmp file system.
      *
      * @param string      $php PHP code
@@ -818,73 +768,6 @@ $libstr
         }
 
         return $ret;
-    }
-
-    /**
-     * Internal method used by compile(). Find current json schema target, return childrens.
-     *
-     * @param array $target current json schema target
-     * @param mixed $key move target to child specified with the key
-     *
-     * @return array children of new JSON schema target 
-     *
-     * @expect Array() when input Array(), false
-     * @expect Array() when input Array(), true
-     */
-    protected static function &setJSONTarget(&$target, $key = false) {
-        if ($key) {
-            if (!isset($target['properties'])) {
-                $target['type'] = 'object';
-                $target['properties'] = Array();
-            }
-            if (!isset($target['properties'][$key])) {
-                $target['properties'][$key] = Array();
-            }
-            return $target['properties'][$key];
-        } else {
-            if (!isset($target['items'])) {
-                $target['type'] = 'array';
-                $target['items'] = Array();
-            }
-            return $target['items'];
-        }
-    }
-
-    /**
-     * Internal method used by compile(). Find current JSON schema target, prepare target parent.
-     *
-     * @param array $context current compile context
-     *
-     * @codeCoverageIgnore
-     */
-    protected static function &setJSONParent(&$context) {
-        $target = &$context['jsonSchema'];
-        foreach ($context['vars'] as $var) {
-            if ($var) {
-                foreach ($var as $v) {
-                    $target = &self::setJSONTarget($target, $v);
-                }
-            }
-            $target = &self::setJSONTarget($target);
-        }
-        return $target;
-    }
-
-    /**
-     * Internal method used by compile(). Define a JSON schema string/number with provided variable name.
-     *
-     * @param array $context current compile context
-     * @param array $var current variable name
-     *
-     * @codeCoverageIgnore
-     */
-    protected static function addJsonSchema(&$context, $var) {
-        $target = &self::setJSONParent($context);
-        foreach ($var as $v) {
-            $target = &self::setJSONTarget($target, $v);
-        }
-        $target['type'] = Array('string', 'number');
-        $target['required'] = true;
     }
 
     /**
@@ -1367,9 +1250,6 @@ $libstr
         if (isset($context['helpers'][$vars[0][0]])) {
             $ch = array_shift($vars);
             self::addUsageCount($context, 'helpers', $ch[0]);
-            foreach ($vars as $var) {
-                self::addJsonSchema($context, $var);
-            }
             return $context['ops']['seperator'] . self::getFuncName($context, 'ch') . "('$ch[0]', " . self::getVariableNames($vars, $context) . ", '$fn', \$cx" . ($named ? ', true' : '') . "){$context['ops']['seperator']}";
         }
     }
@@ -1412,7 +1292,6 @@ $libstr
      * @codeCoverageIgnore
      */
     protected static function compileVariable(&$context, &$vars, $raw) {
-        self::addJsonSchema($context, $vars[0]);
         $v = self::getVariableName($vars[0], $context);
         if ($context['flags']['jsobj'] || $context['flags']['jstrue']) {
             return $context['ops']['seperator'] . self::getFuncName($context, $raw ? 'raw' : $context['ops']['enc']) . "($v, \$cx){$context['ops']['seperator']}";
