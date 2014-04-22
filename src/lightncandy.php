@@ -43,9 +43,12 @@ class LightnCandy {
     const FLAG_NAMEDARG = 2048;
     const FLAG_SPVARS = 4096;
 
-    // PHP performance flags
+    // PHP behavior flags
     const FLAG_EXTHELPER = 8192;
     const FLAG_ECHO = 16384;
+
+    // Template rendering time debug flags
+    const FLAG_RENDER_DEBUG = 32768;
 
     // alias flags
     const FLAG_BESTPERFORMANCE = 16384; // FLAG_ECHO
