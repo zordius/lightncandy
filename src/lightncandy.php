@@ -192,6 +192,7 @@ $libstr
                 'namev' => $flags & self::FLAG_NAMEDARG,
                 'spvar' => $flags & self::FLAG_SPVARS,
                 'exhlp' => $flags & self::FLAG_EXTHELPER,
+                'debug' => $flags & self::FLAG_RENDER_DEBUG,
             ),
             'level' => 0,
             'stack' => Array(),
@@ -707,7 +708,7 @@ $libstr
         array_pop($var);
         $p = count($var) ? self::getArrayCode($var) : '';
 
-        return "((is_array($base$p) && isset($base$n)) ? $base$n : null)";
+        return "((is_array($base$p) && isset($base$n)) ? $base$n : " . ($context['flags']['debug'] ? (self::getFuncName($context, 'debug') . '(\'' . addslashes($base . $n) . '\', $cx)') : 'null' ) . ')';
     }
 
     /**
@@ -1324,6 +1325,12 @@ $libstr
  * LightnCandy static class for compiled template runtime methods.
  */
 class LCRun2 {
+    /**
+     */
+    public static function debug($v, $cx) {
+        error_log("$v is not exists!");
+    }
+
     /**
      * LightnCandy runtime method for {{#if var}}.
      *
