@@ -22,10 +22,11 @@ Features
 * **SMALL** single PHP file, only 70K!
 * Context generation
    * Analyze used feature from your template
-   * generate **Json Schema** [BUGGY NOW]
-      * Do `LightnCandy::getJsonSchema()` right after `LightnCandy::compile()` to get jsonSchema
-      * Know required data structure from your templates
-      * Verify input data, or find out missing variables with any jsonSchema validator
+* Debug
+   * generate debug version template
+      * find out unsed expression in your template
+      * find out missing data when rendering template
+      * generate visually debug template
 * Standalone Template
    * The compiled PHP code can run without any PHP library. You do not need to include LightnCandy when execute rendering function.
 
@@ -44,7 +45,7 @@ Or, download LightnCandy from github:
 wget https://raw.github.com/zordius/lightncandy/master/src/lightncandy.php --no-check-certificate
 ```
 
-LightnCandy requirement: PHP 5.3.0+ , json_encode() (optional for `LightnCandy::getJsonSchema()`)
+LightnCandy requirement: PHP 5.3.0+ .
 
 **UPGRADE NOTICE**
 
