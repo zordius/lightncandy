@@ -139,14 +139,16 @@ class LightnCandy {
         $libstr = self::exportLCRun($context);
         $helpers = self::exportHelper($context);
         $bhelpers = self::exportHelper($context, 'blockhelpers');
+        $debug = LCRun2::DEBUG_ERROR_LOG;
 
         // Return generated PHP code string.
-        return "<?php return function (\$in) {
+        return "<?php return function (\$in, \$debugopt = $debug) {
     \$cx = Array(
         'flags' => Array(
             'jstrue' => $flagJStrue,
             'jsobj' => $flagJSObj,
             'spvar' => $flagSPVar,
+            'debug' => \$debugopt,
         ),
         'helpers' => $helpers,
         'blockhelpers' => $bhelpers,
@@ -1325,10 +1327,20 @@ $libstr
  * LightnCandy static class for compiled template runtime methods.
  */
 class LCRun2 {
+    const DEBUG_ERROR_LOG = 1;
+    const DEBUG_ERROR_EXCEPTION = 2;
+
     /**
      */
     public static function debug($v, $cx) {
-        error_log("$v is not exists!");
+        $e = "LCRun2: $v is not exists";
+        if ($cx['flags']['debug'] & self::DEBUG_ERROR_LOG) {
+            error_log($e);
+            return;
+        }
+        if ($context['flags']['exception']) {
+            throw new Exception($e);
+        }
     }
 
     /**
