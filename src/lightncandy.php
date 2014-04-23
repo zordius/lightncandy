@@ -1587,6 +1587,8 @@ class LCRun2 {
         $isary = is_array($v);
         $loop = $each;
         $keys = null;
+        $last = null;
+        $is_obj = false;
 
         if ($isary && $inv !== null && count($v) === 0) {
             $cx['scopes'][] = $in;
@@ -1605,8 +1607,6 @@ class LCRun2 {
                     $keys = array_keys($v);
                     $is_obj = (count(array_diff_key($v, array_keys($keys))) > 0);
                 }
-            } else {
-                $is_obj = false;
             }
             $ret = Array();
             $cx['scopes'][] = $in;
