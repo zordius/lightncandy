@@ -1369,7 +1369,7 @@ class LCRun2 {
             error_log($e);
             return;
         }
-        if ($context['flags']['exception']) {
+        if ($cx['flags']['debug'] & self::DEBUG_ERROR_EXCEPTION) {
             throw new Exception($e);
         }
     }
