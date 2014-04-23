@@ -726,7 +726,7 @@ $libstr
      * @param boolean $root is the path start from root or not
      * @param mixed $var variable parsed path
      *
-     * @return array variable names
+     * @return string normalized expression for debug display
      *
      * @expect '[a].[b]' when input 0, false, Array('a', 'b')
      * @expect '@root' when input 0, true, Array()
