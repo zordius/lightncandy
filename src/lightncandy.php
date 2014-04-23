@@ -650,7 +650,7 @@ $libstr
     /**
      * Internal method used by compile().
      *
-     * @param array $var variable name.
+     * @param array $var variable parsed path
      * @param array $context current compile context
      *
      * @return array variable names
@@ -686,6 +686,8 @@ $libstr
         }
 
         $base = '$in';
+        $root = false;
+
         // trace to parent
         if (!is_string($var[0]) && is_int($var[0])) {
             $levels = array_shift($var);
@@ -698,9 +700,13 @@ $libstr
 
         // Handle @root
         if ($context['flags']['spvar'] && ($var[0] === '@root')) {
+            $root = true;
             array_shift($var);
             $base = '$cx[\'scopes\'][0]';
         }
+
+        // Generate normalized expression for debug
+        $exp = self::getExpression($levels, $root, $var);
 
         if ((count($var) == 0) || is_null($var[0])) {
             return $base;
@@ -710,7 +716,24 @@ $libstr
         array_pop($var);
         $p = count($var) ? self::getArrayCode($var) : '';
 
-        return "((is_array($base$p) && isset($base$n)) ? $base$n : " . ($context['flags']['debug'] ? (self::getFuncName($context, 'debug') . '(\'' . addslashes($base . $n) . '\', $cx)') : 'null' ) . ')';
+        return "((is_array($base$p) && isset($base$n)) ? $base$n : " . ($context['flags']['debug'] ? (self::getFuncName($context, 'debug') . "('$exp', \$cx)") : 'null' ) . ')';
+    }
+
+    /**
+     * Internal method used by compile().
+     *
+     * @param integer $levels trace N levels top parent scope
+     * @param boolean $root is the path start from root or not
+     * @param array $var variable parsed path
+     *
+     * @return array variable names
+     *
+     * @expect '[a].[b]' when input 0, false, Array('a', 'b')
+     */
+    protected static function getExpression($levels, $root, $var) {
+        return addslashes(str_repeat('../', $levels) . ($root ? '@root' : '') . implode('.', array_map(function($v) {
+            return "[$v]";
+        }, $var)));
     }
 
     /**

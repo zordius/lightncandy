@@ -258,6 +258,16 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         ));
     }
     /**
+     * @covers LightnCandy::getExpression
+     */
+    public function testOn_getExpression() {
+        $method = new ReflectionMethod('LightnCandy', 'getExpression');
+        $method->setAccessible(true);
+        $this->assertEquals('[a].[b]', $method->invoke(null,
+            0, false, Array('a', 'b')
+        ));
+    }
+    /**
      * @covers LightnCandy::fixVariable
      */
     public function testOn_fixVariable() {
