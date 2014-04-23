@@ -729,11 +729,16 @@ $libstr
      * @return array variable names
      *
      * @expect '[a].[b]' when input 0, false, Array('a', 'b')
+     * @expect '@root' when input 0, true, Array()
      */
     protected static function getExpression($levels, $root, $var) {
-        return addslashes(str_repeat('../', $levels) . ($root ? ('@root' . (count($var) ? '.' : '')) : '') . implode('.', array_map(function($v) {
-            return "[$v]";
-        }, $var)));
+        return addslashes(
+            str_repeat('../', $levels) . 
+            ($root ? ('@root' . (count($var) ? '.' : '')) : '') . 
+            (is_array($var) ? implode('.', array_map(function($v) {
+                return "[$v]";
+            }, $var)) : 'this')
+        );
     }
 
     /**
