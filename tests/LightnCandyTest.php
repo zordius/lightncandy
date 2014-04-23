@@ -269,6 +269,15 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('@root', $method->invoke(null,
             0, true, Array()
         ));
+        $this->assertEquals('this', $method->invoke(null,
+            0, false, null
+        ));
+        $this->assertEquals('@root.[a].[b]', $method->invoke(null,
+            0, true, Array('a', 'b')
+        ));
+        $this->assertEquals('../../[a].[b]', $method->invoke(null,
+            2, false, Array('a', 'b')
+        ));
     }
     /**
      * @covers LightnCandy::fixVariable

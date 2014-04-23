@@ -724,12 +724,15 @@ $libstr
      *
      * @param integer $levels trace N levels top parent scope
      * @param boolean $root is the path start from root or not
-     * @param array $var variable parsed path
+     * @param mixed $var variable parsed path
      *
      * @return array variable names
      *
      * @expect '[a].[b]' when input 0, false, Array('a', 'b')
      * @expect '@root' when input 0, true, Array()
+     * @expect 'this' when input 0, false, null
+     * @expect '@root.[a].[b]' when input 0, true, Array('a', 'b')
+     * @expect '../../[a].[b]' when input 2, false, Array('a', 'b')
      */
     protected static function getExpression($levels, $root, $var) {
         return addslashes(
