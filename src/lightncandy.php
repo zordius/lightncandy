@@ -469,11 +469,26 @@ $libstr
             $spos = $file->ftell();
             $file->seek($method->getEndLine() - 2);
             $epos = $file->ftell();
-            $methods[$name] = self::scanLCRunDependency($context, $name, preg_replace('/public static function (.+)\\(/', '\'$1\' => function (', substr($lines, $spos, $epos - $spos))) . "    },\n";
+            $methods[$name] = self::scanLCRunDependency($context, $name, preg_replace('/public static function (.+)\\(/', '\'$1\' => function (', substr($lines, $spos, $epos - $spos)));
         }
         unset($file);
 
-        foreach ($context['usedCount']['lcrun'] as $name => $count) {
+        $exports = array_keys($context['usedCount']['lcrun']);
+
+        while (true) {
+            if (array_sum(array_map(function ($name) use (&$exports) {
+                if (in_array($name, $exports)) {
+                    return 0;
+                }
+                $exports[] = $name;
+                return 1;
+            }, $exports)) == 0) {
+                break;
+            }
+        }
+
+        foreach ($exports as $export) {
+            $ret .= ($methods[$export][0] . "    },\n");
         }
 
         return "$ret)\n";
@@ -484,16 +499,23 @@ $libstr
      *
      * @param array $context current compile context
      *
-     * @return string
+     * @return array list of converted code and children array
+     *
      * @codeCoverageIgnore
      */
-    protected static function scanLCRunDependency(&$context, $name, &$code) {
-        return preg_replace_callback('/self::(.+?)\(/', function ($matches) use (&$context) {
-            if (isset($context['usedCount']['lcrun'][$name])) {
-                self::addUsageCount($context, 'lcrun', $matches[1]);
+    protected static function scanLCRunDependency($context, $name, &$code) {
+        $child = Array();
+
+        $code = preg_replace_callback('/self::(.+?)\(/', function ($matches) use ($context, &$child) {
+            if (!isset($child[$matches[1]])) {
+                $child[$matches[1]] = 0;
             }
+            $child[$matches[1]]++;
+
             return "\$cx['funcs']['{$matches[1]}'](";
         }, $code);
+
+        return Array($code, $child);
     }
 
     /**
