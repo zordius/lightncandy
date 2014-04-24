@@ -501,12 +501,13 @@ $libstr
      * Internal method used by compile(). Export required standalone functions.
      *
      * @param array $context current compile context
+     * @param string $code PHP code string of the method
      *
      * @return array list of converted code and children array
      *
      * @codeCoverageIgnore
      */
-    protected static function scanLCRunDependency($context, $name, &$code) {
+    protected static function scanLCRunDependency($context, $code) {
         $child = Array();
 
         $code = preg_replace_callback('/self::(.+?)\(/', function ($matches) use ($context, &$child) {
