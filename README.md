@@ -177,6 +177,8 @@ When `compile()`, LightnCandy will lookup helpers from generated custom helper n
 
 ```php
 LightnCandy::compile($template, Array(
+    // FLAG_NAMEDARG is required if you want to use named arguments
+    'flags' => LightnCandy::FLAG_HANDLEBARS
     'helpers' => Array(
         // 1. You may pass your function name
         //    When the function is not exist, you get compile time error
@@ -224,7 +226,7 @@ The input arguments are processed by LightnCandy automatically, you do not need 
                             // and processed {{{../name}}} as second parameter into the helper
 ```
 
-When you pass arguments as `name=value` pairs, the input to your custom helper will turn into only one associative array. For example, when your custom helper is `function ($input) {...}`:
+When you pass arguments as `name=value` pairs, the input to your custom helper will turn into only one associative array ( **NOTICE: `FLAG_NAMEDARG` is required when compile()** ). For example, when your custom helper is `function ($input) {...}`:
 
 ```
 {{{helper name=value}}        // This send processed {{{value}}} into $input['name']
