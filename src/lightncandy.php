@@ -469,7 +469,7 @@ $libstr
             $spos = $file->ftell();
             $file->seek($method->getEndLine() - 2);
             $epos = $file->ftell();
-            $methods[$name] = self::scanLCRunDependency($context, $name, preg_replace('/public static function (.+)\\(/', '\'$1\' => function (', substr($lines, $spos, $epos - $spos)));
+            $methods[$name] = self::scanLCRunDependency($context, preg_replace('/public static function (.+)\\(/', '\'$1\' => function (', substr($lines, $spos, $epos - $spos)));
         }
         unset($file);
 
