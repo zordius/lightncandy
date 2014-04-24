@@ -177,70 +177,70 @@ class LCRun2Test extends PHPUnit_Framework_TestCase
     public function testOn_sec() {
         $method = new ReflectionMethod('LCRun2', 'sec');
         $this->assertEquals('', $method->invoke(null,
-            false, Array(), false, false, function () {return 'A';}
+            false, Array('flags' => Array('spvar' => 0)), false, false, function () {return 'A';}
         ));
         $this->assertEquals('', $method->invoke(null,
-            null, Array(), null, false, function () {return 'A';}
+            null, Array('flags' => Array('spvar' => 0)), null, false, function () {return 'A';}
         ));
         $this->assertEquals('A', $method->invoke(null,
-            true, Array(), true, false, function () {return 'A';}
+            true, Array('flags' => Array('spvar' => 0)), true, false, function () {return 'A';}
         ));
         $this->assertEquals('A', $method->invoke(null,
-            0, Array(), 0, false, function () {return 'A';}
+            0, Array('flags' => Array('spvar' => 0)), 0, false, function () {return 'A';}
         ));
         $this->assertEquals('-a=', $method->invoke(null,
-            Array('a'), Array(), Array('a'), false, function ($c, $i) {return "-$i=";}
+            Array('a'), Array('flags' => Array('spvar' => 0)), Array('a'), false, function ($c, $i) {return "-$i=";}
         ));
         $this->assertEquals('-a=-b=', $method->invoke(null,
-            Array('a','b'), Array(), Array('a','b'), false, function ($c, $i) {return "-$i=";}
+            Array('a','b'), Array('flags' => Array('spvar' => 0)), Array('a','b'), false, function ($c, $i) {return "-$i=";}
         ));
         $this->assertEquals('', $method->invoke(null,
-            'abc', Array(), 'abc', true, function ($c, $i) {return "-$i=";}
+            'abc', Array('flags' => Array('spvar' => 0)), 'abc', true, function ($c, $i) {return "-$i=";}
         ));
         $this->assertEquals('-b=', $method->invoke(null,
-            Array('a'=>'b'), Array(), Array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
+            Array('a'=>'b'), Array('flags' => Array('spvar' => 0)), Array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
         ));
         $this->assertEquals(0, $method->invoke(null,
-            'b', Array(), 'b', false, function ($c, $i) {return count($i);}
+            'b', Array('flags' => Array('spvar' => 0)), 'b', false, function ($c, $i) {return count($i);}
         ));
         $this->assertEquals('1', $method->invoke(null,
-            1, Array(), 1, false, function ($c, $i) {return print_r($i, true);}
+            1, Array('flags' => Array('spvar' => 0)), 1, false, function ($c, $i) {return print_r($i, true);}
         ));
         $this->assertEquals('0', $method->invoke(null,
-            0, Array(), 0, false, function ($c, $i) {return print_r($i, true);}
+            0, Array('flags' => Array('spvar' => 0)), 0, false, function ($c, $i) {return print_r($i, true);}
         ));
         $this->assertEquals('{"b":"c"}', $method->invoke(null,
-            Array('b'=>'c'), Array(), Array('b' => 'c'), false, function ($c, $i) {return json_encode($i);}
+            Array('b'=>'c'), Array('flags' => Array('spvar' => 0)), Array('b' => 'c'), false, function ($c, $i) {return json_encode($i);}
         ));
         $this->assertEquals('inv', $method->invoke(null,
-            Array(), Array(), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+            Array(), Array('flags' => Array('spvar' => 0)), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
         ));
         $this->assertEquals('inv', $method->invoke(null,
-            Array(), Array(), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+            Array(), Array('flags' => Array('spvar' => 0)), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
         ));
         $this->assertEquals('inv', $method->invoke(null,
-            false, Array(), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+            false, Array('flags' => Array('spvar' => 0)), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
         ));
         $this->assertEquals('inv', $method->invoke(null,
-            false, Array(), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+            false, Array('flags' => Array('spvar' => 0)), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
         ));
         $this->assertEquals('inv', $method->invoke(null,
-            '', Array(), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+            '', Array('flags' => Array('spvar' => 0)), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
         ));
         $this->assertEquals('cb', $method->invoke(null,
-            '', Array(), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+            '', Array('flags' => Array('spvar' => 0)), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
         ));
         $this->assertEquals('inv', $method->invoke(null,
-            0, Array(), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+            0, Array('flags' => Array('spvar' => 0)), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
         ));
         $this->assertEquals('cb', $method->invoke(null,
-            0, Array(), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+            0, Array('flags' => Array('spvar' => 0)), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
         ));
         $this->assertEquals('inv', $method->invoke(null,
-            new stdClass, Array(), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+            new stdClass, Array('flags' => Array('spvar' => 0)), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
         ));
         $this->assertEquals('cb', $method->invoke(null,
-            new stdClass, Array(), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+            new stdClass, Array('flags' => Array('spvar' => 0)), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
         ));
     }
     /**

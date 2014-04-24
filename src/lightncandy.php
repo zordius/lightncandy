@@ -1613,28 +1613,28 @@ class LCRun2 {
      *
      * @return string The rendered string of the section
      *
-     * @expect '' when input false, Array(), false, false, function () {return 'A';}
-     * @expect '' when input null, Array(), null, false, function () {return 'A';}
-     * @expect 'A' when input true, Array(), true, false, function () {return 'A';}
-     * @expect 'A' when input 0, Array(), 0, false, function () {return 'A';}
-     * @expect '-a=' when input Array('a'), Array(), Array('a'), false, function ($c, $i) {return "-$i=";}
-     * @expect '-a=-b=' when input Array('a','b'), Array(), Array('a','b'), false, function ($c, $i) {return "-$i=";}
-     * @expect '' when input 'abc', Array(), 'abc', true, function ($c, $i) {return "-$i=";}
-     * @expect '-b=' when input Array('a'=>'b'), Array(), Array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
-     * @expect 0 when input 'b', Array(), 'b', false, function ($c, $i) {return count($i);}
-     * @expect '1' when input 1, Array(), 1, false, function ($c, $i) {return print_r($i, true);}
-     * @expect '0' when input 0, Array(), 0, false, function ($c, $i) {return print_r($i, true);}
-     * @expect '{"b":"c"}' when input Array('b'=>'c'), Array(), Array('b' => 'c'), false, function ($c, $i) {return json_encode($i);}
-     * @expect 'inv' when input Array(), Array(), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'inv' when input Array(), Array(), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'inv' when input false, Array(), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'inv' when input false, Array(), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'inv' when input '', Array(), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'cb' when input '', Array(), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'inv' when input 0, Array(), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'cb' when input 0, Array(), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'inv' when input new stdClass, Array(), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'cb' when input new stdClass, Array(), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect '' when input false, Array('flags' => Array('spvar' => 0)), false, false, function () {return 'A';}
+     * @expect '' when input null, Array('flags' => Array('spvar' => 0)), null, false, function () {return 'A';}
+     * @expect 'A' when input true, Array('flags' => Array('spvar' => 0)), true, false, function () {return 'A';}
+     * @expect 'A' when input 0, Array('flags' => Array('spvar' => 0)), 0, false, function () {return 'A';}
+     * @expect '-a=' when input Array('a'), Array('flags' => Array('spvar' => 0)), Array('a'), false, function ($c, $i) {return "-$i=";}
+     * @expect '-a=-b=' when input Array('a','b'), Array('flags' => Array('spvar' => 0)), Array('a','b'), false, function ($c, $i) {return "-$i=";}
+     * @expect '' when input 'abc', Array('flags' => Array('spvar' => 0)), 'abc', true, function ($c, $i) {return "-$i=";}
+     * @expect '-b=' when input Array('a'=>'b'), Array('flags' => Array('spvar' => 0)), Array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
+     * @expect 0 when input 'b', Array('flags' => Array('spvar' => 0)), 'b', false, function ($c, $i) {return count($i);}
+     * @expect '1' when input 1, Array('flags' => Array('spvar' => 0)), 1, false, function ($c, $i) {return print_r($i, true);}
+     * @expect '0' when input 0, Array('flags' => Array('spvar' => 0)), 0, false, function ($c, $i) {return print_r($i, true);}
+     * @expect '{"b":"c"}' when input Array('b'=>'c'), Array('flags' => Array('spvar' => 0)), Array('b' => 'c'), false, function ($c, $i) {return json_encode($i);}
+     * @expect 'inv' when input Array(), Array('flags' => Array('spvar' => 0)), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'inv' when input Array(), Array('flags' => Array('spvar' => 0)), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'inv' when input false, Array('flags' => Array('spvar' => 0)), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'inv' when input false, Array('flags' => Array('spvar' => 0)), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'inv' when input '', Array('flags' => Array('spvar' => 0)), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'cb' when input '', Array('flags' => Array('spvar' => 0)), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'inv' when input 0, Array('flags' => Array('spvar' => 0)), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'cb' when input 0, Array('flags' => Array('spvar' => 0)), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'inv' when input new stdClass, Array('flags' => Array('spvar' => 0)), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'cb' when input new stdClass, Array('flags' => Array('spvar' => 0)), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
      */
     public static function sec($v, &$cx, $in, $each, $cb, $inv = null) {
         $isary = is_array($v);
