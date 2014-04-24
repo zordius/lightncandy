@@ -476,12 +476,15 @@ $libstr
         $exports = array_keys($context['usedCount']['lcrun']);
 
         while (true) {
-            if (array_sum(array_map(function ($name) use (&$exports) {
-                if (in_array($name, $exports)) {
-                    return 0;
+            if (array_sum(array_map(function ($name) use (&$exports, $methods) {
+                $n = 0;
+                foreach ($methods[$name][1] as $child => $count) {
+                    if (!in_array($child, $exports)) {
+                       $exports[] = $child;
+                       $n++;
+                    }
                 }
-                $exports[] = $name;
-                return 1;
+                return $n;
             }, $exports)) == 0) {
                 break;
             }
