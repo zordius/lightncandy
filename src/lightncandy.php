@@ -226,6 +226,7 @@ $libstr
                 'var' => Array(),
                 'helpers' => Array(),
                 'blockhelpers' => Array(),
+                'lcrun' => Array(),
             ),
             'helpers' => Array(),
             'blockhelpers' => Array(),
@@ -450,7 +451,7 @@ $libstr
      * @return string
      * @codeCoverageIgnore
      */
-    protected static function exportLCRun($context) {
+    protected static function exportLCRun(&$context) {
         if ($context['flags']['standalone'] == 0) {
             return '';
         }
@@ -459,17 +460,40 @@ $libstr
         $fname = $class->getFileName();
         $lines = file_get_contents($fname);
         $file = new SplFileObject($fname);
+        $methods = Array();
         $ret = "'funcs' => Array(\n";
 
         foreach ($class->getMethods() as $method) {
+            $name = $method->getName();
             $file->seek($method->getStartLine() - 2);
             $spos = $file->ftell();
             $file->seek($method->getEndLine() - 2);
             $epos = $file->ftell();
-            $ret .= preg_replace('/self::(.+?)\(/', '\\$cx[\'funcs\'][\'$1\'](', preg_replace('/public static function (.+)\\(/', '\'$1\' => function (', substr($lines, $spos, $epos - $spos))) . "    },\n";
+            $methods[$name] = self::scanLCRunDependency($context, $name, preg_replace('/public static function (.+)\\(/', '\'$1\' => function (', substr($lines, $spos, $epos - $spos))) . "    },\n";
         }
         unset($file);
+
+        foreach ($context['usedCount']['lcrun'] as $name => $count) {
+        }
+
         return "$ret)\n";
+    }
+
+    /**
+     * Internal method used by compile(). Export required standalone functions.
+     *
+     * @param array $context current compile context
+     *
+     * @return string
+     * @codeCoverageIgnore
+     */
+    protected static function scanLCRunDependency(&$context, $name, &$code) {
+        return preg_replace_callback('/self::(.+?)\(/', function ($matches) use (&$context) {
+            if (isset($context['usedCount']['lcrun'][$name])) {
+                self::addUsageCount($context, 'lcrun', $matches[1]);
+            }
+            return "\$cx['funcs']['{$matches[1]}'](";
+        }, $code);
     }
 
     /**
@@ -594,7 +618,8 @@ $libstr
      * @expect 'LCRun2::test2' when input Array('flags' => Array('standalone' => 0)), 'test2'
      * @expect "\$cx['funcs']['test3']" when input Array('flags' => Array('standalone' => 1)), 'test3'
      */
-    protected static function getFuncName($context, $name) {
+    protected static function getFuncName(&$context, $name) {
+        self::addUsageCount($context, 'lcrun', $name);
         return $context['flags']['standalone'] ? "\$cx['funcs']['$name']" : "LCRun2::$name";
     }
 
@@ -1343,14 +1368,17 @@ $libstr
      * @param array $context current context
      * @param string $category ctegory name, can be one of: 'var', 'helpers', 'blockhelpers'
      * @param string $name used name
+     * @param integer $count increment
      *
-     * @codeCoverageIgnore
+     * @expect 1 when input Array('usedCount' => Array('test' => Array())), 'test', 'testname'
+     * @expect 3 when input Array('usedCount' => Array('test' => Array('testname' => 2))), 'test', 'testname'
+     * @expect 5 when input Array('usedCount' => Array('test' => Array('testname' => 2))), 'test', 'testname', 3
      */
-    protected static function addUsageCount(&$context, $category, $name) {
+    protected static function addUsageCount(&$context, $category, $name, $count = 1) {
          if (!isset($context['usedCount'][$category][$name])) {
              $context['usedCount'][$category][$name] = 0;
          }
-         $context['usedCount'][$category][$name]++;
+         return ($context['usedCount'][$category][$name] += $count);
     }
 }
 

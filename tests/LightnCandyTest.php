@@ -422,5 +422,21 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
             Array(0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('unless' => 7), 'level' => 0), Array('unless')
         ));
     }
+    /**
+     * @covers LightnCandy::addUsageCount
+     */
+    public function testOn_addUsageCount() {
+        $method = new ReflectionMethod('LightnCandy', 'addUsageCount');
+        $method->setAccessible(true);
+        $this->assertEquals(1, $method->invoke(null,
+            Array('usedCount' => Array('test' => Array())), 'test', 'testname'
+        ));
+        $this->assertEquals(3, $method->invoke(null,
+            Array('usedCount' => Array('test' => Array('testname' => 2))), 'test', 'testname'
+        ));
+        $this->assertEquals(5, $method->invoke(null,
+            Array('usedCount' => Array('test' => Array('testname' => 2))), 'test', 'testname', 3
+        ));
+    }
 }
 ?>
