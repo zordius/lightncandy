@@ -139,7 +139,7 @@ class LightnCandy {
         $libstr = self::exportLCRun($context);
         $helpers = self::exportHelper($context);
         $bhelpers = self::exportHelper($context, 'blockhelpers');
-        $debug = LCRun2::DEBUG_ERROR_LOG;
+        $debug = LCRun3::DEBUG_ERROR_LOG;
 
         // Return generated PHP code string.
         return "<?php return function (\$in, \$debugopt = $debug) {
@@ -270,8 +270,8 @@ $libstr
      * @expect Array() when input Array(), Array()
      * @expect Array('flags' => Array('exhlp' => 1)) when input Array('flags' => Array('exhlp' => 1)), Array('helpers' => Array('abc'))
      * @expect Array('error' => Array('Can not find custom helper function defination abc() !'), 'flags' => Array('exhlp' => 0)) when input Array('error' => Array(), 'flags' => Array('exhlp' => 0)), Array('helpers' => Array('abc'))
-     * @expect Array('flags' => Array('exhlp' => 1), 'helpers' => Array('LCRun2::raw' => 'LCRun2::raw')) when input Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('LCRun2::raw'))
-     * @expect Array('flags' => Array('exhlp' => 1), 'helpers' => Array('test' => 'LCRun2::raw')) when input Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('test' => 'LCRun2::raw'))
+     * @expect Array('flags' => Array('exhlp' => 1), 'helpers' => Array('LCRun3::raw' => 'LCRun3::raw')) when input Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('LCRun3::raw'))
+     * @expect Array('flags' => Array('exhlp' => 1), 'helpers' => Array('test' => 'LCRun3::raw')) when input Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('test' => 'LCRun3::raw'))
      */
     protected static function buildHelperTable($context, $options, $tname = 'helpers') {
         if (isset($options[$tname]) && is_array($options[$tname])) {
@@ -456,7 +456,7 @@ $libstr
             return '';
         }
 
-        $class = new ReflectionClass('LCRun2');
+        $class = new ReflectionClass('LCRun3');
         $fname = $class->getFileName();
         $lines = file_get_contents($fname);
         $file = new SplFileObject($fname);
@@ -640,13 +640,20 @@ $libstr
      *
      * @return string compiled Function name
      *
-     * @expect 'LCRun2::test(' when input Array('flags' => Array('standalone' => 0)), 'test'
-     * @expect 'LCRun2::test2(' when input Array('flags' => Array('standalone' => 0)), 'test2'
+     * @expect 'LCRun3::test(' when input Array('flags' => Array('standalone' => 0)), 'test'
+     * @expect 'LCRun3::test2(' when input Array('flags' => Array('standalone' => 0)), 'test2'
      * @expect "\$cx['funcs']['test3'](" when input Array('flags' => Array('standalone' => 1)), 'test3'
      */
     protected static function getFuncName(&$context, $name) {
         self::addUsageCount($context, 'lcrun', $name);
-        return $context['flags']['standalone'] ? "\$cx['funcs']['$name'](" : "LCRun2::$name(";
+        if ($context['flags']['debug'] && ($name != 'miss')) {
+            $dbg = "'{{~~}}', '$name', ";
+            $name = 'debug';
+            self::addUsageCount($context, 'lcrun', 'debug');
+        } else {
+            $dbg = '';
+        }
+        return $context['flags']['standalone'] ? "\$cx['funcs']['$name']($dbg" : "LCRun3::$name($dbg";
     }
 
     /**
@@ -767,7 +774,7 @@ $libstr
         array_pop($var);
         $p = count($var) ? self::getArrayCode($var) : '';
 
-        return "((is_array($base$p) && isset($base$n)) ? $base$n : " . ($context['flags']['debug'] ? (self::getFuncName($context, 'miss') . "'$exp', \$cx)") : 'null' ) . ')';
+        return "((is_array($base$p) && isset($base$n)) ? $base$n : " . ($context['flags']['debug'] ? (self::getFuncName($context, 'miss') . "\$cx, '$exp')") : 'null' ) . ')';
     }
 
     /**
@@ -1411,19 +1418,40 @@ $libstr
 /**
  * LightnCandy static class for compiled template runtime methods.
  */
-class LCRun2 {
+class LCRun3 {
     const DEBUG_ERROR_LOG = 1;
     const DEBUG_ERROR_EXCEPTION = 2;
+    const DEBUG_TAGS = 4;
 
-    /**
-     * LightnCandy runtime method for missing data error.
+    /**                                                                                                                                                                           
+     * LightnCandy runtime method for output debug info.
      *
      * @param mixed $v expression
      * @param array $cx render time context
      *
      */
-    public static function miss($v, $cx) {
-        $e = "LCRun2: $v is not exists";
+    public static function debug() {
+        $params = func_get_args();
+        $v = array_shift($params);
+        $f = array_shift($params);
+        $cx = $params[0];
+
+        if ($cx['flags']['debug'] & self::DEBUG_TAGS) {
+            return '{{TAG}}';
+        } else {
+            return call_user_func_array((isset($cx['funcs']) ? "\$cx['funcs']['$f']" : "LCRun3::$f"), $params);
+        }
+    }
+
+    /**
+     * LightnCandy runtime method for missing data error.
+     *
+     * @param array $cx render time context
+     * @param mixed $v expression
+     *
+     */
+    public static function miss($cx, $v) {
+        $e = "LCRun3: $v is not exists";
         if ($cx['flags']['debug'] & self::DEBUG_ERROR_LOG) {
             error_log($e);
             return;

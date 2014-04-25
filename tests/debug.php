@@ -11,7 +11,7 @@ Test6: {{../../[test'6]}}
 VAREND
 ;
 $php = LightnCandy::compile($template, Array(
-    'flags' => LightnCandy::FLAG_RENDER_DEBUG | LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_ERROR_LOG  // | LightnCandy::FLAG_STANDALONE
+    'flags' => LightnCandy::FLAG_RENDER_DEBUG | LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_STANDALONE
 ));
 
 echo "Rendered PHP code is:\n$php\n\n";
