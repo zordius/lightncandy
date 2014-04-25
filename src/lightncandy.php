@@ -767,7 +767,7 @@ $libstr
         array_pop($var);
         $p = count($var) ? self::getArrayCode($var) : '';
 
-        return "((is_array($base$p) && isset($base$n)) ? $base$n : " . ($context['flags']['debug'] ? (self::getFuncName($context, 'debug') . "('$exp', \$cx)") : 'null' ) . ')';
+        return "((is_array($base$p) && isset($base$n)) ? $base$n : " . ($context['flags']['debug'] ? (self::getFuncName($context, 'miss') . "('$exp', \$cx)") : 'null' ) . ')';
     }
 
     /**
@@ -1416,8 +1416,9 @@ class LCRun2 {
     const DEBUG_ERROR_EXCEPTION = 2;
 
     /**
+     * LightnCandy runtime method for 
      */
-    public static function debug($v, $cx) {
+    public static function miss($v, $cx) {
         $e = "LCRun2: $v is not exists";
         if ($cx['flags']['debug'] & self::DEBUG_ERROR_LOG) {
             error_log($e);
