@@ -1416,7 +1416,11 @@ class LCRun2 {
     const DEBUG_ERROR_EXCEPTION = 2;
 
     /**
-     * LightnCandy runtime method for 
+     * LightnCandy runtime method for missing data error.
+     *
+     * @param mixed $v expression
+     * @param array $cx render time context
+     *
      */
     public static function miss($v, $cx) {
         $e = "LCRun2: $v is not exists";
