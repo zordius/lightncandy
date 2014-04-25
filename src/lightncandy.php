@@ -1195,7 +1195,7 @@ $libstr
             $context['stack'][] = self::getArrayCode($vars[0]);
             $context['stack'][] = '^';
             self::noNamedArguments($token, $context, $named);
-            return "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'isec') . "$v)){$context['ops']['cnd_then']}";
+            return "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'isec') . "\$cx, $v)){$context['ops']['cnd_then']}";
         case '/':
             return self::compileBlockEnd($token, $context, $vars);
         case '!':
@@ -1230,7 +1230,7 @@ $libstr
         $ch = array_shift($vars);
         self::addUsageCount($context, 'blockhelpers', $ch[0]);
         $v = self::getVariableNames($vars, $context);
-        return $context['ops']['seperator'] . self::getFuncName($context, 'bch') . "'$ch[0]', $v, \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
+        return $context['ops']['seperator'] . self::getFuncName($context, 'bch') . "\$cx, '$ch[0]', $v, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
     /**
@@ -1302,13 +1302,13 @@ $libstr
         case 'if':
             $context['stack'][] = 'if';
             return $context['usedFeature']['parent'] 
-                ? $context['ops']['seperator'] . self::getFuncName($context, 'ifv') . "$v, \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
-                : "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'ifvar') . "$v)){$context['ops']['cnd_then']}";
+                ? $context['ops']['seperator'] . self::getFuncName($context, 'ifv') . "\$cx, $v, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
+                : "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'ifvar') . "\$cx, $v)){$context['ops']['cnd_then']}";
         case 'unless':
             $context['stack'][] = 'unless';
             return $context['usedFeature']['parent']
                 ? $context['ops']['seperator'] . self::getFuncName($context, 'unl') . "$v, \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
-                : "{$context['ops']['cnd_start']}(!" . self::getFuncName($context, 'ifvar') . "$v)){$context['ops']['cnd_then']}";
+                : "{$context['ops']['cnd_start']}(!" . self::getFuncName($context, 'ifvar') . "\$cx, $v)){$context['ops']['cnd_then']}";
         case 'each':
             $each = 'true';
             array_shift($vars);
@@ -1317,7 +1317,7 @@ $libstr
             if ($context['flags']['with']) {
                 $context['vars'][] = $vars[1];
                 $context['stack'][] = 'with';
-                return $context['ops']['seperator'] . self::getFuncName($context, 'wi') . "$v, \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
+                return $context['ops']['seperator'] . self::getFuncName($context, 'wi') . "\$cx, $v, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
             }
         }
 
@@ -1325,7 +1325,7 @@ $libstr
         $context['vars'][] = $vars[0];
         $context['stack'][] = self::getArrayCode($vars[0]);
         $context['stack'][] = '#';
-        return $context['ops']['seperator'] . self::getFuncName($context, 'sec') . "$v, \$cx, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
+        return $context['ops']['seperator'] . self::getFuncName($context, 'sec') . "\$cx, $v, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
     /**
@@ -1345,7 +1345,7 @@ $libstr
         if (isset($context['helpers'][$vars[0][0]])) {
             $ch = array_shift($vars);
             self::addUsageCount($context, 'helpers', $ch[0]);
-            return $context['ops']['seperator'] . self::getFuncName($context, 'ch') . "'$ch[0]', " . self::getVariableNames($vars, $context) . ", '$fn', \$cx" . ($named ? ', true' : '') . "){$context['ops']['seperator']}";
+            return $context['ops']['seperator'] . self::getFuncName($context, 'ch') . "\$cx, '$ch[0]', " . self::getVariableNames($vars, $context) . ", '$fn'" . ($named ? ', true' : '') . "){$context['ops']['seperator']}";
         }
     }
 
@@ -1389,7 +1389,7 @@ $libstr
     protected static function compileVariable(&$context, &$vars, $raw) {
         $v = self::getVariableName($vars[0], $context);
         if ($context['flags']['jsobj'] || $context['flags']['jstrue']) {
-            return $context['ops']['seperator'] . self::getFuncName($context, $raw ? 'raw' : $context['ops']['enc']) . "$v, \$cx){$context['ops']['seperator']}";
+            return $context['ops']['seperator'] . self::getFuncName($context, $raw ? 'raw' : $context['ops']['enc']) . "\$cx, $v){$context['ops']['seperator']}";
         } else {
             return $raw ? "{$context['ops']['seperator']}$v{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlentities($v, ENT_QUOTES, 'UTF-8'){$context['ops']['seperator']}";
         }
@@ -1427,15 +1427,14 @@ class LCRun3 {
      * LightnCandy runtime method for output debug info.
      *
      * @param mixed $v expression
+     * @param string $f runtime function name
      * @param array $cx render time context
      *
      */
-    public static function debug() {
-        $params = func_get_args();
-        $v = array_shift($params);
-        $f = array_shift($params);
-        $cx = $params[0];
+    public static function debug($v, $f, &$cx) {
+        $params = array_slice(func_get_args(), 2);
 
+        $params[0] = &$cx;
         if ($cx['flags']['debug'] & self::DEBUG_TAGS) {
             return '{{TAG}}';
         } else {
@@ -1464,6 +1463,7 @@ class LCRun3 {
     /**
      * LightnCandy runtime method for {{#if var}}.
      *
+     * @param array $cx render time context
      * @param mixed $v value to be tested
      *
      * @return boolean Return true when the value is not null nor false.
@@ -1478,15 +1478,15 @@ class LCRun3 {
      * @expect true when input Array('')
      * @expect true when input Array(0)
      */
-    public static function ifvar($v) {
+    public static function ifvar($cx, $v) {
         return !is_null($v) && ($v !== false) && ($v !== 0) && ($v !== '') && (is_array($v) ? (count($v) > 0) : true);
     }
 
     /**
      * LightnCandy runtime method for {{#if var}} when {{../var}} used.
      *
-     * @param array $v value to be tested
      * @param array $cx render time context
+     * @param array $v value to be tested
      * @param array $in input data with current scope
      * @param Closure $truecb callback function when test result is true
      * @param Closure $falsecb callback function when test result is false
@@ -1498,9 +1498,9 @@ class LCRun3 {
      * @expect 'Y' when input 1, Array('scopes' => Array()), Array(), function () {return 'Y';}
      * @expect 'N' when input null, Array('scopes' => Array()), Array(), function () {return 'Y';}, function () {return 'N';}
      */
-    public static function ifv($v, $cx, $in, $truecb, $falsecb = null) {
+    public static function ifv($cx, $v, $in, $truecb, $falsecb = null) {
         $ret = '';
-        if (self::ifvar($v)) {
+        if (self::ifvar($cx, $v)) {
             if ($truecb) {
                 $cx['scopes'][] = $in;
                 $ret = $truecb($cx, $in);
@@ -1519,8 +1519,8 @@ class LCRun3 {
     /**
      * LightnCandy runtime method for {{#unless var}} when {{../var}} used.
      *
-     * @param mixed $var value be tested
      * @param array $cx render time context
+     * @param mixed $var value be tested
      * @param array $in input data with current scope
      *
      * @return string Return rendered string when the value is not null nor false.
@@ -1531,13 +1531,14 @@ class LCRun3 {
      * @expect 'Y' when input null, Array('scopes' => Array()), Array(), function () {return 'Y';}, function () {return 'N';}
      * @expect 'N' when input true, Array('scopes' => Array()), Array(), function () {return 'Y';}, function () {return 'N';}
      */
-    public static function unl($var, $cx, $in, $truecb, $falsecb = null) {
-        return self::ifv($var, $cx, $in, $falsecb, $truecb);
+    public static function unl($cx, $var, $in, $truecb, $falsecb = null) {
+        return self::ifv($cx, $var, $in, $falsecb, $truecb);
     }
 
     /**
      * LightnCandy runtime method for {{^var}} inverted section.
      *
+     * @param array $cx render time context
      * @param mixed $v value to be tested
      *
      * @return boolean Return true when the value is not null nor false.
@@ -1547,15 +1548,15 @@ class LCRun3 {
      * @expect true when input false
      * @expect false when input 'false'
      */
-    public static function isec($v) {
+    public static function isec($cx, $v) {
         return is_null($v) || ($v === false);
     }
 
     /**
      * LightnCandy runtime method for {{{var}}} .
      *
-     * @param mixed $v value to be output
      * @param array $cx render time context
+     * @param mixed $v value to be output
      * @param boolean $loop true when in loop
      *
      * @return string The raw value of the specified variable
@@ -1574,7 +1575,7 @@ class LCRun3 {
      * @expect 'a,' when input Array('a',false), Array('flags' => Array('jstrue' => 0, 'jsobj' => 1))
      * @expect 'a,false' when input Array('a',false), Array('flags' => Array('jstrue' => 1, 'jsobj' => 1))
      */
-    public static function raw($v, $cx, $loop = false) {
+    public static function raw($cx, $v, $loop = false) {
         if ($v === true) {
             if ($cx['flags']['jstrue']) {
                 return 'true';
@@ -1594,7 +1595,7 @@ class LCRun3 {
                 } else {
                     $ret = Array();
                     foreach ($v as $k => $vv) {
-                        $ret[] = self::raw($vv, $cx, true);
+                        $ret[] = self::raw($cx, $vv, true);
                     }
                     return join(',', $ret);
                 }
@@ -1607,8 +1608,8 @@ class LCRun3 {
     /**
      * LightnCandy runtime method for {{var}} .
      *
-     * @param mixed $var value to be htmlencoded
      * @param array $cx render time context
+     * @param mixed $var value to be htmlencoded
      *
      * @return string The htmlencoded value of the specified variable
      *
@@ -1616,15 +1617,15 @@ class LCRun3 {
      * @expect 'a&amp;b' when input 'a&b', Array()
      * @expect 'a&#039;b' when input 'a\'b', Array()
      */
-    public static function enc($var, $cx) {
-        return htmlentities(self::raw($var, $cx), ENT_QUOTES, 'UTF-8');
+    public static function enc($cx, $var) {
+        return htmlentities(self::raw($cx, $var), ENT_QUOTES, 'UTF-8');
     }
 
     /**
      * LightnCandy runtime method for {{var}} , and deal with single quote to same as handlebars.js .
      *
-     * @param mixed $var value to be htmlencoded
      * @param array $cx render time context
+     * @param mixed $var value to be htmlencoded
      *
      * @return string The htmlencoded value of the specified variable
      *
@@ -1632,15 +1633,15 @@ class LCRun3 {
      * @expect 'a&amp;b' when input 'a&b', Array()
      * @expect 'a&#x27;b' when input 'a\'b', Array()
      */
-    public static function encq($var, $cx) {
-        return preg_replace('/&#039;/', '&#x27;', htmlentities(self::raw($var, $cx), ENT_QUOTES, 'UTF-8'));
+    public static function encq($cx, $var) {
+        return preg_replace('/&#039;/', '&#x27;', htmlentities(self::raw($cx, $var), ENT_QUOTES, 'UTF-8'));
     }
 
     /**
      * LightnCandy runtime method for {{#var}} section.
      *
-     * @param mixed $v value for the section
      * @param array $cx render time context
+     * @param mixed $v value for the section
      * @param array $in input data with current scope
      * @param boolean $each true when rendering #each
      * @param Closure $cb callback function to render child context
@@ -1670,7 +1671,7 @@ class LCRun3 {
      * @expect 'inv' when input new stdClass, Array('flags' => Array('spvar' => 0)), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
      * @expect 'cb' when input new stdClass, Array('flags' => Array('spvar' => 0)), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
      */
-    public static function sec($v, &$cx, $in, $each, $cb, $inv = null) {
+    public static function sec(&$cx, $v, $in, $each, $cb, $inv = null) {
         $isary = is_array($v);
         $loop = $each;
         $keys = null;
@@ -1768,8 +1769,8 @@ class LCRun3 {
     /**
      * LightnCandy runtime method for {{#with var}} .
      *
-     * @param mixed $v value to be the new context
      * @param array $cx render time context
+     * @param mixed $v value to be the new context
      * @param array $in input data with current scope
      * @param Closure $cb callback function to render child context
      *
@@ -1780,7 +1781,7 @@ class LCRun3 {
      * @expect '-Array=' when input Array('a'=>'b'), Array(), Array('a' => 'b'), function ($c, $i) {return "-$i=";}
      * @expect '-b=' when input 'b', Array(), Array('a' => 'b'), function ($c, $i) {return "-$i=";}
      */
-    public static function wi($v, &$cx, $in, $cb) {
+    public static function wi(&$cx, $v, $in, $cb) {
         if (($v === false) || ($v === null)) {
             return '';
         }
@@ -1793,10 +1794,10 @@ class LCRun3 {
     /**
      * LightnCandy runtime method for custom helpers.
      *
+     * @param array $cx render time context
      * @param string $ch the name of custom helper to be executed
      * @param array $vars variables for the helper
      * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
-     * @param array $cx render time context
      * @param boolean $named input arguments are named
      *
      * @return mixed The rendered string of the token, or Array with the rendered string and encode_flag
@@ -1811,10 +1812,10 @@ class LCRun3 {
      * @expect '=&amp;&#039;&quot;=' when input 'a', Array('&\'"'), 'raw', Array('helpers' => Array('a' => function ($i) {return Array("=$i=", 'enc');}))
      * @expect '=&amp;&#x27;&quot;=' when input 'a', Array('&\'"'), 'raw', Array('helpers' => Array('a' => function ($i) {return Array("=$i=", 'encq');}))
      */
-    public static function ch($ch, $vars, $op, &$cx, $named = false) {
+    public static function ch(&$cx, $ch, $vars, $op, $named = false) {
         $args = Array();
         foreach ($vars as $i => $v) {
-            $args[$i] = self::raw($v, $cx);
+            $args[$i] = self::raw($cx, $v);
         }
 
         $r = call_user_func_array($cx['helpers'][$ch], $named ? Array($args) : $args);
@@ -1844,18 +1845,18 @@ class LCRun3 {
     /**
      * LightnCandy runtime method for block custom helpers.
      *
+     * @param array $cx render time context
      * @param string $ch the name of custom helper to be executed
      * @param array $vars variables for the helper
-     * @param array $cx render time context
      * @param array $in input data with current scope
      * @param Closure $cb callback function to render child context
      *
      * @return string The rendered string of the token
      */
-    public static function bch($ch, $vars, &$cx, $in, $cb) {
+    public static function bch(&$cx, $ch, $vars, $in, $cb) {
         $args = Array();
         foreach ($vars as $i => $v) {
-            $args[$i] = self::raw($v, $cx);
+            $args[$i] = self::raw($cx, $v);
         }
 
         $r = call_user_func($cx['blockhelpers'][$ch], $in, $args);
