@@ -451,7 +451,7 @@ $libstr
      * @return string
      * @codeCoverageIgnore
      */
-    protected static function exportLCRun(&$context) {
+    protected static function exportLCRun($context) {
         if ($context['flags']['standalone'] == 0) {
             return '';
         }
@@ -1307,7 +1307,7 @@ $libstr
         case 'unless':
             $context['stack'][] = 'unless';
             return $context['usedFeature']['parent']
-                ? $context['ops']['seperator'] . self::getFuncName($context, 'unl') . "$v, \$cx, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
+                ? $context['ops']['seperator'] . self::getFuncName($context, 'unl') . "\$cx, $v, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
                 : "{$context['ops']['cnd_start']}(!" . self::getFuncName($context, 'ifvar') . "\$cx, $v)){$context['ops']['cnd_then']}";
         case 'each':
             $each = 'true';
@@ -1431,10 +1431,9 @@ class LCRun3 {
      * @param array $cx render time context
      *
      */
-    public static function debug($v, $f, &$cx) {
+    public static function debug($v, $f, $cx) {
         $params = array_slice(func_get_args(), 2);
 
-        $params[0] = &$cx;
         if ($cx['flags']['debug'] & self::DEBUG_TAGS) {
             return '{{TAG}}';
         } else {
@@ -1671,7 +1670,7 @@ class LCRun3 {
      * @expect 'inv' when input new stdClass, Array('flags' => Array('spvar' => 0)), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
      * @expect 'cb' when input new stdClass, Array('flags' => Array('spvar' => 0)), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
      */
-    public static function sec(&$cx, $v, $in, $each, $cb, $inv = null) {
+    public static function sec($cx, $v, $in, $each, $cb, $inv = null) {
         $isary = is_array($v);
         $loop = $each;
         $keys = null;
@@ -1781,7 +1780,7 @@ class LCRun3 {
      * @expect '-Array=' when input Array('a'=>'b'), Array(), Array('a' => 'b'), function ($c, $i) {return "-$i=";}
      * @expect '-b=' when input 'b', Array(), Array('a' => 'b'), function ($c, $i) {return "-$i=";}
      */
-    public static function wi(&$cx, $v, $in, $cb) {
+    public static function wi($cx, $v, $in, $cb) {
         if (($v === false) || ($v === null)) {
             return '';
         }
@@ -1812,7 +1811,7 @@ class LCRun3 {
      * @expect '=&amp;&#039;&quot;=' when input 'a', Array('&\'"'), 'raw', Array('helpers' => Array('a' => function ($i) {return Array("=$i=", 'enc');}))
      * @expect '=&amp;&#x27;&quot;=' when input 'a', Array('&\'"'), 'raw', Array('helpers' => Array('a' => function ($i) {return Array("=$i=", 'encq');}))
      */
-    public static function ch(&$cx, $ch, $vars, $op, $named = false) {
+    public static function ch($cx, $ch, $vars, $op, $named = false) {
         $args = Array();
         foreach ($vars as $i => $v) {
             $args[$i] = self::raw($cx, $v);
@@ -1853,7 +1852,7 @@ class LCRun3 {
      *
      * @return string The rendered string of the token
      */
-    public static function bch(&$cx, $ch, $vars, $in, $cb) {
+    public static function bch($cx, $ch, $vars, $in, $cb) {
         $args = Array();
         foreach ($vars as $i => $v) {
             $args[$i] = self::raw($cx, $v);
