@@ -162,13 +162,13 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
     public function testOn_getFuncName() {
         $method = new ReflectionMethod('LightnCandy', 'getFuncName');
         $method->setAccessible(true);
-        $this->assertEquals('LCRun2::test', $method->invoke(null,
+        $this->assertEquals('LCRun2::test(', $method->invoke(null,
             Array('flags' => Array('standalone' => 0)), 'test'
         ));
-        $this->assertEquals('LCRun2::test2', $method->invoke(null,
+        $this->assertEquals('LCRun2::test2(', $method->invoke(null,
             Array('flags' => Array('standalone' => 0)), 'test2'
         ));
-        $this->assertEquals("\$cx['funcs']['test3']", $method->invoke(null,
+        $this->assertEquals("\$cx['funcs']['test3'](", $method->invoke(null,
             Array('flags' => Array('standalone' => 1)), 'test3'
         ));
     }
