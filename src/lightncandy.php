@@ -637,6 +637,7 @@ $libstr
      *
      * @param array $context Current context of compiler progress.
      * @param string $name base function name
+     * @param string $tag original handlabars tag for debug
      *
      * @return string compiled Function name
      *
@@ -644,15 +645,17 @@ $libstr
      * @expect 'LCRun3::test2(' when input Array('flags' => Array('standalone' => 0)), 'test2'
      * @expect "\$cx['funcs']['test3'](" when input Array('flags' => Array('standalone' => 1)), 'test3'
      */
-    protected static function getFuncName(&$context, $name) {
+    protected static function getFuncName(&$context, $name, $tag = '') {
         self::addUsageCount($context, 'lcrun', $name);
+
         if ($context['flags']['debug'] && ($name != 'miss')) {
-            $dbg = "'{{~~}}', '$name', ";
+            $dbg = "'$tag', '$name', ";
             $name = 'debug';
             self::addUsageCount($context, 'lcrun', 'debug');
         } else {
             $dbg = '';
         }
+
         return $context['flags']['standalone'] ? "\$cx['funcs']['$name']($dbg" : "LCRun3::$name($dbg";
     }
 
