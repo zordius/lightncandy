@@ -1470,7 +1470,7 @@ class LCRun3 {
      * @param mixed $v expression
      */
     public static function miss($cx, $v) {
-        $e = "LCRun3: $v is not exists";
+        $e = "LCRun3: $v is not exist";
         if ($cx['flags']['debug'] & self::DEBUG_ERROR_LOG) {
             error_log($e);
             return;
