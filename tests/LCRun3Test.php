@@ -12,7 +12,7 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
     public function testOn_debug() {
         $method = new ReflectionMethod('LCRun3', 'debug');
         $this->assertEquals('{{123}}', $method->invoke(null,
-            '123', '', Array('flags' => Array('debug' => LCRun3::DEBUG_TAGS))
+            '123', 'miss', Array('flags' => Array('debug' => LCRun3::DEBUG_TAGS)), ''
         ));
     }
     /**

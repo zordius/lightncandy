@@ -1436,16 +1436,16 @@ class LCRun3 {
      * @param string $f runtime function name
      * @param array $cx render time context
      *
-     * @expect '{{123}}' when input '123', '', Array('flags' => Array('debug' => LCRun3::DEBUG_TAGS))
+     * @expect '{{123}}' when input '123', 'miss', Array('flags' => Array('debug' => LCRun3::DEBUG_TAGS)), ''
      */
     public static function debug($v, $f, $cx) {
         $params = array_slice(func_get_args(), 2);
         $r = call_user_func_array((isset($cx['funcs']) ? "\$cx['funcs']['$f']" : "LCRun3::$f"), $params);
-        $ansi = $cx['flags']['debug'] & self::DEBUG_TAGS_ANSI;
-        $cs = $ansi ? (($r !== '') ? "\033[0;32m" : "\033[0:31m") : '';
-        $ce = $ansi ? "\033[0m" : '';
 
         if ($cx['flags']['debug'] & self::DEBUG_TAGS) {
+            $ansi = $cx['flags']['debug'] & (self::DEBUG_TAGS_ANSI xor self::DEBUG_TAGS_ANSI);
+            $cs = $ansi ? (($r !== '') ? "\033[0;32m" : "\033[0:31m") : '';
+            $ce = $ansi ? "\033[0m" : '';
             switch ($f) {
             case 'sec':
             case 'ifv':
