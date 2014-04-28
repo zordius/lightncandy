@@ -1329,7 +1329,7 @@ $libstr
         $context['vars'][] = $vars[0];
         $context['stack'][] = self::getArrayCode($vars[0]);
         $context['stack'][] = '#';
-        return $context['ops']['seperator'] . self::getFuncName($context, 'sec', $v[1]) . "\$cx, {$v[0]}, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
+        return $context['ops']['seperator'] . self::getFuncName($context, 'sec', (($each == 'true') ? 'each ' : '') . $v[1]) . "\$cx, {$v[0]}, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
     /**
@@ -1447,7 +1447,11 @@ class LCRun3 {
             switch ($f) {
             case 'sec':
             case 'ifv':
+            case 'unl':
             case 'wi':
+                if ($r == '') {
+                    $r = "\033[0;33mSKIPPED\033[0m";
+                }
                 return "$cs{{#{$v}}}$ce{$r}$cs{{/{$v}}}$ce";
             default:
                 return "$cs{{{$v}}}$ce";

@@ -11,6 +11,11 @@ Test6: {{../../[test'6]}}
 {{#each .}}
 each Value: {{.}}
 {{/each}}
+{{#.}}
+section Value: {{.}}
+{{/.}}
+{{#if .}}IF OK!{{/if}}
+{{#unless .}}Unless not OK!{{/unless}}
 VAREND
 ;
 $php = LightnCandy::compile($template, Array(
