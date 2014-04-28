@@ -797,14 +797,13 @@ $libstr
      * @expect 'this' when input 0, false, null
      * @expect '@root.[a].[b]' when input 0, true, Array('a', 'b')
      * @expect '../../[a].[b]' when input 2, false, Array('a', 'b')
+     * @expect '../[a\'b]' when input 1, false, Array('a\'b')
      */
     protected static function getExpression($levels, $root, $var) {
-        return addslashes(
-            str_repeat('../', $levels) . 
-            ((is_array($var) && count($var) && ($var[0] !== null)) ?  (($root ? '@root.' : '') . implode('.', array_map(function($v) {
-                return "[$v]";
-            }, $var))) : ($root ? '@root' :  'this'))
-        );
+        return str_repeat('../', $levels) . 
+        ((is_array($var) && count($var) && ($var[0] !== null)) ?  (($root ? '@root.' : '') . implode('.', array_map(function($v) {
+            return "[$v]";
+        }, $var))) : ($root ? '@root' :  'this'));
     }
 
     /**
@@ -1200,7 +1199,7 @@ $libstr
             $context['stack'][] = self::getArrayCode($vars[0]);
             $context['stack'][] = '^';
             self::noNamedArguments($token, $context, $named);
-            return "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'isec', $v[1]) . "\$cx, {$v[0]})){$context['ops']['cnd_then']}";
+            return "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'isec', '^' . $v[1]) . "\$cx, {$v[0]})){$context['ops']['cnd_then']}";
         case '/':
             return self::compileBlockEnd($token, $context, $vars);
         case '!':
@@ -1235,7 +1234,7 @@ $libstr
         $ch = array_shift($vars);
         self::addUsageCount($context, 'blockhelpers', $ch[0]);
         $v = self::getVariableNames($vars, $context);
-        return $context['ops']['seperator'] . self::getFuncName($context, 'bch', $v[1]) . "\$cx, '$ch[0]', {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
+        return $context['ops']['seperator'] . self::getFuncName($context, 'bch', '#' . $v[1]) . "\$cx, '$ch[0]', {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
     /**
@@ -1307,12 +1306,12 @@ $libstr
         case 'if':
             $context['stack'][] = 'if';
             return $context['usedFeature']['parent'] 
-                ? $context['ops']['seperator'] . self::getFuncName($context, 'ifv', $v[1]) . "\$cx, {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
+                ? $context['ops']['seperator'] . self::getFuncName($context, 'ifv', 'if ' . $v[1]) . "\$cx, {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
                 : "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]})){$context['ops']['cnd_then']}";
         case 'unless':
             $context['stack'][] = 'unless';
             return $context['usedFeature']['parent']
-                ? $context['ops']['seperator'] . self::getFuncName($context, 'unl', $v[1]) . "\$cx, {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
+                ? $context['ops']['seperator'] . self::getFuncName($context, 'unl', 'unless ' . $v[1]) . "\$cx, {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
                 : "{$context['ops']['cnd_start']}(!" . self::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]})){$context['ops']['cnd_then']}";
         case 'each':
             $each = 'true';
@@ -1322,7 +1321,7 @@ $libstr
             if ($context['flags']['with']) {
                 $context['vars'][] = $vars[1];
                 $context['stack'][] = 'with';
-                return $context['ops']['seperator'] . self::getFuncName($context, 'wi', $v[1]) . "\$cx, {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
+                return $context['ops']['seperator'] . self::getFuncName($context, 'wi', 'with ' . $v[1]) . "\$cx, {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
             }
         }
 
@@ -1351,7 +1350,7 @@ $libstr
             $ch = array_shift($vars);
             $v = self::getVariableNames($vars, $context);
             self::addUsageCount($context, 'helpers', $ch[0]);
-            return $context['ops']['seperator'] . self::getFuncName($context, 'ch', $v[1]) . "\$cx, '$ch[0]', {$v[0]}, '$fn'" . ($named ? ', true' : '') . "){$context['ops']['seperator']}";
+            return $context['ops']['seperator'] . self::getFuncName($context, 'ch', "$ch " . $v[1]) . "\$cx, '$ch[0]', {$v[0]}, '$fn'" . ($named ? ', true' : '') . "){$context['ops']['seperator']}";
         }
     }
 
@@ -1440,11 +1439,17 @@ class LCRun3 {
      */
     public static function debug($v, $f, $cx) {
         $params = array_slice(func_get_args(), 2);
+        $r = call_user_func_array((isset($cx['funcs']) ? "\$cx['funcs']['$f']" : "LCRun3::$f"), $params);
 
         if ($cx['flags']['debug'] & self::DEBUG_TAGS) {
-            return "{{{$v}}}";
+            switch ($f) {
+            case 'sec':
+                return "{{#{$v}}}{$r}{{/{$v}}}";
+            default:
+                return "{{{$v}}}";
+            }
         } else {
-            return call_user_func_array((isset($cx['funcs']) ? "\$cx['funcs']['$f']" : "LCRun3::$f"), $params);
+            return $r;
         }
     }
 

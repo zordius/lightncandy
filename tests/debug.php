@@ -8,6 +8,9 @@ Test3: {{../test3}}
 Test4: {{../../test4}}
 Test5: {{../../.}}
 Test6: {{../../[test'6]}}
+{{#each .}}
+each Value: {{.}}
+{{/each}}
 VAREND
 ;
 $php = LightnCandy::compile($template, Array(
