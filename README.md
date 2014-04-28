@@ -356,7 +356,7 @@ each Value: {{.}}
 VAREND
 ;
 
-// Generate debug version
+// compile to debug version
 $php = LightnCandy::compile($template, Array(
     'flags' => LightnCandy::FLAG_RENDER_DEBUG | LightnCandy::FLAG_HANDLEBARSJS
 ));
@@ -364,7 +364,7 @@ $php = LightnCandy::compile($template, Array(
 // Get the render function
 $renderer = LightnCandy::prepare($php);
 
-// Generate error_log when missing data:
+// error_log() when missing data:
 //   LCRun3: [gender] is not exist
 //   LCRun3: ../[test] is not exist
 $renderer(Array('name' => 'John'), LCRun3::DEBUG_ERROR_LOG);
@@ -377,6 +377,13 @@ $renderer(Array('name' => 'John'), LCRun3::DEBUG_ERROR_LOG);
 //   {{/each this}}
 echo $renderer(Array('name' => 'John'), LCRun3::DEBUG_TAGS_ANSI);
 ```
+
+Here are the list of LCRun3 flags for render function:
+
+* `DEBUG_ERROR_LOG` : error_log() when missing required data
+* `DEBUG_ERROR_EXCEPTION` : throw exception when missing required data
+* `DEBUG_TAGS` : turn the return value of render function turn into visual debug map
+* `DEBUG_TAGS_ANSI` : turn the return value of render function turn into color visual debug map
 
 Unsupported Feature (so far)
 ----------------------------
