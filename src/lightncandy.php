@@ -1443,7 +1443,7 @@ class LCRun3 {
         $r = call_user_func_array((isset($cx['funcs']) ? "\$cx['funcs']['$f']" : "LCRun3::$f"), $params);
 
         if ($cx['flags']['debug'] & self::DEBUG_TAGS) {
-            $ansi = $cx['flags']['debug'] & (self::DEBUG_TAGS_ANSI xor self::DEBUG_TAGS_ANSI);
+            $ansi = $cx['flags']['debug'] & (self::DEBUG_TAGS_ANSI - self::DEBUG_TAGS);
             $cs = $ansi ? (($r !== '') ? "\033[0;32m" : "\033[0:31m") : '';
             $ce = $ansi ? "\033[0m" : '';
             switch ($f) {

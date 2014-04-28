@@ -24,7 +24,6 @@ Features
    * Analyze used feature from your template
 * Debug
    * generate debug version template
-      * find out unsed expression in your template
       * find out missing data when rendering template
       * generate visually debug template
 * Standalone Template
@@ -341,6 +340,43 @@ function helper_categories($cx, $args) {
 ```
 
 The mission of a block custom helper is only focus on providing different context or logic to inner block, nothing else.
+
+Template Debugging
+------------------
+
+You may generate debug version of templates with `FLAG_ERROR_LOG` when compile() . The debug template contained more debug information and slower (TBD: performance result) , you may pass extra LCRun3 flags into render function to know more rendering error. For example:
+
+```php
+$template = <<<VAREND
+Hello! {{name}} is {{gender}}.
+Test: {{../test}}
+{{#each .}}
+each Value: {{.}}
+{{/each}}
+VAREND
+;
+
+// Generate debug version
+$php = LightnCandy::compile($template, Array(
+    'flags' => LightnCandy::FLAG_RENDER_DEBUG | LightnCandy::FLAG_HANDLEBARSJS
+));
+
+// Get the render function
+$renderer = LightnCandy::prepare($php);
+
+// Generate error_log when missing data:
+//   LCRun3: [gender] is not exist
+//   LCRun3: ../[test] is not exist
+$renderer(Array('name' => 'John'), LCRun3::DEBUG_ERROR_LOG);
+
+// Output visual debug template with ANSI color:
+//   Hello! {{[name]}} is {{[gender]}}.
+//   Test: {{../[test]}}
+//   {{#each this}}
+//   each Value: {{this}}
+//   {{/each this}}
+echo $renderer(Array('name' => 'John'), LCRun3::DEBUG_TAGS_ANSI);
+```
 
 Unsupported Feature (so far)
 ----------------------------
