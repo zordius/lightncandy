@@ -1440,13 +1440,17 @@ class LCRun3 {
     public static function debug($v, $f, $cx) {
         $params = array_slice(func_get_args(), 2);
         $r = call_user_func_array((isset($cx['funcs']) ? "\$cx['funcs']['$f']" : "LCRun3::$f"), $params);
+        $cs = ($r !== '') ? "\033[0;32m" : "\033[0:31m";
+        $ce = "\033[0m";
 
         if ($cx['flags']['debug'] & self::DEBUG_TAGS) {
             switch ($f) {
             case 'sec':
-                return "{{#{$v}}}{$r}{{/{$v}}}";
+            case 'ifv':
+            case 'wi':
+                return "$cs{{#{$v}}}$ce{$r}$cs{{/{$v}}}$ce";
             default:
-                return "{{{$v}}}";
+                return "$cs{{{$v}}}$ce";
             }
         } else {
             return $r;
