@@ -21,11 +21,11 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(Array('error' => Array('Can not find custom helper function defination abc() !'), 'flags' => Array('exhlp' => 0)), $method->invoke(null,
             Array('error' => Array(), 'flags' => Array('exhlp' => 0)), Array('helpers' => Array('abc'))
         ));
-        $this->assertEquals(Array('flags' => Array('exhlp' => 1), 'helpers' => Array('LCRun2::raw' => 'LCRun2::raw')), $method->invoke(null,
-            Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('LCRun2::raw'))
+        $this->assertEquals(Array('flags' => Array('exhlp' => 1), 'helpers' => Array('LCRun3::raw' => 'LCRun3::raw')), $method->invoke(null,
+            Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('LCRun3::raw'))
         ));
-        $this->assertEquals(Array('flags' => Array('exhlp' => 1), 'helpers' => Array('test' => 'LCRun2::raw')), $method->invoke(null,
-            Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('test' => 'LCRun2::raw'))
+        $this->assertEquals(Array('flags' => Array('exhlp' => 1), 'helpers' => Array('test' => 'LCRun3::raw')), $method->invoke(null,
+            Array('flags' => Array('exhlp' => 1), 'helpers' => Array()), Array('helpers' => Array('test' => 'LCRun3::raw'))
         ));
     }
     /**
@@ -162,14 +162,14 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
     public function testOn_getFuncName() {
         $method = new ReflectionMethod('LightnCandy', 'getFuncName');
         $method->setAccessible(true);
-        $this->assertEquals('LCRun2::test', $method->invoke(null,
-            Array('flags' => Array('standalone' => 0)), 'test'
+        $this->assertEquals('LCRun3::test(', $method->invoke(null,
+            Array('flags' => Array('standalone' => 0)), 'test', ''
         ));
-        $this->assertEquals('LCRun2::test2', $method->invoke(null,
-            Array('flags' => Array('standalone' => 0)), 'test2'
+        $this->assertEquals('LCRun3::test2(', $method->invoke(null,
+            Array('flags' => Array('standalone' => 0)), 'test2', ''
         ));
-        $this->assertEquals("\$cx['funcs']['test3']", $method->invoke(null,
-            Array('flags' => Array('standalone' => 1)), 'test3'
+        $this->assertEquals("\$cx['funcs']['test3'](", $method->invoke(null,
+            Array('flags' => Array('standalone' => 1)), 'test3', ''
         ));
     }
     /**
@@ -210,10 +210,10 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
     public function testOn_getVariableNames() {
         $method = new ReflectionMethod('LightnCandy', 'getVariableNames');
         $method->setAccessible(true);
-        $this->assertEquals('Array($in)', $method->invoke(null,
+        $this->assertEquals(Array('Array($in)', Array('this')), $method->invoke(null,
             Array(null), Array('flags'=>Array('spvar'=>true))
         ));
-        $this->assertEquals('Array($in,$in)', $method->invoke(null,
+        $this->assertEquals(Array('Array($in,$in)', Array('this', 'this')), $method->invoke(null,
             Array(null, null), Array('flags'=>Array('spvar'=>true))
         ));
     }
@@ -223,38 +223,63 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
     public function testOn_getVariableName() {
         $method = new ReflectionMethod('LightnCandy', 'getVariableName');
         $method->setAccessible(true);
-        $this->assertEquals('$in', $method->invoke(null,
+        $this->assertEquals(Array('$in', 'this'), $method->invoke(null,
             Array(null), Array('flags'=>Array('spvar'=>true))
         ));
-        $this->assertEquals('((is_array($in) && isset($in[\'@index\'])) ? $in[\'@index\'] : null)', $method->invoke(null,
+        $this->assertEquals(Array('((is_array($in) && isset($in[\'@index\'])) ? $in[\'@index\'] : null)', '[@index]'), $method->invoke(null,
             Array('@index'), Array('flags'=>Array('spvar'=>false))
         ));
-        $this->assertEquals('$cx[\'sp_vars\'][\'index\']', $method->invoke(null,
+        $this->assertEquals(Array('$cx[\'sp_vars\'][\'index\']', '@index'), $method->invoke(null,
             Array('@index'), Array('flags'=>Array('spvar'=>true))
         ));
-        $this->assertEquals('$cx[\'sp_vars\'][\'key\']', $method->invoke(null,
+        $this->assertEquals(Array('$cx[\'sp_vars\'][\'key\']', '@key'), $method->invoke(null,
             Array('@key'), Array('flags'=>Array('spvar'=>true))
         ));
-        $this->assertEquals('$cx[\'sp_vars\'][\'first\']', $method->invoke(null,
+        $this->assertEquals(Array('$cx[\'sp_vars\'][\'first\']', '@first'), $method->invoke(null,
             Array('@first'), Array('flags'=>Array('spvar'=>true))
         ));
-        $this->assertEquals('$cx[\'sp_vars\'][\'last\']', $method->invoke(null,
+        $this->assertEquals(Array('$cx[\'sp_vars\'][\'last\']', '@last'), $method->invoke(null,
             Array('@last'), Array('flags'=>Array('spvar'=>true))
         ));
-        $this->assertEquals('$cx[\'scopes\'][0]', $method->invoke(null,
+        $this->assertEquals(Array('$cx[\'scopes\'][0]', '@root'), $method->invoke(null,
             Array('@root'), Array('flags'=>Array('spvar'=>true))
         ));
-        $this->assertEquals('\'a\'', $method->invoke(null,
+        $this->assertEquals(Array('\'a\'', '"a"'), $method->invoke(null,
             Array('"a"'), Array(), Array('flags'=>Array('spvar'=>true))
         ));
-        $this->assertEquals('((is_array($in) && isset($in[\'a\'])) ? $in[\'a\'] : null)', $method->invoke(null,
+        $this->assertEquals(Array('((is_array($in) && isset($in[\'a\'])) ? $in[\'a\'] : null)', '[a]'), $method->invoke(null,
             Array('a'), Array('flags'=>Array('spvar'=>true))
         ));
-        $this->assertEquals('((is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)', $method->invoke(null,
+        $this->assertEquals(Array('((is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)', '../[a]'), $method->invoke(null,
             Array(1,'a'), Array('flags'=>Array('spvar'=>true))
         ));
-        $this->assertEquals('((is_array($cx[\'scopes\'][count($cx[\'scopes\'])-3]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)', $method->invoke(null,
+        $this->assertEquals(Array('((is_array($cx[\'scopes\'][count($cx[\'scopes\'])-3]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)', '../../../[a]'), $method->invoke(null,
             Array(3,'a'), Array('flags'=>Array('spvar'=>true))
+        ));
+    }
+    /**
+     * @covers LightnCandy::getExpression
+     */
+    public function testOn_getExpression() {
+        $method = new ReflectionMethod('LightnCandy', 'getExpression');
+        $method->setAccessible(true);
+        $this->assertEquals('[a].[b]', $method->invoke(null,
+            0, false, Array('a', 'b')
+        ));
+        $this->assertEquals('@root', $method->invoke(null,
+            0, true, Array()
+        ));
+        $this->assertEquals('this', $method->invoke(null,
+            0, false, null
+        ));
+        $this->assertEquals('@root.[a].[b]', $method->invoke(null,
+            0, true, Array('a', 'b')
+        ));
+        $this->assertEquals('../../[a].[b]', $method->invoke(null,
+            2, false, Array('a', 'b')
+        ));
+        $this->assertEquals('../[a\'b]', $method->invoke(null,
+            1, false, Array('a\'b')
         ));
     }
     /**
@@ -398,6 +423,22 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         ));
         $this->assertEquals(8, $method->invoke(null,
             Array(0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('unless' => 7), 'level' => 0), Array('unless')
+        ));
+    }
+    /**
+     * @covers LightnCandy::addUsageCount
+     */
+    public function testOn_addUsageCount() {
+        $method = new ReflectionMethod('LightnCandy', 'addUsageCount');
+        $method->setAccessible(true);
+        $this->assertEquals(1, $method->invoke(null,
+            Array('usedCount' => Array('test' => Array())), 'test', 'testname'
+        ));
+        $this->assertEquals(3, $method->invoke(null,
+            Array('usedCount' => Array('test' => Array('testname' => 2))), 'test', 'testname'
+        ));
+        $this->assertEquals(5, $method->invoke(null,
+            Array('usedCount' => Array('test' => Array('testname' => 2))), 'test', 'testname', 3
         ));
     }
 }
