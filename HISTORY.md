@@ -7,6 +7,7 @@ v0.12 current trunk
    * bfa1fbef97 add new flag FLAG_SPVARS
    * 10a4623dc1 remove json schema support
    * 240d9fa290 only export used LCRun2 functions when compile() with FLAG_STANDALONE now
+   * 3fa897c98c rename LCRun2 to LCRun3 for interface changed, old none standalone templates will error with newer version.
    * e0838c7418 now can output debug template map with ANSI color
 
 v0.11 https://github.com/zordius/lightncandy/tree/v0.11
