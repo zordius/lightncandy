@@ -376,6 +376,14 @@ $renderer(Array('name' => 'John'), LCRun3::DEBUG_ERROR_LOG);
 //   each Value: {{this}}
 //   {{/each this}}
 echo $renderer(Array('name' => 'John'), LCRun3::DEBUG_TAGS_ANSI);
+
+// Output debug template with HTML comments:
+// Hello! <!!--OK((-->{{[name]}}<!--))--> is <!--MISSED((-->{{[gender]}}<!--))-->.
+// Test: <!--MISSED((-->{{../[test]}}<!--))-->
+// <!!--OK((-->{{#each this}}<!--))-->
+// each Value: <!!--OK((-->{{this}}<!--))-->
+// <!!--OK((-->{{/each this}}<!--))-->
+echo $renderer(Array('name' => 'John'), LCRun3::DEBUG_TAGS_HTML);
 ```
 
 Here are the list of LCRun3 flags for render function:
@@ -384,6 +392,7 @@ Here are the list of LCRun3 flags for render function:
 * `DEBUG_ERROR_EXCEPTION` : throw exception when missing required data
 * `DEBUG_TAGS` : turn the return value of render function turn into visual debug map
 * `DEBUG_TAGS_ANSI` : turn the return value of render function turn into color visual debug map
+* `DEBUG_TAGS_HTML` : turn the return value of render function turn into HTML debug map.
 
 Unsupported Feature (so far)
 ----------------------------
