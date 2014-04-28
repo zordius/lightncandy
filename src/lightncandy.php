@@ -1427,6 +1427,7 @@ class LCRun3 {
     const DEBUG_ERROR_LOG = 1;
     const DEBUG_ERROR_EXCEPTION = 2;
     const DEBUG_TAGS = 4;
+    const DEBUG_TAGS_ANSI = 12;
 
     /**                                                                                                                                                                           
      * LightnCandy runtime method for output debug info.
@@ -1440,8 +1441,9 @@ class LCRun3 {
     public static function debug($v, $f, $cx) {
         $params = array_slice(func_get_args(), 2);
         $r = call_user_func_array((isset($cx['funcs']) ? "\$cx['funcs']['$f']" : "LCRun3::$f"), $params);
-        $cs = ($r !== '') ? "\033[0;32m" : "\033[0:31m";
-        $ce = "\033[0m";
+        $ansi = $cx['flags']['debug'] & self::DEBUG_TAGS_ANSI;
+        $cs = $ansi ? (($r !== '') ? "\033[0;32m" : "\033[0:31m") : '';
+        $ce = $ansi ? "\033[0m" : '';
 
         if ($cx['flags']['debug'] & self::DEBUG_TAGS) {
             switch ($f) {
@@ -1449,7 +1451,7 @@ class LCRun3 {
             case 'ifv':
             case 'unl':
             case 'wi':
-                if ($r == '') {
+                if ($ansi && ($r == '')) {
                     $r = "\033[0;33mSKIPPED\033[0m";
                 }
                 return "$cs{{#{$v}}}$ce{$r}$cs{{/{$v}}}$ce";

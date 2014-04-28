@@ -26,6 +26,6 @@ echo "Rendered PHP code is:\n$php\n\n";
 
 $renderer = LightnCandy::prepare($php);
 
-echo $renderer(Array('name' => 'John'), LCRun3::DEBUG_ERROR_LOG | LCRun3::DEBUG_TAGS);
+echo $renderer(Array('name' => 'John'), LCRun3::DEBUG_ERROR_LOG | LCRun3::DEBUG_TAGS_ANSI);
 
 ?>
