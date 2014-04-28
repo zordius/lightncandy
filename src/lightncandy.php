@@ -1428,6 +1428,7 @@ class LCRun3 {
     const DEBUG_ERROR_EXCEPTION = 2;
     const DEBUG_TAGS = 4;
     const DEBUG_TAGS_ANSI = 12;
+    const DEBUG_TAGS_HTML = 20;
 
     /**                                                                                                                                                                           
      * LightnCandy runtime method for output debug info.
@@ -1444,15 +1445,23 @@ class LCRun3 {
 
         if ($cx['flags']['debug'] & self::DEBUG_TAGS) {
             $ansi = $cx['flags']['debug'] & (self::DEBUG_TAGS_ANSI - self::DEBUG_TAGS);
-            $cs = $ansi ? (($r !== '') ? "\033[0;32m" : "\033[0:31m") : '';
-            $ce = $ansi ? "\033[0m" : '';
+            $html = $cx['flags']['debug'] & (self::DEBUG_TAGS_HTML - self::DEBUG_TAGS);
+            $cs = ($html ? (($r !== '') ? '<!!--OK((-->' : '<!--MISSED((-->') : '')
+                  . ($ansi ? (($r !== '') ? "\033[0;32m" : "\033[0:31m") : '');
+            $ce = ($html ? '<!--))-->' : '')
+                  . ($ansi ? "\033[0m" : '');
             switch ($f) {
             case 'sec':
             case 'ifv':
             case 'unl':
             case 'wi':
-                if ($ansi && ($r == '')) {
-                    $r = "\033[0;33mSKIPPED\033[0m";
+                if ($r == '') {
+                    if ($ansi) {
+                        $r = "\033[0;33mSKIPPED\033[0m";
+                    } 
+                    if ($html) {
+                        $r = '<!--SKIPPED-->';
+                    }
                 }
                 return "$cs{{#{$v}}}$ce{$r}$cs{{/{$v}}}$ce";
             default:
