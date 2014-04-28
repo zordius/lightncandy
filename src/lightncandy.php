@@ -697,15 +697,18 @@ $libstr
      *
      * @return string variable names
      *
-     * @expect 'Array($in)' when input Array(null), Array('flags'=>Array('spvar'=>true))
-     * @expect 'Array($in,$in)' when input Array(null, null), Array('flags'=>Array('spvar'=>true))
+     * @expect Array('Array($in)', Array('this')) when input Array(null), Array('flags'=>Array('spvar'=>true))
+     * @expect Array('Array($in,$in)', Array('this', 'this')) when input Array(null, null), Array('flags'=>Array('spvar'=>true))
      */
     protected static function getVariableNames($vn, $context) {
-        $ret = Array();
+        $vars = Array();
+        $exps = Array();
         foreach ($vn as $i => $v) {
-            $ret[] = (is_string($i) ? "'$i'=>" : '') . self::getVariableName($v, $context);
+            $V = self::getVariableName($v, $context);
+            $vars[] = (is_string($i) ? "'$i'=>" : '') . $V[0];
+            $exps[] = $V[1];
         }
-        return 'Array(' . implode(',', $ret) . ')';
+        return Array('Array(' . implode(',', $vars) . ')', $exps);
     }
 
     /**
@@ -716,17 +719,17 @@ $libstr
      *
      * @return array variable names
      *
-     * @expect '$in' when input Array(null), Array('flags'=>Array('spvar'=>true))
-     * @expect '((is_array($in) && isset($in[\'@index\'])) ? $in[\'@index\'] : null)' when input Array('@index'), Array('flags'=>Array('spvar'=>false))
-     * @expect '$cx[\'sp_vars\'][\'index\']' when input Array('@index'), Array('flags'=>Array('spvar'=>true))
-     * @expect '$cx[\'sp_vars\'][\'key\']' when input Array('@key'), Array('flags'=>Array('spvar'=>true))
-     * @expect '$cx[\'sp_vars\'][\'first\']' when input Array('@first'), Array('flags'=>Array('spvar'=>true))
-     * @expect '$cx[\'sp_vars\'][\'last\']' when input Array('@last'), Array('flags'=>Array('spvar'=>true))
-     * @expect '$cx[\'scopes\'][0]' when input Array('@root'), Array('flags'=>Array('spvar'=>true))
-     * @expect '\'a\'' when input Array('"a"'), Array(), Array('flags'=>Array('spvar'=>true))
-     * @expect '((is_array($in) && isset($in[\'a\'])) ? $in[\'a\'] : null)' when input Array('a'), Array('flags'=>Array('spvar'=>true))
-     * @expect '((is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)' when input Array(1,'a'), Array('flags'=>Array('spvar'=>true))
-     * @expect '((is_array($cx[\'scopes\'][count($cx[\'scopes\'])-3]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)' when input Array(3,'a'), Array('flags'=>Array('spvar'=>true))
+     * @expect Array('$in', 'this') when input Array(null), Array('flags'=>Array('spvar'=>true))
+     * @expect Array('((is_array($in) && isset($in[\'@index\'])) ? $in[\'@index\'] : null)', '[@index]') when input Array('@index'), Array('flags'=>Array('spvar'=>false))
+     * @expect Array('$cx[\'sp_vars\'][\'index\']', '@index') when input Array('@index'), Array('flags'=>Array('spvar'=>true))
+     * @expect Array('$cx[\'sp_vars\'][\'key\']', '@key') when input Array('@key'), Array('flags'=>Array('spvar'=>true))
+     * @expect Array('$cx[\'sp_vars\'][\'first\']', '@first') when input Array('@first'), Array('flags'=>Array('spvar'=>true))
+     * @expect Array('$cx[\'sp_vars\'][\'last\']', '@last') when input Array('@last'), Array('flags'=>Array('spvar'=>true))
+     * @expect Array('$cx[\'scopes\'][0]', '@root') when input Array('@root'), Array('flags'=>Array('spvar'=>true))
+     * @expect Array('\'a\'', '"a"') when input Array('"a"'), Array(), Array('flags'=>Array('spvar'=>true))
+     * @expect Array('((is_array($in) && isset($in[\'a\'])) ? $in[\'a\'] : null)', '[a]') when input Array('a'), Array('flags'=>Array('spvar'=>true))
+     * @expect Array('((is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)', '../[a]') when input Array(1,'a'), Array('flags'=>Array('spvar'=>true))
+     * @expect Array('((is_array($cx[\'scopes\'][count($cx[\'scopes\'])-3]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)', '../../../[a]') when input Array(3,'a'), Array('flags'=>Array('spvar'=>true))
      */
     protected static function getVariableName($var, $context) {
         $levels = 0;
@@ -737,13 +740,13 @@ $libstr
             case '@first':
             case '@last':
             case '@key':
-                return "\$cx['sp_vars']['" . substr($var[0], 1) . "']";
+                return Array("\$cx['sp_vars']['" . substr($var[0], 1) . "']", $var[0]);
             }
         }
 
         // Handle double quoted string
         if (preg_match('/^"(.*)"$/', $var[0], $matched)) {
-            return "'{$matched[1]}'";
+            return Array("'{$matched[1]}'", $var[0]);
         }
 
         $base = '$in';
@@ -770,14 +773,14 @@ $libstr
         $exp = self::getExpression($levels, $root, $var);
 
         if ((count($var) == 0) || is_null($var[0])) {
-            return $base;
+            return Array($base, $exp);
         }
 
         $n = self::getArrayCode($var);
         array_pop($var);
         $p = count($var) ? self::getArrayCode($var) : '';
 
-        return "((is_array($base$p) && isset($base$n)) ? $base$n : " . ($context['flags']['debug'] ? (self::getFuncName($context, 'miss') . "\$cx, '$exp')") : 'null' ) . ')';
+        return Array("((is_array($base$p) && isset($base$n)) ? $base$n : " . ($context['flags']['debug'] ? (self::getFuncName($context, 'miss') . "\$cx, '$exp')") : 'null' ) . ')', $exp);
     }
 
     /**
@@ -798,10 +801,9 @@ $libstr
     protected static function getExpression($levels, $root, $var) {
         return addslashes(
             str_repeat('../', $levels) . 
-            ($root ? ('@root' . (count($var) ? '.' : '')) : '') . 
-            (is_array($var) ? implode('.', array_map(function($v) {
+            ((is_array($var) && count($var) && ($var[0] !== null)) ?  (($root ? '@root.' : '') . implode('.', array_map(function($v) {
                 return "[$v]";
-            }, $var)) : 'this')
+            }, $var))) : ($root ? '@root' :  'this'))
         );
     }
 
@@ -1198,7 +1200,7 @@ $libstr
             $context['stack'][] = self::getArrayCode($vars[0]);
             $context['stack'][] = '^';
             self::noNamedArguments($token, $context, $named);
-            return "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'isec') . "\$cx, $v)){$context['ops']['cnd_then']}";
+            return "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'isec', $v[1]) . "\$cx, {$v[0]})){$context['ops']['cnd_then']}";
         case '/':
             return self::compileBlockEnd($token, $context, $vars);
         case '!':
@@ -1233,7 +1235,7 @@ $libstr
         $ch = array_shift($vars);
         self::addUsageCount($context, 'blockhelpers', $ch[0]);
         $v = self::getVariableNames($vars, $context);
-        return $context['ops']['seperator'] . self::getFuncName($context, 'bch') . "\$cx, '$ch[0]', $v, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
+        return $context['ops']['seperator'] . self::getFuncName($context, 'bch') . "\$cx, '$ch[0]', {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
     /**
@@ -1300,18 +1302,18 @@ $libstr
      */
     protected static function compileBlockBegin(&$context, $vars) {
         $each = 'false';
-        $v = isset($vars[1]) ? self::getVariableName($vars[1], $context) : null;
+        $v = isset($vars[1]) ? self::getVariableName($vars[1], $context) : Array(null, Array());
         switch ($vars[0][0]) {
         case 'if':
             $context['stack'][] = 'if';
             return $context['usedFeature']['parent'] 
-                ? $context['ops']['seperator'] . self::getFuncName($context, 'ifv') . "\$cx, $v, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
-                : "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'ifvar') . "\$cx, $v)){$context['ops']['cnd_then']}";
+                ? $context['ops']['seperator'] . self::getFuncName($context, 'ifv', $v[1]) . "\$cx, {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
+                : "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]})){$context['ops']['cnd_then']}";
         case 'unless':
             $context['stack'][] = 'unless';
             return $context['usedFeature']['parent']
-                ? $context['ops']['seperator'] . self::getFuncName($context, 'unl') . "\$cx, $v, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
-                : "{$context['ops']['cnd_start']}(!" . self::getFuncName($context, 'ifvar') . "\$cx, $v)){$context['ops']['cnd_then']}";
+                ? $context['ops']['seperator'] . self::getFuncName($context, 'unl', $v[1]) . "\$cx, {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
+                : "{$context['ops']['cnd_start']}(!" . self::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]})){$context['ops']['cnd_then']}";
         case 'each':
             $each = 'true';
             array_shift($vars);
@@ -1320,7 +1322,7 @@ $libstr
             if ($context['flags']['with']) {
                 $context['vars'][] = $vars[1];
                 $context['stack'][] = 'with';
-                return $context['ops']['seperator'] . self::getFuncName($context, 'wi') . "\$cx, $v, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
+                return $context['ops']['seperator'] . self::getFuncName($context, 'wi', $v[1]) . "\$cx, {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
             }
         }
 
@@ -1328,7 +1330,7 @@ $libstr
         $context['vars'][] = $vars[0];
         $context['stack'][] = self::getArrayCode($vars[0]);
         $context['stack'][] = '#';
-        return $context['ops']['seperator'] . self::getFuncName($context, 'sec') . "\$cx, $v, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
+        return $context['ops']['seperator'] . self::getFuncName($context, 'sec', $v[1]) . "\$cx, {$v[0]}, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
     /**
@@ -1347,8 +1349,9 @@ $libstr
         $fn = $raw ? 'raw' : $context['ops']['enc'];
         if (isset($context['helpers'][$vars[0][0]])) {
             $ch = array_shift($vars);
+            $v = self::getVariableNames($vars, $context);
             self::addUsageCount($context, 'helpers', $ch[0]);
-            return $context['ops']['seperator'] . self::getFuncName($context, 'ch') . "\$cx, '$ch[0]', " . self::getVariableNames($vars, $context) . ", '$fn'" . ($named ? ', true' : '') . "){$context['ops']['seperator']}";
+            return $context['ops']['seperator'] . self::getFuncName($context, 'ch') . "\$cx, '$ch[0]', {$v[0]}, '$fn'" . ($named ? ', true' : '') . "){$context['ops']['seperator']}";
         }
     }
 
@@ -1391,10 +1394,10 @@ $libstr
      */
     protected static function compileVariable(&$context, &$vars, $raw) {
         $v = self::getVariableName($vars[0], $context);
-        if ($context['flags']['jsobj'] || $context['flags']['jstrue']) {
-            return $context['ops']['seperator'] . self::getFuncName($context, $raw ? 'raw' : $context['ops']['enc']) . "\$cx, $v){$context['ops']['seperator']}";
+        if ($context['flags']['jsobj'] || $context['flags']['jstrue'] || $context['flgs']['debug']) {
+            return $context['ops']['seperator'] . self::getFuncName($context, $raw ? 'raw' : $context['ops']['enc'], $v[1]) . "\$cx, {$v[0]}){$context['ops']['seperator']}";
         } else {
-            return $raw ? "{$context['ops']['seperator']}$v{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlentities($v, ENT_QUOTES, 'UTF-8'){$context['ops']['seperator']}";
+            return $raw ? "{$context['ops']['seperator']}$v{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlentities({$v[0]}, ENT_QUOTES, 'UTF-8'){$context['ops']['seperator']}";
         }
     }
 

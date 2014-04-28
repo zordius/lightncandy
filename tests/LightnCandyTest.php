@@ -210,10 +210,10 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
     public function testOn_getVariableNames() {
         $method = new ReflectionMethod('LightnCandy', 'getVariableNames');
         $method->setAccessible(true);
-        $this->assertEquals('Array($in)', $method->invoke(null,
+        $this->assertEquals(Array('Array($in)', Array('this')), $method->invoke(null,
             Array(null), Array('flags'=>Array('spvar'=>true))
         ));
-        $this->assertEquals('Array($in,$in)', $method->invoke(null,
+        $this->assertEquals(Array('Array($in,$in)', Array('this', 'this')), $method->invoke(null,
             Array(null, null), Array('flags'=>Array('spvar'=>true))
         ));
     }
@@ -223,37 +223,37 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
     public function testOn_getVariableName() {
         $method = new ReflectionMethod('LightnCandy', 'getVariableName');
         $method->setAccessible(true);
-        $this->assertEquals('$in', $method->invoke(null,
+        $this->assertEquals(Array('$in', 'this'), $method->invoke(null,
             Array(null), Array('flags'=>Array('spvar'=>true))
         ));
-        $this->assertEquals('((is_array($in) && isset($in[\'@index\'])) ? $in[\'@index\'] : null)', $method->invoke(null,
+        $this->assertEquals(Array('((is_array($in) && isset($in[\'@index\'])) ? $in[\'@index\'] : null)', '[@index]'), $method->invoke(null,
             Array('@index'), Array('flags'=>Array('spvar'=>false))
         ));
-        $this->assertEquals('$cx[\'sp_vars\'][\'index\']', $method->invoke(null,
+        $this->assertEquals(Array('$cx[\'sp_vars\'][\'index\']', '@index'), $method->invoke(null,
             Array('@index'), Array('flags'=>Array('spvar'=>true))
         ));
-        $this->assertEquals('$cx[\'sp_vars\'][\'key\']', $method->invoke(null,
+        $this->assertEquals(Array('$cx[\'sp_vars\'][\'key\']', '@key'), $method->invoke(null,
             Array('@key'), Array('flags'=>Array('spvar'=>true))
         ));
-        $this->assertEquals('$cx[\'sp_vars\'][\'first\']', $method->invoke(null,
+        $this->assertEquals(Array('$cx[\'sp_vars\'][\'first\']', '@first'), $method->invoke(null,
             Array('@first'), Array('flags'=>Array('spvar'=>true))
         ));
-        $this->assertEquals('$cx[\'sp_vars\'][\'last\']', $method->invoke(null,
+        $this->assertEquals(Array('$cx[\'sp_vars\'][\'last\']', '@last'), $method->invoke(null,
             Array('@last'), Array('flags'=>Array('spvar'=>true))
         ));
-        $this->assertEquals('$cx[\'scopes\'][0]', $method->invoke(null,
+        $this->assertEquals(Array('$cx[\'scopes\'][0]', '@root'), $method->invoke(null,
             Array('@root'), Array('flags'=>Array('spvar'=>true))
         ));
-        $this->assertEquals('\'a\'', $method->invoke(null,
+        $this->assertEquals(Array('\'a\'', '"a"'), $method->invoke(null,
             Array('"a"'), Array(), Array('flags'=>Array('spvar'=>true))
         ));
-        $this->assertEquals('((is_array($in) && isset($in[\'a\'])) ? $in[\'a\'] : null)', $method->invoke(null,
+        $this->assertEquals(Array('((is_array($in) && isset($in[\'a\'])) ? $in[\'a\'] : null)', '[a]'), $method->invoke(null,
             Array('a'), Array('flags'=>Array('spvar'=>true))
         ));
-        $this->assertEquals('((is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)', $method->invoke(null,
+        $this->assertEquals(Array('((is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)', '../[a]'), $method->invoke(null,
             Array(1,'a'), Array('flags'=>Array('spvar'=>true))
         ));
-        $this->assertEquals('((is_array($cx[\'scopes\'][count($cx[\'scopes\'])-3]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)', $method->invoke(null,
+        $this->assertEquals(Array('((is_array($cx[\'scopes\'][count($cx[\'scopes\'])-3]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)', '../../../[a]'), $method->invoke(null,
             Array(3,'a'), Array('flags'=>Array('spvar'=>true))
         ));
     }
