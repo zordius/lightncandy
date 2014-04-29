@@ -1355,7 +1355,7 @@ $libstr
             $ch = array_shift($vars);
             $v = self::getVariableNames($vars, $context);
             self::addUsageCount($context, 'helpers', $ch[0]);
-            return $context['ops']['seperator'] . self::getFuncName($context, 'ch', "$ch " . $v[1]) . "\$cx, '$ch[0]', {$v[0]}, '$fn'" . ($named ? ', true' : '') . "){$context['ops']['seperator']}";
+            return $context['ops']['seperator'] . self::getFuncName($context, 'ch', "$ch[0] " . $v[1]) . "\$cx, '$ch[0]', {$v[0]}, '$fn'" . ($named ? ', true' : '') . "){$context['ops']['seperator']}";
         }
     }
 
