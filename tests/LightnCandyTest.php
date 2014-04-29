@@ -163,13 +163,16 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $method = new ReflectionMethod('LightnCandy', 'getFuncName');
         $method->setAccessible(true);
         $this->assertEquals('LCRun3::test(', $method->invoke(null,
-            Array('flags' => Array('standalone' => 0)), 'test', ''
+            Array('flags' => Array('standalone' => 0, 'debug' => 0)), 'test', ''
         ));
         $this->assertEquals('LCRun3::test2(', $method->invoke(null,
-            Array('flags' => Array('standalone' => 0)), 'test2', ''
+            Array('flags' => Array('standalone' => 0, 'debug' => 0)), 'test2', ''
         ));
         $this->assertEquals("\$cx['funcs']['test3'](", $method->invoke(null,
-            Array('flags' => Array('standalone' => 1)), 'test3', ''
+            Array('flags' => Array('standalone' => 1, 'debug' => 0)), 'test3', ''
+        ));
+        $this->assertEquals('LCRun3::debug(\'abc\', \'test\', ', $method->invoke(null,
+            Array('flags' => Array('standalone' => 0, 'debug' => 1)), 'test', 'abc'
         ));
     }
     /**

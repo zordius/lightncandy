@@ -390,6 +390,7 @@ $libstr
      * @param object $closure Closure object
      *
      * @return string
+     *
      * @expect 'function($a) {return;}' when input function ($a) {return;}
      * @expect 'function($a) {return;}' when input    function ($a) {return;}
      * @expect '' when input 'Directory::close'
@@ -421,10 +422,10 @@ $libstr
      * Internal method used by compile(). Export required custom helper functions.
      *
      * @param string $tname   helper table name
-     *
      * @param array  $context current compile context
      *
      * @return string
+     *
      * @codeCoverageIgnore
      */
     protected static function exportHelper($context, $tname = 'helpers') {
@@ -449,6 +450,7 @@ $libstr
      * @param array $context current compile context
      *
      * @return string
+     *
      * @codeCoverageIgnore
      */
     protected static function exportLCRun($context) {
@@ -641,9 +643,10 @@ $libstr
      *
      * @return string compiled Function name
      *
-     * @expect 'LCRun3::test(' when input Array('flags' => Array('standalone' => 0)), 'test', ''
-     * @expect 'LCRun3::test2(' when input Array('flags' => Array('standalone' => 0)), 'test2', ''
-     * @expect "\$cx['funcs']['test3'](" when input Array('flags' => Array('standalone' => 1)), 'test3', ''
+     * @expect 'LCRun3::test(' when input Array('flags' => Array('standalone' => 0, 'debug' => 0)), 'test', ''
+     * @expect 'LCRun3::test2(' when input Array('flags' => Array('standalone' => 0, 'debug' => 0)), 'test2', ''
+     * @expect "\$cx['funcs']['test3'](" when input Array('flags' => Array('standalone' => 1, 'debug' => 0)), 'test3', ''
+     * @expect 'LCRun3::debug(\'abc\', \'test\', ' when input Array('flags' => Array('standalone' => 0, 'debug' => 1)), 'test', 'abc'
      */
     protected static function getFuncName(&$context, $name, $tag) {
         self::addUsageCount($context, 'lcrun', $name);
