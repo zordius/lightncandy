@@ -15,17 +15,17 @@ Features
    * <a href="https://github.com/zordius/HandlebarsTest/blob/master/fixture/001-simple-vars.tmpl">Template A</a> generated <a href="https://github.com/zordius/HandlebarsTest/blob/master/fixture/001-simple-vars.php">PHP A</a>
    * <a href="https://github.com/zordius/HandlebarsTest/blob/master/fixture/016-hb-eachthis.tmpl">Template B</a> generated <a href="https://github.com/zordius/HandlebarsTest/blob/master/fixture/016-hb-eachthis.php">PHP B</a>
 * **FAST!**
-   * runs 4~6 times faster than <a href="https://github.com/bobthecow/mustache.php">mustache.php</a>
-   * runs 4~10 times faster than <a href="https://github.com/dingram/mustache-php">mustache-php</a>
-   * runs 10~30 times faster than <a href="https://github.com/XaminProject/handlebars.php">handlebars.php</a>
+   * Runs 4~6 times faster than <a href="https://github.com/bobthecow/mustache.php">mustache.php</a>.
+   * Runs 4~10 times faster than <a href="https://github.com/dingram/mustache-php">mustache-php</a>.
+   * Runs 10~30 times faster than <a href="https://github.com/XaminProject/handlebars.php">handlebars.php</a>.
    * Detail performance test reports can be found <a href="https://github.com/zordius/HandlebarsTest">here</a>, go http://zordius.github.io/HandlebarsTest/ to see charts.
-* **SMALL** single PHP file, only 70K!
+* **SMALL** single PHP file, only 77K!
 * Context generation
-   * Analyze used feature from your template
+   * Analyze used feature from your template.
 * Debug
-   * generate debug version template
-      * find out missing data when rendering template
-      * generate visually debug template
+   * <a href="#template-debugging">Generate debug version template</a>
+      * Find out missing data when rendering template.
+      * Generate visually debug template.
 * Standalone Template
    * The compiled PHP code can run without any PHP library. You do not need to include LightnCandy when execute rendering function.
 
@@ -96,10 +96,10 @@ Welcome John , You win $10000 dollars!!
 Welcome Peter , You win $1000 dollars!!
 ```
 
-CONSTANTS
----------
+Compile Options
+---------------
 
-You can apply more flags by running `LightnCandy::compile($php, $options)` , for example:
+You can apply more options by running `LightnCandy::compile($php, $options)` , for example:
 
 ```php
 LightnCandy::compile($template, Array(
@@ -344,7 +344,7 @@ The mission of a block custom helper is only focus on providing different contex
 Template Debugging
 ------------------
 
-You may generate debug version of templates with `FLAG_ERROR_LOG` when compile() . The debug template contained more debug information and slower (TBD: performance result) , you may pass extra LCRun3 flags into render function to know more rendering error. For example:
+You may generate debug version of templates with `FLAG_ERROR_LOG` when compile() . The debug template contained more debug information and slower (TBD: performance result) , you may pass extra LCRun3 options into render function to know more rendering error. For example:
 
 ```php
 $template = <<<VAREND
@@ -386,7 +386,7 @@ echo $renderer(Array('name' => 'John'), LCRun3::DEBUG_TAGS_ANSI);
 echo $renderer(Array('name' => 'John'), LCRun3::DEBUG_TAGS_HTML);
 ```
 
-Here are the list of LCRun3 flags for render function:
+Here are the list of LCRun3 debug options for render function:
 
 * `DEBUG_ERROR_LOG` : error_log() when missing required data
 * `DEBUG_ERROR_EXCEPTION` : throw exception when missing required data
