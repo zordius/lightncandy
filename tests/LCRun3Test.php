@@ -14,6 +14,9 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
         $this->assertEquals('{{123}}', $method->invoke(null,
             '123', 'miss', Array('flags' => Array('debug' => LCRun3::DEBUG_TAGS)), ''
         ));
+        $this->assertEquals('<!--MISSED((-->{{#123}}<!--))--><!--SKIPPED--><!--MISSED((-->{{/123}}<!--))-->', $method->invoke(null,
+            '123', 'wi', Array('flags' => Array('debug' => LCRun3::DEBUG_TAGS_HTML)), false, false, function () {return 'A';}
+        ));
     }
     /**
      * @covers LCRun3::ifvar
