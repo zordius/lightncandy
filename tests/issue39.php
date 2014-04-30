@@ -1,9 +1,7 @@
 <?php
 require('src/lightncandy.php');
 $template = '{{{tt}}}';
-$php = LightnCandy::compile($template, Array(
-    'flags' => LightnCandy::FLAG_STANDALONE || LightnCandy::FLAG_HANDLEBARSJS
-));
+$php = LightnCandy::compile($template);
 
 echo "Rendered PHP code is:\n$php\n\n";
 
