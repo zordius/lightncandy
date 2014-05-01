@@ -99,7 +99,7 @@ Welcome Peter , You win $1000 dollars!!
 Compile Options
 ---------------
 
-You can apply more options by running `LightnCandy::compile($php, $options)` , for example:
+You can apply more options by running `LightnCandy::compile($template, $options)` , for example:
 
 ```php
 LightnCandy::compile($template, Array(
