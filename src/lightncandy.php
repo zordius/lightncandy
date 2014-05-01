@@ -1844,6 +1844,7 @@ class LCRun3 {
      * @expect '=&=' when input Array('helpers' => Array('a' => function ($i) {return Array("=$i=");})), 'a', Array('&'), 'raw'
      * @expect '=&amp;&#039;&quot;=' when input Array('helpers' => Array('a' => function ($i) {return Array("=$i=", 'enc');})), 'a', Array('&\'"'), 'raw'
      * @expect '=&amp;&#x27;&quot;=' when input Array('helpers' => Array('a' => function ($i) {return Array("=$i=", 'encq');})), 'a', Array('&\'"'), 'raw'
+     * @expect '=&=' when input Array('helpers' => Array('a' => function ($i) {return Array("=$i=", 0);})), 'a', Array('&'), 'enc'
      */
     public static function ch($cx, $ch, $vars, $op, $named = false) {
         $args = Array();
@@ -1858,7 +1859,7 @@ class LCRun3 {
                 if ($r[1]) {
                     $op = $r[1];
                 } else {
-                    return $r;
+                    return $r[0];
                 }
             }
             $r = $r[0];
