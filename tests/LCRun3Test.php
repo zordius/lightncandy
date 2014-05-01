@@ -323,6 +323,9 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
         $this->assertEquals('2.6.5', $method->invoke(null,
             Array('blockhelpers' => Array('a' => function ($cx,$in) {return Array($cx,$in[0],5);})), 'a', Array('6'), 2, function($cx, $i) {return implode('.', $i);}
         ));
+        $this->assertEquals('', $method->invoke(null,
+            Array('blockhelpers' => Array('a' => function ($cx,$in) {})), 'a', Array('6'), 2, function($cx, $i) {return implode('.', $i);}
+        ));
     }
 }
 ?>

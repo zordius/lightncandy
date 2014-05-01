@@ -1888,6 +1888,7 @@ class LCRun3 {
      *
      * @expect '4.2.3' when input Array('blockhelpers' => Array('a' => function ($cx) {return Array($cx,2,3);})), 'a', Array(), 4, function($cx, $i) {return implode('.', $i);}
      * @expect '2.6.5' when input Array('blockhelpers' => Array('a' => function ($cx,$in) {return Array($cx,$in[0],5);})), 'a', Array('6'), 2, function($cx, $i) {return implode('.', $i);}
+     * @expect '' when input Array('blockhelpers' => Array('a' => function ($cx,$in) {})), 'a', Array('6'), 2, function($cx, $i) {return implode('.', $i);}
      */
     public static function bch($cx, $ch, $vars, $in, $cb) {
         $args = Array();
