@@ -154,7 +154,6 @@ class LightnCandy {
         'blockhelpers' => $bhelpers,
         'scopes' => Array(\$in),
         'sp_vars' => Array(),
-        'path' => Array(),
 $libstr
     );
     {$context['ops']['op_start']}'$code'{$context['ops']['op_end']}

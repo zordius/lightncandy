@@ -109,9 +109,9 @@ LightnCandy::compile($template, Array(
 
 Default is to compile the template as PHP which can be run as fast as possible (flags = `FLAG_BESTPERFORMANCE`).
 
-* `FLAG_ERROR_LOG` : output error_log when found any template error
+* `FLAG_ERROR_LOG` : error_log() when found any template error
 * `FLAG_ERROR_EXCEPTION` : throw exception when found any template error
-* `FLAG_STANDALONE` : generate stand alone PHP codes which can be execute without including LightnCandy. The compiled PHP code will contain scoped user function, somehow larger. And, the performance of the template will slow 1 ~ 10%.
+* `FLAG_STANDALONE` : generate stand alone PHP codes which can be execute without including LightnCandy.php. The compiled PHP code will contain scoped user function, somehow larger. And, the performance of the template will slow 1 ~ 10%.
 * `FLAG_JSTRUE` : generate 'true' when value is true (handlebars.js behavior). Otherwise, true will generate ''.
 * `FLAG_JSOBJECT` : generate '[object Object]' for associated array, generate ',' separated values for array (handlebars.js behavior). Otherwise, all PHP array will generate ''.
 * `FLAG_THIS` : support `{{this}}` or `{{.}}` in template. Otherwise, `{{this}}` and `{{.}}` will cause template error.
