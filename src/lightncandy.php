@@ -198,7 +198,6 @@ $libstr
             'level' => 0,
             'stack' => Array(),
             'error' => Array(),
-            'vars' => Array(),
             'basedir' => self::buildCXBasedir($options),
             'fileext' => self::buildCXFileext($options),
             'usedPartial' => Array(),
@@ -1232,7 +1231,6 @@ $libstr
         if (!isset($context['blockhelpers'][$vars[0][0]])) {
             return;
         }
-        $context['vars'][] = $vars[0];
         $context['stack'][] = self::getArrayCode($vars[0]);
         $context['stack'][] = '#';
         $ch = array_shift($vars);
@@ -1273,7 +1271,6 @@ $libstr
                 $each = true;
                 // Continue to same logic {{/each}} === {{/any_value}}
             default:
-                array_pop($context['vars']);
                 switch($pop) {
                 case '#':
                 case '^':
@@ -1323,14 +1320,12 @@ $libstr
             break;
         case 'with':
             if ($context['flags']['with']) {
-                $context['vars'][] = $vars[1];
                 $context['stack'][] = 'with';
                 return $context['ops']['seperator'] . self::getFuncName($context, 'wi', 'with ' . $v[1]) . "\$cx, {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
             }
         }
 
         $v = self::getVariableName($vars[0], $context);
-        $context['vars'][] = $vars[0];
         $context['stack'][] = self::getArrayCode($vars[0]);
         $context['stack'][] = '#';
         return $context['ops']['seperator'] . self::getFuncName($context, 'sec', (($each == 'true') ? 'each ' : '') . $v[1]) . "\$cx, {$v[0]}, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
@@ -1482,6 +1477,8 @@ class LCRun3 {
      *
      * @param array $cx render time context
      * @param mixed $v expression
+     *
+     * @codeCoverageIgnore
      */
     public static function miss($cx, $v) {
         $e = "LCRun3: $v is not exist";
@@ -1704,6 +1701,7 @@ class LCRun3 {
      * @expect 'cb' when input Array('flags' => Array('spvar' => 0)), 0, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
      * @expect 'inv' when input Array('flags' => Array('spvar' => 0)), new stdClass, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
      * @expect 'cb' when input Array('flags' => Array('spvar' => 0)), new stdClass, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect '268' when input Array('flags' => Array('spvar' => 1)), Array(1,3,4), 0, false, function ($c, $i) {return $i * 2;}
      */
     public static function sec($cx, $v, $in, $each, $cb, $inv = null) {
         $isary = is_array($v);
