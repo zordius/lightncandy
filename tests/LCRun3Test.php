@@ -257,6 +257,9 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
         $this->assertEquals('268', $method->invoke(null,
             Array('flags' => Array('spvar' => 1)), Array(1,3,4), 0, false, function ($c, $i) {return $i * 2;}
         ));
+        $this->assertEquals('038', $method->invoke(null,
+            Array('flags' => Array('spvar' => 1), 'sp_vars'=>Array()), Array(1,3,'a'=>4), 0, true, function ($c, $i) {return $i * $c['sp_vars']['index'];}
+        ));
     }
     /**
      * @covers LCRun3::wi

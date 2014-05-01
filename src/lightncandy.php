@@ -1702,6 +1702,7 @@ class LCRun3 {
      * @expect 'inv' when input Array('flags' => Array('spvar' => 0)), new stdClass, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
      * @expect 'cb' when input Array('flags' => Array('spvar' => 0)), new stdClass, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
      * @expect '268' when input Array('flags' => Array('spvar' => 1)), Array(1,3,4), 0, false, function ($c, $i) {return $i * 2;}
+     * @expect '038' when input Array('flags' => Array('spvar' => 1), 'sp_vars'=>Array()), Array(1,3,'a'=>4), 0, true, function ($c, $i) {return $i * $c['sp_vars']['index'];}
      */
     public static function sec($cx, $v, $in, $each, $cb, $inv = null) {
         $isary = is_array($v);
