@@ -1251,15 +1251,20 @@ $libstr
      * @codeCoverageIgnore
      */
     protected static function compileBlockCustomHelper(&$context, $vars) {
-        if (!isset($context['blockhelpers'][$vars[0][0]])) {
+        $notBCH = !isset($context['blockhelpers'][$vars[0][0]]);
+        $notHBCH = !isset($context['hbhelpers'][$vars[0][0]]);
+
+        if ($notBCH && $notHBCH) {
             return;
         }
+
         $context['stack'][] = self::getArrayCode($vars[0]);
         $context['stack'][] = '#';
         $ch = array_shift($vars);
-        self::addUsageCount($context, 'blockhelpers', $ch[0]);
+
+        self::addUsageCount($context, $notHBCH ? 'blockhelpers' : 'hbhelpers', $ch[0]);
         $v = self::getVariableNames($vars, $context);
-        return $context['ops']['seperator'] . self::getFuncName($context, 'bch', '#' . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
+        return $context['ops']['seperator'] . self::getFuncName($context, $notHBCH ? 'bch' : 'hbch', '#' . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
     /**
@@ -1367,13 +1372,18 @@ $libstr
      * @codeCoverageIgnore
      */
     protected static function compileCustomHelper(&$context, &$vars, $raw, $named) {
-        $fn = $raw ? 'raw' : $context['ops']['enc'];
-        if (isset($context['helpers'][$vars[0][0]])) {
-            $ch = array_shift($vars);
-            $v = self::getVariableNames($vars, $context);
-            self::addUsageCount($context, 'helpers', $ch[0]);
-            return $context['ops']['seperator'] . self::getFuncName($context, 'ch', "$ch[0] " . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, '$fn'" . ($named ? ', true' : '') . "){$context['ops']['seperator']}";
+        $notH = !isset($context['helpers'][$vars[0][0]]);
+        $notHH = !isset($context['hbhelpers'][$vars[0][0]]);
+
+        if ($notH && $notHH) {
+            return;
         }
+
+        $fn = $raw ? 'raw' : $context['ops']['enc'];
+        $ch = array_shift($vars);
+        $v = self::getVariableNames($vars, $context);
+        self::addUsageCount($context, $notHH ? 'helpers' : 'hbhelpers', $ch[0]);
+        return $context['ops']['seperator'] . self::getFuncName($context, $notHH ? 'ch' : 'hch', "$ch[0] " . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, '$fn'" . ($named ? ', true' : '') . "){$context['ops']['seperator']}";
     }
 
    /**
