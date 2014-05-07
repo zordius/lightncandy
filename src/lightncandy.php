@@ -139,6 +139,7 @@ class LightnCandy {
         $libstr = self::exportLCRun($context);
         $helpers = self::exportHelper($context);
         $bhelpers = self::exportHelper($context, 'blockhelpers');
+        $hbhelpers = self::exportHelper($context, 'hbhelpers');
         $debug = LCRun3::DEBUG_ERROR_LOG;
 
         // Return generated PHP code string.
@@ -152,6 +153,7 @@ class LightnCandy {
         ),
         'helpers' => $helpers,
         'blockhelpers' => $bhelpers,
+        'hbhelpers' => $hbhelpers,
         'scopes' => Array(\$in),
         'sp_vars' => Array(),
 $libstr
@@ -219,15 +221,18 @@ $libstr
                 'partial' => 0,
                 'helper' => 0,
                 'bhelper' => 0,
+                'hbhelper' => 0,
             ),
             'usedCount' => Array(
                 'var' => Array(),
                 'helpers' => Array(),
                 'blockhelpers' => Array(),
+                'hbhelpers' => Array(),
                 'lcrun' => Array(),
             ),
             'helpers' => Array(),
             'blockhelpers' => Array(),
+            'hbhelpers' => Array(),
         );
 
         $context['ops'] = $context['flags']['echo'] ? Array(
@@ -253,7 +258,11 @@ $libstr
         );
 
         $context['ops']['enc'] = $context['flags']['jsquote'] ? 'encq' : 'enc';
-        return self::buildHelperTable(self::buildHelperTable($context, $options), $options, 'blockhelpers');
+        $context = self::buildHelperTable($context, $options);
+        $context = self::buildHelperTable($context, $options, 'blockhelpers');
+        $context = self::buildHelperTable($context, $options, 'hbhelpers');
+
+        return $context;
     }
 
     /**
@@ -1061,6 +1070,11 @@ $libstr
             $context['stack'][] = $token[self::POS_INNERTAG];
             $context['level']++;
 
+            // detect handlebars custom helpers.
+            if (isset($context['hbhelpers'][$vars[0][0]])) {
+                return ++$context['usedFeature']['hbhelper'];
+            }
+
             // detect block custom helpers.
             if (isset($context['blockhelpers'][$vars[0][0]])) {
                 return ++$context['usedFeature']['bhelper'];
@@ -1125,6 +1139,11 @@ $libstr
                 $context['error'][] = "do not support {{{$vars[0]}}}, you should do compile with LightnCandy::FLAG_THIS flag";
             }
             return $context['usedFeature'][($vars[0] == '.') ? 'dot' : 'this']++;
+        }
+
+        // detect handlebars custom helpers.
+        if (isset($context['hbhelpers'][$vars[0][0]])) {
+            return $context['usedFeature']['hbhelper']++;
         }
 
         // detect custom helpers.
