@@ -1383,7 +1383,7 @@ $libstr
         $ch = array_shift($vars);
         $v = self::getVariableNames($vars, $context);
         self::addUsageCount($context, $notHH ? 'helpers' : 'hbhelpers', $ch[0]);
-        return $context['ops']['seperator'] . self::getFuncName($context, $notHH ? 'ch' : 'hch', "$ch[0] " . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, '$fn'" . ($named ? ', true' : '') . "){$context['ops']['seperator']}";
+        return $context['ops']['seperator'] . self::getFuncName($context, $notHH ? 'ch' : 'hbch', "$ch[0] " . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, '$fn'" . ($notHH ? ($named ? ', true' : '') : '\'$in\'') . "){$context['ops']['seperator']}";
     }
 
    /**
@@ -1872,12 +1872,6 @@ class LCRun3 {
      * @expect '=&amp;=' when input Array('helpers' => Array('a' => function ($i) {return "=$i=";})), 'a', Array('&'), 'enc'
      * @expect '=&#x27;=' when input Array('helpers' => Array('a' => function ($i) {return "=$i=";})), 'a', Array('\''), 'encq'
      * @expect '=b=' when input Array('helpers' => Array('a' => function ($i) {return "={$i['a']}=";})), 'a', Array('a' => 'b'), 'raw', true
-     * @expect '=&=' when input Array('helpers' => Array('a' => function ($i) {return Array("=$i=");})), 'a', Array('&'), 'raw'
-     * @expect '=&amp;=' when input Array('helpers' => Array('a' => function ($i) {return Array("=$i=");})), 'a', Array('&'), 'enc'
-     * @expect '=&=' when input Array('helpers' => Array('a' => function ($i) {return Array("=$i=");})), 'a', Array('&'), 'raw'
-     * @expect '=&amp;&#039;&quot;=' when input Array('helpers' => Array('a' => function ($i) {return Array("=$i=", 'enc');})), 'a', Array('&\'"'), 'raw'
-     * @expect '=&amp;&#x27;&quot;=' when input Array('helpers' => Array('a' => function ($i) {return Array("=$i=", 'encq');})), 'a', Array('&\'"'), 'raw'
-     * @expect '=&=' when input Array('helpers' => Array('a' => function ($i) {return Array("=$i=", 0);})), 'a', Array('&'), 'enc'
      */
     public static function ch($cx, $ch, $vars, $op, $named = false) {
         $args = Array();
@@ -1885,8 +1879,24 @@ class LCRun3 {
             $args[$i] = self::raw($cx, $v);
         }
 
-        $r = call_user_func_array($cx['helpers'][$ch], $named ? Array($args) : $args);
+        return self::chret(call_user_func_array($cx['helpers'][$ch], $named ? Array($args) : $args), $op);
+    }
 
+    /**
+     * LightnCandy runtime method to handle response of custom helpers.
+     *
+     * @param mixed $r return value from custom helper
+     * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
+     *
+     * @expect '=&=' when input '=&=', 'raw'
+     * @expect '=&amp;&#039;=' when input '=&\'=', 'enc'
+     * @expect '=&amp;&#x27;=' when input '=&\'=', 'encq'
+     * @expect '=&amp;&#039;=' when input Array('=&\'='), 'enc'
+     * @expect '=&amp;&#x27;=' when input Array('=&\'='), 'encq'
+     * @expect '=&=' when input Array('=&=', 'raw'), 'enc'
+     * @expect '=&amp;&#x27;=' when input Array('=&\'=', 'encq'), 'raw'
+     */
+    public static function chret($r, $op) {
         if (is_array($r)) {
             if (isset($r[1])) {
                 if ($r[1]) {
@@ -1902,11 +1912,50 @@ class LCRun3 {
             case 'enc': 
                 return htmlentities($r, ENT_QUOTES, 'UTF-8');
             case 'encq':
-                return preg_replace('/&#039;/', '&#x27;', htmlentities($r, ENT_QUOTES, 'UTF-8'));
+                return preg_replace('/&#039;/', '&#x27;', htmlentities($r, ENT_QUOTES, 'UTF-8'));                 
             case 'raw':
             default:
                 return $r;
         }
+    }
+
+    /**
+     * LightnCandy runtime method for Handlebars.js style custom helpers.
+     *
+     * @param array $cx render time context
+     * @param string $ch the name of custom helper to be executed
+     * @param array $vars variables for the helper
+     * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
+     * @param boolean $named input arguments are named
+     *
+     * @return mixed The rendered string of the token, or Array with the rendered string and encode_flag
+     */
+    public static function hbch($cx, $ch, $vars, $op, $cb = false, $inv = false) {
+        $args = Array();
+        $options = Array(
+            'name' => $ch,
+            'hash' => Array()
+        );
+
+        if ($cb) {
+            $options['fn'] = $cb;
+        }
+
+        if ($inv) {
+            $options['inverse'] = $inv;
+        }
+
+        foreach ($vars as $i => $v) {
+            if (is_int($i)) {
+                $args[] = self::raw($cx, $v);
+            } else {
+                $options['hash'][$i] = self::raw($cx, $v);
+            }
+        }
+
+        $args[] = $options;
+
+        $r = call_user_func_array($cx['helpers'][$ch], $args);
     }
 
     /**

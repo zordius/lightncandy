@@ -296,23 +296,32 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
         $this->assertEquals('=b=', $method->invoke(null,
             Array('helpers' => Array('a' => function ($i) {return "={$i['a']}=";})), 'a', Array('a' => 'b'), 'raw', true
         ));
+    }
+    /**
+     * @covers LCRun3::chret
+     */
+    public function testOn_chret() {
+        $method = new ReflectionMethod('LCRun3', 'chret');
         $this->assertEquals('=&=', $method->invoke(null,
-            Array('helpers' => Array('a' => function ($i) {return Array("=$i=");})), 'a', Array('&'), 'raw'
+            '=&=', 'raw'
         ));
-        $this->assertEquals('=&amp;=', $method->invoke(null,
-            Array('helpers' => Array('a' => function ($i) {return Array("=$i=");})), 'a', Array('&'), 'enc'
+        $this->assertEquals('=&amp;&#039;=', $method->invoke(null,
+            '=&\'=', 'enc'
+        ));
+        $this->assertEquals('=&amp;&#x27;=', $method->invoke(null,
+            '=&\'=', 'encq'
+        ));
+        $this->assertEquals('=&amp;&#039;=', $method->invoke(null,
+            Array('=&\'='), 'enc'
+        ));
+        $this->assertEquals('=&amp;&#x27;=', $method->invoke(null,
+            Array('=&\'='), 'encq'
         ));
         $this->assertEquals('=&=', $method->invoke(null,
-            Array('helpers' => Array('a' => function ($i) {return Array("=$i=");})), 'a', Array('&'), 'raw'
+            Array('=&=', 'raw'), 'enc'
         ));
-        $this->assertEquals('=&amp;&#039;&quot;=', $method->invoke(null,
-            Array('helpers' => Array('a' => function ($i) {return Array("=$i=", 'enc');})), 'a', Array('&\'"'), 'raw'
-        ));
-        $this->assertEquals('=&amp;&#x27;&quot;=', $method->invoke(null,
-            Array('helpers' => Array('a' => function ($i) {return Array("=$i=", 'encq');})), 'a', Array('&\'"'), 'raw'
-        ));
-        $this->assertEquals('=&=', $method->invoke(null,
-            Array('helpers' => Array('a' => function ($i) {return Array("=$i=", 0);})), 'a', Array('&'), 'enc'
+        $this->assertEquals('=&amp;&#x27;=', $method->invoke(null,
+            Array('=&\'=', 'encq'), 'raw'
         ));
     }
     /**
