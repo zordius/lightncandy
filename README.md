@@ -344,7 +344,7 @@ The mission of a block custom helper is only focus on providing different contex
 Handlebars.js' Custom Helper
 ----------------------------
 
-You can implement helpers more like Handlebars.js way with `hbhelpers` option. In Handlebars.js , 
+You can implement helpers more like Handlebars.js way with `hbhelpers` option. In Handlebars.js , ..........
 
 Template Debugging
 ------------------

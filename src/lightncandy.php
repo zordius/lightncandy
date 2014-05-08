@@ -1939,11 +1939,27 @@ class LCRun3 {
         );
 
         if ($isBlock) {
-            $options['fn'] = $cb;
+            $options['fn'] = function ($context = '_NO_INPUT_HERE_') use ($cx, $op, $cb) {
+                if ($context === '_NO_INPUT_HERE_') {
+                    return $cb($cx, $op);
+                }
+                $cx['scopes'][] = $op;
+                $ret = $cb($cx, $context);
+                array_pop($cx['scopes']);
+                return $ret;
+            };
         }
 
         if ($inv) {
-            $options['inverse'] = $inv;
+            $options['inv'] = function ($context = '_NO_INPUT_HERE_') use ($cx, $op, $inv) {
+                if ($context === '_NO_INPUT_HERE_') {
+                    return $inv($cx, $op);
+                }
+                $cx['scopes'][] = $op;
+                $ret = $inv($cx, $context);
+                array_pop($cx['scopes']);
+                return $ret;
+            };
         }
 
         // prepare $options['data']
@@ -1954,7 +1970,7 @@ class LCRun3 {
 
         foreach ($vars as $i => $v) {
             if (is_int($i)) {
-                $args[] = self::raw($cx, $v);
+                $args[] = $v;
             } else {
                 $options['hash'][$i] = self::raw($cx, $v);
             }
@@ -1962,7 +1978,7 @@ class LCRun3 {
 
         $args[] = $options;
 
-        $r = call_user_func_array($cx['hbhelpers'][$ch], $args);
+        return self::chret(call_user_func_array($cx['hbhelpers'][$ch], $args), $isBlock ? 'raw' : $op);
     }
 
     /**
@@ -1981,12 +1997,7 @@ class LCRun3 {
      * @expect '' when input Array('blockhelpers' => Array('a' => function ($cx,$in) {})), 'a', Array('6'), 2, function($cx, $i) {return implode('.', $i);}
      */
     public static function bch($cx, $ch, $vars, $in, $cb) {
-        $args = Array();
-        foreach ($vars as $i => $v) {
-            $args[$i] = self::raw($cx, $v);
-        }
-
-        $r = call_user_func($cx['blockhelpers'][$ch], $in, $args);
+        $r = call_user_func($cx['blockhelpers'][$ch], $in, $vars);
         if (is_null($r)) {
             return '';
         }
