@@ -1885,7 +1885,7 @@ class LCRun3 {
     /**
      * LightnCandy runtime method to handle response of custom helpers.
      *
-     * @param mixed $r return value from custom helper
+     * @param mixed $ret return value from custom helper
      * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
      *
      * @expect '=&=' when input '=&=', 'raw'
@@ -1931,18 +1931,25 @@ class LCRun3 {
      * @return mixed The rendered string of the token, or Array with the rendered string and encode_flag
      */
     public static function hbch($cx, $ch, $vars, $op, $cb = false, $inv = false) {
+        $isBlock = (is_object($cb) && ($cb instanceof Closure));
         $args = Array();
         $options = Array(
             'name' => $ch,
             'hash' => Array()
         );
 
-        if ($cb) {
+        if ($isBlock) {
             $options['fn'] = $cb;
         }
 
         if ($inv) {
             $options['inverse'] = $inv;
+        }
+
+        // prepare $options['data']
+        if ($cx['flags']['spvar']) {
+            $options['data'] = $cx['sp_vars'];
+            $options['data']['root'] = $cx['scopes'][0];
         }
 
         foreach ($vars as $i => $v) {
@@ -1955,7 +1962,7 @@ class LCRun3 {
 
         $args[] = $options;
 
-        $r = call_user_func_array($cx['helpers'][$ch], $args);
+        $r = call_user_func_array($cx['hbhelpers'][$ch], $args);
     }
 
     /**
