@@ -1896,26 +1896,26 @@ class LCRun3 {
      * @expect '=&=' when input Array('=&=', 'raw'), 'enc'
      * @expect '=&amp;&#x27;=' when input Array('=&\'=', 'encq'), 'raw'
      */
-    public static function chret($r, $op) {
-        if (is_array($r)) {
-            if (isset($r[1])) {
-                if ($r[1]) {
-                    $op = $r[1];
+    public static function chret($ret, $op) {
+        if (is_array($ret)) {
+            if (isset($ret[1])) {
+                if ($ret[1]) {
+                    $op = $ret[1];
                 } else {
-                    return $r[0];
+                    return $ret[0];
                 }
             }
-            $r = $r[0];
+            $ret = $ret[0];
         }
 
         switch ($op) {
             case 'enc': 
-                return htmlentities($r, ENT_QUOTES, 'UTF-8');
+                return htmlentities($ret, ENT_QUOTES, 'UTF-8');
             case 'encq':
-                return preg_replace('/&#039;/', '&#x27;', htmlentities($r, ENT_QUOTES, 'UTF-8'));                 
+                return preg_replace('/&#039;/', '&#x27;', htmlentities($ret, ENT_QUOTES, 'UTF-8'));
             case 'raw':
             default:
-                return $r;
+                return $ret;
         }
     }
 
