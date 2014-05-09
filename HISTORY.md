@@ -9,6 +9,7 @@ v0.12 current trunk
    * 240d9fa290 only export used LCRun2 functions when compile() with FLAG_STANDALONE now
    * 3fa897c98c rename LCRun2 to LCRun3 for interface changed, old none standalone templates will error with newer version.
    * e0838c7418 now can output debug template map with ANSI color
+   * 80dbeab63d fix php warning when compile with custom helper or block custom helper
 
 v0.11 https://github.com/zordius/lightncandy/tree/v0.11
    * align with handlebars.js 2.0.0-alpha.2
