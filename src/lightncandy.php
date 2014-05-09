@@ -277,8 +277,12 @@ $libstr
                 if (is_callable($func)) {
                     $context[$tname][is_int($name) ? $func : $name] = $func;
                 } else {
-                    if (!$context['flags']['exhlp']) {
-                        $context['error'][] = "Can not find custom helper function defination $func() !";
+                    if (is_array($func)) {
+                        $context['error'][] = "I found an array in $tname with key as $name, please fix it.";
+                    } else {
+                        if (!$context['flags']['exhlp']) {
+                            $context['error'][] = "Can not find custom helper function defination $func() !";
+                        }
                     }
                 }
             }
