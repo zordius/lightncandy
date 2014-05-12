@@ -424,6 +424,26 @@ Handlebars.registerHelper('myif', function(conditional, options) {
 });
 ```
 
+**hashed arguments**
+* LightnCandy
+```php
+$php = LightnCandy::compile($template, Array(
+    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+    'hbhelpers' => Array(
+        'sample' => function ($args1, $args2, $options) {
+            // All hashed arguments are in $options['hash']
+        }
+    )
+));
+```
+
+* Handlebars.js
+```javascript
+Handlebars.registerHelper('sample', function(conditional, options) {
+    // All hashed arguments are in options.hash
+});
+```
+
 Template Debugging
 ------------------
 
