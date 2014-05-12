@@ -346,7 +346,8 @@ Handlebars.js' Custom Helper
 
 You can implement helpers more like Handlebars.js way with `hbhelpers` option. In Handlebars.js, a block custom helper can rendener child block by execute options->fn, and change context by send new context as first parameter. Here are some examples to explain the behavior of custom havior:
 
-** #myeach **
+**#myeach**
+
 ```php
 // Lightncandy sample, #myeach works same with #each
 $php = LightnCandy::compile($template, Array(
