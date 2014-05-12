@@ -236,6 +236,9 @@ When you pass arguments as `name=value` pairs, the input to your custom helper w
                               // and the string "value" into $input['name']
 ```
 
+Custom Helper Escaping
+----------------------
+
 The return value of your custom helper should be a string. When your custom helper be executed from {{ }} , the return value will be HTML escaped. You may execute your helper by {{{ }}} , then the original helper return value will be outputted directly.
 
 When you need to do different escaping logic, you can return extended information by Array($responseString, $escape_flag) , here are some custom helper return value cases:
@@ -440,6 +443,10 @@ $php = LightnCandy::compile($template, Array(
     )
 ));
 ```
+
+**Escaping**
+
+When a Handlebars.js style custom helper be used as block tags, LightnCandy will not escape the result. When it is a single {{...}} tag, LightnCandy will escape the result. To change the escape behavior, you can return extended information by Array(), please read <a href="#custom-helper-escaping">Custom Helper Escaping</a> for more.
 
 * Handlebars.js
 ```javascript
