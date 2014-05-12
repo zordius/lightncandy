@@ -344,7 +344,7 @@ The mission of a block custom helper is only focus on providing different contex
 Handlebars.js' Custom Helper
 ----------------------------
 
-You can implement helpers more like Handlebars.js way with `hbhelpers` option. In Handlebars.js, a block custom helper can rendener child block by executing options->fn, and change context by send new context as first parameter. Here are some examples to explain the behavior of custom havior:
+You can implement helpers more like Handlebars.js way with `hbhelpers` option. In Handlebars.js, a block custom helper can rendener child block by executing options->fn, and change context by send new context as first parameter. Here are some examples to explain the behavior of custom helper:
 
 **#mywith**
 * LightnCandy
@@ -388,13 +388,39 @@ $php = LightnCandy::compile($template, Array(
 
 * Handlebars.js
 ```javascript
-// Handlebars.js sample, #myeach works same with #each
+// Handlebars.js sample, #mywith works same with #with
 Handlebars.registerHelper('myeach', function(context, options) {
-    var ret = '', i, j = context.length;
-    for (i =0; i < j; i++) {
-        ret = ret + options.fn(context[i]);
+    return options.fn(context);
+});
+```
+
+**#myif**
+* LightnCandy
+```php
+// LightnCandy sample, #myif works same with #if
+$php = LightnCandy::compile($template, Array(
+    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+    'hbhelpers' => Array(
+        'myif' => function ($conditional, $options) {
+            if ($conditional) {
+                return $options['fn']();
+            } else {
+                return $options['inverse']();
+            }
+        }
+    )
+));
+```
+
+* Handlebars.js
+```javascript
+// Handlebars.js sample, #myif works same with #if
+Handlebars.registerHelper('myif', function(conditional, options) {
+    if (conditional) {
+        return options.fn(this);
+    } else {
+        return options.inverse(this);
     }
-    return ret;
 });
 ```
 
