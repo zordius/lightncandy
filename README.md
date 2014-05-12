@@ -388,7 +388,7 @@ $php = LightnCandy::compile($template, Array(
 
 * Handlebars.js
 ```javascript
-// Handlebars.js sample, #mywith works same with #with
+// Handlebars.js sample, #myeach works same with #each
 Handlebars.registerHelper('myeach', function(context, options) {
     var ret = '', i, j = context.length;
     for (i =0; i < j; i++) {
