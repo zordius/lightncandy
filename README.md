@@ -56,13 +56,13 @@ Usage
 -----
 ```php
 // THREE STEPS TO USE LIGHTNCANDY
-// Step 1. require the lib, compile template, get the PHP code as string
+// Step 1. require the lib, compile template, and get the PHP code as string
 require('src/lightncandy.php');
 
 $template = "Welcome {{name}} , You win \${{value}} dollars!!\n";
 $phpStr = LightnCandy::compile($template);  // compiled PHP code in $phpStr
 
-// Step 2A. (Usage 1) use LightnCandy::prepare to get render function
+// Step 2A. (Usage 1) use LightnCandy::prepare to get rendering function
 //   DEPRECATED , it may require PHP setting allow_url_fopen=1 ,
 //   and allow_url_fopen=1 is not secure .
 //   When allow_url_fopen = 0, prepare() will create tmp file then include it, 
@@ -107,11 +107,11 @@ LightnCandy::compile($template, Array(
 ));
 ```
 
-Default is to compile the template as PHP which can be run as fast as possible (flags = `FLAG_BESTPERFORMANCE`).
+Default is to compile the template as PHP, which can be run as fast as possible (flags = `FLAG_BESTPERFORMANCE`).
 
 * `FLAG_ERROR_LOG` : error_log() when found any template error
 * `FLAG_ERROR_EXCEPTION` : throw exception when found any template error
-* `FLAG_STANDALONE` : generate stand alone PHP codes which can be execute without including LightnCandy.php. The compiled PHP code will contain scoped user function, somehow larger. And, the performance of the template will slow 1 ~ 10%.
+* `FLAG_STANDALONE` : generate stand-alone PHP codes, which can be execute without including LightnCandy.php. The compiled PHP code will contain scoped user function, somehow larger. And, the performance of the template will slow 1 ~ 10%.
 * `FLAG_JSTRUE` : generate 'true' when value is true (handlebars.js behavior). Otherwise, true will generate ''.
 * `FLAG_JSOBJECT` : generate '[object Object]' for associated array, generate ',' separated values for array (handlebars.js behavior). Otherwise, all PHP array will generate ''.
 * `FLAG_THIS` : support `{{this}}` or `{{.}}` in template. Otherwise, `{{this}}` and `{{.}}` will cause template error.
@@ -236,6 +236,9 @@ When you pass arguments as `name=value` pairs, the input to your custom helper w
                               // and the string "value" into $input['name']
 ```
 
+Custom Helper Escaping
+----------------------
+
 The return value of your custom helper should be a string. When your custom helper be executed from {{ }} , the return value will be HTML escaped. You may execute your helper by {{{ }}} , then the original helper return value will be outputted directly.
 
 When you need to do different escaping logic, you can return extended information by Array($responseString, $escape_flag) , here are some custom helper return value cases:
@@ -340,6 +343,117 @@ function helper_categories($cx, $args) {
 ```
 
 The mission of a block custom helper is only focus on providing different context or logic to inner block, nothing else.
+
+Handlebars.js' Custom Helper
+----------------------------
+
+You can implement helpers more like Handlebars.js way with `hbhelpers` option, all matched single cutsom helper and block custom helper will be handled. In Handlebars.js, a block custom helper can rendener child block by executing options->fn, and change context by send new context as first parameter. Here are some examples to explain the behavior of custom helper:
+
+**#mywith**
+* LightnCandy
+```php
+// LightnCandy sample, #mywith works same with #with
+$php = LightnCandy::compile($template, Array(
+    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+    'hbhelpers' => Array(
+        'mywith' => function ($context, $options) {
+            return $options['fn']($context);
+        }
+    )
+));
+```
+
+* Handlebars.js
+```javascript
+// Handlebars.js sample, #mywith works same with #with
+Handlebars.registerHelper('mywith', function(context, options) {
+    return options.fn(context);
+});
+```
+
+**#myeach**
+* LightnCandy
+```php
+// LightnCandy sample, #myeach works same with #each
+$php = LightnCandy::compile($template, Array(
+    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+    'hbhelpers' => Array(
+        'myeach' => function ($context, $options) {
+            $ret = '';
+            foreach ($context as $cx) {
+                $ret .= $options['fn']($cx);
+            }
+            return $ret;
+        }
+    )
+));
+```
+
+* Handlebars.js
+```javascript
+// Handlebars.js sample, #myeach works same with #each
+Handlebars.registerHelper('myeach', function(context, options) {
+    var ret = '', i, j = context.length;
+    for (i = 0; i < j; i++) {
+        ret = ret + options.fn(context[i]);
+    }
+    return ret;
+});
+```
+
+**#myif**
+* LightnCandy
+```php
+// LightnCandy sample, #myif works same with #if
+$php = LightnCandy::compile($template, Array(
+    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+    'hbhelpers' => Array(
+        'myif' => function ($conditional, $options) {
+            if ($conditional) {
+                return $options['fn']();
+            } else {
+                return $options['inverse']();
+            }
+        }
+    )
+));
+```
+
+* Handlebars.js
+```javascript
+// Handlebars.js sample, #myif works same with #if
+Handlebars.registerHelper('myif', function(conditional, options) {
+    if (conditional) {
+        return options.fn(this);
+    } else {
+        return options.inverse(this);
+    }
+});
+```
+
+**Hashed arguments**
+* LightnCandy
+```php
+$php = LightnCandy::compile($template, Array(
+    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+    'hbhelpers' => Array(
+        'sample' => function ($arg1, $arg2, $options) {
+            // All hashed arguments are in $options['hash']
+        }
+    )
+));
+```
+
+**Escaping**
+
+When a Handlebars.js style custom helper be used as block tags, LightnCandy will not escape the result. When it is a single {{...}} tag, LightnCandy will escape the result. To change the escape behavior, you can return extended information by Array(), please read <a href="#custom-helper-escaping">Custom Helper Escaping</a> for more.
+
+* Handlebars.js
+```javascript
+Handlebars.registerHelper('sample', function(arg1, arg2, options) {
+    // All hashed arguments are in options.hash
+});
+```
 
 Template Debugging
 ------------------
@@ -450,13 +564,13 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{#with var}}` : change context scope. If the var is false, skip included section. (require `FLAG_WITH`)
 * `{{../var}}` : parent template scope. (require `FLAG_PARENT`)
 * `{{> file}}` : partial; include another template inside a template.
-* `{{@index}}` : reference to current index in a `{{#each}}` loop on an array.
-* `{{@key}}` : reference to current key in a `{{#each}}` loop on an object.
-* `{{@root}}` : reference to root context.
+* `{{@index}}` : references to current index in a `{{#each}}` loop on an array.
+* `{{@key}}` : references to current key in a `{{#each}}` loop on an object.
+* `{{@root}}` : references to root context.
 * `{{@first}}` : true when looping at first item
 * `{{@last}}` : true when looping at last item
-* `{{@root.path.to.value}}` : reference to root context then follow the path.
-* `{{foo.[ba.r].[#spec].0.ok}}` : reference to $CurrentConext['foo']['ba.r']['#spec'][0]['ok'] . (require `FLAG_ADVARNAME`)
+* `{{@root.path.to.value}}` : references to root context then follow the path.
+* `{{foo.[ba.r].[#spec].0.ok}}` : references to $CurrentConext['foo']['ba.r']['#spec'][0]['ok'] . (require `FLAG_ADVARNAME`)
 * `{{~any_valid_tag}}` : Space control, remove all previous spacing (includes CR/LF, tab, space; stop on any none spacing character) (require `FLAG_SPACECTL`)
 * `{{any_valid_tag~}}` : Space control, remove all next spacing (includes CR/LF, tab, space; stop on any none spacing character) (require `FLAG_SPACECTL`)
 * `{{{helper var}}}` : Execute custom helper then render the result

@@ -139,6 +139,7 @@ class LightnCandy {
         $libstr = self::exportLCRun($context);
         $helpers = self::exportHelper($context);
         $bhelpers = self::exportHelper($context, 'blockhelpers');
+        $hbhelpers = self::exportHelper($context, 'hbhelpers');
         $debug = LCRun3::DEBUG_ERROR_LOG;
 
         // Return generated PHP code string.
@@ -152,6 +153,7 @@ class LightnCandy {
         ),
         'helpers' => $helpers,
         'blockhelpers' => $bhelpers,
+        'hbhelpers' => $hbhelpers,
         'scopes' => Array(\$in),
         'sp_vars' => Array(),
 $libstr
@@ -219,15 +221,18 @@ $libstr
                 'partial' => 0,
                 'helper' => 0,
                 'bhelper' => 0,
+                'hbhelper' => 0,
             ),
             'usedCount' => Array(
                 'var' => Array(),
                 'helpers' => Array(),
                 'blockhelpers' => Array(),
+                'hbhelpers' => Array(),
                 'lcrun' => Array(),
             ),
             'helpers' => Array(),
             'blockhelpers' => Array(),
+            'hbhelpers' => Array(),
         );
 
         $context['ops'] = $context['flags']['echo'] ? Array(
@@ -253,7 +258,11 @@ $libstr
         );
 
         $context['ops']['enc'] = $context['flags']['jsquote'] ? 'encq' : 'enc';
-        return self::buildHelperTable(self::buildHelperTable($context, $options), $options, 'blockhelpers');
+        $context = self::buildHelperTable($context, $options);
+        $context = self::buildHelperTable($context, $options, 'blockhelpers');
+        $context = self::buildHelperTable($context, $options, 'hbhelpers');
+
+        return $context;
     }
 
     /**
@@ -1061,6 +1070,11 @@ $libstr
             $context['stack'][] = $token[self::POS_INNERTAG];
             $context['level']++;
 
+            // detect handlebars custom helpers.
+            if (isset($context['hbhelpers'][$vars[0][0]])) {
+                return ++$context['usedFeature']['hbhelper'];
+            }
+
             // detect block custom helpers.
             if (isset($context['blockhelpers'][$vars[0][0]])) {
                 return ++$context['usedFeature']['bhelper'];
@@ -1125,6 +1139,11 @@ $libstr
                 $context['error'][] = "do not support {{{$vars[0]}}}, you should do compile with LightnCandy::FLAG_THIS flag";
             }
             return $context['usedFeature'][($vars[0] == '.') ? 'dot' : 'this']++;
+        }
+
+        // detect handlebars custom helpers.
+        if (isset($context['hbhelpers'][$vars[0][0]])) {
+            return $context['usedFeature']['hbhelper']++;
         }
 
         // detect custom helpers.
@@ -1232,15 +1251,20 @@ $libstr
      * @codeCoverageIgnore
      */
     protected static function compileBlockCustomHelper(&$context, $vars) {
-        if (!isset($context['blockhelpers'][$vars[0][0]])) {
+        $notBCH = !isset($context['blockhelpers'][$vars[0][0]]);
+        $notHBCH = !isset($context['hbhelpers'][$vars[0][0]]);
+
+        if ($notBCH && $notHBCH) {
             return;
         }
+
         $context['stack'][] = self::getArrayCode($vars[0]);
         $context['stack'][] = '#';
         $ch = array_shift($vars);
-        self::addUsageCount($context, 'blockhelpers', $ch[0]);
+
+        self::addUsageCount($context, $notHBCH ? 'blockhelpers' : 'hbhelpers', $ch[0]);
         $v = self::getVariableNames($vars, $context);
-        return $context['ops']['seperator'] . self::getFuncName($context, 'bch', '#' . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
+        return $context['ops']['seperator'] . self::getFuncName($context, $notHBCH ? 'bch' : 'hbch', '#' . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
     /**
@@ -1348,13 +1372,18 @@ $libstr
      * @codeCoverageIgnore
      */
     protected static function compileCustomHelper(&$context, &$vars, $raw, $named) {
-        $fn = $raw ? 'raw' : $context['ops']['enc'];
-        if (isset($context['helpers'][$vars[0][0]])) {
-            $ch = array_shift($vars);
-            $v = self::getVariableNames($vars, $context);
-            self::addUsageCount($context, 'helpers', $ch[0]);
-            return $context['ops']['seperator'] . self::getFuncName($context, 'ch', "$ch[0] " . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, '$fn'" . ($named ? ', true' : '') . "){$context['ops']['seperator']}";
+        $notH = !isset($context['helpers'][$vars[0][0]]);
+        $notHH = !isset($context['hbhelpers'][$vars[0][0]]);
+
+        if ($notH && $notHH) {
+            return;
         }
+
+        $fn = $raw ? 'raw' : $context['ops']['enc'];
+        $ch = array_shift($vars);
+        $v = self::getVariableNames($vars, $context);
+        self::addUsageCount($context, $notHH ? 'helpers' : 'hbhelpers', $ch[0]);
+        return $context['ops']['seperator'] . self::getFuncName($context, $notHH ? 'ch' : 'hbch', "$ch[0] " . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, '$fn'" . ($notHH ? ($named ? ', true' : '') : '\'$in\'') . "){$context['ops']['seperator']}";
     }
 
    /**
@@ -1843,12 +1872,6 @@ class LCRun3 {
      * @expect '=&amp;=' when input Array('helpers' => Array('a' => function ($i) {return "=$i=";})), 'a', Array('&'), 'enc'
      * @expect '=&#x27;=' when input Array('helpers' => Array('a' => function ($i) {return "=$i=";})), 'a', Array('\''), 'encq'
      * @expect '=b=' when input Array('helpers' => Array('a' => function ($i) {return "={$i['a']}=";})), 'a', Array('a' => 'b'), 'raw', true
-     * @expect '=&=' when input Array('helpers' => Array('a' => function ($i) {return Array("=$i=");})), 'a', Array('&'), 'raw'
-     * @expect '=&amp;=' when input Array('helpers' => Array('a' => function ($i) {return Array("=$i=");})), 'a', Array('&'), 'enc'
-     * @expect '=&=' when input Array('helpers' => Array('a' => function ($i) {return Array("=$i=");})), 'a', Array('&'), 'raw'
-     * @expect '=&amp;&#039;&quot;=' when input Array('helpers' => Array('a' => function ($i) {return Array("=$i=", 'enc');})), 'a', Array('&\'"'), 'raw'
-     * @expect '=&amp;&#x27;&quot;=' when input Array('helpers' => Array('a' => function ($i) {return Array("=$i=", 'encq');})), 'a', Array('&\'"'), 'raw'
-     * @expect '=&=' when input Array('helpers' => Array('a' => function ($i) {return Array("=$i=", 0);})), 'a', Array('&'), 'enc'
      */
     public static function ch($cx, $ch, $vars, $op, $named = false) {
         $args = Array();
@@ -1856,28 +1879,106 @@ class LCRun3 {
             $args[$i] = self::raw($cx, $v);
         }
 
-        $r = call_user_func_array($cx['helpers'][$ch], $named ? Array($args) : $args);
+        return self::chret(call_user_func_array($cx['helpers'][$ch], $named ? Array($args) : $args), $op);
+    }
 
-        if (is_array($r)) {
-            if (isset($r[1])) {
-                if ($r[1]) {
-                    $op = $r[1];
+    /**
+     * LightnCandy runtime method to handle response of custom helpers.
+     *
+     * @param mixed $ret return value from custom helper
+     * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
+     *
+     * @expect '=&=' when input '=&=', 'raw'
+     * @expect '=&amp;&#039;=' when input '=&\'=', 'enc'
+     * @expect '=&amp;&#x27;=' when input '=&\'=', 'encq'
+     * @expect '=&amp;&#039;=' when input Array('=&\'='), 'enc'
+     * @expect '=&amp;&#x27;=' when input Array('=&\'='), 'encq'
+     * @expect '=&=' when input Array('=&=', 'raw'), 'enc'
+     * @expect '=&amp;&#x27;=' when input Array('=&\'=', 'encq'), 'raw'
+     */
+    public static function chret($ret, $op) {
+        if (is_array($ret)) {
+            if (isset($ret[1])) {
+                if ($ret[1]) {
+                    $op = $ret[1];
                 } else {
-                    return $r[0];
+                    return $ret[0];
                 }
             }
-            $r = $r[0];
+            $ret = $ret[0];
         }
 
         switch ($op) {
             case 'enc': 
-                return htmlentities($r, ENT_QUOTES, 'UTF-8');
+                return htmlentities($ret, ENT_QUOTES, 'UTF-8');
             case 'encq':
-                return preg_replace('/&#039;/', '&#x27;', htmlentities($r, ENT_QUOTES, 'UTF-8'));
+                return preg_replace('/&#039;/', '&#x27;', htmlentities($ret, ENT_QUOTES, 'UTF-8'));
             case 'raw':
             default:
-                return $r;
+                return $ret;
         }
+    }
+
+    /**
+     * LightnCandy runtime method for Handlebars.js style custom helpers.
+     *
+     * @param array $cx render time context
+     * @param string $ch the name of custom helper to be executed
+     * @param array $vars variables for the helper
+     * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
+     * @param boolean $named input arguments are named
+     *
+     * @return mixed The rendered string of the token, or Array with the rendered string and encode_flag
+     */
+    public static function hbch($cx, $ch, $vars, $op, $cb = false, $inv = false) {
+        $isBlock = (is_object($cb) && ($cb instanceof Closure));
+        $args = Array();
+        $options = Array(
+            'name' => $ch,
+            'hash' => Array()
+        );
+
+        if ($isBlock) {
+            $options['fn'] = function ($context = '_NO_INPUT_HERE_') use ($cx, $op, $cb) {
+                if ($context === '_NO_INPUT_HERE_') {
+                    return $cb($cx, $op);
+                }
+                $cx['scopes'][] = $op;
+                $ret = $cb($cx, $context);
+                array_pop($cx['scopes']);
+                return $ret;
+            };
+        }
+
+        if ($inv) {
+            $options['inv'] = function ($context = '_NO_INPUT_HERE_') use ($cx, $op, $inv) {
+                if ($context === '_NO_INPUT_HERE_') {
+                    return $inv($cx, $op);
+                }
+                $cx['scopes'][] = $op;
+                $ret = $inv($cx, $context);
+                array_pop($cx['scopes']);
+                return $ret;
+            };
+        }
+
+        // prepare $options['data']
+        if ($cx['flags']['spvar']) {
+            $options['data'] = $cx['sp_vars'];
+            $options['data']['root'] = $cx['scopes'][0];
+        }
+
+        foreach ($vars as $i => $v) {
+            if (is_int($i)) {
+                $args[] = $v;
+            } else {
+                $options['hash'][$i] = self::raw($cx, $v);
+            }
+        }
+
+        $args[] = $options;
+
+        return self::chret(call_user_func_array($cx['hbhelpers'][$ch], $args), $isBlock ? 'raw' : $op);
     }
 
     /**
@@ -1896,12 +1997,7 @@ class LCRun3 {
      * @expect '' when input Array('blockhelpers' => Array('a' => function ($cx,$in) {})), 'a', Array('6'), 2, function($cx, $i) {return implode('.', $i);}
      */
     public static function bch($cx, $ch, $vars, $in, $cb) {
-        $args = Array();
-        foreach ($vars as $i => $v) {
-            $args[$i] = self::raw($cx, $v);
-        }
-
-        $r = call_user_func($cx['blockhelpers'][$ch], $in, $args);
+        $r = call_user_func($cx['blockhelpers'][$ch], $in, $vars);
         if (is_null($r)) {
             return '';
         }
