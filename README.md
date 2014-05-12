@@ -56,13 +56,13 @@ Usage
 -----
 ```php
 // THREE STEPS TO USE LIGHTNCANDY
-// Step 1. require the lib, compile template, get the PHP code as string
+// Step 1. require the lib, compile template, and get the PHP code as string
 require('src/lightncandy.php');
 
 $template = "Welcome {{name}} , You win \${{value}} dollars!!\n";
 $phpStr = LightnCandy::compile($template);  // compiled PHP code in $phpStr
 
-// Step 2A. (Usage 1) use LightnCandy::prepare to get render function
+// Step 2A. (Usage 1) use LightnCandy::prepare to get rendering function
 //   DEPRECATED , it may require PHP setting allow_url_fopen=1 ,
 //   and allow_url_fopen=1 is not secure .
 //   When allow_url_fopen = 0, prepare() will create tmp file then include it, 
@@ -107,11 +107,11 @@ LightnCandy::compile($template, Array(
 ));
 ```
 
-Default is to compile the template as PHP which can be run as fast as possible (flags = `FLAG_BESTPERFORMANCE`).
+Default is to compile the template as PHP, which can be run as fast as possible (flags = `FLAG_BESTPERFORMANCE`).
 
 * `FLAG_ERROR_LOG` : error_log() when found any template error
 * `FLAG_ERROR_EXCEPTION` : throw exception when found any template error
-* `FLAG_STANDALONE` : generate stand alone PHP codes which can be execute without including LightnCandy.php. The compiled PHP code will contain scoped user function, somehow larger. And, the performance of the template will slow 1 ~ 10%.
+* `FLAG_STANDALONE` : generate stand-alone PHP codes, which can be execute without including LightnCandy.php. The compiled PHP code will contain scoped user function, somehow larger. And, the performance of the template will slow 1 ~ 10%.
 * `FLAG_JSTRUE` : generate 'true' when value is true (handlebars.js behavior). Otherwise, true will generate ''.
 * `FLAG_JSOBJECT` : generate '[object Object]' for associated array, generate ',' separated values for array (handlebars.js behavior). Otherwise, all PHP array will generate ''.
 * `FLAG_THIS` : support `{{this}}` or `{{.}}` in template. Otherwise, `{{this}}` and `{{.}}` will cause template error.
@@ -344,7 +344,7 @@ The mission of a block custom helper is only focus on providing different contex
 Handlebars.js' Custom Helper
 ----------------------------
 
-You can implement helpers more like Handlebars.js way with `hbhelpers` option. In Handlebars.js, a block custom helper can rendener child block by execute options->fn, and change context by send new context as first parameter. Here are some examples to explain the behavior of custom havior:
+You can implement helpers more like Handlebars.js way with `hbhelpers` option. In Handlebars.js, a block custom helper can rendener child block by executing options->fn, and change context by send new context as first parameter. Here are some examples to explain the behavior of custom havior:
 
 **#mywith**
 * LightnCandy
@@ -507,13 +507,13 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{#with var}}` : change context scope. If the var is false, skip included section. (require `FLAG_WITH`)
 * `{{../var}}` : parent template scope. (require `FLAG_PARENT`)
 * `{{> file}}` : partial; include another template inside a template.
-* `{{@index}}` : reference to current index in a `{{#each}}` loop on an array.
-* `{{@key}}` : reference to current key in a `{{#each}}` loop on an object.
-* `{{@root}}` : reference to root context.
+* `{{@index}}` : references to current index in a `{{#each}}` loop on an array.
+* `{{@key}}` : references to current key in a `{{#each}}` loop on an object.
+* `{{@root}}` : references to root context.
 * `{{@first}}` : true when looping at first item
 * `{{@last}}` : true when looping at last item
-* `{{@root.path.to.value}}` : reference to root context then follow the path.
-* `{{foo.[ba.r].[#spec].0.ok}}` : reference to $CurrentConext['foo']['ba.r']['#spec'][0]['ok'] . (require `FLAG_ADVARNAME`)
+* `{{@root.path.to.value}}` : references to root context then follow the path.
+* `{{foo.[ba.r].[#spec].0.ok}}` : references to $CurrentConext['foo']['ba.r']['#spec'][0]['ok'] . (require `FLAG_ADVARNAME`)
 * `{{~any_valid_tag}}` : Space control, remove all previous spacing (includes CR/LF, tab, space; stop on any none spacing character) (require `FLAG_SPACECTL`)
 * `{{any_valid_tag~}}` : Space control, remove all next spacing (includes CR/LF, tab, space; stop on any none spacing character) (require `FLAG_SPACECTL`)
 * `{{{helper var}}}` : Execute custom helper then render the result
