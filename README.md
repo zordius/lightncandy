@@ -348,6 +348,7 @@ You can implement helpers more like Handlebars.js way with `hbhelpers` option. I
 
 <table>
 <th>Lightncandy</th><th>Handlebars.js</th>
+
 ```php
 $php = LightnCandy::compile($template, Array(
     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
@@ -363,7 +364,9 @@ $php = LightnCandy::compile($template, Array(
 
 ));
 ```
+
 <tr><td>
+
 ```javascript
 Handlebars.registerHelper('myeach', function(context, options) {
   var ret = '', i, j = context.length;
@@ -373,8 +376,10 @@ Handlebars.registerHelper('myeach', function(context, options) {
   return ret;
 });
 ```
+
 </td><td>
-</td></tr></table>
+</td></tr>
+</table>
 
 Template Debugging
 ------------------
