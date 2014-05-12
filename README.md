@@ -444,6 +444,7 @@ $php = LightnCandy::compile($template, Array(
 ));
 ```
 
+* Handlebars.js
 ```javascript
 Handlebars.registerHelper('sample', function(arg1, arg2, options) {
     // All hashed arguments are in options.hash
@@ -453,8 +454,6 @@ Handlebars.registerHelper('sample', function(arg1, arg2, options) {
 **Escaping**
 
 When a Handlebars.js style custom helper be used as block tags, LightnCandy will not escape the result. When it is a single {{...}} tag, LightnCandy will escape the result. To change the escape behavior, you can return extended information by Array(), please read <a href="#custom-helper-escaping">Custom Helper Escaping</a> for more.
-
-* Handlebars.js
 
 Template Debugging
 ------------------
