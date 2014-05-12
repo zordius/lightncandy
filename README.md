@@ -349,7 +349,7 @@ Handlebars.js' Custom Helper
 
 You can implement helpers more like Handlebars.js way with `hbhelpers` option, all matched single cutsom helper and block custom helper will be handled. In Handlebars.js, a block custom helper can rendener child block by executing options->fn, and change context by send new context as first parameter. Here are some examples to explain the behavior of custom helper:
 
-**#mywith**
+**#mywith (context change)**
 * LightnCandy
 ```php
 // LightnCandy sample, #mywith works same with #with
@@ -371,7 +371,7 @@ Handlebars.registerHelper('mywith', function(context, options) {
 });
 ```
 
-**#myeach**
+**#myeach (context change)**
 * LightnCandy
 ```php
 // LightnCandy sample, #myeach works same with #each
@@ -401,7 +401,7 @@ Handlebars.registerHelper('myeach', function(context, options) {
 });
 ```
 
-**#myif**
+**#myif (no context change)**
 * LightnCandy
 ```php
 // LightnCandy sample, #myif works same with #if
@@ -444,16 +444,17 @@ $php = LightnCandy::compile($template, Array(
 ));
 ```
 
-**Escaping**
-
-When a Handlebars.js style custom helper be used as block tags, LightnCandy will not escape the result. When it is a single {{...}} tag, LightnCandy will escape the result. To change the escape behavior, you can return extended information by Array(), please read <a href="#custom-helper-escaping">Custom Helper Escaping</a> for more.
-
-* Handlebars.js
 ```javascript
 Handlebars.registerHelper('sample', function(arg1, arg2, options) {
     // All hashed arguments are in options.hash
 });
 ```
+
+**Escaping**
+
+When a Handlebars.js style custom helper be used as block tags, LightnCandy will not escape the result. When it is a single {{...}} tag, LightnCandy will escape the result. To change the escape behavior, you can return extended information by Array(), please read <a href="#custom-helper-escaping">Custom Helper Escaping</a> for more.
+
+* Handlebars.js
 
 Template Debugging
 ------------------
