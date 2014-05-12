@@ -428,13 +428,13 @@ Handlebars.registerHelper('myif', function(conditional, options) {
 });
 ```
 
-**hashed arguments**
+**Hashed arguments**
 * LightnCandy
 ```php
 $php = LightnCandy::compile($template, Array(
     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
     'hbhelpers' => Array(
-        'sample' => function ($args1, $args2, $options) {
+        'sample' => function ($arg1, $arg2, $options) {
             // All hashed arguments are in $options['hash']
         }
     )
@@ -443,7 +443,7 @@ $php = LightnCandy::compile($template, Array(
 
 * Handlebars.js
 ```javascript
-Handlebars.registerHelper('sample', function(conditional, options) {
+Handlebars.registerHelper('sample', function(arg1, arg2, options) {
     // All hashed arguments are in options.hash
 });
 ```
