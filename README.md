@@ -228,12 +228,12 @@ The input arguments are processed by LightnCandy automatically, you do not need 
 When you pass arguments as `name=value` pairs, the input to your custom helper will turn into only one associative array ( **NOTICE: `FLAG_NAMEDARG` is required when compile()** ). For example, when your custom helper is `function ($input) {...}`:
 
 ```
-{{{helper name=value}}        // This send processed {{{value}}} into $input['name']
-{{{helper name="value"}}      // This send the string "value" into $input['name']
-{{{helper [na me]="value"}}   // You can still protect the name with [ ]
-                              // so you get $input['na me'] as the string 'value'
-{{{helper url name="value"}}  // This send processed {{{url}}}  into $input[0]
-                              // and the string "value" into $input['name']
+{{{helper name=value}}}        // This send processed {{{value}}} into $input['name']
+{{{helper name="value"}}}      // This send the string "value" into $input['name']
+{{{helper [na me]="value"}}}   // You can still protect the name with [ ]
+                               // so you get $input['na me'] as the string 'value'
+{{{helper url name="value"}}}  // This send processed {{{url}}}  into $input[0]
+                               // and the string "value" into $input['name']
 ```
 
 Custom Helper Escaping
