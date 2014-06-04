@@ -838,6 +838,7 @@ $libstr
      * @expect Array(2, '[a]', 'b') when input '../../[a].b', Array('flags' => Array('advar' => 0, 'this' => 0, 'parent' => 1), 'usedFeature' => Array('parent' => 0))
      * @expect Array(2, 'a', 'b') when input '../../[a].b', Array('flags' => Array('advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => Array('parent' => 0))
      * @expect Array('"a.b"') when input '"a.b"', Array('flags' => Array('advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => Array('parent' => 0))
+     * @expect Array(null, 'id') when input 'this.id', Array('flags' => Array('advar' => 1, 'this' => 1, 'parent' => 1), 'usedFeature' => Array('parent' => 0))
      */
     protected static function fixVariable($v, &$context) {
         $ret = Array();
