@@ -426,7 +426,7 @@ $libstr
         $file->seek($ref->getEndLine() - 1);
         $epos = $file->ftell();
 
-        return preg_replace('/^.*?function\s.*?\\((.+?)\\}[,\\s]*;?$/s', 'function($1}', substr($lines, $spos, $epos - $spos));
+        return preg_replace('/^.*?function\s*?\\((.+?)\\}[,\\s]*;?$/s', 'function($1}', substr($lines, $spos, $epos - $spos));
     }
 
     /**
