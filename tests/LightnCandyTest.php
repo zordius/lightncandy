@@ -259,6 +259,9 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(Array('((is_array($cx[\'scopes\'][count($cx[\'scopes\'])-3]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)', '../../../[a]'), $method->invoke(null,
             Array(3,'a'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
         ));
+        $this->assertEquals(Array('((is_array($in) && isset($in[\'id\'])) ? $in[\'id\'] : null)', 'this.[id]'), $method->invoke(null,
+            Array(null, 'id'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
+        ));
     }
     /**
      * @covers LightnCandy::getExpression
@@ -274,6 +277,9 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         ));
         $this->assertEquals('this', $method->invoke(null,
             0, false, null
+        ));
+        $this->assertEquals('this.[id]', $method->invoke(null,
+            0, false, Array(null, 'id')
         ));
         $this->assertEquals('@root.[a].[b]', $method->invoke(null,
             0, true, Array('a', 'b')
@@ -320,6 +326,9 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         ));
         $this->assertEquals(Array('"a.b"'), $method->invoke(null,
             '"a.b"', Array('flags' => Array('advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => Array('parent' => 0))
+        ));
+        $this->assertEquals(Array(null, 'id'), $method->invoke(null,
+            'this.id', Array('flags' => Array('advar' => 1, 'this' => 1, 'parent' => 1), 'usedFeature' => Array('parent' => 0))
         ));
     }
     /**
