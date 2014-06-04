@@ -10,6 +10,8 @@ echo "Rendered PHP code is:\n$php\n\n";
 
 $renderer = LightnCandy::prepare($php);
 
-echo $renderer(Array('id' => 'bla bla bla'));
+echo "Render esult:\n";
+echo $renderer(Array('id' => 'bla bla bla', 'a' => Array('id' => 'OK!')));
+echo "\n";
 
 ?>

@@ -744,6 +744,7 @@ $libstr
      * @expect Array('((is_array($in) && isset($in[\'a\'])) ? $in[\'a\'] : null)', '[a]') when input Array('a'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
      * @expect Array('((is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)', '../[a]') when input Array(1,'a'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
      * @expect Array('((is_array($cx[\'scopes\'][count($cx[\'scopes\'])-3]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)', '../../../[a]') when input Array(3,'a'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
+     * @expect Array('((is_array($in) && isset($in[\'id\'])) ? $in[\'id\'] : null)', 'this.[id]') when input Array(null, 'id'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
      */
     protected static function getVariableName($var, $context) {
         $levels = 0;
@@ -786,8 +787,12 @@ $libstr
         // Generate normalized expression for debug
         $exp = self::getExpression($levels, $root, $var);
 
-        if ((count($var) == 0) || is_null($var[0])) {
+        if ((count($var) == 0) || (is_null($var[0]) && (count($var) == 1))) {
             return Array($base, $exp);
+        }
+
+        if (is_null($var[0])) {
+            array_shift($var);
         }
 
         $n = self::getArrayCode($var);
@@ -809,14 +814,15 @@ $libstr
      * @expect '[a].[b]' when input 0, false, Array('a', 'b')
      * @expect '@root' when input 0, true, Array()
      * @expect 'this' when input 0, false, null
+     * @expect 'this.[id]' when input 0, false, Array(null, 'id')
      * @expect '@root.[a].[b]' when input 0, true, Array('a', 'b')
      * @expect '../../[a].[b]' when input 2, false, Array('a', 'b')
      * @expect '../[a\'b]' when input 1, false, Array('a\'b')
      */
     protected static function getExpression($levels, $root, $var) {
         return str_repeat('../', $levels) . 
-        ((is_array($var) && count($var) && ($var[0] !== null)) ?  (($root ? '@root.' : '') . implode('.', array_map(function($v) {
-            return "[$v]";
+        ((is_array($var) && count($var)) ? (($root ? '@root.' : '') . implode('.', array_map(function($v) {
+            return is_null($v) ? 'this' : "[$v]";
         }, $var))) : ($root ? '@root' :  'this'));
     }
 
