@@ -4,7 +4,7 @@ require('src/lightncandy.php');
 $template = '<div class="terms-text"> {{render "artists-terms"}} </div>';
 
 $compileOptions = [
-    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_EXTHELPER,
     'helpers' => [
         'url',
         'render' => function($view,$data = array()) {
