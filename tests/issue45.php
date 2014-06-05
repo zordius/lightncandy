@@ -1,9 +1,11 @@
 <?php
 require('src/lightncandy.php');
 
-$template = '{{{a.b.c}}}, {{a.b.bar}}';
+$template = '{{{a.b.c}}}, {{a.b.bar}}, {{a.b.prop}}';
 
 class foo {
+    $prop = 'Yes!';
+
     function bar() {
         return 'OK!'; 
     }
