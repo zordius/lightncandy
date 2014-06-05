@@ -46,15 +46,18 @@ class LightnCandy {
     // PHP behavior flags
     const FLAG_EXTHELPER = 8192;
     const FLAG_ECHO = 16384;
+    const FLAG_PROPERTY = 32768;
+    const FLAG_METHOD = 65536;
 
     // Template rendering time debug flags
-    const FLAG_RENDER_DEBUG = 32768;
+    const FLAG_RENDER_DEBUG = 131072;
 
     // alias flags
     const FLAG_BESTPERFORMANCE = 16384; // FLAG_ECHO
     const FLAG_JS = 24; // FLAG_JSTRUE + FLAG_JSOBJECT
     const FLAG_HANDLEBARS = 8160; // FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME + FLAG_SPACECTL + FLAG_NAMEDARG + FLAG_SPVARS
     const FLAG_HANDLEBARSJS = 8184; // FLAG_JS + FLAG_HANDLEBARS
+    const FLAG_INSTANCE = 98304; // FLAG_PROPERTY + FLAG_METHOD
 
     // RegExps
     const PARTIAL_SEARCH = '/\\{\\{>[ \\t]*(.+?)[ \\t]*\\}\\}/s';
@@ -196,6 +199,8 @@ $libstr
                 'spvar' => $flags & self::FLAG_SPVARS,
                 'exhlp' => $flags & self::FLAG_EXTHELPER,
                 'debug' => $flags & self::FLAG_RENDER_DEBUG,
+                'prop' => $flags & self::FLAG_PROPERTY,
+                'method' => $flags & self::FLAG_METHOD,
             ),
             'level' => 0,
             'stack' => Array(),
@@ -793,6 +798,12 @@ $libstr
 
         if (is_null($var[0])) {
             array_shift($var);
+        }
+
+        if ($context['flags']['prop'] || $context['flags']['method']) {
+            return Array(self::getFuncName($context, 'v', $exp) . "\$cx, $base, Array(" . implode(',', array_map(function ($V) {
+                return "'$V'";
+            }, $var)) . '))', $exp);
         }
 
         $n = self::getArrayCode($var);
