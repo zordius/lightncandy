@@ -138,6 +138,8 @@ class LightnCandy {
         $flagJStrue = self::getBoolStr($context['flags']['jstrue']);
         $flagJSObj = self::getBoolStr($context['flags']['jsobj']);
         $flagSPVar = self::getBoolStr($context['flags']['spvar']);
+        $flagProp = self::getBoolStr($context['flags']['prop']);
+        $flagMethod = self::getBoolStr($context['flags']['method']);
 
         $libstr = self::exportLCRun($context);
         $helpers = self::exportHelper($context);
@@ -152,6 +154,8 @@ class LightnCandy {
             'jstrue' => $flagJStrue,
             'jsobj' => $flagJSObj,
             'spvar' => $flagSPVar,
+            'prop' => $flagProp,
+            'method' => $flagMethod,
             'debug' => \$debugopt,
         ),
         'helpers' => $helpers,
@@ -800,6 +804,8 @@ $libstr
             array_shift($var);
         }
 
+        // To support instance properties or methods, the only way
+        // is using slower rendering time variable resolver.
         if ($context['flags']['prop'] || $context['flags']['method']) {
             return Array(self::getFuncName($context, 'v', $exp) . "\$cx, $base, Array(" . implode(',', array_map(function ($V) {
                 return "'$V'";
@@ -1543,32 +1549,36 @@ class LCRun3 {
     }
 
     /**
-     * LightnCandy runtime method for variable lookup. It is slower and only be used to support instance property or method.
+     * LightnCandy runtime method for variable lookup. It is slower and only be used for instance property or method detection.
      *
      * @param array $cx render time context
      * @param mixed $base current variable context
+     * @param array $path array of names for path
      *
-     * @return boolean Return true when the value is not null nor false.
-     * 
-     * @expect false when input Array(), null
-     * @expect false when input Array(), 0
-     * @expect false when input Array(), false
-     * @expect true when input Array(), true
-     * @expect true when input Array(), 1
-     * @expect false when input Array(), ''
-     * @expect false when input Array(), Array()
-     * @expect true when input Array(), Array('')
-     * @expect true when input Array(), Array(0)
+     * @return mixed Return the value or null when not found
      */
     public static function v($cx, $base, $path) {
-        return !is_null($v) && ($v !== false) && ($v !== 0) && ($v !== '') && (is_array($v) ? (count($v) > 0) : true);
+        $v = $base;
+        foreach ($path as $name) {
+            if (is_array($v) && isset($v[$name])) {
+                $v = $v[name];
+                continue;
+            }
+            if (!is_object($v)) {
+                return null;
+            }
+            if ($cx['flags']['prop'] && property_exists($v, $name)) {
+                $v = $v->$name;
+                continue;
+            }
+            if ($cx['flags']['method'] && method_exists($v, $name)) {
+                $v = $v->$name();
+                continue;
+            }
+            return null;
+        }
+        return $v;
     }
-        $array_case = "(is_array($base$p) && isset($base$n)) ? $base$n :";
-        $property_case = "(is_object($base$p) && property_exists($base$p, '$last')) ? $base$p->$last :";
-        $method_case = "(is_object($base$p) && method_exists($base$p, '$last')) ? $base$p->$last() :";
-        $debug_case = $context['flags']['debug'] ? (self::getFuncName($context, 'miss', '') . "\$cx, '$exp')") : 'null';
-        return Array("$array_case ($property_case ($method_case $debug_case))", $exp);
-
 
     /**
      * LightnCandy runtime method for {{#if var}}.
