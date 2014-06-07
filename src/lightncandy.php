@@ -1559,9 +1559,10 @@ class LCRun3 {
      */
     public static function v($cx, $base, $path) {
         $v = $base;
+
         foreach ($path as $name) {
             if (is_array($v) && isset($v[$name])) {
-                $v = $v[name];
+                $v = $v[$name];
                 continue;
             }
             if (!is_object($v)) {
@@ -1577,6 +1578,7 @@ class LCRun3 {
             }
             return null;
         }
+
         return $v;
     }
 
