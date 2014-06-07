@@ -1,7 +1,7 @@
 HISTORY
 =======
 
-v0.12 current trunk
+v0.13 current trunk
    * align with handlebars.js 2.0.0-alpha.4
    * e5a8fe3833 fix issue #46 ( error with {{this.foo.bar}} )
    * ea131512f9 fix issue #44 ( error with some helper inline function PHP code syntax )
