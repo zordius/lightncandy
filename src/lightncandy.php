@@ -431,7 +431,7 @@ $libstr
         $file->seek($ref->getEndLine() - 1);
         $epos = $file->ftell();
 
-        return preg_replace('/^.*?function\s*?\\((.+?)\\}[,\\s]*;?$/s', 'function($1}', substr($lines, $spos, $epos - $spos));
+        return preg_replace('/^.*?function(\s+[^\s\\(]+?)?\s*?\\((.+?)\\}[,\\s]*;?$/s', 'function($2}', substr($lines, $spos, $epos - $spos));
     }
 
     /**
@@ -1044,7 +1044,7 @@ $libstr
         }
         // {{{# }}} or {{{! }}} or {{{/ }}} or {{{^ }}} are invalid.
         if ($raw && $token[self::POS_OP]) {
-            $context['error'][] = 'Bad token ' . self::tokenString($token) . ' ! Do you mean {{' . self::tokenString($token, 2) . '}}?';
+            $context['error'][] = 'Bad token ' . self::tokenString($token) . ' ! Do you mean {{' . self::tokenString($token, 3) . '}} ?';
             return true;
         }
     }
