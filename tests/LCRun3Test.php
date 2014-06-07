@@ -19,6 +19,24 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
         ));
     }
     /**
+     * @covers LCRun3::v
+     */
+    public function testOn_v() {
+        $method = new ReflectionMethod('LCRun3', 'v');
+        $this->assertEquals(null, $method->invoke(null,
+            Array('flags' => Array('prop' => false, 'method' => false)), 0, Array('a', 'b')
+        ));
+        $this->assertEquals(3, $method->invoke(null,
+            Array('flags' => Array('prop' => false, 'method' => false)), Array('a' => Array('b' => 3)), Array('a', 'b')
+        ));
+        $this->assertEquals(null, $method->invoke(null,
+            Array('flags' => Array('prop' => false, 'method' => false)), (Object) Array('a' => Array('b' => 3)), Array('a', 'b')
+        ));
+        $this->assertEquals(3, $method->invoke(null,
+            Array('flags' => Array('prop' => true, 'method' => false)), (Object) Array('a' => Array('b' => 3)), Array('a', 'b')
+        ));
+    }
+    /**
      * @covers LCRun3::ifvar
      */
     public function testOn_ifvar() {

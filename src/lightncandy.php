@@ -1556,6 +1556,11 @@ class LCRun3 {
      * @param array $path array of names for path
      *
      * @return mixed Return the value or null when not found
+     *
+     * @expect null when input Array('flags' => Array('prop' => false, 'method' => false)), 0, Array('a', 'b')
+     * @expect 3 when input Array('flags' => Array('prop' => false, 'method' => false)), Array('a' => Array('b' => 3)), Array('a', 'b')
+     * @expect null when input Array('flags' => Array('prop' => false, 'method' => false)), (Object) Array('a' => Array('b' => 3)), Array('a', 'b')
+     * @expect 3 when input Array('flags' => Array('prop' => true, 'method' => false)), (Object) Array('a' => Array('b' => 3)), Array('a', 'b')
      */
     public static function v($cx, $base, $path) {
         $v = $base;
