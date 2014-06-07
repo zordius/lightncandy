@@ -46,15 +46,18 @@ class LightnCandy {
     // PHP behavior flags
     const FLAG_EXTHELPER = 8192;
     const FLAG_ECHO = 16384;
+    const FLAG_PROPERTY = 32768;
+    const FLAG_METHOD = 65536;
 
     // Template rendering time debug flags
-    const FLAG_RENDER_DEBUG = 32768;
+    const FLAG_RENDER_DEBUG = 131072;
 
     // alias flags
     const FLAG_BESTPERFORMANCE = 16384; // FLAG_ECHO
     const FLAG_JS = 24; // FLAG_JSTRUE + FLAG_JSOBJECT
     const FLAG_HANDLEBARS = 8160; // FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME + FLAG_SPACECTL + FLAG_NAMEDARG + FLAG_SPVARS
     const FLAG_HANDLEBARSJS = 8184; // FLAG_JS + FLAG_HANDLEBARS
+    const FLAG_INSTANCE = 98304; // FLAG_PROPERTY + FLAG_METHOD
 
     // RegExps
     const PARTIAL_SEARCH = '/\\{\\{>[ \\t]*(.+?)[ \\t]*\\}\\}/s';
@@ -135,6 +138,8 @@ class LightnCandy {
         $flagJStrue = self::getBoolStr($context['flags']['jstrue']);
         $flagJSObj = self::getBoolStr($context['flags']['jsobj']);
         $flagSPVar = self::getBoolStr($context['flags']['spvar']);
+        $flagProp = self::getBoolStr($context['flags']['prop']);
+        $flagMethod = self::getBoolStr($context['flags']['method']);
 
         $libstr = self::exportLCRun($context);
         $helpers = self::exportHelper($context);
@@ -149,6 +154,8 @@ class LightnCandy {
             'jstrue' => $flagJStrue,
             'jsobj' => $flagJSObj,
             'spvar' => $flagSPVar,
+            'prop' => $flagProp,
+            'method' => $flagMethod,
             'debug' => \$debugopt,
         ),
         'helpers' => $helpers,
@@ -196,6 +203,8 @@ $libstr
                 'spvar' => $flags & self::FLAG_SPVARS,
                 'exhlp' => $flags & self::FLAG_EXTHELPER,
                 'debug' => $flags & self::FLAG_RENDER_DEBUG,
+                'prop' => $flags & self::FLAG_PROPERTY,
+                'method' => $flags & self::FLAG_METHOD,
             ),
             'level' => 0,
             'stack' => Array(),
@@ -746,7 +755,7 @@ $libstr
      * @expect Array('((is_array($cx[\'scopes\'][count($cx[\'scopes\'])-3]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)', '../../../[a]') when input Array(3,'a'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
      * @expect Array('((is_array($in) && isset($in[\'id\'])) ? $in[\'id\'] : null)', 'this.[id]') when input Array(null, 'id'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
      */
-    protected static function getVariableName($var, $context) {
+    protected static function getVariableName($var, &$context) {
         $levels = 0;
 
         if ($context['flags']['spvar']) {
@@ -793,6 +802,14 @@ $libstr
 
         if (is_null($var[0])) {
             array_shift($var);
+        }
+
+        // To support instance properties or methods, the only way
+        // is using slower rendering time variable resolver.
+        if ($context['flags']['prop'] || $context['flags']['method']) {
+            return Array(self::getFuncName($context, 'v', $exp) . "\$cx, $base, Array(" . implode(',', array_map(function ($V) {
+                return "'$V'";
+            }, $var)) . '))', $exp);
         }
 
         $n = self::getArrayCode($var);
@@ -1529,6 +1546,45 @@ class LCRun3 {
         if ($cx['flags']['debug'] & self::DEBUG_ERROR_EXCEPTION) {
             throw new Exception($e);
         }
+    }
+
+    /**
+     * LightnCandy runtime method for variable lookup. It is slower and only be used for instance property or method detection.
+     *
+     * @param array $cx render time context
+     * @param mixed $base current variable context
+     * @param array $path array of names for path
+     *
+     * @return mixed Return the value or null when not found
+     *
+     * @expect null when input Array('flags' => Array('prop' => false, 'method' => false)), 0, Array('a', 'b')
+     * @expect 3 when input Array('flags' => Array('prop' => false, 'method' => false)), Array('a' => Array('b' => 3)), Array('a', 'b')
+     * @expect null when input Array('flags' => Array('prop' => false, 'method' => false)), (Object) Array('a' => Array('b' => 3)), Array('a', 'b')
+     * @expect 3 when input Array('flags' => Array('prop' => true, 'method' => false)), (Object) Array('a' => Array('b' => 3)), Array('a', 'b')
+     */
+    public static function v($cx, $base, $path) {
+        $v = $base;
+
+        foreach ($path as $name) {
+            if (is_array($v) && isset($v[$name])) {
+                $v = $v[$name];
+                continue;
+            }
+            if (!is_object($v)) {
+                return null;
+            }
+            if ($cx['flags']['prop'] && property_exists($v, $name)) {
+                $v = $v->$name;
+                continue;
+            }
+            if ($cx['flags']['method'] && method_exists($v, $name)) {
+                $v = $v->$name();
+                continue;
+            }
+            return null;
+        }
+
+        return $v;
     }
 
     /**
