@@ -1033,7 +1033,7 @@ $libstr
         }
         // {{{# }}} or {{{! }}} or {{{/ }}} or {{{^ }}} are invalid.
         if ($raw && $token[self::POS_OP]) {
-            $context['error'][] = 'Bad token ' . self::tokenString($token) . ' ! Do you mean {{' . self::tokenString($token, 2) . '}}?';
+            $context['error'][] = 'Bad token ' . self::tokenString($token) . ' ! Do you mean {{' . self::tokenString($token, 3) . '}} ?';
             return true;
         }
     }
