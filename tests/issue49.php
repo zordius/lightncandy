@@ -20,11 +20,11 @@ $php = LightnCandy::compile($template, array(
     return "OKOK~1";
 }
 
-function meetup_date_format2() {
+function  meetup_date_format2() {
     return "OKOK~2";
 }
 
-function meetup_date_format3 () {
+function        meetup_date_format3 () {
     return "OKOK~3";
 }
 
