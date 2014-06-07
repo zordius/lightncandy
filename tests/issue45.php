@@ -12,9 +12,11 @@ class foo {
 }
 
 $php = LightnCandy::compile($template, Array(
-    'flags' => LightnCandy::FLAG_ERROR_LOG | 0 * LightnCandy::FLAG_STANDALONE | LightnCandy::FLAG_HANDLEBARSJS,
+    'flags' => LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_INSTANCE | LightnCandy::FLAG_HANDLEBARSJS,
     )
 );
+
+echo $php;
 
 $renderer = LightnCandy::prepare($php);
 

@@ -1543,6 +1543,34 @@ class LCRun3 {
     }
 
     /**
+     * LightnCandy runtime method for variable lookup. It is slower and only be used to support instance property or method.
+     *
+     * @param array $cx render time context
+     * @param mixed $base current variable context
+     *
+     * @return boolean Return true when the value is not null nor false.
+     * 
+     * @expect false when input Array(), null
+     * @expect false when input Array(), 0
+     * @expect false when input Array(), false
+     * @expect true when input Array(), true
+     * @expect true when input Array(), 1
+     * @expect false when input Array(), ''
+     * @expect false when input Array(), Array()
+     * @expect true when input Array(), Array('')
+     * @expect true when input Array(), Array(0)
+     */
+    public static function v($cx, $base, $path) {
+        return !is_null($v) && ($v !== false) && ($v !== 0) && ($v !== '') && (is_array($v) ? (count($v) > 0) : true);
+    }
+        $array_case = "(is_array($base$p) && isset($base$n)) ? $base$n :";
+        $property_case = "(is_object($base$p) && property_exists($base$p, '$last')) ? $base$p->$last :";
+        $method_case = "(is_object($base$p) && method_exists($base$p, '$last')) ? $base$p->$last() :";
+        $debug_case = $context['flags']['debug'] ? (self::getFuncName($context, 'miss', '') . "\$cx, '$exp')") : 'null';
+        return Array("$array_case ($property_case ($method_case $debug_case))", $exp);
+
+
+    /**
      * LightnCandy runtime method for {{#if var}}.
      *
      * @param array $cx render time context
