@@ -755,7 +755,7 @@ $libstr
      * @expect Array('((is_array($cx[\'scopes\'][count($cx[\'scopes\'])-3]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)', '../../../[a]') when input Array(3,'a'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
      * @expect Array('((is_array($in) && isset($in[\'id\'])) ? $in[\'id\'] : null)', 'this.[id]') when input Array(null, 'id'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
      */
-    protected static function getVariableName($var, $context) {
+    protected static function getVariableName($var, &$context) {
         $levels = 0;
 
         if ($context['flags']['spvar']) {
