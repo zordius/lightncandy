@@ -111,16 +111,18 @@ class LightnCandy {
             return false;
         }
 
-        // Do PHP code and json schema generation.
+        // Do PHP code generation.
         $code = preg_replace_callback(self::TOKEN_SEARCH, function ($matches) use (&$context) {
             $tmpl = LightnCandy::compileToken($matches, $context);
             return "{$matches[LightnCandy::POS_LSPACE]}'$tmpl'{$matches[LightnCandy::POS_RSPACE]}";
         }, addcslashes($template, "'"));
 
+        // return false when fatal error
         if (self::handleError($context)) {
             return false;
         }
 
+        // Or, return full PHP render codes as string
         return self::composePHPRender($context, $code);
     }
 

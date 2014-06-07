@@ -2,6 +2,13 @@ HISTORY
 =======
 
 v0.12 current trunk
+   * align with handlebars.js 2.0.0-alpha.4
+   * e5a8fe3833 fix issue #46 ( error with {{this.foo.bar}} )
+   * ea131512f9 fix issue #44 ( error with some helper inline function PHP code syntax )
+   * 522591a0c6 fix issue #49 ( error with some helper user function PHP code syntax )
+   * c4f7e1eaac support {{foo.bar}} lookup on instance foo then property/method bar ( flagd FLAG_PROPERTY or FLAG_METHOD required )
+
+v0.12 https://github.com/zordius/lightncandy/tree/v0.12
    * align with handlebars.js 2.0.0-alpha.2
    * 64db34cf65 support {{@first}} and {{@last}}
    * bfa1fbef97 add new flag FLAG_SPVARS
