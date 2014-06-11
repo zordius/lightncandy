@@ -1575,7 +1575,7 @@ class LCRun3 {
             if (!is_object($v)) {
                 return null;
             }
-            if ($cx['flags']['prop'] && property_exists($v, $name)) {
+            if ($cx['flags']['prop'] && isset($v->$name)) {
                 $v = $v->$name;
                 continue;
             }
