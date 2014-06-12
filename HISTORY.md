@@ -7,6 +7,7 @@ v0.13 current trunk
    * ea131512f9 fix issue #44 ( error with some helper inline function PHP code syntax )
    * 522591a0c6 fix issue #49 ( error with some helper user function PHP code syntax )
    * c4f7e1eaac support {{foo.bar}} lookup on instance foo then property/method bar ( flagd FLAG_PROPERTY or FLAG_METHOD required )
+   * 0f4c0daa4b stop simulate Javascript output for array when pass input to custom helpers
 
 v0.12 https://github.com/zordius/lightncandy/tree/v0.12
    * align with handlebars.js 2.0.0-alpha.2
