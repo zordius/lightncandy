@@ -2032,7 +2032,7 @@ class LCRun3 {
             if (is_int($i)) {
                 $args[] = $v;
             } else {
-                $options['hash'][$i] = self::raw($cx, $v);
+                $options['hash'][$i] = $v;
             }
         }
 
