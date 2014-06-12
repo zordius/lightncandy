@@ -1939,12 +1939,7 @@ class LCRun3 {
      * @expect '=b=' when input Array('helpers' => Array('a' => function ($i) {return "={$i['a']}=";})), 'a', Array('a' => 'b'), 'raw', true
      */
     public static function ch($cx, $ch, $vars, $op, $named = false) {
-        $args = Array();
-        foreach ($vars as $i => $v) {
-            $args[$i] = self::raw($cx, $v);
-        }
-
-        return self::chret(call_user_func_array($cx['helpers'][$ch], $named ? Array($args) : $args), $op);
+        return self::chret(call_user_func_array($cx['helpers'][$ch], $named ? Array($vars) : $vars), $op);
     }
 
     /**
