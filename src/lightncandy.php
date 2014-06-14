@@ -2011,7 +2011,7 @@ class LCRun3 {
         }
 
         if ($inv) {
-            $options['inv'] = function ($context = '_NO_INPUT_HERE_') use ($cx, $op, $inv) {
+            $options['inverse'] = function ($context = '_NO_INPUT_HERE_') use ($cx, $op, $inv) {
                 if ($context === '_NO_INPUT_HERE_') {
                     return $inv($cx, $op);
                 }
