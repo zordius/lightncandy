@@ -303,16 +303,16 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
     public function testOn_ch() {
         $method = new ReflectionMethod('LCRun3', 'ch');
         $this->assertEquals('=-=', $method->invoke(null,
-            Array('helpers' => Array('a' => function ($i) {return "=$i=";})), 'a', Array('-'), 'raw'
+            Array('helpers' => Array('a' => function ($i) {return "=$i[0]=";})), 'a', Array(Array('-'),Array()), 'raw'
         ));
         $this->assertEquals('=&amp;=', $method->invoke(null,
-            Array('helpers' => Array('a' => function ($i) {return "=$i=";})), 'a', Array('&'), 'enc'
+            Array('helpers' => Array('a' => function ($i) {return "=$i[0]=";})), 'a', Array(Array('&'),Array()), 'enc'
         ));
         $this->assertEquals('=&#x27;=', $method->invoke(null,
-            Array('helpers' => Array('a' => function ($i) {return "=$i=";})), 'a', Array('\''), 'encq'
+            Array('helpers' => Array('a' => function ($i) {return "=$i[0]=";})), 'a', Array(Array('\''),Array()), 'encq'
         ));
         $this->assertEquals('=b=', $method->invoke(null,
-            Array('helpers' => Array('a' => function ($i) {return "={$i['a']}=";})), 'a', Array('a' => 'b'), 'raw', true
+            Array('helpers' => Array('a' => function ($i,$j) {return "={$j['a']}=";})), 'a', Array(Array(),Array('a' => 'b')), 'raw'
         ));
     }
     /**

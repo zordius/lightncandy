@@ -722,18 +722,18 @@ $libstr
      *
      * @return string variable names
      *
-     * @expect Array('Array($in)', Array('this')) when input Array(null), Array('flags'=>Array('spvar'=>true))
-     * @expect Array('Array($in,$in)', Array('this', 'this')) when input Array(null, null), Array('flags'=>Array('spvar'=>true))
+     * @expect Array('Array(Array($in),Array())', Array('this')) when input Array(null), Array('flags'=>Array('spvar'=>true))
+     * @expect Array('Array(Array($in,$in),Array())', Array('this', 'this')) when input Array(null, null), Array('flags'=>Array('spvar'=>true))
      */
     protected static function getVariableNames($vn, $context) {
-        $vars = Array();
+        $vars = Array(Array(), Array());
         $exps = Array();
         foreach ($vn as $i => $v) {
             $V = self::getVariableName($v, $context);
-            $vars[] = (is_string($i) ? "'$i'=>" : '') . $V[0];
+                $vars[is_string($i) ? 1 : 0][] = $V[0];
             $exps[] = $V[1];
         }
-        return Array('Array(' . implode(',', $vars) . ')', $exps);
+        return Array('Array(Array(' . implode(',', $vars[0]) . '),Array(' . implode(',', $vars[1]) . '))', $exps);
     }
 
     /**
@@ -1409,7 +1409,7 @@ $libstr
         $ch = array_shift($vars);
         $v = self::getVariableNames($vars, $context);
         self::addUsageCount($context, $notHH ? 'helpers' : 'hbhelpers', $ch[0]);
-        return $context['ops']['seperator'] . self::getFuncName($context, $notHH ? 'ch' : 'hbch', "$ch[0] " . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, '$fn'" . ($notHH ? ($named ? ', true' : '') : '\'$in\'') . "){$context['ops']['seperator']}";
+        return $context['ops']['seperator'] . self::getFuncName($context, $notHH ? 'ch' : 'hbch', "$ch[0] " . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, '$fn'" . ($notHH ? '' : '\'$in\'') . "){$context['ops']['seperator']}";
     }
 
    /**
@@ -1929,17 +1929,16 @@ class LCRun3 {
      * @param string $ch the name of custom helper to be executed
      * @param array $vars variables for the helper
      * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
-     * @param boolean $named input arguments are named
      *
      * @return mixed The rendered string of the token, or Array with the rendered string and encode_flag
      *
-     * @expect '=-=' when input Array('helpers' => Array('a' => function ($i) {return "=$i=";})), 'a', Array('-'), 'raw'
-     * @expect '=&amp;=' when input Array('helpers' => Array('a' => function ($i) {return "=$i=";})), 'a', Array('&'), 'enc'
-     * @expect '=&#x27;=' when input Array('helpers' => Array('a' => function ($i) {return "=$i=";})), 'a', Array('\''), 'encq'
-     * @expect '=b=' when input Array('helpers' => Array('a' => function ($i) {return "={$i['a']}=";})), 'a', Array('a' => 'b'), 'raw', true
+     * @expect '=-=' when input Array('helpers' => Array('a' => function ($i) {return "=$i[0]=";})), 'a', Array(Array('-'),Array()), 'raw'
+     * @expect '=&amp;=' when input Array('helpers' => Array('a' => function ($i) {return "=$i[0]=";})), 'a', Array(Array('&'),Array()), 'enc'
+     * @expect '=&#x27;=' when input Array('helpers' => Array('a' => function ($i) {return "=$i[0]=";})), 'a', Array(Array('\''),Array()), 'encq'
+     * @expect '=b=' when input Array('helpers' => Array('a' => function ($i,$j) {return "={$j['a']}=";})), 'a', Array(Array(),Array('a' => 'b')), 'raw'
      */
-    public static function ch($cx, $ch, $vars, $op, $named = false) {
-        return self::chret(call_user_func_array($cx['helpers'][$ch], $named ? Array($vars) : $vars), $op);
+    public static function ch($cx, $ch, $vars, $op) {
+        return self::chret(call_user_func_array($cx['helpers'][$ch], $vars), $op);
     }
 
     /**
