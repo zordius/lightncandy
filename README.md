@@ -300,7 +300,7 @@ LightnCandy handled all input arguments for you, you will receive current contex
 
 ```php
 // Only render inner block when input > 5
-// {{#helper_iffivemore people.length}}More then 5 people, discount!{{/helper_iffivemore}}
+// {{#helper_iffivemore total_people}}More then 5 people, discount!{{/helper_iffivemore}}
 function helper_iffivemore($cx, $args) {
     return $args[0] > 5 ? $cx : null;
 }
