@@ -228,15 +228,26 @@ The input arguments are processed by LightnCandy automatically, you do not need 
                             // and processed {{{../name}}} as second parameter into the helper
 ```
 
-When you pass arguments as `name=value` pairs, the input to your custom helper will turn into only one associative array ( **NOTICE: `FLAG_NAMEDARG` is required when compile()** ). For example, when your custom helper is `function ($input) {...}`:
+Your custom helper function will be executed with two arguments. The first one is noname arguments, the second one is named arguments:
+
+``php
+function myhelper ($args, $named) {
+    if (count($args)) {
+        // handle no name arguments....
+    }
+    // access foo=bar from $named['foo'] ...
+}
+```
+
+In your template:
 
 ```
-{{{helper name=value}}}        // This send processed {{{value}}} into $input['name']
-{{{helper name="value"}}}      // This send the string "value" into $input['name']
+{{{helper name=value}}}        // This send processed {{{value}}} into $named['name']
+{{{helper name="value"}}}      // This send the string "value" into $named['name']
 {{{helper [na me]="value"}}}   // You can still protect the name with [ ]
-                               // so you get $input['na me'] as the string 'value'
-{{{helper url name="value"}}}  // This send processed {{{url}}}  into $input[0]
-                               // and the string "value" into $input['name']
+                               // so you get $named['na me'] as the string 'value'
+{{{helper url name="value"}}}  // This send processed {{{url}}}  into $args[0]
+                               // and the string "value" into $named['name']
 ```
 
 Custom Helper Escaping
