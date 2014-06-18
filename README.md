@@ -230,7 +230,7 @@ The input arguments are processed by LightnCandy automatically, you do not need 
 
 Your custom helper function will be executed with two arguments. The first one is noname arguments, the second one is named arguments:
 
-``php
+```php
 function myhelper ($args, $named) {
     if (count($args)) {
         // handle no name arguments....
