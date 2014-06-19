@@ -312,26 +312,26 @@ LightnCandy handled all input arguments for you, you will receive current contex
 ```php
 // Only render inner block when input > 5
 // {{#helper_iffivemore total_people}}More then 5 people, discount!{{/helper_iffivemore}}
-function helper_iffivemore($cx, $args) {
+function helper_iffivemore($cx, $args, $named) {
     return $args[0] > 5 ? $cx : null;
 }
 
 // You can use named arguments, too
 // {{#helper_if value=people logic="more" tovalue=5}}Yes the logic is true{{/helper_if}}
-function helper_if($cx, $args) {
+function helper_if($cx, $args, $named) {
     switch ($args['logic']) {
     case 'more':
-        return $args['value'] > $args['tovalue'] ? $cx : null;
+        return $named['value'] > $named['tovalue'] ? $cx : null;
     case 'less':
-        return $args['value'] < $args['tovalue'] ? $cx : null;
+        return $named['value'] < $named['tovalue'] ? $cx : null;
     case 'eq':
-        return $args['value'] == $args['tovalue'] ? $cx : null;
+        return $named['value'] == $named['tovalue'] ? $cx : null;
     }
 }
 
 // Provide default values for name and salary
 // {{#helper_defaultpeople}}Hello, {{name}} ....Your salary will be {{salary}}{{/helper_defaultpeople}}
-function helper_defaultpeople($cx, $args) {
+function helper_defaultpeople($cx, $args, $named) {
     if (!isset($cx['name'])) {
         $cx['name'] = 'Sir';
     }

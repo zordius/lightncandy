@@ -730,7 +730,11 @@ $libstr
         $exps = Array();
         foreach ($vn as $i => $v) {
             $V = self::getVariableName($v, $context);
-                $vars[is_string($i) ? 1 : 0][] = $V[0];
+            if (is_string($i)) {
+                $vars[1][] = "'$i'=>{$V[0]}";
+            } else {
+                $vars[0][] = $V[0];
+            }
             $exps[] = $V[1];
         }
         return Array('Array(Array(' . implode(',', $vars[0]) . '),Array(' . implode(',', $vars[1]) . '))', $exps);
@@ -2056,7 +2060,7 @@ class LCRun3 {
      * @expect '' when input Array('blockhelpers' => Array('a' => function ($cx,$in) {})), 'a', Array('6'), 2, function($cx, $i) {return implode('.', $i);}
      */
     public static function bch($cx, $ch, $vars, $in, $cb) {
-        $r = call_user_func($cx['blockhelpers'][$ch], $in, $vars);
+        $r = call_user_func($cx['blockhelpers'][$ch], $in, $vars[0], $vars[1]);
         if (is_null($r)) {
             return '';
         }
