@@ -228,15 +228,26 @@ The input arguments are processed by LightnCandy automatically, you do not need 
                             // and processed {{{../name}}} as second parameter into the helper
 ```
 
-When you pass arguments as `name=value` pairs, the input to your custom helper will turn into only one associative array ( **NOTICE: `FLAG_NAMEDARG` is required when compile()** ). For example, when your custom helper is `function ($input) {...}`:
+Your custom helper function will be executed with two arguments. The first one is noname arguments, the second one is named arguments:
+
+```php
+function myhelper ($args, $named) {
+    if (count($args)) {
+        // handle no name arguments....
+    }
+    // access foo=bar from $named['foo'] ...
+}
+```
+
+In your template:
 
 ```
-{{{helper name=value}}}        // This send processed {{{value}}} into $input['name']
-{{{helper name="value"}}}      // This send the string "value" into $input['name']
+{{{helper name=value}}}        // This send processed {{{value}}} into $named['name']
+{{{helper name="value"}}}      // This send the string "value" into $named['name']
 {{{helper [na me]="value"}}}   // You can still protect the name with [ ]
-                               // so you get $input['na me'] as the string 'value'
-{{{helper url name="value"}}}  // This send processed {{{url}}}  into $input[0]
-                               // and the string "value" into $input['name']
+                               // so you get $named['na me'] as the string 'value'
+{{{helper url name="value"}}}  // This send processed {{{url}}}  into $args[0]
+                               // and the string "value" into $named['name']
 ```
 
 Custom Helper Escaping
@@ -301,26 +312,26 @@ LightnCandy handled all input arguments for you, you will receive current contex
 ```php
 // Only render inner block when input > 5
 // {{#helper_iffivemore total_people}}More then 5 people, discount!{{/helper_iffivemore}}
-function helper_iffivemore($cx, $args) {
+function helper_iffivemore($cx, $args, $named) {
     return $args[0] > 5 ? $cx : null;
 }
 
 // You can use named arguments, too
 // {{#helper_if value=people logic="more" tovalue=5}}Yes the logic is true{{/helper_if}}
-function helper_if($cx, $args) {
+function helper_if($cx, $args, $named) {
     switch ($args['logic']) {
     case 'more':
-        return $args['value'] > $args['tovalue'] ? $cx : null;
+        return $named['value'] > $named['tovalue'] ? $cx : null;
     case 'less':
-        return $args['value'] < $args['tovalue'] ? $cx : null;
+        return $named['value'] < $named['tovalue'] ? $cx : null;
     case 'eq':
-        return $args['value'] == $args['tovalue'] ? $cx : null;
+        return $named['value'] == $named['tovalue'] ? $cx : null;
     }
 }
 
 // Provide default values for name and salary
 // {{#helper_defaultpeople}}Hello, {{name}} ....Your salary will be {{salary}}{{/helper_defaultpeople}}
-function helper_defaultpeople($cx, $args) {
+function helper_defaultpeople($cx, $args, $named) {
     if (!isset($cx['name'])) {
         $cx['name'] = 'Sir';
     }
@@ -350,7 +361,7 @@ The mission of a block custom helper is only focus on providing different contex
 Handlebars.js' Custom Helper
 ----------------------------
 
-You can implement helpers more like Handlebars.js way with `hbhelpers` option, all matched single cutsom helper and block custom helper will be handled. In Handlebars.js, a block custom helper can rendener child block by executing options->fn, and change context by send new context as first parameter. Here are some examples to explain the behavior of custom helper:
+You can implement helpers more like Handlebars.js way with `hbhelpers` option, all matched single cutsom helper and block custom helper will be handled. In Handlebars.js, a block custom helper can rendener child block by executing options->fn, and change context by send new context as first parameter. Here are some examples to explain the behavior of `hbhelpers` custom helper:
 
 **#mywith (context change)**
 * LightnCandy

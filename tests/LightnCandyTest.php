@@ -213,10 +213,10 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
     public function testOn_getVariableNames() {
         $method = new ReflectionMethod('LightnCandy', 'getVariableNames');
         $method->setAccessible(true);
-        $this->assertEquals(Array('Array($in)', Array('this')), $method->invoke(null,
+        $this->assertEquals(Array('Array(Array($in),Array())', Array('this')), $method->invoke(null,
             Array(null), Array('flags'=>Array('spvar'=>true))
         ));
-        $this->assertEquals(Array('Array($in,$in)', Array('this', 'this')), $method->invoke(null,
+        $this->assertEquals(Array('Array(Array($in,$in),Array())', Array('this', 'this')), $method->invoke(null,
             Array(null, null), Array('flags'=>Array('spvar'=>true))
         ));
     }
