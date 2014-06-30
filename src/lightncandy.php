@@ -749,6 +749,8 @@ $libstr
      * @return array variable names
      *
      * @expect Array('$in', 'this') when input Array(null), Array('flags'=>Array('spvar'=>true,'debug'=>0))
+     * @expect Array('true', 'true') when input Array('true'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
+     * @expect Array('false', 'false') when input Array('false'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
      * @expect Array('((is_array($in) && isset($in[\'@index\'])) ? $in[\'@index\'] : null)', '[@index]') when input Array('@index'), Array('flags'=>Array('spvar'=>false,'debug'=>0))
      * @expect Array('$cx[\'sp_vars\'][\'index\']', '@index') when input Array('@index'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
      * @expect Array('$cx[\'sp_vars\'][\'key\']', '@key') when input Array('@key'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
@@ -772,6 +774,14 @@ $libstr
             case '@key':
                 return Array("\$cx['sp_vars']['" . substr($var[0], 1) . "']", $var[0]);
             }
+        }
+
+        // Handle language constants
+        switch ($var[0]) {
+        case 'true':
+            return Array('true', 'true');
+        case 'false':
+            return Array('false', 'false');
         }
 
         // Handle double quoted string

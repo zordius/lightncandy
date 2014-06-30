@@ -11,8 +11,8 @@ function helper1 ($args, $named) {
 // Custom Helper Interface ... named arguments
 // Template: {{helper1 url=article.url text=article.text [ur"l]=article.extra}}
 function helper2 ($args, $named) {
-    $u = isset($named['url']) ? $named['url'] : 'undefined';
-    $t = isset($named['text']) ? $named['text'] : 'undefined';
+    $u = isset($named['url']) ? jsraw($named['url']) : 'undefined';
+    $t = isset($named['text']) ? jsraw($named['text']) : 'undefined';
     $x = isset($named['ur"l']) ? $named['ur"l'] : 'undefined';
     return "<a href=\"{$u}\">{$t}</a>({$x})";
 }
@@ -42,6 +42,17 @@ function myeach ($list, $options) {
         $ret .= $options['fn']($item);
     }
     return $ret;
+}
+
+// Simulate Javascript toString() behaviors
+function jsraw ($i) {
+    if ($i === true) {
+        return 'true';
+    }
+    if ($i === false) {
+        return 'false';
+    }
+    return $i;
 }
 
 ?>
