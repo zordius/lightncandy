@@ -122,8 +122,8 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * `FLAG_ADVARNAME` : support `{{foo.[0].[#te#st].bar}}` style advanced variable naming in template.
 * `FLAG_NAMEDARG` : support named arguments for custom helper `{{helper name1=val1 nam2=val2 ...}}`.
 * `FLAG_EXTHELPER` : do not including custom helper codes into compiled PHP codes. This reduces the code size, but you need to take care of your helper functions when rendering. If you forget to include required functions when execute rendering function, `undefined function` runtime error will be triggered. NOTE: Anonymous functions will always be placed into generated codes.
-* `FLAG_PROPERTY` : support instance attribute access.
-* `FLAG_METHOD` : support instance method access.
+* `FLAG_PROPERTY` : support object instance attribute access.
+* `FLAG_METHOD` : support object instance method access.
 * `FLAG_INSTANCE` : same with `FLAG_PROPERTY` + `FLAG_METHOD`
 * `FLAG_SPACECTL` : support space control `{{~ }}` or `{{ ~}}` in template. Otherwise, `{{~ }}` or `{{ ~}}` will cause template error.
 * `FLAG_SPVARS` : support special variables include @root, @index, @key, @first, @last. Otherwise, compile these variable names with default parsing logic.
@@ -528,7 +528,6 @@ Unsupported Feature (so far)
 
 * [NEVER] `{{foo/bar}}` style variable name, it is deprecated in official handlebars.js document.
 * [Plan to support] set delimiter (change delimiter from `{{ }}` to custom string, for example `<% then %>`)
-* [Possible] input as Object and methods (now only accept associative array data structure)
 
 Suggested Handlebars Template Practices
 ---------------------------------------
