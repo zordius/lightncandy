@@ -559,7 +559,7 @@ $libstr
      * @expect true when input Array('level' => 0, 'error' => Array('some error'), 'flags' => Array('errorlog' => 0, 'exception' => 0))
      */
     protected static function handleError(&$context) {
-        if ($context['level'] !== 0) {
+        if ($context['level'] > 0) {
             $token = array_pop($context['stack']);
             $context['error'][] = "Unclosed token {{{#$token}}} !!";
         }
