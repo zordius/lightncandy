@@ -11,8 +11,8 @@ $php = LightnCandy::compile($template, array(
     )
 ));
 
-function test ($array) {
-   return is_array($array) ? 'IS_ARRAY' : 'NOT_ARRAY';
+function test ($input) {
+   return is_array($input[0]) ? 'IS_ARRAY' : 'NOT_ARRAY';
 }
 
 echo "Rendered PHP code is:\n$php\n\n";
