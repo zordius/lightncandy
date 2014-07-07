@@ -125,6 +125,12 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
         $this->assertEquals(false, $method->invoke(null,
             Array(), 'false'
         ));
+        $this->assertEquals(true, $method->invoke(null,
+            Array(), Array()
+        ));
+        $this->assertEquals(false, $method->invoke(null,
+            Array(), Array('1')
+        ));
     }
     /**
      * @covers LCRun3::raw
