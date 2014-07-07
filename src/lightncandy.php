@@ -1423,7 +1423,7 @@ $libstr
         $ch = array_shift($vars);
         $v = self::getVariableNames($vars, $context);
         self::addUsageCount($context, $notHH ? 'helpers' : 'hbhelpers', $ch[0]);
-        return $context['ops']['seperator'] . self::getFuncName($context, $notHH ? 'ch' : 'hbch', "$ch[0] " . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, '$fn'" . ($notHH ? '' : '\'$in\'') . "){$context['ops']['seperator']}";
+        return $context['ops']['seperator'] . self::getFuncName($context, $notHH ? 'ch' : 'hbch', "$ch[0] " . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, '$fn', " . ($notHH ? '' : '\'$in\'') . "){$context['ops']['seperator']}";
     }
 
    /**
