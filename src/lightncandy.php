@@ -1225,14 +1225,16 @@ $libstr
         if (!$token[self::POS_LSPACE] && !$token[self::POS_RSPACE]) {
             return;
         }
-            // Standalone detection
-        $lsp = preg_match(self::LINESPACE_SEARCH, $token[self::POS_LSPACE]);
-        $rsp = preg_match(self::LINESPACE_SEARCH, $token[self::POS_RSPACE]);
+
+        // Line change detection
+        $lsp = preg_match(self::LINESPACE_SEARCH, $token[self::POS_LSPACE], $lmatch);
+        $rsp = preg_match(self::LINESPACE_SEARCH, $token[self::POS_RSPACE], $rmatch);
 
         if ($lsp && $rsp) {
+            // Handle ^ ! # / operation tokens
             if ($token[self::POS_OP]) {
-//                $token[self::POS_LSPACE] = '';
-//                $token[self::POS_RSPACE] = '';
+                $token[self::POS_LSPACE] = $lmatch[2] . $lmatch[3];
+                $token[self::POS_RSPACE] = $rmatch[3];
             }
         }
     }
