@@ -61,7 +61,7 @@ class LightnCandy {
 
     // RegExps
     const PARTIAL_SEARCH = '/\\{\\{>[ \\t]*(.+?)[ \\t]*\\}\\}/s';
-    const TOKEN_SEARCH = '/(\s*)(\\{{2,3})(~?)([\\^#\\/!]?)(.+?)(~?)(\\}{2,3})(\s*)/s';
+    const TOKEN_SEARCH = '/(\s*)(\\{{2,3})(~?)([\\^#\\/!&]?)(.+?)(~?)(\\}{2,3})(\s*)/s';
     const VARNAME_SEARCH = '/(\\[[^\\]]+\\]|[^\\[\\]\\.]+)/';
     const EXTENDED_COMMENT_SEARCH = '/{{!--.*?--}}/s';
 
@@ -1028,7 +1028,7 @@ $libstr
             }
         }
 
-        return Array(($token[self::POS_BEGINTAG] === '{{{'), $ret);
+        return Array(($token[self::POS_BEGINTAG] === '{{{') || ($token[self::POS_OP] === '&'), $ret);
     }
 
     /**
@@ -1065,7 +1065,7 @@ $libstr
             return true;
         }
         // {{{# }}} or {{{! }}} or {{{/ }}} or {{{^ }}} are invalid.
-        if ($raw && $token[self::POS_OP]) {
+        if ($raw && $token[self::POS_OP] && ($token[self::POS_OP] !== '&')) {
             $context['error'][] = 'Bad token ' . self::tokenString($token) . ' ! Do you mean {{' . self::tokenString($token, 3) . '}} ?';
             return true;
         }
