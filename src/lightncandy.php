@@ -1246,7 +1246,6 @@ $libstr
         // Handle ^ ! # / operation tokens
         if ($lsp && $rsp && $token[self::POS_OP] && ($token[self::POS_OP] !== '&')) {
             $token[self::POS_LSPACE] = $lmatch[1] . $lmatch[2];
-            //$token[self::POS_RSPACE] = (($context['tokens']['current'] == 1) ? $rmatch[2] : '') . $rmatch[3];
             $token[self::POS_RSPACE] = $rmatch[3];
         }
     }
