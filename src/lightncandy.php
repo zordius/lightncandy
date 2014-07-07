@@ -1690,9 +1690,11 @@ class LCRun3 {
      * @expect false when input Array(), 0
      * @expect true when input Array(), false
      * @expect false when input Array(), 'false'
+     * @expect true when input Array(), Array()
+     * @expect false when input Array(), Array('1')
      */
     public static function isec($cx, $v) {
-        return is_null($v) || ($v === false);
+        return is_null($v) || ($v === false) || (is_array($v) && (count($v) === 0));
     }
 
     /**
