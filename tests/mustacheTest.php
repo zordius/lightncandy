@@ -14,7 +14,7 @@ class MustacheSpecTest extends PHPUnit_Framework_TestCase
         }
 
         $php = LightnCandy::compile($spec['template'], Array(
-            'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_ERROR_EXCEPTION,
+            'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_MUSTACHESP | LightnCandy::FLAG_ERROR_EXCEPTION,
                 'helpers' => array(
                 )
             )

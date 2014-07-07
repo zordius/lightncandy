@@ -50,7 +50,7 @@ class LightnCandy {
     const FLAG_METHOD = 65536;
 
     // Mustache compatibility
-    const FLAG_MUSTACHESP = 131072
+    const FLAG_MUSTACHESP = 131072;
 
     // Template rendering time debug flags
     const FLAG_RENDER_DEBUG = 262144;
@@ -67,6 +67,7 @@ class LightnCandy {
     const TOKEN_SEARCH = '/(\s*)(\\{{2,3})(~?)([\\^#\\/!&]?)(.+?)(~?)(\\}{2,3})(\s*)/s';
     const VARNAME_SEARCH = '/(\\[[^\\]]+\\]|[^\\[\\]\\.]+)/';
     const EXTENDED_COMMENT_SEARCH = '/{{!--.*?--}}/s';
+    const LINESPACE_SEARCH = '/([ \\t]*)([\\r\\n]+)([ \\t]*)/';
 
     // Positions of matched token
     const POS_LSPACE = 1;
@@ -207,6 +208,7 @@ $libstr
                 'namev' => $flags & self::FLAG_NAMEDARG,
                 'spvar' => $flags & self::FLAG_SPVARS,
                 'exhlp' => $flags & self::FLAG_EXTHELPER,
+                'mustsp' => $flags & self::FLAG_MUSTACHESP,
                 'debug' => $flags & self::FLAG_RENDER_DEBUG,
                 'prop' => $flags & self::FLAG_PROPERTY,
                 'method' => $flags & self::FLAG_METHOD,
@@ -1210,6 +1212,32 @@ $libstr
     }
 
     /**
+     * Internal method used by compileToken(). Modify $token when mustache rules matched.
+     *
+     * @param array $token detected handlebars {{ }} token
+     * @param array $context current compile context
+     *
+     * @return string Return compiled code segment for the token
+     *
+     * @codeCoverageIgnore
+     */
+    public static function handleMustacheSpacing(&$token, &$context) {
+        if (!$token[self::POS_LSPACE] && !$token[self::POS_RSPACE]) {
+            return;
+        }
+            // Standalone detection
+        $lsp = preg_match(self::LINESPACE_SEARCH, $token[self::POS_LSPACE]);
+        $rsp = preg_match(self::LINESPACE_SEARCH, $token[self::POS_RSPACE]);
+
+        if ($lsp && $rsp) {
+            if ($token[self::POS_OP]) {
+//                $token[self::POS_LSPACE] = '';
+//                $token[self::POS_RSPACE] = '';
+            }
+        }
+    }
+
+    /**
      * Internal method used by compile(). Return compiled PHP code partial for a handlebars token.
      *
      * @param array $token detected handlebars {{ }} token
@@ -1222,6 +1250,11 @@ $libstr
     public static function compileToken(&$token, &$context) {
         list($raw, $vars) = self::parseTokenArgs($token, $context);
         $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;
+
+        // Handle Mustache spacing
+        if ($context['flags']['mustsp']) {
+            self::handleMustacheSpacing($token, $context);
+        }
 
         // Handle space control.
         if ($token[self::POS_LSPACECTL]) {
