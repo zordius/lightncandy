@@ -9,8 +9,15 @@ class MustacheSpecTest extends PHPUnit_Framework_TestCase
      */
     public function testSpecs($spec)
     {
-//$name, $desc, $data, $template, $expected)
-        $this->assertEquals(0, 0);
+        $php = LightnCandy::compile($spec['template'], Array(
+            'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_ERROR_EXCEPTION,
+                'helpers' => array(
+                )
+            )
+        );
+        $renderer = LightnCandy::prepare($php);
+
+        $this->assertEquals($spec['expected'], $renderer($spec['data']), "[{$spec['name']}]:{$spec['desc']}");
     }
 
     public function yamlProvider()
@@ -19,7 +26,7 @@ class MustacheSpecTest extends PHPUnit_Framework_TestCase
 
         foreach (glob('spec/specs/*.json') as $file) {
            $json = json_decode(file_get_contents($file), true);
-           $ret = array_merge($ret, $json['tests']);
+           $ret = array_merge($ret, array_map(function ($d) {return Array($d);}, $json['tests']));
         }
 
         return $ret;
