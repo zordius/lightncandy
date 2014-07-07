@@ -1233,7 +1233,7 @@ $libstr
         if ($lsp && $rsp) {
             // Handle ^ ! # / operation tokens
             if ($token[self::POS_OP]) {
-                $token[self::POS_LSPACE] = $lmatch[2] . $lmatch[3];
+                $token[self::POS_LSPACE] = $lmatch[1] . $lmatch[2];
                 $token[self::POS_RSPACE] = $rmatch[3];
             }
         }
