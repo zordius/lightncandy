@@ -49,8 +49,11 @@ class LightnCandy {
     const FLAG_PROPERTY = 32768;
     const FLAG_METHOD = 65536;
 
+    // Mustache compatibility
+    const FLAG_MUSTACHESP = 131072
+
     // Template rendering time debug flags
-    const FLAG_RENDER_DEBUG = 131072;
+    const FLAG_RENDER_DEBUG = 262144;
 
     // alias flags
     const FLAG_BESTPERFORMANCE = 16384; // FLAG_ECHO
