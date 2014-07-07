@@ -102,7 +102,7 @@ class LightnCandy {
         }
 
         // Strip extended comments
-        $template = preg_replace( self::EXTENDED_COMMENT_SEARCH, '', $template );
+        $template = preg_replace( self::EXTENDED_COMMENT_SEARCH, '{{!}}', $template );
 
         // Do first time scan to find out used feature, detect template error.
         if (preg_match_all(self::TOKEN_SEARCH, $template, $tokens, PREG_SET_ORDER) > 0) {
@@ -119,7 +119,7 @@ class LightnCandy {
         $code = preg_replace_callback(self::TOKEN_SEARCH, function ($matches) use (&$context) {
             $tmpl = LightnCandy::compileToken($matches, $context);
             return "{$matches[LightnCandy::POS_LSPACE]}'$tmpl'{$matches[LightnCandy::POS_RSPACE]}";
-        }, addcslashes($template, "'"));
+        }, addcslashes("\n$template", "'"));
 
         // return false when fatal error
         if (self::handleError($context)) {
@@ -127,7 +127,7 @@ class LightnCandy {
         }
 
         // Or, return full PHP render codes as string
-        return self::composePHPRender($context, $code);
+        return self::composePHPRender($context, substr($code, 1));
     }
 
     /**
