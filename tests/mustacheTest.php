@@ -17,7 +17,7 @@ class MustacheSpecTest extends PHPUnit_Framework_TestCase
         );
         $renderer = LightnCandy::prepare($php);
 
-        $this->assertEquals($spec['expected'], $renderer($spec['data']), "[{$spec['name']}]:{$spec['desc']}");
+        $this->assertEquals($spec['expected'], $renderer($spec['data']), "[{$spec['file']}.{$spec['name']}]#{$spec['no']}:{$spec['desc']}");
     }
 
     public function yamlProvider()
@@ -25,8 +25,13 @@ class MustacheSpecTest extends PHPUnit_Framework_TestCase
         $ret = Array();
 
         foreach (glob('spec/specs/*.json') as $file) {
+           $i=0;
            $json = json_decode(file_get_contents($file), true);
-           $ret = array_merge($ret, array_map(function ($d) {return Array($d);}, $json['tests']));
+           $ret = array_merge($ret, array_map(function ($d) use ($file, &$i) {
+               $d['file'] = $file;
+               $d['no'] = ++$i;
+               return Array($d);
+           }, $json['tests']));
         }
 
         return $ret;
