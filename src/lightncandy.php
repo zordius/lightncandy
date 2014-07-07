@@ -106,6 +106,8 @@ class LightnCandy {
 
         // Do first time scan to find out used feature, detect template error.
         if (preg_match_all(self::TOKEN_SEARCH, $template, $tokens, PREG_SET_ORDER) > 0) {
+            $context['tokens']['list'] = $tokens;
+            $context['tokens']['count'] = count($tokens);
             foreach ($tokens as $token) {
                 self::scanFeatures($token, $context);
             }
@@ -117,6 +119,7 @@ class LightnCandy {
 
         // Do PHP code generation.
         $code = preg_replace_callback(self::TOKEN_SEARCH, function ($matches) use (&$context) {
+            $context['tokens']['current'] ++;
             $tmpl = LightnCandy::compileToken($matches, $context);
             return "{$matches[LightnCandy::POS_LSPACE]}'$tmpl'{$matches[LightnCandy::POS_RSPACE]}";
         }, addcslashes("\n$template", "'"));
@@ -218,6 +221,11 @@ $libstr
             'error' => Array(),
             'basedir' => self::buildCXBasedir($options),
             'fileext' => self::buildCXFileext($options),
+            'tokens' => Array(
+                'current' => 0,
+                'count' => 0,
+                'list' => Array(),
+            ),
             'usedPartial' => Array(),
             'usedFeature' => Array(
                 'rootthis' => 0,
@@ -1222,7 +1230,7 @@ $libstr
      * @codeCoverageIgnore
      */
     public static function handleMustacheSpacing(&$token, &$context) {
-        if (!$token[self::POS_LSPACE] && !$token[self::POS_RSPACE]) {
+        if (!$token[self::POS_LSPACE] && !$token[self::POS_RSPACE] && ($context['tokens']['current'] < $context['tokens']['count'])) {
             return;
         }
 
@@ -1230,12 +1238,16 @@ $libstr
         $lsp = preg_match(self::LINESPACE_SEARCH, $token[self::POS_LSPACE], $lmatch);
         $rsp = preg_match(self::LINESPACE_SEARCH, $token[self::POS_RSPACE], $rmatch);
 
-        if ($lsp && $rsp) {
-            // Handle ^ ! # / operation tokens
-            if ($token[self::POS_OP] && ($token[self::POS_OP] !== '&')) {
-                $token[self::POS_LSPACE] = $lmatch[1] . $lmatch[2];
-                $token[self::POS_RSPACE] = $rmatch[3];
-            }
+        if (!$rsp && ($context['tokens']['current'] == $context['tokens']['count'])) {
+            $rsp = 2;
+            $rmatch = Array(2, $token[self::POS_RSPACE], '', '');
+        }
+
+        // Handle ^ ! # / operation tokens
+        if ($lsp && $rsp && $token[self::POS_OP] && ($token[self::POS_OP] !== '&')) {
+            $token[self::POS_LSPACE] = $lmatch[1] . $lmatch[2];
+            //$token[self::POS_RSPACE] = (($context['tokens']['current'] == 1) ? $rmatch[2] : '') . $rmatch[3];
+            $token[self::POS_RSPACE] = $rmatch[3];
         }
     }
 
