@@ -2007,10 +2007,10 @@ class LCRun3 {
      */
     public static function hbch($cx, $ch, $vars, $op, $cb = false, $inv = false) {
         $isBlock = (is_object($cb) && ($cb instanceof Closure));
-        $args = Array();
+        $args = $vars[0];
         $options = Array(
             'name' => $ch,
-            'hash' => Array()
+            'hash' => $vars[1]
         );
 
         if ($isBlock) {
@@ -2041,14 +2041,6 @@ class LCRun3 {
         if ($cx['flags']['spvar']) {
             $options['data'] = $cx['sp_vars'];
             $options['data']['root'] = $cx['scopes'][0];
-        }
-
-        foreach ($vars as $i => $v) {
-            if (is_int($i)) {
-                $args[] = $v;
-            } else {
-                $options['hash'][$i] = $v;
-            }
         }
 
         $args[] = $options;
