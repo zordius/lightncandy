@@ -5,6 +5,10 @@ v0.14 current trunk
    * align with handlebars.js 2.0.0-alpha.4
    * fa6225f278 support boolen value in named arguments for cusotm helper
    * 160743e1c8 better error message when unmatch {{/foo}} tag detected
+   * d9a9416907 support {{&foo}}
+   * 8797485cfa fix {{^foo}} logic when foo is empty list
+   * 523b1373c4 fix handlebars custom helper interface
+   * a744a2d522 fix bad syntax when FLAG_RENDER_DEBUG + helpers
 
 v0.13 https://github.com/zordius/lightncandy/tree/v0.13
    * align with handlebars.js 2.0.0-alpha.4
