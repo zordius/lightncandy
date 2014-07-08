@@ -109,6 +109,7 @@ class LightnCandy {
         if (preg_match_all(self::TOKEN_SEARCH, $template, $tokens, PREG_SET_ORDER) > 0) {
             $context['tokens']['list'] = $tokens;
             $context['tokens']['count'] = count($tokens);
+            $context['tokens']['standalone'] = Array();
             foreach ($tokens as $token) {
                 self::scanFeatures($token, $context);
             }
@@ -1233,6 +1234,7 @@ $libstr
      */
     public static function handleMustacheSpacing(&$token, &$context) {
         if (!$token[self::POS_LSPACE] && !$token[self::POS_RSPACE] && ($context['tokens']['current'] < $context['tokens']['count'])) {
+            $context['tokens']['standalone'][] = false;
             return;
         }
 
@@ -1249,6 +1251,9 @@ $libstr
         if ($lsp && $rsp && $token[self::POS_OP] && ($token[self::POS_OP] !== '&')) {
             $token[self::POS_LSPACE] = $lmatch[1] . $lmatch[2];
             $token[self::POS_RSPACE] = $rmatch[3];
+            $context['tokens']['standalone'][] = true;
+        } else {
+            $context['tokens']['standalone'][] = false;
         }
     }
 
