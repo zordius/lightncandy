@@ -11,9 +11,9 @@ VAREND
 $php = LightnCandy::compile($template, Array(
     'flags' => LightnCandy::FLAG_ERROR_LOG | 0 * LightnCandy::FLAG_STANDALONE | LightnCandy::FLAG_HANDLEBARSJS,
     'hbhelpers' => Array(
-        'myeach' => function ($people, $options) {
+        'myeach' => function ($context, $options) {
             $ret = '';
-            foreach ($people as $ppl) {
+            foreach ($context as $ppl) {
                 $ret .= $options['fn']($ppl);
             }
             return $ret;
