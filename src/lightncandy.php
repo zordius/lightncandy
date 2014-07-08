@@ -51,9 +51,10 @@ class LightnCandy {
 
     // Mustache compatibility
     const FLAG_MUSTACHESP = 131072;
+    const FLAG_MUSTACHELOOKUP = 262144;
 
     // Template rendering time debug flags
-    const FLAG_RENDER_DEBUG = 262144;
+    const FLAG_RENDER_DEBUG = 524288;
 
     // alias flags
     const FLAG_BESTPERFORMANCE = 16384; // FLAG_ECHO
@@ -212,6 +213,7 @@ $libstr
                 'spvar' => $flags & self::FLAG_SPVARS,
                 'exhlp' => $flags & self::FLAG_EXTHELPER,
                 'mustsp' => $flags & self::FLAG_MUSTACHESP,
+                'mustlok' => $flags & self::FLAG_MUSTACHELOOKUP,
                 'debug' => $flags & self::FLAG_RENDER_DEBUG,
                 'prop' => $flags & self::FLAG_PROPERTY,
                 'method' => $flags & self::FLAG_METHOD,
@@ -929,7 +931,7 @@ $libstr
             if ($context['flags']['advar'] && substr($m, 0, 1) === '[') {
                 $ret[] = substr($m, 1, -1);
             } else {
-                $ret[] = ($context['flags']['this'] && (($m === 'this') || ($m === '.'))) ? null : $m;
+                $ret[] = (($context['flags']['this'] && ($m === 'this')) || ($m === '.')) ? null : $m;
             }
         }
 
@@ -1187,9 +1189,6 @@ $libstr
         case '.':
             if ($context['level'] == 0) {
                 $context['usedFeature']['rootthis']++;
-            }
-            if (!$context['flags']['this']) {
-                $context['error'][] = "do not support {{{$vars[0]}}}, you should do compile with LightnCandy::FLAG_THIS flag";
             }
             return $context['usedFeature'][($vars[0] == '.') ? 'dot' : 'this']++;
         }
