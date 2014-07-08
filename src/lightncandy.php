@@ -66,6 +66,7 @@ class LightnCandy {
     // RegExps
     const PARTIAL_SEARCH = '/\\{\\{>[ \\t]*(.+?)[ \\t]*\\}\\}/s';
     const TOKEN_SEARCH = '/(\s*)(\\{{2,3})(~?)([\\^#\\/!&]?)(.+?)(~?)(\\}{2,3})(\s*)/s';
+    const ONE_TOKEN_SEARCH = '/^(.*?)(\s*)(\\{{2,3})(~?)([\\^#\\/!&]?)(.+?)(~?)(\\}{2,3})(\s*)(.*)$/s';
     const VARNAME_SEARCH = '/(\\[[^\\]]+\\]|[^\\[\\]\\.]+)/';
     const EXTENDED_COMMENT_SEARCH = '/{{!--.*?--}}/s';
     const LINESPACE_SEARCH = '/([ \\t]*)([\\r\\n]+)([ \\t]*)/';
@@ -120,11 +121,7 @@ class LightnCandy {
         }
 
         // Do PHP code generation.
-        $code = preg_replace_callback(self::TOKEN_SEARCH, function ($matches) use (&$context) {
-            $context['tokens']['current'] ++;
-            $tmpl = LightnCandy::compileToken($matches, $context);
-            return "{$matches[LightnCandy::POS_LSPACE]}'$tmpl'{$matches[LightnCandy::POS_RSPACE]}";
-        }, addcslashes("\n$template", "'"));
+        $code = self::compileCode($context, addcslashes($template, "'"));
 
         // return false when fatal error
         if (self::handleError($context)) {
@@ -132,9 +129,27 @@ class LightnCandy {
         }
 
         // Or, return full PHP render codes as string
-        return self::composePHPRender($context, substr($code, 1));
+        return self::composePHPRender($context, $code);
     }
 
+    /**
+     * Compile template into PHP code (internal method)
+     *
+     * @param array $context Current context
+     * @param string $template handlebars template
+     *
+     * @return string generated PHP code
+     *
+     * @codeCoverageIgnore
+     */
+    protected static function compileCode(&$context, &$template) {
+        return preg_replace_callback(self::TOKEN_SEARCH, function ($matches) use (&$context) {
+            $context['tokens']['current'] ++;
+            $tmpl = LightnCandy::compileToken($matches, $context);
+            return "{$matches[LightnCandy::POS_LSPACE]}'$tmpl'{$matches[LightnCandy::POS_RSPACE]}";
+        }, $template);
+    }
+    
     /**
      * Compose LightnCandy render codes for include()
      *
