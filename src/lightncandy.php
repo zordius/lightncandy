@@ -150,6 +150,7 @@ class LightnCandy {
         $flagSPVar = self::getBoolStr($context['flags']['spvar']);
         $flagProp = self::getBoolStr($context['flags']['prop']);
         $flagMethod = self::getBoolStr($context['flags']['method']);
+        $flagMustlok = self::getBoolStr($context['flags']['mustlok']);
 
         $libstr = self::exportLCRun($context);
         $helpers = self::exportHelper($context);
@@ -166,6 +167,7 @@ class LightnCandy {
             'spvar' => $flagSPVar,
             'prop' => $flagProp,
             'method' => $flagMethod,
+            'mustlok' => $flagMustlok,
             'debug' => \$debugopt,
         ),
         'helpers' => $helpers,
@@ -835,9 +837,10 @@ $libstr
             array_shift($var);
         }
 
-        // To support instance properties or methods, the only way
-        // is using slower rendering time variable resolver.
-        if ($context['flags']['prop'] || $context['flags']['method']) {
+        // 1. To support recursive context lookup...
+        // 2. To support instance properties or methods...
+        // the only way is using slower rendering time variable resolver.
+        if ($context['flags']['prop'] || $context['flags']['method'] || $context['flags']['mustlok']) {
             return Array(self::getFuncName($context, 'v', $exp) . "\$cx, $base, Array(" . implode(',', array_map(function ($V) {
                 return "'$V'";
             }, $var)) . '))', $exp);
@@ -1627,28 +1630,40 @@ class LCRun3 {
      * @expect 3 when input Array('flags' => Array('prop' => true, 'method' => false)), (Object) Array('a' => Array('b' => 3)), Array('a', 'b')
      */
     public static function v($cx, $base, $path) {
-        $v = $base;
-
-        foreach ($path as $name) {
-            if (is_array($v) && isset($v[$name])) {
-                $v = $v[$name];
-                continue;
-            }
-            if (!is_object($v)) {
+        $count = count($cx['scopes']);
+        while ($base) {
+            $v = $base;
+            foreach ($path as $name) {
+                if (is_array($v) && isset($v[$name])) {
+                    $v = $v[$name];
+                    continue;
+                }
+                if (is_object($v)) {
+                    if ($cx['flags']['prop'] && isset($v->$name)) {
+                        $v = $v->$name;
+                        continue;
+                    }
+                    if ($cx['flags']['method'] && method_exists($v, $name)) {
+                        $v = $v->$name();
+                        continue;
+                    }
+                }
+                if ($cx['flags']['mustlok']) {
+                    unset($v);
+                    break;
+                }
                 return null;
             }
-            if ($cx['flags']['prop'] && isset($v->$name)) {
-                $v = $v->$name;
-                continue;
+            if (isset($v)) {
+                return $v;
             }
-            if ($cx['flags']['method'] && method_exists($v, $name)) {
-                $v = $v->$name();
-                continue;
+            $count--;
+            if ($count >= 0) {
+                $base = $cx['scopes'][$count];
+            } else {
+                return null;
             }
-            return null;
         }
-
-        return $v;
     }
 
     /**
