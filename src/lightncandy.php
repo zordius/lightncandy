@@ -1023,7 +1023,7 @@ $libstr
     protected static function parseTokenArgs(&$token, &$context) {
         trim($token[self::POS_INNERTAG]);
 
-        // Handle delemeter change
+        // Handle delimiter change
         if (preg_match('/=\s*([^ =]+)\s+([^ =]+)\s*=/', $token[self::POS_INNERTAG], $matched)) {
             self::setupToken($context, $matched[1], $matched[2]);
             $token[self::POS_OP] = ' ';
