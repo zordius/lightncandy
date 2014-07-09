@@ -136,17 +136,20 @@ class LightnCandy {
      * @codeCoverageIgnore
      */
     protected static function setupToken(&$context, $left = '{{', $right = '}}') {
-        if (($left === '{{') && ($right === '}}')) {
-            $context['token']['search'] = '/^(.*?)(\s*)(\\{{2,3})(~?)([\\^#\\/!&]?)(.+?)(~?)(\\}{2,3})(\s*)(.*)$/s';
-            return;
-        }
-
         if (preg_match('/=/', "$left$right")) {
             $context['error'][] = "Can not set delimiter contains '='";
             return;
         }
 
-        $context['token']['search'] = '/^(.*?)(\s*)(' . preg_quote($left) . ')(~?)([\\^#\\/!&]?)(.+?)(~?)(' . preg_quote($right) . ')(\s*)(.*)$/s';
+        if (($left === '{{') && ($right === '}}')) {
+            $left = '\\{{2,3}';
+            $right = '\\}{2,3}';
+        } else {
+            $left = preg_quote($left);
+            $right = preg_quote($right);
+        }
+
+        $context['token']['search'] = "/^(.*?)(\\s*)($left)(~?)([\\^#\\/!&]?)(.+?)(~?)($right)(\\s*)(.*)\$/s";
     }
 
     /**
