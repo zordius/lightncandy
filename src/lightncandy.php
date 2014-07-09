@@ -305,6 +305,7 @@ $libstr
                 'helper' => 0,
                 'bhelper' => 0,
                 'hbhelper' => 0,
+                'delimiter' => 0,
             ),
             'usedCount' => Array(
                 'var' => Array(),
@@ -1020,8 +1021,16 @@ $libstr
      * @expect Array(false, Array(Array('a'), 'q' => Array('"b c"'))) when input Array(0,0,0,0,0,0,'a q="b c"'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 1))
      */
     protected static function parseTokenArgs(&$token, &$context) {
-        $vars = Array();
         trim($token[self::POS_INNERTAG]);
+
+        // Handle delemeter change
+        if (preg_match('/=\s*([^ =]+)\s+([^ =]+)\s*=/', $token[self::POS_INNERTAG], $matched)) {
+            self::setupToken($context, $matched[1], $matched[2]);
+            $token[self::POS_OP] = ' ';
+            return Array(false, Array());
+        }
+
+        $vars = Array();
         $count = preg_match_all('/(\s*)([^\s]+)/', $token[self::POS_INNERTAG], $matched);
 
         // Parse arguments and deal with "..." or [...]
@@ -1166,6 +1175,9 @@ $libstr
      */
     protected static function validateOperations($token, &$context, $vars) {
         switch ($token[self::POS_OP]) {
+        case ' ':
+            return ++$context['usedFeature']['delimiter'];
+
         case '^':
             $context['stack'][] = $token[self::POS_INNERTAG];
             $context['level']++;
@@ -1392,6 +1404,7 @@ $libstr
         case '/':
             return self::compileBlockEnd($token, $context, $vars);
         case '!':
+        case ' ':
             return $context['ops']['seperator'];
         case '#':
             $r = self::compileBlockCustomHelper($context, $vars);
