@@ -12,6 +12,7 @@ v0.14 current trunk
    * 0044f7bd10 change FLAG_THIS behavoir
    * b5b0739b68 support recursive context lookup now ( mustache spec , require FLAG_MUSTACHELOOKUP )
    * 096c241fce support standalone tag detection now ( mustache spec , require FLAG_MUSTACHESP )
+   * cea46c9a67 support {{=<% %>=}} to set delimiter
 
 v0.13 https://github.com/zordius/lightncandy/tree/v0.13
    * align with handlebars.js 2.0.0-alpha.4
