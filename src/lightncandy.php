@@ -65,7 +65,6 @@ class LightnCandy {
 
     // RegExps
     const PARTIAL_SEARCH = '/\\{\\{>[ \\t]*(.+?)[ \\t]*\\}\\}/s';
-    const TOKEN_SEARCH = '/^(.*?)(\s*)(\\{{2,3})(~?)([\\^#\\/!&]?)(.+?)(~?)(\\}{2,3})(\s*)(.*)$/s';
     const VARNAME_SEARCH = '/(\\[[^\\]]+\\]|[^\\[\\]\\.]+)/';
     const EXTENDED_COMMENT_SEARCH = '/{{!--.*?--}}/s';
     const LINESPACE_SEARCH = '/([ \\t]*)([\\r\\n]+)([ \\t]*)/';
@@ -108,6 +107,7 @@ class LightnCandy {
         $template = preg_replace( self::EXTENDED_COMMENT_SEARCH, '{{!}}', $template );
 
         // Do first time scan to find out used feature, detect template error.
+        self::setupToken($context);
         self::verifyTemplate($context, $template);
 
         if (self::handleError($context)) {
@@ -115,6 +115,7 @@ class LightnCandy {
         }
 
         // Do PHP code generation.
+        self::setupToken($context);
         $code = self::compileTemplate($context, addcslashes($template, "'"));
 
         // return false when fatal error
@@ -127,15 +128,37 @@ class LightnCandy {
     }
 
     /**
+     * Setup token delimiter by default or provided string
+     *
+     * @param array $context Current context
+     * @param string $template handlebars template
+     *
+     * @codeCoverageIgnore
+     */
+    protected static function setupToken(&$context, $left = '{{', $right = '}}') {
+        if (($left === '{{') && ($right === '}}')) {
+            $context['token']['search'] = '/^(.*?)(\s*)(\\{{2,3})(~?)([\\^#\\/!&]?)(.+?)(~?)(\\}{2,3})(\s*)(.*)$/s';
+            return;
+        }
+
+        if (preg_match('/=/', "$left$right")) {
+            $context['error'][] = "Can not set delimiter contains '='";
+            return;
+        }
+
+        $context['token']['search'] = '/^(.*?)(\s*)(' . preg_quote($left) . ')(~?)([\\^#\\/!&]?)(.+?)(~?)(' . preg_quote($right) . ')(\s*)(.*)$/s';
+    }
+
+    /**
      * Verify template and scan for used features
      *
-     * @param array $context Current context                                                            
+     * @param array $context Current context
      * @param string $template handlebars template
      *
      * @codeCoverageIgnore
      */
     protected static function verifyTemplate(&$context, $template) {
-        while (preg_match(self::TOKEN_SEARCH, $template, $matches)) {
+        while (preg_match($context['token']['search'], $template, $matches)) {
             $context['tokens']['count']++;
             self::scanFeatures($matches, $context);
             $template = $matches[LightnCandy::POS_ROTHER];
@@ -154,7 +177,7 @@ class LightnCandy {
      */
     protected static function compileTemplate(&$context, $template) {
         $code = '';
-        while (preg_match(self::TOKEN_SEARCH, $template, $matches)) {
+        while (preg_match($context['token']['search'], $template, $matches)) {
             $context['tokens']['current']++;
             $tmpl = LightnCandy::compileToken($matches, $context);
             $code .= "{$matches[LightnCandy::POS_LOTHER]}{$matches[LightnCandy::POS_LSPACE]}'$tmpl'{$matches[LightnCandy::POS_RSPACE]}";
