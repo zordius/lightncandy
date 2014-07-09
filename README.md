@@ -1,7 +1,7 @@
 LightnCandy
 ===========
 
-A PHP library to support almost all features of handlebars ( http://handlebarsjs.com/ ) , target to run as fast as pure PHP.
+A PHP library to support almost all features of handlebars ( http://handlebarsjs.com/ ) and mustache ( http://mustache.github.io/ ), target to run as fast as pure PHP.
 
 Travis CI status: [![Unit testing](https://travis-ci.org/zordius/lightncandy.png?branch=master)](https://travis-ci.org/zordius/lightncandy) [![Regression testing](https://travis-ci.org/zordius/HandlebarsTest.png?branch=master)](https://travis-ci.org/zordius/HandlebarsTest)
 
@@ -115,7 +115,7 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * `FLAG_STANDALONE` : generate stand-alone PHP codes, which can be execute without including LightnCandy.php. The compiled PHP code will contain scoped user function, somehow larger. And, the performance of the template will slow 1 ~ 10%.
 * `FLAG_JSTRUE` : generate 'true' when value is true (handlebars.js behavior). Otherwise, true will generate ''.
 * `FLAG_JSOBJECT` : generate '[object Object]' for associated array, generate ',' separated values for array (handlebars.js behavior). Otherwise, all PHP array will generate ''.
-* `FLAG_THIS` : support `{{this}}` or `{{.}}` in template. Otherwise, `{{this}}` and `{{.}}` will cause template error.
+* `FLAG_THIS` : resolve `{{this}}` as {{.}} in template. Otherwise, `{{this}}` will be resolved as normal variable.
 * `FLAG_WITH` : support `{{#with var}}` in template. Otherwise, `{{#with var}}` will cause template error.
 * `FLAG_PARENT` : support `{{../var}}` in template. Otherwise, `{{../var}}` will cause template error.
 * `FLAG_JSQUOTE` : escape `'` to `&#x27;` . Otherwise, `'` will be escaped to `&#039;` .
@@ -129,6 +129,8 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * `FLAG_SPVARS` : support special variables include @root, @index, @key, @first, @last. Otherwise, compile these variable names with default parsing logic.
 * `FLAG_JS` : simulate all JavaScript string conversion behavior, same with `FLAG_JSTRUE` + `FLAG_JSOBJECT`.
 * `FLAG_HANDLEBARS` : support all handlebars extensions (which mustache do not supports) , same with `FLAG_THIS` + `FLAG_WITH` + `FLAG_PARENT` + `FLAG_JSQUOTE` + `FLAG_ADVARNAME` + `FLAG_NAMEDARG`.
+* `FLAG_MUSTACHESP` : align line change and spacing behaviors with mustache specification.
+* `FLAG_MUSTACHELOOKUP` : align recursive lookup up behaviors with mustache specification.
 * `FLAG_HANDLEBARSJS` : align with handlebars.js behaviors, same with `FLAG_JS` + `FLAG_HANDLEBARS`.
 * `FLAG_ECHO` : compile to `echo 'a', $b, 'c';` to improve performance. This will slow down rendering when the template and data are simple, but will improve 1% ~ 7% when the data is big and looping in the template.
 * `FLAG_BESTPERFORMANCE` : same with `FLAG_ECHO` now. This flag may be changed base on performance testing result in the future.

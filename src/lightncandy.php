@@ -49,8 +49,12 @@ class LightnCandy {
     const FLAG_PROPERTY = 32768;
     const FLAG_METHOD = 65536;
 
+    // Mustache compatibility
+    const FLAG_MUSTACHESP = 131072;
+    const FLAG_MUSTACHELOOKUP = 262144;
+
     // Template rendering time debug flags
-    const FLAG_RENDER_DEBUG = 131072;
+    const FLAG_RENDER_DEBUG = 524288;
 
     // alias flags
     const FLAG_BESTPERFORMANCE = 16384; // FLAG_ECHO
@@ -61,19 +65,22 @@ class LightnCandy {
 
     // RegExps
     const PARTIAL_SEARCH = '/\\{\\{>[ \\t]*(.+?)[ \\t]*\\}\\}/s';
-    const TOKEN_SEARCH = '/(\s*)(\\{{2,3})(~?)([\\^#\\/!&]?)(.+?)(~?)(\\}{2,3})(\s*)/s';
+    const TOKEN_SEARCH = '/^(.*?)(\s*)(\\{{2,3})(~?)([\\^#\\/!&]?)(.+?)(~?)(\\}{2,3})(\s*)(.*)$/s';
     const VARNAME_SEARCH = '/(\\[[^\\]]+\\]|[^\\[\\]\\.]+)/';
     const EXTENDED_COMMENT_SEARCH = '/{{!--.*?--}}/s';
+    const LINESPACE_SEARCH = '/([ \\t]*)([\\r\\n]+)([ \\t]*)/';
 
     // Positions of matched token
-    const POS_LSPACE = 1;
-    const POS_BEGINTAG = 2;
-    const POS_LSPACECTL = 3;
-    const POS_OP = 4;
-    const POS_INNERTAG = 5;
-    const POS_RSPACECTL = 6;
-    const POS_ENDTAG = 7;
-    const POS_RSPACE = 8;
+    const POS_LOTHER = 1;
+    const POS_LSPACE = 2;
+    const POS_BEGINTAG = 3;
+    const POS_LSPACECTL = 4;
+    const POS_OP = 5;
+    const POS_INNERTAG = 6;
+    const POS_RSPACECTL = 7;
+    const POS_ENDTAG = 8;
+    const POS_RSPACE = 9;
+    const POS_ROTHER = 10;
 
     private static $lastContext;
 
@@ -98,24 +105,17 @@ class LightnCandy {
         }
 
         // Strip extended comments
-        $template = preg_replace( self::EXTENDED_COMMENT_SEARCH, '', $template );
+        $template = preg_replace( self::EXTENDED_COMMENT_SEARCH, '{{!}}', $template );
 
         // Do first time scan to find out used feature, detect template error.
-        if (preg_match_all(self::TOKEN_SEARCH, $template, $tokens, PREG_SET_ORDER) > 0) {
-            foreach ($tokens as $token) {
-                self::scanFeatures($token, $context);
-            }
-        }
+        self::verifyTemplate($context, $template);
 
         if (self::handleError($context)) {
             return false;
         }
 
         // Do PHP code generation.
-        $code = preg_replace_callback(self::TOKEN_SEARCH, function ($matches) use (&$context) {
-            $tmpl = LightnCandy::compileToken($matches, $context);
-            return "{$matches[LightnCandy::POS_LSPACE]}'$tmpl'{$matches[LightnCandy::POS_RSPACE]}";
-        }, addcslashes($template, "'"));
+        $code = self::compileTemplate($context, addcslashes($template, "'"));
 
         // return false when fatal error
         if (self::handleError($context)) {
@@ -126,6 +126,43 @@ class LightnCandy {
         return self::composePHPRender($context, $code);
     }
 
+    /**
+     * Verify template and scan for used features
+     *
+     * @param array $context Current context                                                            
+     * @param string $template handlebars template
+     *
+     * @codeCoverageIgnore
+     */
+    protected static function verifyTemplate(&$context, $template) {
+        while (preg_match(self::TOKEN_SEARCH, $template, $matches)) {
+            $context['tokens']['count']++;
+            self::scanFeatures($matches, $context);
+            $template = $matches[LightnCandy::POS_ROTHER];
+        }
+    }
+
+    /**
+     * Compile template into PHP code (internal method)
+     *
+     * @param array $context Current context
+     * @param string $template handlebars template
+     *
+     * @return string generated PHP code
+     *
+     * @codeCoverageIgnore
+     */
+    protected static function compileTemplate(&$context, $template) {
+        $code = '';
+        while (preg_match(self::TOKEN_SEARCH, $template, $matches)) {
+            $context['tokens']['current']++;
+            $tmpl = LightnCandy::compileToken($matches, $context);
+            $code .= "{$matches[LightnCandy::POS_LOTHER]}{$matches[LightnCandy::POS_LSPACE]}'$tmpl'{$matches[LightnCandy::POS_RSPACE]}";
+            $template = $matches[LightnCandy::POS_ROTHER];
+        }
+        return "$code$template";
+    }
+    
     /**
      * Compose LightnCandy render codes for include()
      *
@@ -142,6 +179,7 @@ class LightnCandy {
         $flagSPVar = self::getBoolStr($context['flags']['spvar']);
         $flagProp = self::getBoolStr($context['flags']['prop']);
         $flagMethod = self::getBoolStr($context['flags']['method']);
+        $flagMustlok = self::getBoolStr($context['flags']['mustlok']);
 
         $libstr = self::exportLCRun($context);
         $helpers = self::exportHelper($context);
@@ -158,6 +196,7 @@ class LightnCandy {
             'spvar' => $flagSPVar,
             'prop' => $flagProp,
             'method' => $flagMethod,
+            'mustlok' => $flagMustlok,
             'debug' => \$debugopt,
         ),
         'helpers' => $helpers,
@@ -204,6 +243,8 @@ $libstr
                 'namev' => $flags & self::FLAG_NAMEDARG,
                 'spvar' => $flags & self::FLAG_SPVARS,
                 'exhlp' => $flags & self::FLAG_EXTHELPER,
+                'mustsp' => $flags & self::FLAG_MUSTACHESP,
+                'mustlok' => $flags & self::FLAG_MUSTACHELOOKUP,
                 'debug' => $flags & self::FLAG_RENDER_DEBUG,
                 'prop' => $flags & self::FLAG_PROPERTY,
                 'method' => $flags & self::FLAG_METHOD,
@@ -213,6 +254,11 @@ $libstr
             'error' => Array(),
             'basedir' => self::buildCXBasedir($options),
             'fileext' => self::buildCXFileext($options),
+            'tokens' => Array(
+                'ahead' => false,
+                'current' => 0,
+                'count' => 0
+            ),
             'usedPartial' => Array(),
             'usedFeature' => Array(
                 'rootthis' => 0,
@@ -820,9 +866,10 @@ $libstr
             array_shift($var);
         }
 
-        // To support instance properties or methods, the only way
-        // is using slower rendering time variable resolver.
-        if ($context['flags']['prop'] || $context['flags']['method']) {
+        // 1. To support recursive context lookup...
+        // 2. To support instance properties or methods...
+        // the only way is using slower rendering time variable resolver.
+        if ($context['flags']['prop'] || $context['flags']['method'] || $context['flags']['mustlok']) {
             return Array(self::getFuncName($context, 'v', $exp) . "\$cx, $base, Array(" . implode(',', array_map(function ($V) {
                 return "'$V'";
             }, $var)) . '))', $exp);
@@ -916,7 +963,7 @@ $libstr
             if ($context['flags']['advar'] && substr($m, 0, 1) === '[') {
                 $ret[] = substr($m, 1, -1);
             } else {
-                $ret[] = ($context['flags']['this'] && (($m === 'this') || ($m === '.'))) ? null : $m;
+                $ret[] = (($context['flags']['this'] && ($m === 'this')) || ($m === '.')) ? null : $m;
             }
         }
 
@@ -931,20 +978,20 @@ $libstr
      *
      * @return array Return parsed result
      *
-     * @expect Array(false, Array(Array(null))) when input Array(0,0,0,0,0,''), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 0))
-     * @expect Array(true, Array(Array(null))) when input Array(0,0,'{{{',0,0,''), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 0))
-     * @expect Array(false, Array(Array('a'))) when input Array(0,0,0,0,0,'a'), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 0))
-     * @expect Array(false, Array(Array('a'), Array('b'))) when input Array(0,0,0,0,0,'a  b'), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 0))
-     * @expect Array(false, Array(Array('a'), Array('"b'), Array('c"'))) when input Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 0))
-     * @expect Array(false, Array(Array('a'), Array('"b c"'))) when input Array(0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 0))
-     * @expect Array(false, Array(Array('a'), Array('[b'), Array('c]'))) when input Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 0))
-     * @expect Array(false, Array(Array('a'), Array('[b'), Array('c]'))) when input Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 1))
-     * @expect Array(false, Array(Array('a'), Array('b c'))) when input Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 0))
-     * @expect Array(false, Array(Array('a'), Array('b c'))) when input Array(0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 1))
-     * @expect Array(false, Array(Array('a'), 'q' => Array('b c'))) when input Array(0,0,0,0,0,'a q=[b c]'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 1))
-     * @expect Array(false, Array(Array('a'), Array('q=[b c'))) when input Array(0,0,0,0,0,'a [q=[b c]'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 1))
-     * @expect Array(false, Array(Array('a'), 'q' => Array('[b'), Array('c]'))) when input Array(0,0,0,0,0,'a q=[b c]'), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 1))
-     * @expect Array(false, Array(Array('a'), 'q' => Array('"b c"'))) when input Array(0,0,0,0,0,'a q="b c"'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 1))
+     * @expect Array(false, Array(Array(null))) when input Array(0,0,0,0,0,0,''), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 0))
+     * @expect Array(true, Array(Array(null))) when input Array(0,0,0,'{{{',0,0,''), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 0))
+     * @expect Array(false, Array(Array('a'))) when input Array(0,0,0,0,0,0,'a'), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 0))
+     * @expect Array(false, Array(Array('a'), Array('b'))) when input Array(0,0,0,0,0,0,'a  b'), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 0))
+     * @expect Array(false, Array(Array('a'), Array('"b'), Array('c"'))) when input Array(0,0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 0))
+     * @expect Array(false, Array(Array('a'), Array('"b c"'))) when input Array(0,0,0,0,0,0,'a "b c"'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 0))
+     * @expect Array(false, Array(Array('a'), Array('[b'), Array('c]'))) when input Array(0,0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 0))
+     * @expect Array(false, Array(Array('a'), Array('[b'), Array('c]'))) when input Array(0,0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 1))
+     * @expect Array(false, Array(Array('a'), Array('b c'))) when input Array(0,0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 0))
+     * @expect Array(false, Array(Array('a'), Array('b c'))) when input Array(0,0,0,0,0,0,'a [b c]'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 1))
+     * @expect Array(false, Array(Array('a'), 'q' => Array('b c'))) when input Array(0,0,0,0,0,0,'a q=[b c]'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 1))
+     * @expect Array(false, Array(Array('a'), Array('q=[b c'))) when input Array(0,0,0,0,0,0,'a [q=[b c]'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 1))
+     * @expect Array(false, Array(Array('a'), 'q' => Array('[b'), Array('c]'))) when input Array(0,0,0,0,0,0,'a q=[b c]'), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 1))
+     * @expect Array(false, Array(Array('a'), 'q' => Array('"b c"'))) when input Array(0,0,0,0,0,0,'a q="b c"'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 1))
      */
     protected static function parseTokenArgs(&$token, &$context) {
         $vars = Array();
@@ -1080,16 +1127,16 @@ $libstr
      *
      * @return mixed Return true when invalid or detected
      * 
-     * @expect null when input Array(0, 0, 0, 0, ''), Array(), Array()
-     * @expect 2 when input Array(0, 0, 0, 0, '^', '...'), Array('usedFeature' => Array('isec' => 1), 'level' => 0), Array()
-     * @expect 3 when input Array(0, 0, 0, 0, '!', '...'), Array('usedFeature' => Array('comment' => 2)), Array()
-     * @expect true when input Array(0, 0, 0, 0, '/'), Array('stack' => Array(1), 'level' => 1), Array()
-     * @expect 4 when input Array(0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('sec' => 3), 'level' => 0), Array('x')
-     * @expect 5 when input Array(0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('if' => 4), 'level' => 0), Array('if')
-     * @expect 6 when input Array(0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('with' => 5), 'level' => 0, 'flags' => Array('with' => 1)), Array('with')
-     * @expect 7 when input Array(0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('each' => 6), 'level' => 0), Array('each')
-     * @expect 8 when input Array(0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('unless' => 7), 'level' => 0), Array('unless')
-     * @expect 9 when input Array(0, 0, 0, 0, '#', '...'), Array('blockhelpers' => Array('abc' => ''), 'usedFeature' => Array('bhelper' => 8), 'level' => 0), Array(Array('abc'))
+     * @expect null when input Array(0, 0, 0, 0, 0, ''), Array(), Array()
+     * @expect 2 when input Array(0, 0, 0, 0, 0, '^', '...'), Array('usedFeature' => Array('isec' => 1), 'level' => 0), Array()
+     * @expect 3 when input Array(0, 0, 0, 0, 0, '!', '...'), Array('usedFeature' => Array('comment' => 2)), Array()
+     * @expect true when input Array(0, 0, 0, 0, 0, '/'), Array('stack' => Array(1), 'level' => 1), Array()
+     * @expect 4 when input Array(0, 0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('sec' => 3), 'level' => 0), Array('x')
+     * @expect 5 when input Array(0, 0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('if' => 4), 'level' => 0), Array('if')
+     * @expect 6 when input Array(0, 0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('with' => 5), 'level' => 0, 'flags' => Array('with' => 1)), Array('with')
+     * @expect 7 when input Array(0, 0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('each' => 6), 'level' => 0), Array('each')
+     * @expect 8 when input Array(0, 0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('unless' => 7), 'level' => 0), Array('unless')
+     * @expect 9 when input Array(0, 0, 0, 0, 0, '#', '...'), Array('blockhelpers' => Array('abc' => ''), 'usedFeature' => Array('bhelper' => 8), 'level' => 0), Array(Array('abc'))
      */
     protected static function validateOperations($token, &$context, $vars) {
         switch ($token[self::POS_OP]) {
@@ -1175,9 +1222,6 @@ $libstr
             if ($context['level'] == 0) {
                 $context['usedFeature']['rootthis']++;
             }
-            if (!$context['flags']['this']) {
-                $context['error'][] = "do not support {{{$vars[0]}}}, you should do compile with LightnCandy::FLAG_THIS flag";
-            }
             return $context['usedFeature'][($vars[0] == '.') ? 'dot' : 'this']++;
         }
 
@@ -1207,6 +1251,54 @@ $libstr
     }
 
     /**
+     * Internal method used by compileToken(). Modify $token when mustache rules matched.
+     *
+     * @param array $token detected handlebars {{ }} token
+     * @param array $context current compile context
+     *
+     * @return string Return compiled code segment for the token
+     *
+     * @codeCoverageIgnore
+     */
+    public static function handleMustacheSpacing(&$token, &$context) {
+        // Line change detection
+        $rsp = preg_match(self::LINESPACE_SEARCH, $token[self::POS_RSPACE], $rmatch);
+        $lsp = preg_match(self::LINESPACE_SEARCH, $token[self::POS_LSPACE], $lmatch);
+
+        // setup ahead flag
+        $ahead = $context['tokens']['ahead'];
+        $context['tokens']['ahead'] = !$rsp;
+
+        // same tags in the same line , not standalone
+        if (!$lsp && $ahead) {
+            return;
+        }
+
+        // Do need standalone detection for these tags
+        if (!$token[self::POS_OP] || ($token[self::POS_OP] === '&')) {
+            return;
+        }
+
+        // not standalone because other things in the same line ahead
+        if ($token[self::POS_LOTHER] && !$token[self::POS_LSPACE]) {
+            return;
+        }
+
+        // not standalone because other things in the same line behind
+        if ($token[self::POS_ROTHER] && !$token[self::POS_RSPACE]) {
+            return;
+        }
+
+        if (($lsp && $rsp) // both side cr
+            || ($rsp && !$token[self::POS_LOTHER]) // first line without left
+            || ($lsp && ($context['tokens']['current'] == $context['tokens']['count']) && !$token[self::POS_ROTHER]) // final line
+           ) {
+            $token[self::POS_LSPACE] = $lmatch[1] . $lmatch[2];
+            $token[self::POS_RSPACE] = $rmatch[3];
+        }
+    }
+
+    /**
      * Internal method used by compile(). Return compiled PHP code partial for a handlebars token.
      *
      * @param array $token detected handlebars {{ }} token
@@ -1219,6 +1311,11 @@ $libstr
     public static function compileToken(&$token, &$context) {
         list($raw, $vars) = self::parseTokenArgs($token, $context);
         $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;
+
+        // Handle Mustache spacing
+        if ($context['flags']['mustsp']) {
+            self::handleMustacheSpacing($token, $context);
+        }
 
         // Handle space control.
         if ($token[self::POS_LSPACECTL]) {
@@ -1579,28 +1676,40 @@ class LCRun3 {
      * @expect 3 when input Array('flags' => Array('prop' => true, 'method' => false)), (Object) Array('a' => Array('b' => 3)), Array('a', 'b')
      */
     public static function v($cx, $base, $path) {
-        $v = $base;
-
-        foreach ($path as $name) {
-            if (is_array($v) && isset($v[$name])) {
-                $v = $v[$name];
-                continue;
-            }
-            if (!is_object($v)) {
+        $count = count($cx['scopes']);
+        while ($base) {
+            $v = $base;
+            foreach ($path as $name) {
+                if (is_array($v) && isset($v[$name])) {
+                    $v = $v[$name];
+                    continue;
+                }
+                if (is_object($v)) {
+                    if ($cx['flags']['prop'] && isset($v->$name)) {
+                        $v = $v->$name;
+                        continue;
+                    }
+                    if ($cx['flags']['method'] && method_exists($v, $name)) {
+                        $v = $v->$name();
+                        continue;
+                    }
+                }
+                if ($cx['flags']['mustlok']) {
+                    unset($v);
+                    break;
+                }
                 return null;
             }
-            if ($cx['flags']['prop'] && isset($v->$name)) {
-                $v = $v->$name;
-                continue;
+            if (isset($v)) {
+                return $v;
             }
-            if ($cx['flags']['method'] && method_exists($v, $name)) {
-                $v = $v->$name();
-                continue;
+            $count--;
+            if ($count >= 0) {
+                $base = $cx['scopes'][$count];
+            } else {
+                return null;
             }
-            return null;
         }
-
-        return $v;
     }
 
     /**
