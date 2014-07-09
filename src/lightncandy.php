@@ -65,21 +65,22 @@ class LightnCandy {
 
     // RegExps
     const PARTIAL_SEARCH = '/\\{\\{>[ \\t]*(.+?)[ \\t]*\\}\\}/s';
-    const TOKEN_SEARCH = '/(\s*)(\\{{2,3})(~?)([\\^#\\/!&]?)(.+?)(~?)(\\}{2,3})(\s*)/s';
-    const ONE_TOKEN_SEARCH = '/^(.*?)(\s*)(\\{{2,3})(~?)([\\^#\\/!&]?)(.+?)(~?)(\\}{2,3})(\s*)(.*)$/s';
+    const TOKEN_SEARCH = '/^(.*?)(\s*)(\\{{2,3})(~?)([\\^#\\/!&]?)(.+?)(~?)(\\}{2,3})(\s*)(.*)$/s';
     const VARNAME_SEARCH = '/(\\[[^\\]]+\\]|[^\\[\\]\\.]+)/';
     const EXTENDED_COMMENT_SEARCH = '/{{!--.*?--}}/s';
     const LINESPACE_SEARCH = '/([ \\t]*)([\\r\\n]+)([ \\t]*)/';
 
     // Positions of matched token
-    const POS_LSPACE = 1;
-    const POS_BEGINTAG = 2;
-    const POS_LSPACECTL = 3;
-    const POS_OP = 4;
-    const POS_INNERTAG = 5;
-    const POS_RSPACECTL = 6;
-    const POS_ENDTAG = 7;
-    const POS_RSPACE = 8;
+    const POS_LOTHER = 1;
+    const POS_LSPACE = 2;
+    const POS_BEGINTAG = 3;
+    const POS_LSPACECTL = 4;
+    const POS_OP = 5;
+    const POS_INNERTAG = 6;
+    const POS_RSPACECTL = 7;
+    const POS_ENDTAG = 8;
+    const POS_RSPACE = 9;
+    const POS_ROTHER = 10;
 
     private static $lastContext;
 
@@ -107,21 +108,14 @@ class LightnCandy {
         $template = preg_replace( self::EXTENDED_COMMENT_SEARCH, '{{!}}', $template );
 
         // Do first time scan to find out used feature, detect template error.
-        if (preg_match_all(self::TOKEN_SEARCH, $template, $tokens, PREG_SET_ORDER) > 0) {
-            $context['tokens']['list'] = $tokens;
-            $context['tokens']['count'] = count($tokens);
-            $context['tokens']['standalone'] = Array();
-            foreach ($tokens as $token) {
-                self::scanFeatures($token, $context);
-            }
-        }
+        self::verifyTemplate($context, $template);
 
         if (self::handleError($context)) {
             return false;
         }
 
         // Do PHP code generation.
-        $code = self::compileCode($context, addcslashes($template, "'"));
+        $code = self::compileTemplate($context, addcslashes($template, "'"));
 
         // return false when fatal error
         if (self::handleError($context)) {
@@ -130,6 +124,25 @@ class LightnCandy {
 
         // Or, return full PHP render codes as string
         return self::composePHPRender($context, $code);
+    }
+
+    /**
+     * Verify template and scan for used features
+     *
+     * @param array $context Current context                                                            
+     * @param string $template handlebars template
+     *
+     * @codeCoverageIgnore
+     */
+    protected static function verifyTemplate(&$context, $template) {
+        while (preg_match(self::TOKEN_SEARCH, $template, $matches)) {
+            /* $context['tokens']['list'] = $tokens;
+            $context['tokens']['count'] = count($tokens);
+            $context['tokens']['standalone'] = Array();
+            */
+            self::scanFeatures($matches, $context);
+            $template = $matches[LightnCandy::POS_ROTHER];
+        }
     }
 
     /**
@@ -142,12 +155,14 @@ class LightnCandy {
      *
      * @codeCoverageIgnore
      */
-    protected static function compileCode(&$context, &$template) {
-        return preg_replace_callback(self::TOKEN_SEARCH, function ($matches) use (&$context) {
-            $context['tokens']['current'] ++;
-            $tmpl = LightnCandy::compileToken($matches, $context);
-            return "{$matches[LightnCandy::POS_LSPACE]}'$tmpl'{$matches[LightnCandy::POS_RSPACE]}";
-        }, $template);
+    protected static function compileTemplate(&$context, $template) {
+        $code = '';
+        while (preg_match(self::TOKEN_SEARCH, $template, $matches)) {
+           $tmpl = LightnCandy::compileToken($matches, $context);
+           $code .= "{{$matches[LightnCandy::POS_LOTHER]}}{$matches[LightnCandy::POS_LSPACE]}'$tmpl'{$matches[LightnCandy::POS_RSPACE]}";
+           $template = $matches[LightnCandy::POS_ROTHER];
+        }
+        return ($code === '') ? "$template{$matches[LightnCandy::POS_ROTHER]}" : $code;
     }
     
     /**
