@@ -5,7 +5,7 @@ require_once('src/lightncandy.php');
 class MustacheSpecTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @dataProvider yamlProvider
+     * @dataProvider jsonSpecProvider
      */
     public function testSpecs($spec)
     {
@@ -24,7 +24,7 @@ class MustacheSpecTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($spec['expected'], $renderer($spec['data']), "[{$spec['file']}.{$spec['name']}]#{$spec['no']}:{$spec['desc']} PHP CODE: $php");
     }
 
-    public function yamlProvider()
+    public function jsonSpecProvider()
     {
         $ret = Array();
 
