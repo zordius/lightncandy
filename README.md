@@ -1,7 +1,7 @@
 LightnCandy
 ===========
 
-A PHP library to support almost all features of handlebars ( http://handlebarsjs.com/ ) and mustache ( http://mustache.github.io/ ), target to run as fast as pure PHP.
+An extremely fast PHP implementation of handlebars ( http://handlebarsjs.com/ ) and mustache ( http://mustache.github.io/ ),
 
 Travis CI status: [![Unit testing](https://travis-ci.org/zordius/lightncandy.png?branch=master)](https://travis-ci.org/zordius/lightncandy) [![Regression testing](https://travis-ci.org/zordius/HandlebarsTest.png?branch=master)](https://travis-ci.org/zordius/HandlebarsTest)
 
