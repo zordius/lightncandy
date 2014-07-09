@@ -13,6 +13,10 @@ class MustacheSpecTest extends PHPUnit_Framework_TestCase
             $this->markTestIncomplete("Skip [{$spec['file']}.{$spec['name']}]#{$spec['no']} , lightncandy do not support this now.");
         }
 
+        if (preg_match('/Partial/', $spec['name'])) {
+            $this->markTestIncomplete("Skip [{$spec['file']}.{$spec['name']}]#{$spec['no']} , lightncandy do not support this now.");
+        }
+
         $php = LightnCandy::compile($spec['template'], Array(
             'flags' => LightnCandy::FLAG_MUSTACHELOOKUP | LightnCandy::FLAG_MUSTACHESP | LightnCandy::FLAG_ERROR_EXCEPTION,
                 'helpers' => array(
