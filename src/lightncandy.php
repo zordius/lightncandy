@@ -1261,8 +1261,18 @@ $libstr
      * @codeCoverageIgnore
      */
     public static function handleMustacheSpacing(&$token, &$context) {
-        // Line change detection (behind)
+        // Line change detection
         $rsp = preg_match(self::LINESPACE_SEARCH, $token[self::POS_RSPACE], $rmatch);
+        $lsp = preg_match(self::LINESPACE_SEARCH, $token[self::POS_LSPACE], $lmatch);
+
+        // setup ahead flag
+        $ahead = $context['tokens']['ahead'];
+        $context['tokens']['ahead'] = !$rsp;
+
+        // same tags in the same line , not standalone
+        if (!$lsp && $ahead) {
+            return;
+        }
 
         // Do need standalone detection for these tags
         if (!$token[self::POS_OP] || ($token[self::POS_OP] === '&')) {
@@ -1278,9 +1288,6 @@ $libstr
         if ($token[self::POS_ROTHER] && !$token[self::POS_RSPACE]) {
             return;
         }
-
-        // Line change detection (ahead)
-        $lsp = preg_match(self::LINESPACE_SEARCH, $token[self::POS_LSPACE], $lmatch);
 
         if (($lsp && $rsp) // both side cr
             || ($rsp && !$token[self::POS_LOTHER]) // first line without left
