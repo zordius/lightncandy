@@ -136,10 +136,7 @@ class LightnCandy {
      */
     protected static function verifyTemplate(&$context, $template) {
         while (preg_match(self::TOKEN_SEARCH, $template, $matches)) {
-            /* $context['tokens']['list'] = $tokens;
-            $context['tokens']['count'] = count($tokens);
-            $context['tokens']['standalone'] = Array();
-            */
+            $context['tokens']['count']++;
             self::scanFeatures($matches, $context);
             $template = $matches[LightnCandy::POS_ROTHER];
         }
@@ -158,9 +155,10 @@ class LightnCandy {
     protected static function compileTemplate(&$context, $template) {
         $code = '';
         while (preg_match(self::TOKEN_SEARCH, $template, $matches)) {
-           $tmpl = LightnCandy::compileToken($matches, $context);
-           $code .= "{$matches[LightnCandy::POS_LOTHER]}{$matches[LightnCandy::POS_LSPACE]}'$tmpl'{$matches[LightnCandy::POS_RSPACE]}";
-           $template = $matches[LightnCandy::POS_ROTHER];
+            $tmpl = LightnCandy::compileToken($matches, $context);
+            $code .= "{$matches[LightnCandy::POS_LOTHER]}{$matches[LightnCandy::POS_LSPACE]}'$tmpl'{$matches[LightnCandy::POS_RSPACE]}";
+            $context['tokens']['current']++;
+            $template = $matches[LightnCandy::POS_ROTHER];
         }
         return "$code$template";
     }
@@ -258,8 +256,7 @@ $libstr
             'fileext' => self::buildCXFileext($options),
             'tokens' => Array(
                 'current' => 0,
-                'count' => 0,
-                'list' => Array(),
+                'count' => 0
             ),
             'usedPartial' => Array(),
             'usedFeature' => Array(
@@ -1263,8 +1260,18 @@ $libstr
      * @codeCoverageIgnore
      */
     public static function handleMustacheSpacing(&$token, &$context) {
-        if (!$token[self::POS_LSPACE] && !$token[self::POS_RSPACE] && ($context['tokens']['current'] < $context['tokens']['count'])) {
-            $context['tokens']['standalone'][] = false;
+        // Do need standalone detection for these tags
+        if (!$token[self::POS_OP] || ($token[self::POS_OP] === '&')) {
+            return;
+        }
+
+        // not standalone because other things in the same line ahead
+        if ($token[self::POS_LOTHER] && !$token[self::POS_LSPACE]) {
+            return;
+        }
+
+        // not standalone because other things in the same line behind
+        if ($token[self::POS_ROTHER] && !$token[self::POS_RSPACE]) {
             return;
         }
 
@@ -1272,18 +1279,9 @@ $libstr
         $lsp = preg_match(self::LINESPACE_SEARCH, $token[self::POS_LSPACE], $lmatch);
         $rsp = preg_match(self::LINESPACE_SEARCH, $token[self::POS_RSPACE], $rmatch);
 
-        if (!$rsp && ($context['tokens']['current'] == $context['tokens']['count'])) {
-            $rsp = 2;
-            $rmatch = Array(2, $token[self::POS_RSPACE], '', '');
-        }
-
-        // Handle ^ ! # / operation tokens
-        if ($lsp && $rsp && $token[self::POS_OP] && ($token[self::POS_OP] !== '&')) {
+        if ($lsp && $rsp) {
             $token[self::POS_LSPACE] = $lmatch[1] . $lmatch[2];
             $token[self::POS_RSPACE] = $rmatch[3];
-            $context['tokens']['standalone'][] = true;
-        } else {
-            $context['tokens']['standalone'][] = false;
         }
     }
 
