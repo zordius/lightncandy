@@ -255,6 +255,7 @@ $libstr
             'basedir' => self::buildCXBasedir($options),
             'fileext' => self::buildCXFileext($options),
             'tokens' => Array(
+                'ahead' => false,
                 'current' => 0,
                 'count' => 0
             ),
@@ -1260,6 +1261,9 @@ $libstr
      * @codeCoverageIgnore
      */
     public static function handleMustacheSpacing(&$token, &$context) {
+        // Line change detection (behind)
+        $rsp = preg_match(self::LINESPACE_SEARCH, $token[self::POS_RSPACE], $rmatch);
+
         // Do need standalone detection for these tags
         if (!$token[self::POS_OP] || ($token[self::POS_OP] === '&')) {
             return;
@@ -1275,13 +1279,12 @@ $libstr
             return;
         }
 
-        // Line change detection
+        // Line change detection (ahead)
         $lsp = preg_match(self::LINESPACE_SEARCH, $token[self::POS_LSPACE], $lmatch);
-        $rsp = preg_match(self::LINESPACE_SEARCH, $token[self::POS_RSPACE], $rmatch);
 
         if (($lsp && $rsp) // both side cr
-            || ($rsp && ($context['tokens']['current'] == 1) && !$token[self::POS_LOTHER]) // first line
-            || ($lsp && ($contest['tokens']['current'] == $contest['tokens']['count']) && !$token[self::POS_ROTHER]) // final line
+            || ($rsp && !$token[self::POS_LOTHER]) // first line without left
+            || ($lsp && ($context['tokens']['current'] == $context['tokens']['count']) && !$token[self::POS_ROTHER]) // final line
            ) {
             $token[self::POS_LSPACE] = $lmatch[1] . $lmatch[2];
             $token[self::POS_RSPACE] = $rmatch[3];
