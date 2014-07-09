@@ -155,9 +155,9 @@ class LightnCandy {
     protected static function compileTemplate(&$context, $template) {
         $code = '';
         while (preg_match(self::TOKEN_SEARCH, $template, $matches)) {
+            $context['tokens']['current']++;
             $tmpl = LightnCandy::compileToken($matches, $context);
             $code .= "{$matches[LightnCandy::POS_LOTHER]}{$matches[LightnCandy::POS_LSPACE]}'$tmpl'{$matches[LightnCandy::POS_RSPACE]}";
-            $context['tokens']['current']++;
             $template = $matches[LightnCandy::POS_ROTHER];
         }
         return "$code$template";
@@ -1279,7 +1279,10 @@ $libstr
         $lsp = preg_match(self::LINESPACE_SEARCH, $token[self::POS_LSPACE], $lmatch);
         $rsp = preg_match(self::LINESPACE_SEARCH, $token[self::POS_RSPACE], $rmatch);
 
-        if ($lsp && $rsp) {
+        if (($lsp && $rsp) // both side cr
+            || ($rsp && ($context['tokens']['current'] == 1) && !$token[self::POS_LOTHER]) // first line
+            || ($lsp && ($contest['tokens']['current'] == $contest['tokens']['count']) && !$token[self::POS_ROTHER]) // final line
+           ) {
             $token[self::POS_LSPACE] = $lmatch[1] . $lmatch[2];
             $token[self::POS_RSPACE] = $rmatch[3];
         }

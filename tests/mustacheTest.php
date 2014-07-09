@@ -20,8 +20,9 @@ class MustacheSpecTest extends PHPUnit_Framework_TestCase
             )
         );
         $renderer = LightnCandy::prepare($php);
+        $context = print_r(LightnCandy::getContext(), true);
 
-        $this->assertEquals($spec['expected'], $renderer($spec['data']), "[{$spec['file']}.{$spec['name']}]#{$spec['no']}:{$spec['desc']}");
+        $this->assertEquals($spec['expected'], $renderer($spec['data']), "[{$spec['file']}.{$spec['name']}]#{$spec['no']}:{$spec['desc']} PHP CODE: $php$context");
     }
 
     public function yamlProvider()
