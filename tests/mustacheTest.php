@@ -9,7 +9,11 @@ class MustacheSpecTest extends PHPUnit_Framework_TestCase
      */
     public function testSpecs($spec)
     {
-        if (preg_match('/(partials|lambdas|delimiters)\\.json/', $spec['file'])) {
+        if (preg_match('/(partials|lambdas)\\.json/', $spec['file'])) {
+            $this->markTestIncomplete("Skip [{$spec['file']}.{$spec['name']}]#{$spec['no']} , lightncandy do not support this now.");
+        }
+
+        if (preg_match('/Partial/', $spec['name'])) {
             $this->markTestIncomplete("Skip [{$spec['file']}.{$spec['name']}]#{$spec['no']} , lightncandy do not support this now.");
         }
 

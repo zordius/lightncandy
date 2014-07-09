@@ -65,10 +65,8 @@ class LightnCandy {
 
     // RegExps
     const PARTIAL_SEARCH = '/\\{\\{>[ \\t]*(.+?)[ \\t]*\\}\\}/s';
-    const TOKEN_SEARCH = '/^(.*?)(\s*)(\\{{2,3})(~?)([\\^#\\/!&]?)(.+?)(~?)(\\}{2,3})(\s*)(.*)$/s';
     const VARNAME_SEARCH = '/(\\[[^\\]]+\\]|[^\\[\\]\\.]+)/';
     const EXTENDED_COMMENT_SEARCH = '/{{!--.*?--}}/s';
-    const LINESPACE_SEARCH = '/([ \\t]*)([\\r\\n]+)([ \\t]*)/';
 
     // Positions of matched token
     const POS_LOTHER = 1;
@@ -108,6 +106,7 @@ class LightnCandy {
         $template = preg_replace( self::EXTENDED_COMMENT_SEARCH, '{{!}}', $template );
 
         // Do first time scan to find out used feature, detect template error.
+        self::setupToken($context);
         self::verifyTemplate($context, $template);
 
         if (self::handleError($context)) {
@@ -115,6 +114,7 @@ class LightnCandy {
         }
 
         // Do PHP code generation.
+        self::setupToken($context);
         $code = self::compileTemplate($context, addcslashes($template, "'"));
 
         // return false when fatal error
@@ -127,15 +127,40 @@ class LightnCandy {
     }
 
     /**
+     * Setup token delimiter by default or provided string
+     *
+     * @param array $context Current context
+     * @param string $template handlebars template
+     *
+     * @codeCoverageIgnore
+     */
+    protected static function setupToken(&$context, $left = '{{', $right = '}}') {
+        if (preg_match('/=/', "$left$right")) {
+            $context['error'][] = "Can not set delimiter contains '='";
+            return;
+        }
+
+        if (($left === '{{') && ($right === '}}')) {
+            $left = '\\{{2,3}';
+            $right = '\\}{2,3}';
+        } else {
+            $left = preg_quote($left);
+            $right = preg_quote($right);
+        }
+
+        $context['token']['search'] = "/^(.*?)(\\s*)($left)(~?)([\\^#\\/!&]?)(.+?)(~?)($right)(\\s*)(.*)\$/s";
+    }
+
+    /**
      * Verify template and scan for used features
      *
-     * @param array $context Current context                                                            
+     * @param array $context Current context
      * @param string $template handlebars template
      *
      * @codeCoverageIgnore
      */
     protected static function verifyTemplate(&$context, $template) {
-        while (preg_match(self::TOKEN_SEARCH, $template, $matches)) {
+        while (preg_match($context['token']['search'], $template, $matches)) {
             $context['tokens']['count']++;
             self::scanFeatures($matches, $context);
             $template = $matches[LightnCandy::POS_ROTHER];
@@ -154,7 +179,7 @@ class LightnCandy {
      */
     protected static function compileTemplate(&$context, $template) {
         $code = '';
-        while (preg_match(self::TOKEN_SEARCH, $template, $matches)) {
+        while (preg_match($context['token']['search'], $template, $matches)) {
             $context['tokens']['current']++;
             $tmpl = LightnCandy::compileToken($matches, $context);
             $code .= "{$matches[LightnCandy::POS_LOTHER]}{$matches[LightnCandy::POS_LSPACE]}'$tmpl'{$matches[LightnCandy::POS_RSPACE]}";
@@ -279,6 +304,7 @@ $libstr
                 'helper' => 0,
                 'bhelper' => 0,
                 'hbhelper' => 0,
+                'delimiter' => 0,
             ),
             'usedCount' => Array(
                 'var' => Array(),
@@ -994,8 +1020,16 @@ $libstr
      * @expect Array(false, Array(Array('a'), 'q' => Array('"b c"'))) when input Array(0,0,0,0,0,0,'a q="b c"'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 1))
      */
     protected static function parseTokenArgs(&$token, &$context) {
-        $vars = Array();
         trim($token[self::POS_INNERTAG]);
+
+        // Handle delimiter change
+        if (preg_match('/=\s*([^ =]+)\s+([^ =]+)\s*=/', $token[self::POS_INNERTAG], $matched)) {
+            self::setupToken($context, $matched[1], $matched[2]);
+            $token[self::POS_OP] = ' ';
+            return Array(false, Array());
+        }
+
+        $vars = Array();
         $count = preg_match_all('/(\s*)([^\s]+)/', $token[self::POS_INNERTAG], $matched);
 
         // Parse arguments and deal with "..." or [...]
@@ -1140,6 +1174,9 @@ $libstr
      */
     protected static function validateOperations($token, &$context, $vars) {
         switch ($token[self::POS_OP]) {
+        case ' ':
+            return ++$context['usedFeature']['delimiter'];
+
         case '^':
             $context['stack'][] = $token[self::POS_INNERTAG];
             $context['level']++;
@@ -1262,8 +1299,8 @@ $libstr
      */
     public static function handleMustacheSpacing(&$token, &$context) {
         // Line change detection
-        $rsp = preg_match(self::LINESPACE_SEARCH, $token[self::POS_RSPACE], $rmatch);
-        $lsp = preg_match(self::LINESPACE_SEARCH, $token[self::POS_LSPACE], $lmatch);
+        $lsp = preg_match('/^(.*)(\\r?\\n)([ \\t]*?)$/s', $token[self::POS_LSPACE], $lmatch);
+        $rsp = preg_match('/^([ \\t]*?)(\\r?\\n)(.*)$/s', $token[self::POS_RSPACE], $rmatch);
 
         // setup ahead flag
         $ahead = $context['tokens']['ahead'];
@@ -1366,6 +1403,7 @@ $libstr
         case '/':
             return self::compileBlockEnd($token, $context, $vars);
         case '!':
+        case ' ':
             return $context['ops']['seperator'];
         case '#':
             $r = self::compileBlockCustomHelper($context, $vars);

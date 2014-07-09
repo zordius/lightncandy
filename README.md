@@ -19,7 +19,7 @@ Features
    * Runs 4~10 times faster than <a href="https://github.com/dingram/mustache-php">mustache-php</a>.
    * Runs 10~30 times faster than <a href="https://github.com/XaminProject/handlebars.php">handlebars.php</a>.
    * Detail performance test reports can be found <a href="https://github.com/zordius/HandlebarsTest">here</a>, go http://zordius.github.io/HandlebarsTest/ to see charts.
-* **SMALL** single PHP file, only 85K!
+* **SMALL** single PHP file, only 92K!
 * Context generation
    * Analyze used feature from your template.
 * Debug
@@ -529,7 +529,6 @@ Unsupported Feature (so far)
 ----------------------------
 
 * [NEVER] `{{foo/bar}}` style variable name, it is deprecated in official handlebars.js document.
-* [Plan to support] set delimiter (change delimiter from `{{ }}` to custom string, for example `<% then %>`)
 
 Suggested Handlebars Template Practices
 ---------------------------------------
@@ -573,6 +572,7 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
    * All others will skip the section (includes 0, 1, -1, '', '1', '0', '-1', 'false', Array, ...)
 * `{{! comment}}` : comment
 * `{{!-- comment or {{ or }} --}}` : extended comment that can contain }} or {{ .
+* `{{=<% %>=}}` : set delimiter to custom string , the custom string can not contain = . Check http://mustache.github.io/mustache.5.html for more example.
 * `{{#each var}}` : each loop
 * `{{/each}}` : end loop
 * `{{#if var}}` : run if logic with original scope (null, false, empty Array and '' will skip this block)
