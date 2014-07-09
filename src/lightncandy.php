@@ -67,7 +67,6 @@ class LightnCandy {
     const PARTIAL_SEARCH = '/\\{\\{>[ \\t]*(.+?)[ \\t]*\\}\\}/s';
     const VARNAME_SEARCH = '/(\\[[^\\]]+\\]|[^\\[\\]\\.]+)/';
     const EXTENDED_COMMENT_SEARCH = '/{{!--.*?--}}/s';
-    const LINESPACE_SEARCH = '/([ \\t]*)([\\r\\n]+)([ \\t]*)/';
 
     // Positions of matched token
     const POS_LOTHER = 1;
@@ -1300,8 +1299,8 @@ $libstr
      */
     public static function handleMustacheSpacing(&$token, &$context) {
         // Line change detection
-        $rsp = preg_match(self::LINESPACE_SEARCH, $token[self::POS_RSPACE], $rmatch);
-        $lsp = preg_match(self::LINESPACE_SEARCH, $token[self::POS_LSPACE], $lmatch);
+        $lsp = preg_match('/^(.*)(\\r?\\n)([ \\t]*?)$/s', $token[self::POS_LSPACE], $lmatch);
+        $rsp = preg_match('/^([ \\t]*?)(\\r?\\n)(.*)$/s', $token[self::POS_RSPACE], $rmatch);
 
         // setup ahead flag
         $ahead = $context['tokens']['ahead'];
