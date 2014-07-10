@@ -29,18 +29,6 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         ));
     }
     /**
-     * @covers LightnCandy::expandPartial
-     */
-    public function testOn_expandPartial() {
-        $method = new ReflectionMethod('LightnCandy', 'expandPartial');
-        $this->assertEquals("123\n", $method->invoke(null,
-            '{{> test1}}', Array('basedir' => Array('tests'), 'usedFeature' => Array('partial' =>0), 'fileext' => Array('.tmpl'))
-        ));
-        $this->assertEquals("a123\nb\n", $method->invoke(null,
-            '{{> test2}}', Array('basedir' => Array('tests'), 'usedFeature' => Array('partial' =>0), 'fileext' => Array('.tmpl'))
-        ));
-    }
-    /**
      * @covers LightnCandy::readPartial
      */
     public function testOn_readPartial() {
