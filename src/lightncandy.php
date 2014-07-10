@@ -178,7 +178,12 @@ class LightnCandy {
         while (preg_match($context['token']['search'], $template, $matches)) {
             $context['tokens']['current']++;
             $tmpl = LightnCandy::compileToken($matches, $context);
-            $code .= "{$matches[LightnCandy::POS_LOTHER]}{$matches[LightnCandy::POS_LSPACE]}'$tmpl'{$matches[LightnCandy::POS_RSPACE]}";
+            if ($tmpl == $context['ops']['seperator']) {
+                $tmpl = '';
+            } else {
+                $tmpl = "'$tmpl'";
+            }
+            $code .= "{$matches[LightnCandy::POS_LOTHER]}{$matches[LightnCandy::POS_LSPACE]}$tmpl{$matches[LightnCandy::POS_RSPACE]}";
             $template = $matches[LightnCandy::POS_ROTHER];
         }
         return "$code$template";
