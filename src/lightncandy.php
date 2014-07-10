@@ -388,16 +388,12 @@ $libstr
     }
 
     /**
-     * Read partial file content as string.
+     * Read partial file content as string and store in context
      *
      * @param string $name partial file name
      * @param array $context Current context of compiler progress.
      *
-     * @return string partial file content
-     *
-     * @expect "123\n" when input 'test1', Array('basedir' => Array('tests'), 'usedFeature' => Array('partial' =>0), 'fileext' => Array('.tmpl'))
-     * @expect "a{{> test1}}b\n" when input 'test2', Array('basedir' => Array('tests'), 'usedFeature' => Array('partial' =>0), 'fileext' => Array('.tmpl'))
-     * @expect null when input 'test3', Array('basedir' => Array('tests'), 'usedFeature' => Array('partial' =>0), 'fileext' => Array('.tmpl'))
+     * @codeCoverageIgnore
      */
     public static function readPartial($name, &$context) {
         $context['usedFeature']['partial']++;
@@ -701,23 +697,6 @@ $libstr
         }
 
         return include('data://text/plain,' . urlencode($php));
-    }
-
-    /**
-     * Use a saved PHP file to render the input data.
-     *
-     * @param string $compiled compiled template php file name
-     *
-     * @param mixed $data
-     *
-     * @return string rendered result
-     *
-     * @codeCoverageIgnore
-     */
-    public static function render($compiled, $data) {
-        /** @var Closure $func */
-        $func = include($compiled);
-        return $func($data);
     }
 
     /**
