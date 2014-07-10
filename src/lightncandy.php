@@ -230,6 +230,7 @@ class LightnCandy {
         'helpers' => $helpers,
         'blockhelpers' => $bhelpers,
         'hbhelpers' => $hbhelpers,
+        'partials' => Array({$context['partialCode']}),
         'scopes' => Array(\$in),
         'sp_vars' => Array(),
 $libstr
@@ -289,7 +290,7 @@ $libstr
                 'count' => 0
             ),
             'usedPartial' => Array(),
-            'compiledPartial' => Array(),
+            'partialCode' => '',
             'usedFeature' => Array(
                 'rootthis' => 0,
                 'enc' => 0,
@@ -408,7 +409,8 @@ $libstr
                 if (file_exists($fn)) {
                     $context['usedPartial'][$name] = addcslashes(file_get_contents($fn), "'");
                     if ($context['flags']['runpart']) {
-                        $context['compiledPartial'][$name] = self::compileTemplate($context, $context['usedPartial'][$name]);
+                        $code = self::compileTemplate($context, $context['usedPartial'][$name]);
+                        $context['partialCode'] .= "'$name' => function (\$cx, \$in) {{$context['ops']['op_start']}'$code'{$context['ops']['op_end']}},";
                     }
                     return;
                 }
@@ -1425,6 +1427,8 @@ $libstr
         switch ($token[self::POS_OP]) {
         case '>':
             if ($context['flags']['runpart']) {
+                $v = self::getVariableName($vars[1], $context);
+                return $context['ops']['seperator'] . self::getFuncName($context, 'p', "{$vars[0][0]} {$v[1]}") . "\$cx, '{$vars[0][0]}', {$v[0]}){$context['ops']['seperator']}";
             }
             $token[self::POS_ROTHER] = $context['usedPartial'][$vars[0][0]] . $token[self::POS_RSPACE] . $token[self::POS_ROTHER];
             $token[LightnCandy::POS_RSPACE] = '';
@@ -2118,6 +2122,10 @@ class LCRun3 {
         $ret = $cb($cx, $v);
         array_pop($cx['scopes']);
         return $ret;
+    }
+
+    public static function p($cx, $p, $vars) {
+        return call_user_func($cx['partials'][$p], $cx, $vars);
     }
 
     /**
