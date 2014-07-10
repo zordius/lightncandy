@@ -48,6 +48,7 @@ class LightnCandy {
     const FLAG_ECHO = 16384;
     const FLAG_PROPERTY = 32768;
     const FLAG_METHOD = 65536;
+    const FLAG_RUNTIMEPARTIAL = 1048576;
 
     // Mustache compatibility
     const FLAG_MUSTACHESP = 131072;
@@ -275,6 +276,7 @@ $libstr
                 'debug' => $flags & self::FLAG_RENDER_DEBUG,
                 'prop' => $flags & self::FLAG_PROPERTY,
                 'method' => $flags & self::FLAG_METHOD,
+                'runpart' => $flags & self::FLAG_RUNTIMEPARTIAL,
             ),
             'level' => 0,
             'stack' => Array(),
