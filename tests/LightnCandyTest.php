@@ -90,9 +90,6 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('function($a) {return;}', $method->invoke(null,
                function ($a) {return;}
         ));
-        $this->assertEquals('', $method->invoke(null,
-            'Directory::close'
-        ));
     }
     /**
      * @covers LightnCandy::handleError

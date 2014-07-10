@@ -397,9 +397,11 @@ $libstr
      */
     public static function readPartial($name, &$context) {
         $context['usedFeature']['partial']++;
+
         if (isset($context['usedPartial'][$name])) {
             return;
         }
+
         foreach ($context['basedir'] as $dir) {
             foreach ($context['fileext'] as $ext) {
                 $fn = "$dir/$name$ext";
@@ -412,6 +414,7 @@ $libstr
                 }
             }
         }
+
         $context['error'][] = "can not find partial file for '$name', you should set correct basedir and fileext in options";
     }
 
@@ -475,7 +478,6 @@ $libstr
      *
      * @expect 'function($a) {return;}' when input function ($a) {return;}
      * @expect 'function($a) {return;}' when input    function ($a) {return;}
-     * @expect '' when input 'Directory::close'
      */
     protected static function getPHPCode($closure) {
         if (is_string($closure) && preg_match('/(.+)::(.+)/', $closure, $matched)) {
@@ -484,11 +486,6 @@ $libstr
             $ref = new ReflectionFunction($closure);
         }
         $fname = $ref->getFileName();
-
-        // This never happened, only for Unit testing.
-        if (!is_file($fname)) {
-            return '';
-        }
 
         $lines = file_get_contents($fname);
         $file = new SplFileObject($fname);
