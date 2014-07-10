@@ -103,7 +103,7 @@ class LightnCandy {
         }
 
         // Strip extended comments
-        $template = preg_replace( self::EXTENDED_COMMENT_SEARCH, '{{!}}', $template );
+        $template = preg_replace( self::EXTENDED_COMMENT_SEARCH, '{{!*}}', $template );
 
         // Do first time scan to find out used feature, detect template error.
         self::setupToken($context);
