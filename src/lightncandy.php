@@ -1435,7 +1435,8 @@ $libstr
     protected static function compileSection(&$token, &$context, $vars, $named) {
         switch ($token[self::POS_OP]) {
         case '>':
-            $token[self::POS_RSPACE] = addcslashes($context['usedPartial'][$vars[0][0]], "'") . $token[self::POS_RSPACE];
+            $token[self::POS_ROTHER] = addcslashes($context['usedPartial'][$vars[0][0]], "'") . $token[self::POS_RSPACE] . $token[self::POS_ROTHER];
+            $token[LightnCandy::POS_RSPACE] = '';
             return $context['ops']['seperator'];
         case '^':
             $v = self::getVariableName($vars[0], $context);
