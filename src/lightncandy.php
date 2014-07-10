@@ -289,6 +289,7 @@ $libstr
                 'count' => 0
             ),
             'usedPartial' => Array(),
+            'compiledPartial' => Array(),
             'usedFeature' => Array(
                 'rootthis' => 0,
                 'enc' => 0,
@@ -400,14 +401,18 @@ $libstr
      */
     public static function readPartial($name, &$context) {
         $context['usedFeature']['partial']++;
-        if ($context['usedPartial'][$name]) {
+        if (isset($context['usedPartial'][$name])) {
             return;
         }
         foreach ($context['basedir'] as $dir) {
             foreach ($context['fileext'] as $ext) {
                 $fn = "$dir/$name$ext";
                 if (file_exists($fn)) {
-                    return $context['usedPartial'][$name] = file_get_contents($fn);
+                    $context['usedPartial'][$name] = addcslashes(file_get_contents($fn), "'");
+                    if ($context['flags']['runpart']) {
+                        $context['compiledPartial'][$name] = self::compileTemplate($context, $context['usedPartial'][$name]);
+                    }
+                    return;
                 }
             }
         }
@@ -1443,7 +1448,9 @@ $libstr
     protected static function compileSection(&$token, &$context, $vars, $named) {
         switch ($token[self::POS_OP]) {
         case '>':
-            $token[self::POS_ROTHER] = addcslashes($context['usedPartial'][$vars[0][0]], "'") . $token[self::POS_RSPACE] . $token[self::POS_ROTHER];
+            if ($context['flags']['runpart']) {
+            }
+            $token[self::POS_ROTHER] = $context['usedPartial'][$vars[0][0]] . $token[self::POS_RSPACE] . $token[self::POS_ROTHER];
             $token[LightnCandy::POS_RSPACE] = '';
             return $context['ops']['seperator'];
         case '^':
