@@ -797,11 +797,15 @@ $libstr
      * @expect Array('Array(Array($in),Array())', Array('this')) when input Array(null), Array('flags'=>Array('spvar'=>true))
      * @expect Array('Array(Array($in,$in),Array())', Array('this', 'this')) when input Array(null, null), Array('flags'=>Array('spvar'=>true))
      */
-    protected static function getVariableNames($vn, $context) {
+    protected static function getVariableNames($vn, &$context) {
         $vars = Array(Array(), Array());
         $exps = Array();
         foreach ($vn as $i => $v) {
-            $V = self::getVariableName($v, $context);
+            if (preg_match('/^\(.+\)$/', $v[0])) {
+                $V = self::compileSubExpression( $v[0], $context );
+            } else {
+                $V = self::getVariableName($v, $context);
+            }
             if (is_string($i)) {
                 $vars[1][] = "'$i'=>{$V[0]}";
             } else {
@@ -810,6 +814,44 @@ $libstr
             $exps[] = $V[1];
         }
         return Array('Array(Array(' . implode(',', $vars[0]) . '),Array(' . implode(',', $vars[1]) . '))', $exps);
+    }
+
+    /**
+     * Internal method used by compile().
+     *
+     * @param string $subExpression subExpression to compile
+     * @param array &$context current compile context
+     *
+     * @return array code representing passed expression
+     */
+    protected static function compileSubExpression($subExpression, &$context) {
+        // mock up a token for this expression
+        $token = array(
+            self::POS_LOTHER => '',
+            self::POS_LSPACE => '',
+            self::POS_BEGINTAG => '',
+            self::POS_LSPACECTL => '',
+            self::POS_OP => '',
+            // strip outer ( ) from subexpression
+            self::POS_INNERTAG => substr(substr($subExpression, 1), 0, -1),
+            self::POS_RSPACECTL => '',
+            self::POS_ENDTAG => '',
+            self::POS_RSPACE => '',
+            self::POS_ROTHER => '',
+        );
+
+        list( $raw, $vars ) = self::parseTokenArgs( $token, $context );
+        // override $raw, subexpressions are never escaped
+        $raw = true;
+        $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;
+
+        // no separator is needed, this code will be used as a function argument
+        $origSeperator = $context['ops']['seperator'];
+        $context['ops']['seperator'] = '';
+        $ret = self::compileCustomHelper($context, $vars, $raw, $named);
+        $context['ops']['seperator'] = $origSeperator;
+
+        return Array($ret, $ret);
     }
 
     /**
@@ -1048,6 +1090,13 @@ $libstr
                     }
                     continue;
                 }
+                // continue to next match when begin with '(' without ending ')'
+                if (preg_match('/^\([^\)]+$/', $t)) {
+                    $prev = $t;
+                    $expect = ')';
+                    continue;
+                }
+
                 // continue to next match when begin with '"' without ending '"'
                 if (preg_match('/^"[^"]+$/', $t)) {
                     $prev = $t;
@@ -1078,6 +1127,13 @@ $libstr
         $ret = Array();
         $i = 0;
         foreach ($vars as $idx => $var) {
+            // Skip advanced processing for subexpressions
+            if (preg_match('/^\(.+\)$/', $var)) {
+                $ret[$i] = Array($var);
+                $i++;
+                continue;
+            }
+
             if ($context['flags']['namev']) {
                 if (preg_match('/^((\\[([^\\]]+)\\])|([^=^[]+))=(.+)$/', $var, $m)) {
                     if (!$context['flags']['advar'] && $m[3]) {
