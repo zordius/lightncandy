@@ -823,6 +823,8 @@ $libstr
      * @param array &$context current compile context
      *
      * @return array code representing passed expression
+     *
+     * @codeCoverageIgnore
      */
     protected static function compileSubExpression($subExpression, &$context) {
         // mock up a token for this expression
@@ -840,15 +842,14 @@ $libstr
             self::POS_ROTHER => '',
         );
 
-        list( $raw, $vars ) = self::parseTokenArgs( $token, $context );
-        // override $raw, subexpressions are never escaped
-        $raw = true;
+        list( , $vars ) = self::parseTokenArgs( $token, $context );
         $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;
 
         // no separator is needed, this code will be used as a function argument
         $origSeperator = $context['ops']['seperator'];
         $context['ops']['seperator'] = '';
-        $ret = self::compileCustomHelper($context, $vars, $raw, $named);
+        // override $raw, subexpressions are never escaped
+        $ret = self::compileCustomHelper($context, $vars, true, $named);
         $context['ops']['seperator'] = $origSeperator;
 
         return Array($ret, $ret);
