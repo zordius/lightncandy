@@ -48,6 +48,7 @@ class LightnCandy {
     const FLAG_ECHO = 16384;
     const FLAG_PROPERTY = 32768;
     const FLAG_METHOD = 65536;
+    const FLAG_RUNTIMEPARTIAL = 1048576;
 
     // Mustache compatibility
     const FLAG_MUSTACHESP = 131072;
@@ -59,12 +60,12 @@ class LightnCandy {
     // alias flags
     const FLAG_BESTPERFORMANCE = 16384; // FLAG_ECHO
     const FLAG_JS = 24; // FLAG_JSTRUE + FLAG_JSOBJECT
+    const FLAG_MUSTACHE = 393216; // FLAG_MUSTACHESP + FLAG_MUSTACHELOOKUP
     const FLAG_HANDLEBARS = 8160; // FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME + FLAG_SPACECTL + FLAG_NAMEDARG + FLAG_SPVARS
     const FLAG_HANDLEBARSJS = 8184; // FLAG_JS + FLAG_HANDLEBARS
     const FLAG_INSTANCE = 98304; // FLAG_PROPERTY + FLAG_METHOD
 
     // RegExps
-    const PARTIAL_SEARCH = '/\\{\\{>[ \\t]*(.+?)[ \\t]*\\}\\}/s';
     const VARNAME_SEARCH = '/(\\[[^\\]]+\\]|[^\\[\\]\\.]+)/';
     const EXTENDED_COMMENT_SEARCH = '/{{!--.*?--}}/s';
 
@@ -94,9 +95,6 @@ class LightnCandy {
      */
     public static function compile($template, $options = Array('flags' => self::FLAG_BESTPERFORMANCE)) {
         $context = self::buildContext($options);
-
-        // Scan for partial and replace partial with template.
-        $template = self::expandPartial($template, $context);
 
         if (self::handleError($context)) {
             return false;
@@ -148,7 +146,7 @@ class LightnCandy {
             $right = preg_quote($right);
         }
 
-        $context['token']['search'] = "/^(.*?)(\\s*)($left)(~?)([\\^#\\/!&]?)(.+?)(~?)($right)(\\s*)(.*)\$/s";
+        $context['token']['search'] = "/^(.*?)(\\s*)($left)(~?)([\\^#\\/!&>]?)(.+?)(~?)($right)(\\s*)(.*)\$/s";
     }
 
     /**
@@ -182,7 +180,12 @@ class LightnCandy {
         while (preg_match($context['token']['search'], $template, $matches)) {
             $context['tokens']['current']++;
             $tmpl = LightnCandy::compileToken($matches, $context);
-            $code .= "{$matches[LightnCandy::POS_LOTHER]}{$matches[LightnCandy::POS_LSPACE]}'$tmpl'{$matches[LightnCandy::POS_RSPACE]}";
+            if ($tmpl == $context['ops']['seperator']) {
+                $tmpl = '';
+            } else {
+                $tmpl = "'$tmpl'";
+            }
+            $code .= "{$matches[LightnCandy::POS_LOTHER]}{$matches[LightnCandy::POS_LSPACE]}$tmpl{$matches[LightnCandy::POS_RSPACE]}";
             $template = $matches[LightnCandy::POS_ROTHER];
         }
         return "$code$template";
@@ -227,6 +230,7 @@ class LightnCandy {
         'helpers' => $helpers,
         'blockhelpers' => $bhelpers,
         'hbhelpers' => $hbhelpers,
+        'partials' => Array({$context['partialCode']}),
         'scopes' => Array(\$in),
         'sp_vars' => Array(),
 $libstr
@@ -273,6 +277,7 @@ $libstr
                 'debug' => $flags & self::FLAG_RENDER_DEBUG,
                 'prop' => $flags & self::FLAG_PROPERTY,
                 'method' => $flags & self::FLAG_METHOD,
+                'runpart' => $flags & self::FLAG_RUNTIMEPARTIAL,
             ),
             'level' => 0,
             'stack' => Array(),
@@ -285,6 +290,7 @@ $libstr
                 'count' => 0
             ),
             'usedPartial' => Array(),
+            'partialCode' => '',
             'usedFeature' => Array(
                 'rootthis' => 0,
                 'enc' => 0,
@@ -383,47 +389,34 @@ $libstr
     }
 
     /**
-     * Expand partial string recursively.
-     *
-     * @param string $template template string
-     *
-     * @param mixed $context
-     *
-     * @return string expanded template
-     *
-     * @expect "123\n" when input '{{> test1}}', Array('basedir' => Array('tests'), 'usedFeature' => Array('partial' =>0), 'fileext' => Array('.tmpl'))
-     * @expect "a123\nb\n" when input '{{> test2}}', Array('basedir' => Array('tests'), 'usedFeature' => Array('partial' =>0), 'fileext' => Array('.tmpl'))
-     */
-    public static function expandPartial($template, &$context) {
-        $template = preg_replace_callback(self::PARTIAL_SEARCH, function ($matches) use (&$context) {
-            return LightnCandy::expandPartial(LightnCandy::readPartial($matches[1], $context), $context);
-        }, $template);
-        return $template;
-    }
-
-    /**
-     * Read partial file content as string.
+     * Read partial file content as string and store in context
      *
      * @param string $name partial file name
      * @param array $context Current context of compiler progress.
      *
-     * @return string partial file content
-     *
-     * @expect "123\n" when input 'test1', Array('basedir' => Array('tests'), 'usedFeature' => Array('partial' =>0), 'fileext' => Array('.tmpl'))
-     * @expect "a{{> test1}}b\n" when input 'test2', Array('basedir' => Array('tests'), 'usedFeature' => Array('partial' =>0), 'fileext' => Array('.tmpl'))
-     * @expect null when input 'test3', Array('basedir' => Array('tests'), 'usedFeature' => Array('partial' =>0), 'fileext' => Array('.tmpl'))
+     * @codeCoverageIgnore
      */
     public static function readPartial($name, &$context) {
-        $f = preg_split('/[ \\t]/', $name);
         $context['usedFeature']['partial']++;
+
+        if (isset($context['usedPartial'][$name])) {
+            return;
+        }
+
         foreach ($context['basedir'] as $dir) {
             foreach ($context['fileext'] as $ext) {
-                $fn = "$dir/$f[0]$ext";
+                $fn = "$dir/$name$ext";
                 if (file_exists($fn)) {
-                    return file_get_contents($fn);
+                    $context['usedPartial'][$name] = addcslashes(file_get_contents($fn), "'");
+                    if ($context['flags']['runpart']) {
+                        $code = self::compileTemplate($context, $context['usedPartial'][$name]);
+                        $context['partialCode'] .= "'$name' => function (\$cx, \$in) {{$context['ops']['op_start']}'$code'{$context['ops']['op_end']}},";
+                    }
+                    return;
                 }
             }
         }
+
         $context['error'][] = "can not find partial file for '$name', you should set correct basedir and fileext in options";
     }
 
@@ -487,7 +480,6 @@ $libstr
      *
      * @expect 'function($a) {return;}' when input function ($a) {return;}
      * @expect 'function($a) {return;}' when input    function ($a) {return;}
-     * @expect '' when input 'Directory::close'
      */
     protected static function getPHPCode($closure) {
         if (is_string($closure) && preg_match('/(.+)::(.+)/', $closure, $matched)) {
@@ -496,11 +488,6 @@ $libstr
             $ref = new ReflectionFunction($closure);
         }
         $fname = $ref->getFileName();
-
-        // This never happened, only for Unit testing.
-        if (!is_file($fname)) {
-            return '';
-        }
 
         $lines = file_get_contents($fname);
         $file = new SplFileObject($fname);
@@ -709,23 +696,6 @@ $libstr
         }
 
         return include('data://text/plain,' . urlencode($php));
-    }
-
-    /**
-     * Use a saved PHP file to render the input data.
-     *
-     * @param string $compiled compiled template php file name
-     *
-     * @param mixed $data
-     *
-     * @return string rendered result
-     *
-     * @codeCoverageIgnore
-     */
-    public static function render($compiled, $data) {
-        /** @var Closure $func */
-        $func = include($compiled);
-        return $func($data);
     }
 
     /**
@@ -1231,6 +1201,10 @@ $libstr
      */
     protected static function validateOperations($token, &$context, $vars) {
         switch ($token[self::POS_OP]) {
+        case '>':
+            self::readPartial($vars[0][0], $context);
+            return true;
+
         case ' ':
             return ++$context['usedFeature']['delimiter'];
 
@@ -1451,6 +1425,14 @@ $libstr
      */
     protected static function compileSection(&$token, &$context, $vars, $named) {
         switch ($token[self::POS_OP]) {
+        case '>':
+            if ($context['flags']['runpart']) {
+                $v = self::getVariableName($vars[1], $context);
+                return $context['ops']['seperator'] . self::getFuncName($context, 'p', "{$vars[0][0]} {$v[1]}") . "\$cx, '{$vars[0][0]}', {$v[0]}){$context['ops']['seperator']}";
+            }
+            $token[self::POS_ROTHER] = $context['usedPartial'][$vars[0][0]] . $token[self::POS_RSPACE] . $token[self::POS_ROTHER];
+            $token[LightnCandy::POS_RSPACE] = '';
+            return $context['ops']['seperator'];
         case '^':
             $v = self::getVariableName($vars[0], $context);
             $context['stack'][] = self::getArrayCode($vars[0]);
@@ -2140,6 +2122,10 @@ class LCRun3 {
         $ret = $cb($cx, $v);
         array_pop($cx['scopes']);
         return $ret;
+    }
+
+    public static function p($cx, $p, $vars) {
+        return call_user_func($cx['partials'][$p], $cx, $vars);
     }
 
     /**
