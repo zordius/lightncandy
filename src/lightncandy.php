@@ -229,7 +229,6 @@ class LightnCandy {
         $flagProp = self::getBoolStr($context['flags']['prop']);
         $flagMethod = self::getBoolStr($context['flags']['method']);
         $flagMustlok = self::getBoolStr($context['flags']['mustlok']);
-        $flagMustpi = self::getBoolStr($context['flags']['mustpi']);
 
         $libstr = self::exportLCRun($context);
         $helpers = self::exportHelper($context);
@@ -247,7 +246,6 @@ class LightnCandy {
             'prop' => $flagProp,
             'method' => $flagMethod,
             'mustlok' => $flagMustlok,
-            'mustpi' => $flagMustpi,
             'debug' => \$debugopt,
         ),
         'helpers' => $helpers,
