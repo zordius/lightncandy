@@ -1449,7 +1449,7 @@ $libstr
                 $v = self::getVariableName($vars[1], $context);
                 return $context['ops']['seperator'] . self::getFuncName($context, 'p', "{$vars[0][0]} {$v[1]}") . "\$cx, '{$vars[0][0]}', {$v[0]}){$context['ops']['seperator']}";
             } else {
-                return self::compileTemplate($context, $context['usedPartial'][$vars[0][0]], $vars[0][0]);
+                return "{$context['ops']['seperator']}'" . self::compileTemplate($context, $context['usedPartial'][$vars[0][0]], $vars[0][0]) . "'{$context['ops']['seperator']}";
             }
         case '^':
             $v = self::getVariableName($vars[0], $context);
