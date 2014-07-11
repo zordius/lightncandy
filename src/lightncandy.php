@@ -436,7 +436,7 @@ $libstr
                         $code = self::compileTemplate($context, $context['usedPartial'][$name], $name);
                         if ($context['flags']['mustpi']) {
                             $sp = ', $sp';
-                            $code = preg_replace('/\n/', "\n'{$context['ops']['seperator']}\$sp{$context['ops']['seperator']}'", $code);
+                            $code = preg_replace('/\n\r?([^\r\n])/s', "\n'{$context['ops']['seperator']}\$sp{$context['ops']['seperator']}'\$1", $code);
                         } else {
                             $sp = '';
                         }
