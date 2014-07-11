@@ -114,6 +114,7 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 
 * `FLAG_ERROR_LOG` : error_log() when found any template error
 * `FLAG_ERROR_EXCEPTION` : throw exception when found any template error
+* `FLAG_ERROR_SKIPPARTIAL` : skip 'partial not found' error/exception. Use this to align with mustache specification.
 * `FLAG_STANDALONE` : generate stand-alone PHP codes, which can be execute without including LightnCandy.php. The compiled PHP code will contain scoped user function, somehow larger. And, the performance of the template will slow 1 ~ 10%.
 * `FLAG_JSTRUE` : generate 'true' when value is true (handlebars.js behavior). Otherwise, true will generate ''.
 * `FLAG_JSOBJECT` : generate '[object Object]' for associated array, generate ',' separated values for array (handlebars.js behavior). Otherwise, all PHP array will generate ''.
@@ -136,7 +137,7 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * `FLAG_MUSTACHESP` : align line change and spacing behaviors with mustache specification.
 * `FLAG_MUSTACHELOOKUP` : align recursive lookup up behaviors with mustache specification.
 * `FLAG_MUSTACHEPAIN` : align partial indent behavior with mustache specification.
-* `FLAG_MUSTACHE` : support all mustache specification, same with `FLAG_MUSTACHESP` + `FLAG_MUSTACHELOOKUP` + `FLAG_MUSTACHEPAIN`.
+* `FLAG_MUSTACHE` : support all mustache specification, same with `FLAG_ERROR_SKIPPARTIAL` + `FLAG_MUSTACHESP` + `FLAG_MUSTACHELOOKUP` + `FLAG_MUSTACHEPAIN`.
 * `FLAG_ECHO` : compile to `echo 'a', $b, 'c';` to improve performance. This will slow down rendering when the template and data are simple, but will improve 1% ~ 7% when the data is big and looping in the template.
 * `FLAG_BESTPERFORMANCE` : same with `FLAG_ECHO` now. This flag may be changed base on performance testing result in the future.
 * `FLAG_RENDER_DEBUG` : generate debug template to show error when rendering. With this flag, the performance of rendering may be slowed.

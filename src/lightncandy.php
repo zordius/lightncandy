@@ -25,6 +25,7 @@ class LightnCandy {
     // Compile time error handling flags
     const FLAG_ERROR_LOG = 1;
     const FLAG_ERROR_EXCEPTION = 2;
+    const FLAG_ERROR_SKIPPARTIAL = 4194304;
 
     // Compile the template as standalone PHP code which can execute without including LightnCandy
     const FLAG_STANDALONE = 4;
@@ -61,7 +62,7 @@ class LightnCandy {
     // alias flags
     const FLAG_BESTPERFORMANCE = 16384; // FLAG_ECHO
     const FLAG_JS = 24; // FLAG_JSTRUE + FLAG_JSOBJECT
-    const FLAG_MUSTACHE = 2490368; // FLAG_MUSTACHESP + FLAG_MUSTACHELOOKUP +  FLAG_MUSTACHEPAIN
+    const FLAG_MUSTACHE = 6684672; // FLAG_ERROR_SKIPPARTIAL + FLAG_MUSTACHESP + FLAG_MUSTACHELOOKUP + FLAG_MUSTACHEPAIN
     const FLAG_HANDLEBARS = 8160; // FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME + FLAG_SPACECTL + FLAG_NAMEDARG + FLAG_SPVARS
     const FLAG_HANDLEBARSJS = 8184; // FLAG_JS + FLAG_HANDLEBARS
     const FLAG_INSTANCE = 98304; // FLAG_PROPERTY + FLAG_METHOD
@@ -282,6 +283,7 @@ $libstr
             'flags' => Array(
                 'errorlog' => $flags & self::FLAG_ERROR_LOG,
                 'exception' => $flags & self::FLAG_ERROR_EXCEPTION,
+                'skippartial' => $flags & self::FLAG_ERROR_SKIPPARTIAL,
                 'standalone' => $flags & self::FLAG_STANDALONE,
                 'jstrue' => $flags & self::FLAG_JSTRUE,
                 'jsobj' => $flags & self::FLAG_JSOBJECT,
@@ -447,7 +449,9 @@ $libstr
             }
         }
 
-        $context['error'][] = "can not find partial file for '$name', you should set correct basedir and fileext in options";
+        if (!$context['flags']['skippartial']) {
+            $context['error'][] = "can not find partial file for '$name', you should set correct basedir and fileext in options";
+        }
     }
 
     /**
@@ -1463,6 +1467,11 @@ $libstr
     protected static function compileSection(&$token, &$context, $vars, $named) {
         switch ($token[self::POS_OP]) {
         case '>':
+            // mustache spec: ignore missing partial
+            if (!isset($context['usedPartial'][$vars[0][0]])) {
+                return $context['ops']['seperator'];
+            }
+
             if ($context['flags']['runpart']) {
                 $v = self::getVariableName($vars[1], $context);
                 $sp = $context['tokens']['partialind'] ? ", '{$context['tokens']['partialind']}'" : '';
