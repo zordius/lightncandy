@@ -21,10 +21,6 @@ class MustacheSpecTest extends PHPUnit_Framework_TestCase
             $this->markTestIncomplete("Skip [{$spec['file']}.{$spec['name']}]#{$spec['no']} , lightncandy do not support this now.");
         }
 
-        if (preg_match('/partial should be indented before rendering/', $spec['desc'])) {
-            $this->markTestIncomplete("Skip [{$spec['file']}.{$spec['name']}]#{$spec['no']} , lightncandy do not support this now.");
-        }
-
         if (preg_match('/partials\\.json/', $spec['file']) && preg_match('/Standalone tags should not require a newline/', $spec['desc'])) {
             $this->markTestIncomplete("Skip [{$spec['file']}.{$spec['name']}]#{$spec['no']} , lightncandy do not support this now.");
         }
@@ -40,7 +36,7 @@ class MustacheSpecTest extends PHPUnit_Framework_TestCase
         }
 
         $php = LightnCandy::compile($spec['template'], Array(
-            'flags' => LightnCandy::FLAG_MUSTACHELOOKUP | LightnCandy::FLAG_MUSTACHESP | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_RUNTIMEPARTIAL,
+            'flags' => LightnCandy::FLAG_MUSTACHE | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_RUNTIMEPARTIAL,
             'helpers' => array(
             ),
             'basedir' => $tmpdir,

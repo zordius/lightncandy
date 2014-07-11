@@ -53,6 +53,7 @@ class LightnCandy {
     // Mustache compatibility
     const FLAG_MUSTACHESP = 131072;
     const FLAG_MUSTACHELOOKUP = 262144;
+    const FLAG_MUSTACHEPAIN = 2097152;
 
     // Template rendering time debug flags
     const FLAG_RENDER_DEBUG = 524288;
@@ -60,7 +61,7 @@ class LightnCandy {
     // alias flags
     const FLAG_BESTPERFORMANCE = 16384; // FLAG_ECHO
     const FLAG_JS = 24; // FLAG_JSTRUE + FLAG_JSOBJECT
-    const FLAG_MUSTACHE = 393216; // FLAG_MUSTACHESP + FLAG_MUSTACHELOOKUP
+    const FLAG_MUSTACHE = 2490368; // FLAG_MUSTACHESP + FLAG_MUSTACHELOOKUP +  FLAG_MUSTACHEPAIN
     const FLAG_HANDLEBARS = 8160; // FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME + FLAG_SPACECTL + FLAG_NAMEDARG + FLAG_SPVARS
     const FLAG_HANDLEBARSJS = 8184; // FLAG_JS + FLAG_HANDLEBARS
     const FLAG_INSTANCE = 98304; // FLAG_PROPERTY + FLAG_METHOD
@@ -226,6 +227,7 @@ class LightnCandy {
         $flagProp = self::getBoolStr($context['flags']['prop']);
         $flagMethod = self::getBoolStr($context['flags']['method']);
         $flagMustlok = self::getBoolStr($context['flags']['mustlok']);
+        $flagMustpi = self::getBoolStr($context['flags']['mustpi']);
 
         $libstr = self::exportLCRun($context);
         $helpers = self::exportHelper($context);
@@ -243,6 +245,7 @@ class LightnCandy {
             'prop' => $flagProp,
             'method' => $flagMethod,
             'mustlok' => $flagMustlok,
+            'mustpi' => $flagMustpi,
             'debug' => \$debugopt,
         ),
         'helpers' => $helpers,
@@ -292,6 +295,7 @@ $libstr
                 'exhlp' => $flags & self::FLAG_EXTHELPER,
                 'mustsp' => $flags & self::FLAG_MUSTACHESP,
                 'mustlok' => $flags & self::FLAG_MUSTACHELOOKUP,
+                'mustpi' => $flags & self::FLAG_MUSTACHEPAIN,
                 'debug' => $flags & self::FLAG_RENDER_DEBUG,
                 'prop' => $flags & self::FLAG_PROPERTY,
                 'method' => $flags & self::FLAG_METHOD,
@@ -1356,6 +1360,9 @@ $libstr
         $ahead = $context['tokens']['ahead'];
         $context['tokens']['ahead'] = !$rsp;
 
+        // reset partial indent
+        $context['tokens']['partialind'] = ''; // $lsp ? '' : $token[self::POS_LSPACE];
+
         // same tags in the same line , not standalone
         if (!$lsp && $ahead) {
             return;
@@ -1380,6 +1387,9 @@ $libstr
             || ($rsp && !$token[self::POS_LOTHER]) // first line without left
             || ($lsp && ($context['tokens']['current'] == $context['tokens']['count']) && !$token[self::POS_ROTHER]) // final line
            ) {
+            if ($context['flags']['mustpi'] && ($token[self::POS_OP] === '>')) {
+                $context['tokens']['partialind'] = $lmatch[3];
+            }
             $token[self::POS_LSPACE] = $lmatch[1] . $lmatch[2];
             $token[self::POS_RSPACE] = $rmatch[3];
         }
@@ -1447,7 +1457,8 @@ $libstr
         case '>':
             if ($context['flags']['runpart']) {
                 $v = self::getVariableName($vars[1], $context);
-                return $context['ops']['seperator'] . self::getFuncName($context, 'p', "{$vars[0][0]} {$v[1]}") . "\$cx, '{$vars[0][0]}', {$v[0]}){$context['ops']['seperator']}";
+                $sp = $context['tokens']['partialind'] ? ", '{$context['tokens']['partialind']}'" : '';
+                return $context['ops']['seperator'] . self::getFuncName($context, 'p', "{$vars[0][0]} {$v[1]}") . "\$cx, '{$vars[0][0]}', {$v[0]}{$sp}){$context['ops']['seperator']}";
             } else {
                 return "{$context['ops']['seperator']}'" . self::compileTemplate($context, $context['usedPartial'][$vars[0][0]], $vars[0][0]) . "'{$context['ops']['seperator']}";
             }
@@ -2152,8 +2163,10 @@ class LCRun3 {
      * @return string The rendered string of the partial
      *
      */
-    public static function p($cx, $p, $v) {
-        return call_user_func($cx['partials'][$p], $cx, $v);
+    public static function p($cx, $p, $v, $sp = '') {
+        return $sp
+               ? preg_replace('/^/', $sp, call_user_func($cx['partials'][$p], $cx, $v))
+               : call_user_func($cx['partials'][$p], $cx, $v);
     }
 
     /**
