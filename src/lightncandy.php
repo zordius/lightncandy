@@ -179,8 +179,13 @@ class LightnCandy {
     protected static function compileTemplate(&$context, $template, $partial = '') {
         if ($partial && !$context['flags']['runpart']) {
             $context['partialStack'][] = $partial;
-            if (count(array_unique($context['partialStack'])) < count($context['partialStack'])) {
+            $diff = count($context['partialStack']) - count(array_unique($context['partialStack']));
+            if ($diff) {
                 $context['error'][] = 'I found recursive partial includes as the path:' . implode(' > ', $context['partialStack']) . '! You should fix your template or compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag.';
+                if ($diff > 1) {
+                    $context['error'][] = "Skip rendering partial '$partial' again due to recursive detected";
+                    return '';
+                }
             }
         }
 
