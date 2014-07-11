@@ -2124,8 +2124,18 @@ class LCRun3 {
         return $ret;
     }
 
-    public static function p($cx, $p, $vars) {
-        return call_user_func($cx['partials'][$p], $cx, $vars);
+    /**
+     * LightnCandy runtime method for {{> partial}} .
+     *
+     * @param array $cx render time context
+     * @param mixed $p partial name
+     * @param mixed $v value to be the new context
+     *
+     * @return string The rendered string of the partial
+     *
+     */
+    public static function p($cx, $p, $v) {
+        return call_user_func($cx['partials'][$p], $cx, $v);
     }
 
     /**
