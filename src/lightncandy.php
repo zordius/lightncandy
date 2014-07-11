@@ -180,12 +180,12 @@ class LightnCandy {
         if ($partial && !$context['flags']['runpart']) {
             $context['partialStack'][] = $partial;
             $diff = count($context['partialStack']) - count(array_unique($context['partialStack']));
+            if ($diff > 1) {
+                $context['error'][] = "Skip rendering partial '$partial' again due to recursive detected";
+                return '';
+            }
             if ($diff) {
-                $context['error'][] = 'I found recursive partial includes as the path:' . implode(' > ', $context['partialStack']) . '! You should fix your template or compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag.';
-                if ($diff > 1) {
-                    $context['error'][] = "Skip rendering partial '$partial' again due to recursive detected";
-                    return '';
-                }
+                $context['error'][] = 'I found recursive partial includes as the path: ' . implode(' -> ', $context['partialStack']) . '! You should fix your template or compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag.';
             }
         }
 
@@ -1448,10 +1448,9 @@ $libstr
             if ($context['flags']['runpart']) {
                 $v = self::getVariableName($vars[1], $context);
                 return $context['ops']['seperator'] . self::getFuncName($context, 'p', "{$vars[0][0]} {$v[1]}") . "\$cx, '{$vars[0][0]}', {$v[0]}){$context['ops']['seperator']}";
+            } else {
+                return self::compileTemplate($context, $context['usedPartial'][$vars[0][0]], $vars[0][0]);
             }
-            $token[self::POS_ROTHER] = $context['usedPartial'][$vars[0][0]] . $token[self::POS_RSPACE] . $token[self::POS_ROTHER];
-            $token[self::POS_RSPACE] = '';
-            return $context['ops']['seperator'];
         case '^':
             $v = self::getVariableName($vars[0], $context);
             $context['stack'][] = self::getArrayCode($vars[0]);
