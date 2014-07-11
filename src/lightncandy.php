@@ -1431,7 +1431,7 @@ $libstr
                 return $context['ops']['seperator'] . self::getFuncName($context, 'p', "{$vars[0][0]} {$v[1]}") . "\$cx, '{$vars[0][0]}', {$v[0]}){$context['ops']['seperator']}";
             }
             $token[self::POS_ROTHER] = $context['usedPartial'][$vars[0][0]] . $token[self::POS_RSPACE] . $token[self::POS_ROTHER];
-            $token[LightnCandy::POS_RSPACE] = '';
+            $token[self::POS_RSPACE] = '';
             return $context['ops']['seperator'];
         case '^':
             $v = self::getVariableName($vars[0], $context);
