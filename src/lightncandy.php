@@ -178,6 +178,7 @@ class LightnCandy {
      * @codeCoverageIgnore
      */
     protected static function compileTemplate(&$context, $template, $partial = '') {
+        // Check for recursive partial
         if ($partial && !$context['flags']['runpart']) {
             $context['partialStack'][] = $partial;
             $diff = count($context['partialStack']) - count(array_unique($context['partialStack']));
@@ -433,7 +434,13 @@ $libstr
                     $context['usedPartial'][$name] = addcslashes(file_get_contents($fn), "'");
                     if ($context['flags']['runpart']) {
                         $code = self::compileTemplate($context, $context['usedPartial'][$name], $name);
-                        $context['partialCode'] .= "'$name' => function (\$cx, \$in) {{$context['ops']['op_start']}'$code'{$context['ops']['op_end']}},";
+                        if ($context['flags']['mustpi']) {
+                            $sp = ', $sp';
+                            $code = preg_replace('/\n/', "\n'{$context['ops']['seperator']}\$sp{$context['ops']['seperator']}'", $code);
+                        } else {
+                            $sp = '';
+                        }
+                        $context['partialCode'] .= "'$name' => function (\$cx, \$in{$sp}) {{$context['ops']['op_start']}'$code'{$context['ops']['op_end']}},";
                     }
                     return;
                 }
@@ -1389,8 +1396,9 @@ $libstr
            ) {
             if ($context['flags']['mustpi'] && ($token[self::POS_OP] === '>')) {
                 $context['tokens']['partialind'] = $lmatch[3];
+            } else {
+                $token[self::POS_LSPACE] = $lmatch[1] . $lmatch[2];
             }
-            $token[self::POS_LSPACE] = $lmatch[1] . $lmatch[2];
             $token[self::POS_RSPACE] = $rmatch[3];
         }
     }
@@ -2164,9 +2172,7 @@ class LCRun3 {
      *
      */
     public static function p($cx, $p, $v, $sp = '') {
-        return $sp
-               ? preg_replace('/^/', $sp, call_user_func($cx['partials'][$p], $cx, $v))
-               : call_user_func($cx['partials'][$p], $cx, $v);
+        return call_user_func($cx['partials'][$p], $cx, $v, $sp);
     }
 
     /**
