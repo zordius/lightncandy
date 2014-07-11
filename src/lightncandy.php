@@ -170,12 +170,20 @@ class LightnCandy {
      *
      * @param array $context Current context
      * @param string $template handlebars template
+     * @param string $partial partial name when $template is come from the template
      *
      * @return string generated PHP code
      *
      * @codeCoverageIgnore
      */
-    protected static function compileTemplate(&$context, $template) {
+    protected static function compileTemplate(&$context, $template, $partial = '') {
+        if ($partial && !$context['flags']['runpart']) {
+            $context['partialStack'][] = $partial;
+            if (count(array_unique($context['partialStack'])) < count($context['partialStack'])) {
+                $context['error'][] = 'I found recursive partial includes as the path:' . implode(' > ', $context['partialStack']) . '! You should fix your template or compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag.';
+            }
+        }
+
         $code = '';
         while (preg_match($context['tokens']['search'], $template, $matches)) {
             $context['tokens']['current']++;
@@ -188,6 +196,11 @@ class LightnCandy {
             $code .= "{$matches[LightnCandy::POS_LOTHER]}{$matches[LightnCandy::POS_LSPACE]}$tmpl{$matches[LightnCandy::POS_RSPACE]}";
             $template = $matches[LightnCandy::POS_ROTHER];
         }
+
+        if ($partial && !$context['flags']['runpart']) {
+            array_pop($context['partialStack']);
+        }
+
         return "$code$template";
     }
     
@@ -290,6 +303,7 @@ $libstr
                 'count' => 0
             ),
             'usedPartial' => Array(),
+            'partialStack' => Array(),
             'partialCode' => '',
             'usedFeature' => Array(
                 'rootthis' => 0,
@@ -409,7 +423,7 @@ $libstr
                 if (file_exists($fn)) {
                     $context['usedPartial'][$name] = addcslashes(file_get_contents($fn), "'");
                     if ($context['flags']['runpart']) {
-                        $code = self::compileTemplate($context, $context['usedPartial'][$name]);
+                        $code = self::compileTemplate($context, $context['usedPartial'][$name], $name);
                         $context['partialCode'] .= "'$name' => function (\$cx, \$in) {{$context['ops']['op_start']}'$code'{$context['ops']['op_end']}},";
                     }
                     return;
