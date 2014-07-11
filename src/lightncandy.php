@@ -1395,7 +1395,7 @@ $libstr
             || ($lsp && ($context['tokens']['current'] == $context['tokens']['count']) && !$token[self::POS_ROTHER]) // final line
            ) {
             if ($context['flags']['mustpi'] && ($token[self::POS_OP] === '>')) {
-                $context['tokens']['partialind'] = $lmatch[3];
+                $context['tokens']['partialind'] = $lsp ? $lmatch[3] : $token[self::POS_LSPACE];
             } else {
                 $token[self::POS_LSPACE] = $lmatch[1] . $lmatch[2];
             }

@@ -21,10 +21,6 @@ class MustacheSpecTest extends PHPUnit_Framework_TestCase
             $this->markTestIncomplete("Skip [{$spec['file']}.{$spec['name']}]#{$spec['no']} , lightncandy do not support this now.");
         }
 
-        if (preg_match('/partials\\.json/', $spec['file']) && preg_match('/Standalone tags should not require a newline/', $spec['desc'])) {
-            $this->markTestIncomplete("Skip [{$spec['file']}.{$spec['name']}]#{$spec['no']} , lightncandy do not support this now.");
-        }
-
         if (preg_match('/partials\\.json/', $spec['file']) && preg_match('/The empty string should be used when the named partial is not found/', $spec['desc'])) {
             $this->markTestIncomplete("Skip [{$spec['file']}.{$spec['name']}]#{$spec['no']} , lightncandy do not support this now.");
         }
