@@ -1559,7 +1559,7 @@ $libstr
                         return;
                     }
                     if ($pop == '^') {
-                        return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}){$context['ops']['seperator']}" : "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
+                        return "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
                     }
                     return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
                 default:
