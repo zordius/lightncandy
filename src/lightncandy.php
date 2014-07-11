@@ -146,7 +146,7 @@ class LightnCandy {
             $right = preg_quote($right);
         }
 
-        $context['token']['search'] = "/^(.*?)(\\s*)($left)(~?)([\\^#\\/!&>]?)(.+?)(~?)($right)(\\s*)(.*)\$/s";
+        $context['tokens']['search'] = "/^(.*?)(\\s*)($left)(~?)([\\^#\\/!&>]?)(.+?)(~?)($right)(\\s*)(.*)\$/s";
     }
 
     /**
@@ -158,7 +158,7 @@ class LightnCandy {
      * @codeCoverageIgnore
      */
     protected static function verifyTemplate(&$context, $template) {
-        while (preg_match($context['token']['search'], $template, $matches)) {
+        while (preg_match($context['tokens']['search'], $template, $matches)) {
             $context['tokens']['count']++;
             self::scanFeatures($matches, $context);
             $template = $matches[LightnCandy::POS_ROTHER];
@@ -177,7 +177,7 @@ class LightnCandy {
      */
     protected static function compileTemplate(&$context, $template) {
         $code = '';
-        while (preg_match($context['token']['search'], $template, $matches)) {
+        while (preg_match($context['tokens']['search'], $template, $matches)) {
             $context['tokens']['current']++;
             $tmpl = LightnCandy::compileToken($matches, $context);
             if ($tmpl == $context['ops']['seperator']) {
