@@ -1,8 +1,6 @@
 <?php
 require('src/lightncandy.php');
 $template = '{{{test @root.foo.bar}}} should be happy!';
-VAREND
-;
 
 $php = LightnCandy::compile($template, array(
     'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_ERROR_EXCEPTION,
