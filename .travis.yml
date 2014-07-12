@@ -15,7 +15,7 @@ before_script:
 
 script:
   - build/runphp build/gen_test.php
-  - phpunit
+  - vendor/bin/phpunit
   - build/travis_push
 
 env:
