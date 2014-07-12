@@ -1056,6 +1056,7 @@ $libstr
      * @expect Array(false, Array(Array('a'), Array('q=[b c'))) when input Array(0,0,0,0,0,0,'a [q=[b c]'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 1))
      * @expect Array(false, Array(Array('a'), 'q' => Array('[b'), Array('c]'))) when input Array(0,0,0,0,0,0,'a q=[b c]'), Array('flags' => Array('advar' => 0, 'this' => 1, 'namev' => 1))
      * @expect Array(false, Array(Array('a'), 'q' => Array('"b c"'))) when input Array(0,0,0,0,0,0,'a q="b c"'), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 1))
+     * @expect Array(false, Array()) when input Array(0,0,0,0,0,0,'=<% %>='), Array('flags' => Array('advar' => 1, 'this' => 1, 'namev' => 1))
      */
     protected static function parseTokenArgs(&$token, &$context) {
         trim($token[self::POS_INNERTAG]);
