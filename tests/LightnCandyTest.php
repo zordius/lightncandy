@@ -189,6 +189,9 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(Array('Array(Array($in,$in),Array())', Array('this', 'this')), $method->invoke(null,
             Array(null, null), Array('flags'=>Array('spvar'=>true))
         ));
+        $this->assertEquals(Array('Array(Array(),Array(\'a\'=>$in))', Array('this')), $method->invoke(null,
+            Array('a' => null), Array('flags'=>Array('spvar'=>true))
+        ));
     }
     /**
      * @covers LightnCandy::getVariableName

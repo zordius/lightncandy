@@ -798,6 +798,7 @@ $libstr
      *
      * @expect Array('Array(Array($in),Array())', Array('this')) when input Array(null), Array('flags'=>Array('spvar'=>true))
      * @expect Array('Array(Array($in,$in),Array())', Array('this', 'this')) when input Array(null, null), Array('flags'=>Array('spvar'=>true))
+     * @expect Array('Array(Array(),Array(\'a\'=>$in))', Array('this')) when input Array('a' => null), Array('flags'=>Array('spvar'=>true))
      */
     protected static function getVariableNames($vn, &$context) {
         $vars = Array(Array(), Array());
