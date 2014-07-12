@@ -241,6 +241,9 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(Array('((is_array($in) && isset($in[\'id\'])) ? $in[\'id\'] : null)', 'this.[id]'), $method->invoke(null,
             Array(null, 'id'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
         ));
+        $this->assertEquals(Array('LCRun3::v($cx, $in, Array(\'id\'))', 'this.[id]'), $method->invoke(null,
+            Array(null, 'id'), Array('flags'=>Array('prop'=>true,'spvar'=>true,'debug'=>0))
+        ));
     }
     /**
      * @covers LightnCandy::getExpression
