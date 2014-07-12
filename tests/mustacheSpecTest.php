@@ -13,10 +13,6 @@ class MustacheSpecTest extends PHPUnit_Framework_TestCase
     {
         global $tmpdir;
 
-        if (preg_match('/lambdas\\.json/', $spec['file'])) {
-            $this->markTestIncomplete("Skip [{$spec['file']}.{$spec['name']}]#{$spec['no']} , lightncandy do not support this now.");
-        }
-
         // clean up old partials
         foreach (glob("$tmpdir/*.tmpl") as $file) {
             unlink($file);
@@ -44,13 +40,18 @@ class MustacheSpecTest extends PHPUnit_Framework_TestCase
         $ret = Array();
 
         foreach (glob('specs/mustache/specs/*.json') as $file) {
-           $i=0;
-           $json = json_decode(file_get_contents($file), true);
-           $ret = array_merge($ret, array_map(function ($d) use ($file, &$i) {
-               $d['file'] = $file;
-               $d['no'] = ++$i;
-               return Array($d);
-           }, $json['tests']));
+            // Skip lambda extension
+            if (preg_match('/lambdas\\.json$/', $file)) {
+                continue;
+            }
+
+            $i=0;
+            $json = json_decode(file_get_contents($file), true);
+            $ret = array_merge($ret, array_map(function ($d) use ($file, &$i) {
+                $d['file'] = $file;
+                $d['no'] = ++$i;
+                return Array($d);
+            }, $json['tests']));
         }
 
         return $ret;
