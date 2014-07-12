@@ -115,7 +115,7 @@ class LightnCandy {
 
         // Do PHP code generation.
         self::setupToken($context);
-        $code = self::compileTemplate($context, addcslashes($template, "'"));
+        $code = self::compileTemplate($context, addcslashes(addcslashes($template, '\\'), "'"));
 
         // return false when fatal error
         if (self::handleError($context)) {

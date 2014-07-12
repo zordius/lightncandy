@@ -49,7 +49,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
            }, $json));
         }
 
-        return $ret;
+        return array_slice($ret, 0, 1);
     }
 }
 
