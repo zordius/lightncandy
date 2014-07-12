@@ -7,7 +7,7 @@ Travis CI status: [![Unit testing](https://travis-ci.org/zordius/lightncandy.png
 
 Scrutinizer CI status: [![Code Coverage](https://scrutinizer-ci.com/g/zordius/lightncandy/badges/coverage.png?s=57aaeed149696b16380a79615df2ff83a1c25afa)](https://scrutinizer-ci.com/g/zordius/lightncandy/)
 
-Package version on packagist: [![Package version](http://img.shields.io/packagist/v/zordius/lightncandy.svg)](https://packagist.org/packages/zordius/lightncandy)
+Package version on packagist: [![Latest Stable Version](https://poser.pugx.org/zordius/lightncandy/v/stable.svg)](https://packagist.org/packages/zordius/lightncandy)
 
 Features
 --------
