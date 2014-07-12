@@ -43,7 +43,7 @@ class MustacheSpecTest extends PHPUnit_Framework_TestCase
     {
         $ret = Array();
 
-        foreach (glob('spec/specs/*.json') as $file) {
+        foreach (glob('specs/mustache/specs/*.json') as $file) {
            $i=0;
            $json = json_decode(file_get_contents($file), true);
            $ret = array_merge($ret, array_map(function ($d) use ($file, &$i) {
