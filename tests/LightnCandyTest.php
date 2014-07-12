@@ -427,6 +427,9 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(9, $method->invoke(null,
             Array(0, 0, 0, 0, 0, '#', '...'), Array('blockhelpers' => Array('abc' => ''), 'usedFeature' => Array('bhelper' => 8), 'level' => 0), Array(Array('abc'))
         ));
+        $this->assertEquals(10, $method->invoke(null,
+            Array(0, 0, 0, 0, 0, ' ', '...'), Array('usedFeature' => Array('delimiter' => 9), 'level' => 0), Array()
+        ));
         $this->assertEquals(true, $method->invoke(null,
             Array(0, 0, 0, 0, 0, '>', '...'), Array('basedir' => Array('.'), 'fileext' => Array('.tmpl'), 'usedFeature' => Array('unless' => 7), 'level' => 0), Array('test')
         ));
