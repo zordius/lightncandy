@@ -3,7 +3,7 @@ HISTORY
 
 master current trunk
 
-v0.91 https://github.com/zordius/lightncandy/tree/v0.91
+v0.14 https://github.com/zordius/lightncandy/tree/v0.14
    * align with handlebars.js 2.0.0-alpha.4
    * fa6225f278 support boolen value in named arguments for cusotm helper
    * 160743e1c8 better error message when unmatch {{/foo}} tag detected
