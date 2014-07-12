@@ -1341,6 +1341,7 @@ $libstr
      * @param array $context current compile context
      * @param boolean $named is named arguments
      *
+     * @codeCoverageIgnore
      */
     public static function noNamedArguments($token, &$context, $named) {
         if ($named) {
