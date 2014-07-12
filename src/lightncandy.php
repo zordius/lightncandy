@@ -804,7 +804,7 @@ $libstr
         $exps = Array();
         foreach ($vn as $i => $v) {
             if (preg_match('/^\(.+\)$/', $v[0])) {
-                $V = self::compileSubExpression( $v[0], $context );
+                $V = self::compileSubExpression($v[0], $context);
             } else {
                 $V = self::getVariableName($v, $context);
             }
@@ -830,21 +830,12 @@ $libstr
      */
     protected static function compileSubExpression($subExpression, &$context) {
         // mock up a token for this expression
-        $token = array(
-            self::POS_LOTHER => '',
-            self::POS_LSPACE => '',
-            self::POS_BEGINTAG => '',
-            self::POS_LSPACECTL => '',
-            self::POS_OP => '',
-            // strip outer ( ) from subexpression
-            self::POS_INNERTAG => substr(substr($subExpression, 1), 0, -1),
-            self::POS_RSPACECTL => '',
-            self::POS_ENDTAG => '',
-            self::POS_RSPACE => '',
-            self::POS_ROTHER => '',
-        );
+        $token = array_fill(self::POS_LOTHER, self::POS_ROTHER, '');
 
-        list( , $vars ) = self::parseTokenArgs( $token, $context );
+        // strip outer ( ) from subexpression
+        $token[self::POS_INNERTAG] = substr($subExpression, 1, -1);
+
+        list(, $vars) = self::parseTokenArgs( $token, $context );
         $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;
 
         // no separator is needed, this code will be used as a function argument
@@ -854,7 +845,7 @@ $libstr
         $ret = self::compileCustomHelper($context, $vars, true, $named);
         $context['ops']['seperator'] = $origSeperator;
 
-        return Array($ret, $ret);
+        return Array($ret, $subExpression);
     }
 
     /**

@@ -535,6 +535,7 @@ Unsupported Feature (so far)
 ----------------------------
 
 * [NEVER] `{{foo/bar}}` style variable name, it is deprecated in official handlebars.js document.
+* [maybe] mustache lambda : runtime time compile based on input value is far from lightncandy nature, not in the plan now.
 
 Suggested Handlebars Template Practices
 ---------------------------------------
