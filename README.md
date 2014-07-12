@@ -43,7 +43,7 @@ composer require zordius/lightncandy:dev-master
 Or, download LightnCandy from github:
 
 ```
-wget https://raw.github.com/zordius/lightncandy/master/src/lightncandy.php --no-check-certificate
+curl -LO https://github.com/zordius/lightncandy/raw/master/src/lightncandy.php
 ```
 
 LightnCandy requirement: PHP 5.3.0+ .
