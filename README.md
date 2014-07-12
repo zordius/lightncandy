@@ -556,7 +556,8 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * Exact same 'true' output with handlebars.js (require `FLAG_JSTRUE`)
 * Exact same '[object Object]' output or join(',' array) output with handlebars.js (require `FLAG_JSOBJECT`)
 * Can place heading/tailing space, tab, CR/LF inside `{{ var }}` or `{{{ var }}}`
-* Recursive variable lookup to parent context same as mustache spec (require `FLAG_MUSTACHELOOKUP`)
+* Indent behavior of the partial same with mustache spec (require `FLAG_MUSTACHEPAIN`)
+* Recursive variable lookup to parent context behavior same with mustache spec (require `FLAG_MUSTACHELOOKUP`)
 * `{{{value}}}` or `{{&value}}` : raw variable
    * true as 'true' (require `FLAG_JSTRUE`)
    * false as ''
