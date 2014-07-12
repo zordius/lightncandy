@@ -2,6 +2,7 @@ HISTORY
 =======
 
 master current trunk
+   * 4c750806e8 fix for \ in template
 
 v0.14 https://github.com/zordius/lightncandy/tree/v0.14
    * align with handlebars.js 2.0.0-alpha.4
