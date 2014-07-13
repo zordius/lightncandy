@@ -3,6 +3,8 @@ HISTORY
 
 master current trunk
    * 4c750806e8 fix for \ in template
+   * 12ab6626d6 support escape. \{{foo}} will be rendered as is. ( handlebars spec , require FLAG_SLASH )
+   * 876bd44d9c escape &#x60; to &amp;#x60; ( require FLAG_JSQUOTE )
 
 v0.14 https://github.com/zordius/lightncandy/tree/v0.14
    * align with handlebars.js 2.0.0-alpha.4
