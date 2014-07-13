@@ -23,16 +23,27 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
             unlink($file);
         }
 
+        // setup partials
         if (isset($spec['partials'])) {
             foreach ($spec['partials'] as $name => $cnt) {
                 file_put_contents("$tmpdir/$name.tmpl", $cnt);
             }
         }
 
+        // setup helpers
+        $helpers = Array();
+        if (isset($spec['helpers'])) {
+            foreach ($spec['helpers'] as $name => $func) {
+                $hname = "custom_helper_{$spec['no']}_$name";
+                $helpers[$name] = $hname;
+                eval(preg_replace('/function/', "function $hname", $func['php'], 1));
+            }
+
+        }
+
         $php = LightnCandy::compile($spec['template'], Array(
-            'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_RUNTIMEPARTIAL,
-            'helpers' => array(
-            ),
+            'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_EXTHELPER,
+            'hbhelpers' => $helpers,
             'basedir' => $tmpdir,
         ));
         $renderer = LightnCandy::prepare($php);
@@ -54,7 +65,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
            }, $json));
         }
 
-        return array_slice($ret, 0, 30);
+        return array_slice($ret, 0, 60);
     }
 }
 
