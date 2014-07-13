@@ -43,6 +43,7 @@ class LightnCandy {
     const FLAG_SPACECTL = 1024;
     const FLAG_NAMEDARG = 2048;
     const FLAG_SPVARS = 4096;
+    const FLAG_SLASH = 8388608;
 
     // PHP behavior flags
     const FLAG_EXTHELPER = 8192;
@@ -63,8 +64,8 @@ class LightnCandy {
     const FLAG_BESTPERFORMANCE = 16384; // FLAG_ECHO
     const FLAG_JS = 24; // FLAG_JSTRUE + FLAG_JSOBJECT
     const FLAG_MUSTACHE = 6684672; // FLAG_ERROR_SKIPPARTIAL + FLAG_MUSTACHESP + FLAG_MUSTACHELOOKUP + FLAG_MUSTACHEPAIN
-    const FLAG_HANDLEBARS = 8160; // FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME + FLAG_SPACECTL + FLAG_NAMEDARG + FLAG_SPVARS
-    const FLAG_HANDLEBARSJS = 8184; // FLAG_JS + FLAG_HANDLEBARS
+    const FLAG_HANDLEBARS = 8396768; // FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME + FLAG_SPACECTL + FLAG_NAMEDARG + FLAG_SPVARS + FLAG_SLASH
+    const FLAG_HANDLEBARSJS = 8396792; // FLAG_JS + FLAG_HANDLEBARS
     const FLAG_INSTANCE = 98304; // FLAG_PROPERTY + FLAG_METHOD
 
     // RegExps
@@ -140,6 +141,8 @@ class LightnCandy {
             return;
         }
 
+        $context['tokens']['startchar'] = substr($left, 0, 1);
+
         if (($left === '{{') && ($right === '}}')) {
             $left = '\\{{2,3}';
             $right = '\\}{2,3}';
@@ -194,6 +197,18 @@ class LightnCandy {
 
         $code = '';
         while (preg_match($context['tokens']['search'], $template, $matches)) {
+            // Skip a token when it is slash escaped
+            if ($context['flags']['slash'] && ($matches[LightnCandy::POS_LSPACE] === '') && preg_match('/^(.*?)(\\\\+)$/s', $matches[LightnCandy::POS_LOTHER], $escmatch)) {
+                if (strlen($escmatch[2]) % 4) {
+                    $code .= substr($matches[LightnCandy::POS_LOTHER], 0, -2) . $context['tokens']['startchar'];
+                    $matches[LightnCandy::POS_BEGINTAG] = substr($matches[LightnCandy::POS_BEGINTAG], 1);
+                    $template = implode('', array_slice($matches, LightnCandy::POS_BEGINTAG));
+                    continue;
+                } else {
+                    $matches[LightnCandy::POS_LOTHER] = $escmatch[1] . str_repeat('\\', strlen($escmatch[2]) / 2);
+                }
+            }
+
             $context['tokens']['current']++;
             $tmpl = LightnCandy::compileToken($matches, $context);
             if ($tmpl == $context['ops']['seperator']) {
@@ -293,6 +308,7 @@ $libstr
                 'advar' => $flags & self::FLAG_ADVARNAME,
                 'namev' => $flags & self::FLAG_NAMEDARG,
                 'spvar' => $flags & self::FLAG_SPVARS,
+                'slash' => $flags & self::FLAG_SLASH,
                 'exhlp' => $flags & self::FLAG_EXTHELPER,
                 'mustsp' => $flags & self::FLAG_MUSTACHESP,
                 'mustlok' => $flags & self::FLAG_MUSTACHELOOKUP,

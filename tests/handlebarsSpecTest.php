@@ -32,7 +32,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
         ));
         $renderer = LightnCandy::prepare($php);
 
-        $this->assertEquals($spec['expected'], $renderer($spec['data']), "[{$spec['file']}.{$spec['description']}]#{$spec['no']}:{$spec['it']} PHP CODE: $php");
+        $this->assertEquals($spec['expected'], $renderer($spec['data']), "[{$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']} PHP CODE: $php");
     }
 
     public function jsonSpecProvider()
@@ -49,7 +49,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
            }, $json));
         }
 
-        return array_slice($ret, 0, 1);
+        return array_slice($ret, 0, 10);
     }
 }
 
