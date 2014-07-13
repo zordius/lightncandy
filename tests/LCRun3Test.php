@@ -206,6 +206,9 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
         $this->assertEquals('a&#x27;b', $method->invoke(null,
             Array(), 'a\'b'
         ));
+        $this->assertEquals('&#x60;a&#x27;b', $method->invoke(null,
+            Array(), '`a\'b'
+        ));
     }
     /**
      * @covers LCRun3::sec

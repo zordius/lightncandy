@@ -2022,9 +2022,10 @@ class LCRun3 {
      * @expect 'a' when input Array(), 'a'
      * @expect 'a&amp;b' when input Array(), 'a&b'
      * @expect 'a&#x27;b' when input Array(), 'a\'b'
+     * @expect '&#x60;a&#x27;b' when input Array(), '`a\'b'
      */
     public static function encq($cx, $var) {
-        return preg_replace('/&#039;/', '&#x27;', htmlentities(self::raw($cx, $var), ENT_QUOTES, 'UTF-8'));
+        return preg_replace('/`/', '&#x60;', preg_replace('/&#039;/', '&#x27;', htmlentities(self::raw($cx, $var), ENT_QUOTES, 'UTF-8')));
     }
 
     /**
