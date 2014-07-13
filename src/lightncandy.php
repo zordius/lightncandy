@@ -166,7 +166,7 @@ class LightnCandy {
         while (preg_match($context['tokens']['search'], $template, $matches)) {
             $context['tokens']['count']++;
             self::scanFeatures($matches, $context);
-            $template = $matches[LightnCandy::POS_ROTHER];
+            $template = $matches[self::POS_ROTHER];
         }
     }
 
@@ -198,26 +198,26 @@ class LightnCandy {
         $code = '';
         while (preg_match($context['tokens']['search'], $template, $matches)) {
             // Skip a token when it is slash escaped
-            if ($context['flags']['slash'] && ($matches[LightnCandy::POS_LSPACE] === '') && preg_match('/^(.*?)(\\\\+)$/s', $matches[LightnCandy::POS_LOTHER], $escmatch)) {
+            if ($context['flags']['slash'] && ($matches[self::POS_LSPACE] === '') && preg_match('/^(.*?)(\\\\+)$/s', $matches[self::POS_LOTHER], $escmatch)) {
                 if (strlen($escmatch[2]) % 4) {
-                    $code .= substr($matches[LightnCandy::POS_LOTHER], 0, -2) . $context['tokens']['startchar'];
-                    $matches[LightnCandy::POS_BEGINTAG] = substr($matches[LightnCandy::POS_BEGINTAG], 1);
-                    $template = implode('', array_slice($matches, LightnCandy::POS_BEGINTAG));
+                    $code .= substr($matches[self::POS_LOTHER], 0, -2) . $context['tokens']['startchar'];
+                    $matches[self::POS_BEGINTAG] = substr($matches[self::POS_BEGINTAG], 1);
+                    $template = implode('', array_slice($matches, self::POS_BEGINTAG));
                     continue;
                 } else {
-                    $matches[LightnCandy::POS_LOTHER] = $escmatch[1] . str_repeat('\\', strlen($escmatch[2]) / 2);
+                    $matches[self::POS_LOTHER] = $escmatch[1] . str_repeat('\\', strlen($escmatch[2]) / 2);
                 }
             }
 
             $context['tokens']['current']++;
-            $tmpl = LightnCandy::compileToken($matches, $context);
+            $tmpl = self::compileToken($matches, $context);
             if ($tmpl == $context['ops']['seperator']) {
                 $tmpl = '';
             } else {
                 $tmpl = "'$tmpl'";
             }
-            $code .= "{$matches[LightnCandy::POS_LOTHER]}{$matches[LightnCandy::POS_LSPACE]}$tmpl{$matches[LightnCandy::POS_RSPACE]}";
-            $template = $matches[LightnCandy::POS_ROTHER];
+            $code .= "{$matches[self::POS_LOTHER]}{$matches[self::POS_LSPACE]}$tmpl{$matches[self::POS_RSPACE]}";
+            $template = $matches[self::POS_ROTHER];
         }
 
         if ($partial && !$context['flags']['runpart']) {
