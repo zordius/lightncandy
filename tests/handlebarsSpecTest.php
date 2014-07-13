@@ -13,6 +13,11 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
     {
         global $tmpdir;
 
+        // Skip unsupported features
+        if (($spec['description'] === 'basic context') && preg_match('/functions/', $spec['it'])) {
+            $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , lightncandy do not support this now.");
+        }
+
         // clean up old partials
         foreach (glob("$tmpdir/*.tmpl") as $file) {
             unlink($file);
@@ -49,7 +54,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
            }, $json));
         }
 
-        return array_slice($ret, 0, 10);
+        return array_slice($ret, 0, 30);
     }
 }
 
