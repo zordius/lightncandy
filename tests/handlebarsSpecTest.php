@@ -61,6 +61,16 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                 if (!isset($func['php'])) {
                     $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , no PHP helper code provided for this case.");
                 }
+
+                // Wrong PHP helper interface in spec, skip.
+                preg_match('/function *\(.+?\)/', $func['javascript'], $js_args);
+                preg_match('/function *\(.+?\)/', $func['php'], $php_args);
+                $jsn = substr_count($js_args[0], ',');
+                $phpn = substr_count($php_args[0], ',');
+                if ($jsn !== $phpn) {
+                    $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , PHP helper interface is wrong.");
+                }
+
                 $hname = "custom_helper_{$spec['no']}_$name";
                 $helpers[$name] = $hname;
                 eval(preg_replace('/function/', "function $hname", $func['php'], 1));
@@ -92,7 +102,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
            }, $json));
         }
 
-        return array_slice($ret, 0, 110);
+        return array_slice($ret, 0, 130);
     }
 }
 
