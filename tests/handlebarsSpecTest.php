@@ -13,6 +13,12 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
     {
         global $tmpdir;
 
+        //// Skip bad specs
+        // No expect in spec
+        if (!isset($spec['expected'])) {
+            $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , no expected result in spec, skip.");
+        }
+
         //// Skip unsupported features
         // can not get any hint of 'function' from handlebars-spec , maybe it is a conversion error.
         if (($spec['description'] === 'basic context') && preg_match('/functions/', $spec['it'])) {
