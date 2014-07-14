@@ -586,6 +586,7 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{!-- comment or {{ or }} --}}` : extended comment that can contain }} or {{ .
 * `{{=<% %>=}}` : set delimiter to custom string , the custom string can not contain = . Check http://mustache.github.io/mustache.5.html for more example.
 * `{{#each var}}` : each loop
+* `{{#each}}` : each loop on {{.}}
 * `{{/each}}` : end loop
 * `{{#if var}}` : run if logic with original scope (null, false, empty Array and '' will skip this block)
 * `{{/if}}` : end if
