@@ -129,7 +129,7 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * `FLAG_EXTHELPER` : do not including custom helper codes into compiled PHP codes. This reduces the code size, but you need to take care of your helper functions when rendering. If you forget to include required functions when execute rendering function, `undefined function` runtime error will be triggered. NOTE: Anonymous functions will always be placed into generated codes.
 * `FLAG_RUNTIMEPARTIAL` : compile partial as runtime function, This enables recursive partials or context change for partials.
 * `FLAG_SLASH` : Skip a delimiter when it behind `\` .
-* `FLAG_ELSE` : support `{{else}}` or `{{^}}` as handlebars specification.
+* `FLAG_ELSE` : support `{{else}}` or `{{^}}` as handlebars specification. Otherwise, `{{else}}` will be resolved as normal variable , and {{^}} will cause template error.
 * `FLAG_PROPERTY` : support object instance attribute access.
 * `FLAG_METHOD` : support object instance method access.
 * `FLAG_INSTANCE` : same with `FLAG_PROPERTY` + `FLAG_METHOD`
