@@ -1644,6 +1644,9 @@ $libstr
         case 'each':
             $each = 'true';
             array_shift($vars);
+            if (!isset($vars[0])) {
+                $vars[0] = Array(null);
+            }
             break;
         case 'with':
             if ($context['flags']['with']) {

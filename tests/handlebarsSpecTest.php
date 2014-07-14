@@ -18,12 +18,22 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
         if (($spec['description'] === 'basic context') && preg_match('/functions/', $spec['it'])) {
             $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , lightncandy do not support this now.");
         }
-        if (($spec['description'] === '#if') && preg_match('/if with function argument/', $spec['it'])) {
+        if (preg_match('/(.+) with function argument/', $spec['it'])) {
             $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , lightncandy do not support this now.");
         }
 
         // Do not support includeZero now
         if (($spec['description'] === '#if') && preg_match('/includeZero=true/', $spec['template'])) {
+            $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , lightncandy do not support this now.");
+        }
+
+        // Do not support setting options.data now
+        if ($spec['it'] === 'data passed to helpers') {
+            $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , lightncandy do not support this now.");
+        }
+
+        // Do not support buildin helper : lookup now
+        if ($spec['description'] == '#lookup') {
             $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , lightncandy do not support this now.");
         }
 
@@ -79,7 +89,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
            }, $json));
         }
 
-        return array_slice($ret, 0, 80);
+        return array_slice($ret, 0, 100);
     }
 }
 
