@@ -1176,7 +1176,7 @@ $libstr
             if (is_string($idx)) {
                 $ret[$idx] = is_numeric($var) ? Array('"' . $var . '"') : self::fixVariable($var, $context);
             } else {
-                $ret[$i] = self::fixVariable($var, $context);
+                $ret[$i] = (($idx === 0) && ($token[self::POS_OP] === '>')) ? Array($var) : self::fixVariable($var, $context);
                 $i++;
             }
         }
