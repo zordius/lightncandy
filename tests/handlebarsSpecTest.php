@@ -58,6 +58,9 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
         $helpers = Array();
         if (isset($spec['helpers'])) {
             foreach ($spec['helpers'] as $name => $func) {
+                if (!isset($func['php'])) {
+                    $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , no PHP helper code provided for this case.");
+                }
                 $hname = "custom_helper_{$spec['no']}_$name";
                 $helpers[$name] = $hname;
                 eval(preg_replace('/function/', "function $hname", $func['php'], 1));
@@ -89,7 +92,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
            }, $json));
         }
 
-        return array_slice($ret, 0, 100);
+        return array_slice($ret, 0, 110);
     }
 }
 
