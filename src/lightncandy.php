@@ -44,6 +44,7 @@ class LightnCandy {
     const FLAG_NAMEDARG = 2048;
     const FLAG_SPVARS = 4096;
     const FLAG_SLASH = 8388608;
+    const FLAG_ELSE = 16777216;
 
     // PHP behavior flags
     const FLAG_EXTHELPER = 8192;
@@ -64,8 +65,8 @@ class LightnCandy {
     const FLAG_BESTPERFORMANCE = 16384; // FLAG_ECHO
     const FLAG_JS = 24; // FLAG_JSTRUE + FLAG_JSOBJECT
     const FLAG_MUSTACHE = 6684672; // FLAG_ERROR_SKIPPARTIAL + FLAG_MUSTACHESP + FLAG_MUSTACHELOOKUP + FLAG_MUSTACHEPAIN
-    const FLAG_HANDLEBARS = 8396768; // FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME + FLAG_SPACECTL + FLAG_NAMEDARG + FLAG_SPVARS + FLAG_SLASH
-    const FLAG_HANDLEBARSJS = 8396792; // FLAG_JS + FLAG_HANDLEBARS
+    const FLAG_HANDLEBARS = 25173984; // FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME + FLAG_SPACECTL + FLAG_NAMEDARG + FLAG_SPVARS + FLAG_SLASH + FLAG_ELSE
+    const FLAG_HANDLEBARSJS = 25174008; // FLAG_JS + FLAG_HANDLEBARS
     const FLAG_INSTANCE = 98304; // FLAG_PROPERTY + FLAG_METHOD
 
     // RegExps
@@ -151,7 +152,7 @@ class LightnCandy {
             $right = preg_quote($right);
         }
 
-        $context['tokens']['search'] = "/^(.*?)(\\s*)($left)(~?)([\\^#\\/!&>]?)(.+?)(~?)($right)(\\s*)(.*)\$/s";
+        $context['tokens']['search'] = "/^(.*?)(\\s*)($left)(~?)([\\^#\\/!&>]?)(.*?)(~?)($right)(\\s*)(.*)\$/s";
     }
 
     /**
@@ -309,6 +310,7 @@ $libstr
                 'namev' => $flags & self::FLAG_NAMEDARG,
                 'spvar' => $flags & self::FLAG_SPVARS,
                 'slash' => $flags & self::FLAG_SLASH,
+                'else' => $flags & self::FLAG_ELSE,
                 'exhlp' => $flags & self::FLAG_EXTHELPER,
                 'mustsp' => $flags & self::FLAG_MUSTACHESP,
                 'mustlok' => $flags & self::FLAG_MUSTACHELOOKUP,
@@ -1232,7 +1234,7 @@ $libstr
      * @return mixed Return true when invalid or detected
      * 
      * @expect null when input Array(0, 0, 0, 0, 0, ''), Array(), Array()
-     * @expect 2 when input Array(0, 0, 0, 0, 0, '^', '...'), Array('usedFeature' => Array('isec' => 1), 'level' => 0), Array()
+     * @expect 2 when input Array(0, 0, 0, 0, 0, '^', '...'), Array('usedFeature' => Array('isec' => 1), 'level' => 0), Array(Array('foo'))
      * @expect 3 when input Array(0, 0, 0, 0, 0, '!', '...'), Array('usedFeature' => Array('comment' => 2)), Array()
      * @expect true when input Array(0, 0, 0, 0, 0, '/'), Array('stack' => Array(1), 'level' => 1), Array()
      * @expect 4 when input Array(0, 0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('sec' => 3), 'level' => 0), Array('x')
@@ -1255,9 +1257,16 @@ $libstr
             return ++$context['usedFeature']['delimiter'];
 
         case '^':
-            $context['stack'][] = $token[self::POS_INNERTAG];
-            $context['level']++;
-            return ++$context['usedFeature']['isec'];
+            if ($vars[0][0]) {
+                $context['stack'][] = $token[self::POS_INNERTAG];
+                $context['level']++;
+                return ++$context['usedFeature']['isec'];
+            }
+
+            if (!$context['flags']['else']) {
+                $context['error'][] = 'do not support {{^}}, you should do compile with LightnCandy::FLAG_ELSE flag';
+            }
+            return;
 
         case '/':
             array_pop($context['stack']);
@@ -1320,16 +1329,28 @@ $libstr
             return;
         }
 
-        $context['usedFeature'][$raw ? 'raw' : 'enc']++;
+        switch ($token[self::POS_OP]) {
+        case '^':
+            if ($context['flags']['else']) {
+                return $context['usedFeature']['else']++;
+            }
+        }
 
         if (count($vars) == 0) {
             return $context['error'][] = 'Wrong variable naming in ' . self::tokenString($token);
         }
 
+        if ($vars[0] !== 'else') {
+            $context['usedFeature'][$raw ? 'raw' : 'enc']++;
+        }
+
         // validate else and this.
         switch ($vars[0]) {
         case 'else':
-            return $context['usedFeature']['else']++;
+            if ($context['flags']['else']) {
+                return $context['usedFeature']['else']++;
+            }
+            break;
 
         case 'this':
         case '.':
@@ -1477,7 +1498,7 @@ $libstr
      *
      * @codeCoverageIgnore
      */
-    protected static function compileSection(&$token, &$context, $vars, $named) {
+    protected static function compileSection(&$token, &$context, &$vars, $named) {
         switch ($token[self::POS_OP]) {
         case '>':
             // mustache spec: ignore missing partial
@@ -1493,6 +1514,11 @@ $libstr
                 return "{$context['ops']['seperator']}'" . self::compileTemplate($context, $context['usedPartial'][$vars[0][0]], $vars[0][0]) . "'{$context['ops']['seperator']}";
             }
         case '^':
+            if (!$vars[0][0]) {
+                $vars[0][0] = 'else';
+                $token[self::POS_OP] = '';
+                return;
+            }
             $v = self::getVariableName($vars[0], $context);
             $context['stack'][] = self::getArrayCode($vars[0]);
             $context['stack'][] = '^';
@@ -2072,10 +2098,7 @@ class LCRun3 {
         $is_obj = false;
 
         if ($isary && $inv !== null && count($v) === 0) {
-            $cx['scopes'][] = $in;
-            $ret = $inv($cx, $v);
-            array_pop($cx['scopes']);
-            return $ret;
+            return $inv($cx, $in);
         }
         if (!$loop && $isary) {
             $keys = array_keys($v);
@@ -2150,10 +2173,7 @@ class LCRun3 {
         }
 
         if ($inv !== null) {
-            $cx['scopes'][] = $in;
-            $ret = $inv($cx, $v);
-            array_pop($cx['scopes']);
-            return $ret;
+            return $inv($cx, $in);
         }
 
         return '';

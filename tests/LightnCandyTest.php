@@ -401,7 +401,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
             Array(0, 0, 0, 0, 0, ''), Array(), Array()
         ));
         $this->assertEquals(2, $method->invoke(null,
-            Array(0, 0, 0, 0, 0, '^', '...'), Array('usedFeature' => Array('isec' => 1), 'level' => 0), Array()
+            Array(0, 0, 0, 0, 0, '^', '...'), Array('usedFeature' => Array('isec' => 1), 'level' => 0), Array(Array('foo'))
         ));
         $this->assertEquals(3, $method->invoke(null,
             Array(0, 0, 0, 0, 0, '!', '...'), Array('usedFeature' => Array('comment' => 2)), Array()
