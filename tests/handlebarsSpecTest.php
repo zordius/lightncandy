@@ -18,6 +18,14 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
         if (($spec['description'] === 'basic context') && preg_match('/functions/', $spec['it'])) {
             $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , lightncandy do not support this now.");
         }
+        if (($spec['description'] === '#if') && preg_match('/if with function argument/', $spec['it'])) {
+            $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , lightncandy do not support this now.");
+        }
+
+        // Do not support includeZero now
+        if (($spec['description'] === '#if') && preg_match('/includeZero=true/', $spec['template'])) {
+            $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , lightncandy do not support this now.");
+        }
 
         // Lightncandy will not support old path style as foo/bar , now only support foo.bar .
         if ($spec['it'] === 'literal paths') {
@@ -71,7 +79,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
            }, $json));
         }
 
-        return array_slice($ret, 0, 70);
+        return array_slice($ret, 0, 80);
     }
 }
 
