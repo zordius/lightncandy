@@ -7,6 +7,7 @@ master current trunk
    * 876bd44d9c escape &#x60; to &amp;#x60; ( require FLAG_JSQUOTE )
    * f1f388ed79 support {{^}} as {{else}} ( require FLAG_ELSE )
    * d5e17204b6 support {{#each}} == {{#each .}} now.
+   * 742126b440 fix {{>foo/bar}} partial not found bug.
 
 v0.14 https://github.com/zordius/lightncandy/tree/v0.14
    * align with handlebars.js 2.0.0-alpha.4
