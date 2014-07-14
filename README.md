@@ -118,9 +118,9 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * `FLAG_ERROR_EXCEPTION` : throw exception when found any template error
 * `FLAG_ERROR_SKIPPARTIAL` : skip 'partial not found' error/exception. Use this to align with mustache specification.
 * `FLAG_STANDALONE` : generate stand-alone PHP codes, which can be execute without including LightnCandy.php. The compiled PHP code will contain scoped user function, somehow larger. And, the performance of the template will slow 1 ~ 10%.
-* `FLAG_JSTRUE` : generate 'true' when value is true (handlebars.js behavior). Otherwise, true will generate ''.
-* `FLAG_JSOBJECT` : generate '[object Object]' for associated array, generate ',' separated values for array (handlebars.js behavior). Otherwise, all PHP array will generate ''.
-* `FLAG_THIS` : resolve `{{this}}` as {{.}} in template. Otherwise, `{{this}}` will be resolved as normal variable.
+* `FLAG_JSTRUE` : generate 'true' when value is true (JavaScript behavior). Otherwise, true will generate ''.
+* `FLAG_JSOBJECT` : generate '[object Object]' for associated array, generate ',' separated values for array (JavaScript behavior). Otherwise, all PHP array will generate ''.
+* `FLAG_THIS` : resolve `{{this}}` as `{{.}}` in template. Otherwise, `{{this}}` will be resolved as normal variable.
 * `FLAG_WITH` : support `{{#with var}}` in template. Otherwise, `{{#with var}}` will cause template error.
 * `FLAG_PARENT` : support `{{../var}}` in template. Otherwise, `{{../var}}` will cause template error.
 * `FLAG_JSQUOTE` : escape `'` to `&#x27;` , <code>`</code> to `&#x60;` . Otherwise, `'` will be escaped to `&#039;` , <code>`</code> will not be touched.
