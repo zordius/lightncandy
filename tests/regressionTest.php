@@ -1,6 +1,7 @@
 <?php
 
 require_once('src/lightncandy.php');
+require_once('tests/helpers_for_test.php');
 
 $tmpdir = sys_get_temp_dir();
 
@@ -44,6 +45,16 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 ),
                 'data' => Array('tt' => 'bla bla bla'),
                 'expected' => '<div class="terms-text"> OK! </div>'
+            ),
+
+            Array(
+                'id' => 45,
+                'template' => '{{{a.b.c}}}, {{a.b.bar}}, {{a.b.prop}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_INSTANCE | LightnCandy::FLAG_HANDLEBARSJS,
+                ),
+                'data' => Array('a' => Array('b' => new foo)),
+                'expected' => ', OK!, Yes!'
             ),
         );
 
