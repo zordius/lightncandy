@@ -112,6 +112,16 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'data' => Array('foo' => Array('A', 'B', 'bar' => Array('C', 'D', 'E'))),
                 'expected' => ' Test! A  Test! B  Test! C,D,E ',
             ),
+
+            Array(
+                'id' => 81,
+                'template' => '{{#with ../person}} {{^name}} Unknown {{/name}} {{/with}}?!',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_ERROR_EXCEPTION,
+                ),
+                'data' => Array('parent?!' => Array('A', 'B', 'bar' => Array('C', 'D', 'E'))),
+                'expected' => '?!'
+            ),
         );
 
         return array_map(function($i) {return Array($i);}, $issues);
