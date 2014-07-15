@@ -93,6 +93,25 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'data' => Array('tmp' => Array('A', 'B', 'C')),
                 'expected' => 'IS_ARRAY should be happy!'
             ),
+
+            Array(
+                'id' => 68,
+                'template' => '{{#myeach foo}} Test! {{this}} {{/myeach}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'myeach' => function ($context, $options) {
+                            $ret = '';
+                            foreach ($context as $cx) {
+                                $ret .= $options['fn']($cx);
+                            }
+                            return $ret;
+                        }
+                    )
+                ),
+                'data' => Array('foo' => Array('A', 'B', 'bar' => Array('C', 'D', 'E'))),
+                'expected' => ' Test! A  Test! B  Test! C,D,E ',
+            ),
         );
 
         return array_map(function($i) {return Array($i);}, $issues);
