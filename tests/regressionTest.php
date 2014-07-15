@@ -64,7 +64,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                     'flags' => LightnCandy::FLAG_THIS,
                 ),
                 'data' => Array('id' => 'bla bla bla', 'a' => Array('id' => 'OK!')),
-                'expected' => 'bla bla bla, OK!',
+                'expected' => 'bla bla bla, OK!'
             ),
 
             Array(
@@ -79,7 +79,19 @@ class regressionTest extends PHPUnit_Framework_TestCase
                     )
                 ),
                 'data' => null,
-                'expected' => 'OKOK~1 1, OKOK~2 2, OKOK~3 3, OKOK~4 4',
+                'expected' => 'OKOK~1 1, OKOK~2 2, OKOK~3 3, OKOK~4 4'
+            ),
+
+            Array(
+                'id' => 52,
+                'template' => '{{{test_array tmp}}} should be happy!',
+                'options' => Array(
+                    'helpers' => Array(
+                        'test_array',
+                    )
+                ),
+                'data' => Array('tmp' => Array('A', 'B', 'C')),
+                'expected' => 'IS_ARRAY should be happy!'
             ),
         );
 

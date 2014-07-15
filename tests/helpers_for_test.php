@@ -24,5 +24,9 @@ function	meetup_date_format4(){
     return "OKOK~4";};
 
 
+function test_array ($input) {
+   return is_array($input[0]) ? 'IS_ARRAY' : 'NOT_ARRAY';
+}
+
 
 ?>
