@@ -56,6 +56,14 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'data' => Array('a' => Array('b' => new foo)),
                 'expected' => ', OK!, Yes!'
             ),
+
+            Array(
+                'id' => 46,
+                'template' => '{{{this.id}}}, {{a.id}}',
+                'options' => null,
+                'data' => Array('id' => 'bla bla bla', 'a' => Array('id' => 'OK!')),
+                'expected' => 'bla bla bla, OK!',
+            ),
         );
 
         return $issues;
