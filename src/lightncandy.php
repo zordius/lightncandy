@@ -811,6 +811,7 @@ $libstr
      *
      * @param array $vn variable name array.
      * @param array $context current compile context
+     * @param array $helper true when compile for helper
      *
      * @return string variable names
      *
@@ -818,14 +819,14 @@ $libstr
      * @expect Array('Array(Array($in,$in),Array())', Array('this', 'this')) when input Array(null, null), Array('flags'=>Array('spvar'=>true))
      * @expect Array('Array(Array(),Array(\'a\'=>$in))', Array('this')) when input Array('a' => null), Array('flags'=>Array('spvar'=>true))
      */
-    protected static function getVariableNames($vn, &$context) {
+    protected static function getVariableNames($vn, &$context, $helper = false) {
         $vars = Array(Array(), Array());
         $exps = Array();
         foreach ($vn as $i => $v) {
             if (preg_match('/^\(.+\)$/', $v[0])) {
                 $V = self::compileSubExpression($v[0], $context);
             } else {
-                $V = self::getVariableName($v, $context);
+                $V = self::getVariableName($v, $context, $helper);
             }
             if (is_string($i)) {
                 $vars[1][] = "'$i'=>{$V[0]}";
@@ -872,6 +873,7 @@ $libstr
      *
      * @param array $var variable parsed path
      * @param array $context current compile context
+     * @param array $helper true when compile for helper$
      *
      * @return array variable names
      *
@@ -891,7 +893,7 @@ $libstr
      * @expect Array('((is_array($in) && isset($in[\'id\'])) ? $in[\'id\'] : null)', 'this.[id]') when input Array(null, 'id'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
      * @expect Array('LCRun3::v($cx, $in, Array(\'id\'))', 'this.[id]') when input Array(null, 'id'), Array('flags'=>Array('prop'=>true,'spvar'=>true,'debug'=>0))
      */
-    protected static function getVariableName($var, &$context) {
+    protected static function getVariableName($var, &$context, $helper = false) {
         $levels = 0;
 
         if ($context['flags']['spvar']) {
@@ -904,12 +906,17 @@ $libstr
             }
         }
 
-        // Handle language constants
-        switch ($var[0]) {
-        case 'true':
-            return Array('true', 'true');
-        case 'false':
-            return Array('false', 'false');
+        // Handle language constants or number , only for helpers
+        if ($helper) {
+            if (is_numeric($var[0])) {
+                return Array(1 * $var[0], $var[0]); 
+            }
+            switch ($var[0]) {
+            case 'true':
+                return Array('true', 'true');
+            case 'false':
+                return Array('false', 'false');
+            }
         }
 
         // Handle double quoted string
@@ -1562,7 +1569,7 @@ $libstr
         $ch = array_shift($vars);
 
         self::addUsageCount($context, $notHBCH ? 'blockhelpers' : 'hbhelpers', $ch[0]);
-        $v = self::getVariableNames($vars, $context);
+        $v = self::getVariableNames($vars, $context, true);
         return $context['ops']['seperator'] . self::getFuncName($context, $notHBCH ? 'bch' : 'hbch', '#' . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
@@ -1629,7 +1636,7 @@ $libstr
      */
     protected static function compileBlockBegin(&$context, $vars) {
         $each = 'false';
-        $v = isset($vars[1]) ? self::getVariableName($vars[1], $context) : Array(null, Array());
+        $v = isset($vars[1]) ? self::getVariableName($vars[1], $context, true) : Array(null, Array());
         switch ($vars[0][0]) {
         case 'if':
             $context['stack'][] = 'if';
@@ -1683,7 +1690,7 @@ $libstr
 
         $fn = $raw ? 'raw' : $context['ops']['enc'];
         $ch = array_shift($vars);
-        $v = self::getVariableNames($vars, $context);
+        $v = self::getVariableNames($vars, $context, true);
         self::addUsageCount($context, $notHH ? 'helpers' : 'hbhelpers', $ch[0]);
         return $context['ops']['seperator'] . self::getFuncName($context, $notHH ? 'ch' : 'hbch', "$ch[0] " . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, '$fn'" . ($notHH ? '' : ', \'$in\'') . "){$context['ops']['seperator']}";
     }

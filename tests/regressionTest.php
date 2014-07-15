@@ -132,6 +132,21 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'data' => null,
                 'expected' => "123\n"
             ),
+
+            Array(
+                'id' => 85,
+                'template' => '{{helper 1 foo bar="q"}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'helper' => function ($arg1, $arg2, $options) {
+                            return "ARG1:$arg1, ARG2:$arg2, HASH:{$options['hash']['bar']}";
+                        }
+                    )
+                ),
+                'data' => Array('foo' => 'BAR'),
+                'expected' => 'ARG1:1, ARG2:BAR, HASH:q',
+            ),
         );
 
         return array_map(function($i) {return Array($i);}, $issues);
