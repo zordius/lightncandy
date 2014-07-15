@@ -878,8 +878,8 @@ $libstr
      * @return array variable names
      *
      * @expect Array('$in', 'this') when input Array(null), Array('flags'=>Array('spvar'=>true,'debug'=>0))
-     * @expect Array('true', 'true') when input Array('true'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
-     * @expect Array('false', 'false') when input Array('false'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
+     * @expect Array('true', 'true') when input Array('true'), Array('flags'=>Array('spvar'=>true,'debug'=>0)), true
+     * @expect Array('false', 'false') when input Array('false'), Array('flags'=>Array('spvar'=>true,'debug'=>0)), true
      * @expect Array('((is_array($in) && isset($in[\'@index\'])) ? $in[\'@index\'] : null)', '[@index]') when input Array('@index'), Array('flags'=>Array('spvar'=>false,'debug'=>0))
      * @expect Array('$cx[\'sp_vars\'][\'index\']', '@index') when input Array('@index'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
      * @expect Array('$cx[\'sp_vars\'][\'key\']', '@key') when input Array('@key'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
@@ -908,7 +908,7 @@ $libstr
 
         // Handle language constants or number , only for helpers
         if ($helper) {
-            if (is_numeric($var[0])) {
+            if ((count($var) == 1) && is_numeric($var[0])) {
                 return Array(1 * $var[0], $var[0]); 
             }
             switch ($var[0]) {
