@@ -60,13 +60,30 @@ class regressionTest extends PHPUnit_Framework_TestCase
             Array(
                 'id' => 46,
                 'template' => '{{{this.id}}}, {{a.id}}',
-                'options' => null,
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_THIS,
+                ),
                 'data' => Array('id' => 'bla bla bla', 'a' => Array('id' => 'OK!')),
                 'expected' => 'bla bla bla, OK!',
             ),
+
+            Array(
+                'id' => 49,
+                'template' => '{{date_format}} 1, {{date_format2}} 2, {{date_format3}} 3, {{date_format4}} 4',
+                'options' => Array(
+                    'helpers' => Array(
+                        'date_format' => 'meetup_date_format',
+                        'date_format2' => 'meetup_date_format2',
+                        'date_format3' => 'meetup_date_format3',
+                        'date_format4' => 'meetup_date_format4'
+                    )
+                ),
+                'data' => null,
+                'expected' => 'OKOK~1 1, OKOK~2 2, OKOK~3 3, OKOK~4 4',
+            ),
         );
 
-        return $issues;
+        return array_map(function($i) {return Array($i);}, $issues);
     }
 }
 
