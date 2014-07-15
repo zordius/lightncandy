@@ -811,7 +811,7 @@ $libstr
      *
      * @param array $vn variable name array.
      * @param array $context current compile context
-     * @param array $helper true when compile for helper
+     * @param boolean $ishelper true when compile for helper
      *
      * @return string variable names
      *
@@ -819,14 +819,14 @@ $libstr
      * @expect Array('Array(Array($in,$in),Array())', Array('this', 'this')) when input Array(null, null), Array('flags'=>Array('spvar'=>true))
      * @expect Array('Array(Array(),Array(\'a\'=>$in))', Array('this')) when input Array('a' => null), Array('flags'=>Array('spvar'=>true))
      */
-    protected static function getVariableNames($vn, &$context, $helper = false) {
+    protected static function getVariableNames($vn, &$context, $ishelper = false) {
         $vars = Array(Array(), Array());
         $exps = Array();
         foreach ($vn as $i => $v) {
             if (preg_match('/^\(.+\)$/', $v[0])) {
                 $V = self::compileSubExpression($v[0], $context);
             } else {
-                $V = self::getVariableName($v, $context, $helper);
+                $V = self::getVariableName($v, $context, $ishelper);
             }
             if (is_string($i)) {
                 $vars[1][] = "'$i'=>{$V[0]}";
@@ -873,7 +873,7 @@ $libstr
      *
      * @param array $var variable parsed path
      * @param array $context current compile context
-     * @param array $helper true when compile for helper$
+     * @param boolean $ishelper true when compile for helper$
      *
      * @return array variable names
      *
@@ -893,7 +893,7 @@ $libstr
      * @expect Array('((is_array($in) && isset($in[\'id\'])) ? $in[\'id\'] : null)', 'this.[id]') when input Array(null, 'id'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
      * @expect Array('LCRun3::v($cx, $in, Array(\'id\'))', 'this.[id]') when input Array(null, 'id'), Array('flags'=>Array('prop'=>true,'spvar'=>true,'debug'=>0))
      */
-    protected static function getVariableName($var, &$context, $helper = false) {
+    protected static function getVariableName($var, &$context, $ishelper = false) {
         $levels = 0;
 
         if ($context['flags']['spvar']) {
@@ -907,7 +907,7 @@ $libstr
         }
 
         // Handle language constants or number , only for helpers
-        if ($helper) {
+        if ($ishelper) {
             if ((count($var) == 1) && is_numeric($var[0])) {
                 return Array(1 * $var[0], $var[0]); 
             }
