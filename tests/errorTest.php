@@ -158,6 +158,10 @@ class errorTest extends PHPUnit_Framework_TestCase
              '<ul>{{#each item}}<li>{{name}}</li>',
              'issue63: {{test_join}} Test! {{this}} {{/test_join}}',
              '{{../foo}}',
+             Array(
+                 'template' => '{{a=b}}',
+                 'options' => Array('flags' => LightnCandy::FLAG_NAMEDARG),
+             ),
         );
 
         return array_map(function($i) {
