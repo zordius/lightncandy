@@ -856,7 +856,6 @@ $libstr
         $token[self::POS_INNERTAG] = substr($subExpression, 1, -1);
 
         list(, $vars) = self::parseTokenArgs( $token, $context );
-        $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;
 
         // no separator is needed, this code will be used as a function argument
         $origSeperator = $context['ops']['seperator'];
