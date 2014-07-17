@@ -448,8 +448,7 @@ $libstr
         $fn = self::resolvePartial($name, $context);
 
         if ($fn) {
-            $code = self::compilePartial($name, $context, $fn);
-            return;
+            return self::compilePartial($name, $context, $fn);
         }
 
         if (!$context['flags']['skippartial']) {
