@@ -150,6 +150,7 @@ class errorTest extends PHPUnit_Framework_TestCase
                  'pass' => true,
              ),
              '<ul>{{#each item}}<li>{{name}}</li>',
+             'issue63: {{test_join}} Test! {{this}} {{/test_join}}',
         );
 
         return array_map(function($i) {
