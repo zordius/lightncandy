@@ -1,5 +1,7 @@
+before_commands:
+  - 'git submodule update --init --recursive'
 filter:
-    excluded_paths: [tests/*, build/*]
+    excluded_paths: [tests/*, build/*, specs/]
 tools:
     php_cs_fixer: true
     php_code_sniffer: true
