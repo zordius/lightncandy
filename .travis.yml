@@ -11,8 +11,12 @@ before_script:
 
 script:
   - build/runphp build/gen_test.php
-  - vendor/bin/phpunit
+  - vendor/bin/phpunit --coverage-clover=coverage.clover
   - build/travis_push
+
+after_script:
+  - wget https://scrutinizer-ci.com/ocular.phar
+  - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
 
 env:
   global:
