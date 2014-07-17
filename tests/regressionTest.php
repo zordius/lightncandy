@@ -95,6 +95,17 @@ class regressionTest extends PHPUnit_Framework_TestCase
             ),
 
             Array(
+                'id' => 62,
+                'template' => '{{{test_join @root.foo.bar}}} should be happy!',
+                'options' => Array(
+                     'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_ERROR_EXCEPTION,
+                     'helpers' => array('test_join')
+                ),
+                'data' => Array('foo' => Array('A', 'B', 'bar' => Array('C', 'D'))),
+                'expected' => 'C.D should be happy!',
+            ),
+
+            Array(
                 'id' => 64,
                 'template' => '{{#each foo}} Test! {{this}} {{/each}}{{> test1}} ! >>> {{>recursive}}',
                 'options' => Array(

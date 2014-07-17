@@ -28,5 +28,8 @@ function test_array ($input) {
    return is_array($input[0]) ? 'IS_ARRAY' : 'NOT_ARRAY';
 }
 
+function test_join ($input) {
+   return join('.', $input[0]);
+}
 
 ?>
