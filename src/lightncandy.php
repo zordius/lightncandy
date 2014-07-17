@@ -438,35 +438,47 @@ $libstr
      *
      * @codeCoverageIgnore
      */
-    public static function readPartial($name, &$context) {
+    protected static function readPartial($name, &$context) {
         $context['usedFeature']['partial']++;
 
         if (isset($context['usedPartial'][$name])) {
             return;
         }
 
-        foreach ($context['basedir'] as $dir) {
-            foreach ($context['fileext'] as $ext) {
-                $fn = "$dir/$name$ext";
-                if (file_exists($fn)) {
-                    $context['usedPartial'][$name] = addcslashes(file_get_contents($fn), "'");
-                    if ($context['flags']['runpart']) {
-                        $code = self::compileTemplate($context, $context['usedPartial'][$name], $name);
-                        if ($context['flags']['mustpi']) {
-                            $sp = ', $sp';
-                            $code = preg_replace('/\n\r?([^\r\n])/s', "\n'{$context['ops']['seperator']}\$sp{$context['ops']['seperator']}'\$1", $code);
-                        } else {
-                            $sp = '';
-                        }
-                        $context['partialCode'] .= "'$name' => function (\$cx, \$in{$sp}) {{$context['ops']['op_start']}'$code'{$context['ops']['op_end']}},";
-                    }
-                    return;
-                }
-            }
+        $fn = self::resolvePartial($name, $context);
+
+        if ($fn) {
+            $code = self::compilePartial($name, $context, $fn);
+            return;
         }
 
         if (!$context['flags']['skippartial']) {
             $context['error'][] = "can not find partial file for '$name', you should set correct basedir and fileext in options";
+        }
+    }
+
+    protected static function resolvePartial(&$name, &$context) {
+        foreach ($context['basedir'] as $dir) {
+            foreach ($context['fileext'] as $ext) {
+                $fn = "$dir/$name$ext";
+                if (file_exists($fn)) {
+                    return $fn;
+                }
+            }
+        }
+    }
+
+    protected static function compilePartial(&$name, &$context, $filename) {
+        $context['usedPartial'][$name] = addcslashes(file_get_contents($filename), "'");
+        if ($context['flags']['runpart']) {
+            $code = self::compileTemplate($context, $context['usedPartial'][$name], $name);
+            if ($context['flags']['mustpi']) {
+                $sp = ', $sp';
+                $code = preg_replace('/\n\r?([^\r\n])/s', "\n'{$context['ops']['seperator']}\$sp{$context['ops']['seperator']}'\$1", $code);
+            } else {
+                $sp = '';
+            }
+            $context['partialCode'] .= "'$name' => function (\$cx, \$in{$sp}) {{$context['ops']['op_start']}'$code'{$context['ops']['op_end']}},";
         }
     }
 
