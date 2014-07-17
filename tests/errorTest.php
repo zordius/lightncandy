@@ -17,159 +17,202 @@ class errorTest extends PHPUnit_Framework_TestCase
         try {
             $php = LightnCandy::compile($test['template'], $test['options']);
         } catch (Exception $e) {
+            $this->assertEquals($test['expected'], $e->getMessage());
             return;
         }
 
         // This case should be compiled without error
-        if (isset($test['pass'])) {
+        if (!isset($test['expected'])) {
             return;
         }
 
-        $this->fail('This should be failed.'); // Context:' . print_r(LightnCandy::getContext(), true));
+        $this->fail("This should be failed as '{$test['expected']}' !");
     }
 
     public function errorProvider()
     {
         $errorCases = Array(
-             '{{testerr1}}}',
-             '{{{testerr2}}',
-             '{{{#testerr3}}}',
-             '{{{!testerr4}}}',
-             '{{{^testerr5}}}',
-             '{{{/testerr6}}}',
+             Array(
+                 'template' => '{{testerr1}}}',
+                 'expected' => 'Bad token {{testerr1}}} ! Do you mean {{testerr1}} or {{{testerr1}}}?',
+             ),
+             Array(
+                 'template' => '{{{testerr2}}',
+                 'expected' => 'Bad token {{{testerr2}} ! Do you mean {{testerr2}} or {{{testerr2}}}?',
+             ),
+             Array(
+                 'template' => '{{{#testerr3}}}',
+                 'expected' => 'Bad token {{{#testerr3}}} ! Do you mean {{#testerr3}} ?',
+             ),
+             Array(
+                 'template' => '{{{!testerr4}}}',
+                 'expected' => 'Bad token {{{!testerr4}}} ! Do you mean {{!testerr4}} ?',
+             ),
+             Array(
+                 'template' => '{{{^testerr5}}}',
+                 'expected' => 'Bad token {{{^testerr5}}} ! Do you mean {{^testerr5}} ?',
+             ),
+             Array(
+                 'template' => '{{{/testerr6}}}',
+                 'expected' => 'Bad token {{{/testerr6}}} ! Do you mean {{/testerr6}} ?',
+             ),
              Array(
                  'template' => '{{win[ner.test1}}',
                  'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
+                 'expected' => 'Wrong variable naming in {{win[ner.test1}}',
              ),
              Array(
                  'template' => '{{win]ner.test2}}',
                  'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
+                 'expected' => 'Wrong variable naming as \'win]ner.test2\' in {{win]ner.test2}} !',
              ),
              Array(
                  'template' => '{{wi[n]ner.test3}}',
                  'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
+                 'expected' => 'Wrong variable naming as \'wi[n]ner.test3\' in {{wi[n]ner.test3}} !',
              ),
              Array(
                  'template' => '{{winner].[test4]}}',
                  'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
+                 'expected' => 'Wrong variable naming as \'winner].[test4]\' in {{winner].[test4]}} !',
              ),
              Array(
                  'template' => '{{winner[.test5]}}',
                  'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
+                 'expected' => 'Wrong variable naming as \'winner[.test5]\' in {{winner[.test5]}} !',
              ),
              Array(
                  'template' => '{{winner.[.test6]}}',
                  'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
-                 'pass' => true,
              ),
              Array(
                  'template' => '{{winner.[#te.st7]}}',
                  'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
-                 'pass' => true,
              ),
              Array(
                  'template' => '{{test8}}',
                  'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
-                 'pass' => true,
              ),
              Array(
                  'template' => '{{test9]}}',
                  'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
+                 'expected' => 'Wrong variable naming as \'test9]\' in {{test9]}} !',
              ),
              Array(
                  'template' => '{{testA[}}',
                  'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
+                 'expected' => 'Wrong variable naming as \'testA[\' in {{testA[}} !',
              ),
              Array(
                  'template' => '{{[testB}}',
                  'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
+                 'expected' => 'Wrong variable naming in {{[testB}}',
              ),
              Array(
                  'template' => '{{]testC}}',
                  'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
+                 'expected' => 'Wrong variable naming as \']testC\' in {{]testC}} !',
              ),
              Array(
                  'template' => '{{[testD]}}',
                  'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
-                 'pass' => true,
              ),
              Array(
                  'template' => '{{te]stE}}',
                  'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
+                 'expected' => 'Wrong variable naming as \'te]stE\' in {{te]stE}} !',
              ),
              Array(
                  'template' => '{{tee[stF}}',
                  'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
+                 'expected' => 'Wrong variable naming in {{tee[stF}}',
              ),
              Array(
                  'template' => '{{te.e[stG}}',
                  'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
+                 'expected' => 'Wrong variable naming in {{te.e[stG}}',
              ),
              Array(
                  'template' => '{{te.e]stH}}',
                  'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
+                 'expected' => 'Wrong variable naming as \'te.e]stH\' in {{te.e]stH}} !',
              ),
              Array(
                  'template' => '{{te.e[st.endI}}',
                  'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
+                 'expected' => 'Wrong variable naming in {{te.e[st.endI}}',
              ),
              Array(
                  'template' => '{{te.e]st.endJ}}',
                  'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
+                 'expected' => 'Wrong variable naming as \'te.e]st.endJ\' in {{te.e]st.endJ}} !',
              ),
              Array(
                  'template' => '{{te.[est].endK}}',
                  'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
-                 'pass' => true,
              ),
              Array(
                  'template' => '{{te.t[est].endL}}',
                  'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
+                 'expected' => 'Wrong variable naming as \'te.t[est].endL\' in {{te.t[est].endL}} !',
              ),
              Array(
                  'template' => '{{te.t[est]o.endM}}',
                  'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
+                 'expected' => 'Wrong variable naming as \'te.t[est]o.endM\' in {{te.t[est]o.endM}} !',
              ),
              Array(
                  'template' => '{{te.[est]o.endN}}',
                  'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
+                 'expected' => 'Wrong variable naming as \'te.[est]o.endN\' in {{te.[est]o.endN}} !',
              ),
              Array(
                  'template' => '{{te.[e.st].endO}}',
                  'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
-                 'pass' => true,
              ),
              Array(
                  'template' => '{{te.[e.s[t].endP}}',
                  'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
-                 'pass' => true,
              ),
              Array(
                  'template' => '{{te.[e[s.t].endQ}}',
                  'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
-                 'pass' => true,
              ),
              Array(
                  'template' => '{{helper}}',
                  'options' => Array('helpers' => Array(
                      'helper' => Array('bad input'),
                  )),
+                 'expected' => 'I found an array in helpers with key as helper, please fix it.',
              ),
-             '<ul>{{#each item}}<li>{{name}}</li>',
-             'issue63: {{test_join}} Test! {{this}} {{/test_join}}',
-             '{{../foo}}',
+             Array(
+                 'template' => '<ul>{{#each item}}<li>{{name}}</li>',
+                 'expected' => 'Unclosed token {{{#each item}}} !!',
+             ),
+             Array(
+                 'template' => 'issue63: {{test_join}} Test! {{this}} {{/test_join}}',
+                 'expected' => 'Unexpect token: {{/test_join}} !',
+             ),
+             Array(
+                 'template' => '{{../foo}}',
+                 'expected' => 'do not support {{../var}}, you should do compile with LightnCandy::FLAG_PARENT flag',
+             ),
              Array(
                  'template' => '{{a=b}}',
                  'options' => Array('flags' => LightnCandy::FLAG_NAMEDARG),
+                 'expected' => 'do not support name=value in {{a=b}}!',
              ),
-             '{{#foo}1{{^}}2{{/foo}}',
-             '{{#with a}OK!{{/with}}',
+             Array(
+                 'template' => '{{#foo}}1{{^}}2{{/foo}}',
+                 'expected' => 'do not support {{^}}, you should do compile with LightnCandy::FLAG_ELSE flag',
+             ),
+             Array(
+                 'template' => '{{#with a}OK!{{/with}}',
+                 'expected' => 'Unclosed token {{{#with a}OK!{{/with}}} !!',
+             )
         );
 
         return array_map(function($i) {
-            if (!is_array($i)) {
-                $i = Array('template' => $i);
-            }
             if (!isset($i['options'])) {
                 $i['options'] = Array('flags' => 0);
             }

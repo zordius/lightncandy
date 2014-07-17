@@ -1,6 +1,6 @@
 {
     "name": "zordius/lightncandy",
-    "description": "A PHP library to support almost all features of handlebars ( http://handlebarsjs.com/ ) , target to run as fast as pure PHP.",
+    "description": "An extremely fast PHP implementation of handlebars ( http://handlebarsjs.com/ ) and mustache ( http://mustache.github.io/ ).",
     "homepage": "https://github.com/zordius/lightncandy",
     "keywords": ["handlebars", "mustache", "PHP", "template", "logicless"],
     "license": "MIT",

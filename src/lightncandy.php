@@ -1198,10 +1198,10 @@ $libstr
      *
      * @return string Return whole token
      * 
-     * @expect 'b' when input Array('a', 'b', 'c')
-     * @expect 'c' when input Array('a', 'b', 'c', 'd', 'e'), 2
+     * @expect 'b' when input Array('a', 'b', 'c'), 1
+     * @expect 'c' when input Array('a', 'b', 'c', 'd', 'e')
      */
-    protected static function tokenString($token, $remove = 1) {
+    protected static function tokenString($token, $remove = 2) {
         return implode('', array_slice($token, $remove, -$remove));
     }
 
@@ -1220,12 +1220,12 @@ $libstr
     protected static function validateStartEnd($token, &$context, $raw) {
         // {{ }}} or {{{ }} are invalid
         if (strlen($token[self::POS_BEGINTAG]) !== strlen($token[self::POS_ENDTAG])) {
-            $context['error'][] = 'Bad token ' . self::tokenString($token) . ' ! Do you mean {{ }} or {{{ }}}?';
+            $context['error'][] = 'Bad token ' . self::tokenString($token) . ' ! Do you mean {{' . self::tokenString($token, 4) . '}} or {{{' . self::tokenString($token, 4) . '}}}?';
             return true;
         }
         // {{{# }}} or {{{! }}} or {{{/ }}} or {{{^ }}} are invalid.
         if ($raw && $token[self::POS_OP] && ($token[self::POS_OP] !== '&')) {
-            $context['error'][] = 'Bad token ' . self::tokenString($token) . ' ! Do you mean {{' . self::tokenString($token, 3) . '}} ?';
+            $context['error'][] = 'Bad token ' . self::tokenString($token) . ' ! Do you mean {{' . self::tokenString($token, 4) . '}} ?';
             return true;
         }
     }
