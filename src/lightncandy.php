@@ -1429,8 +1429,6 @@ $libstr
      * @param array $context current compile context
      *
      * @return string Return compiled code segment for the token
-     *
-     * @codeCoverageIgnore
      */
     public static function handleMustacheSpacing(&$token, &$context) {
         // Line change detection
@@ -1442,7 +1440,7 @@ $libstr
         $context['tokens']['ahead'] = !$rsp;
 
         // reset partial indent
-        $context['tokens']['partialind'] = ''; // $lsp ? '' : $token[self::POS_LSPACE];
+        $context['tokens']['partialind'] = '';
 
         // same tags in the same line , not standalone
         if (!$lsp && $ahead) {
