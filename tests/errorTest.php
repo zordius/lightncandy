@@ -162,6 +162,8 @@ class errorTest extends PHPUnit_Framework_TestCase
                  'template' => '{{a=b}}',
                  'options' => Array('flags' => LightnCandy::FLAG_NAMEDARG),
              ),
+             '{{#foo}1{{^}}2{{/foo}}',
+             '{{#with a}OK!{{/with}}',
         );
 
         return array_map(function($i) {
