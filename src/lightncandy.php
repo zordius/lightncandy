@@ -1074,7 +1074,7 @@ $libstr
         }
 
         if (($v === '.') || ($v === '')) {
-            $matched = Array(null, Array('.'));
+            $matched = Array(Array('.'), Array('.'));
         }
 
         foreach ($matched[1] as $m) {
