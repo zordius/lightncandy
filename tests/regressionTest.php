@@ -95,6 +95,34 @@ class regressionTest extends PHPUnit_Framework_TestCase
             ),
 
             Array(
+                'id' => 64,
+                'template' => '{{#each foo}} Test! {{this}} {{/each}}{{> test1}} ! >>> {{>recursive}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_RUNTIMEPARTIAL,                      
+                    'basedir' => Array('tests'),
+                ),
+                'data' => Array(
+                 'bar' => 1,
+                 'foo' => Array(
+                  'bar' => 3,
+                  'foo' => Array(
+                   'bar' => 5,
+                   'foo' => Array(
+                    'bar' => 7,
+                    'foo' => Array(
+                     'bar' => 11,
+                     'foo' => Array(
+                      'no foo here'
+                     )
+                    )
+                   )
+                  )
+                 )
+                ),
+                'expected' => " Test! 3  Test! [object Object] 123\n ! >>> 1 -> 3 -> 5 -> 7 -> 11 -> END!\n\n\n\n\n\n",
+            ),
+
+            Array(
                 'id' => 68,
                 'template' => '{{#myeach foo}} Test! {{this}} {{/myeach}}',
                 'options' => Array(
