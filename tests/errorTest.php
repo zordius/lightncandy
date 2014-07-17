@@ -149,8 +149,15 @@ class errorTest extends PHPUnit_Framework_TestCase
                  'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
                  'pass' => true,
              ),
+             Array(
+                 'template' => '{{helper}}',
+                 'options' => Array('helpers' => Array(
+                     'helper' => Array('bad input'),
+                 )),
+             ),
              '<ul>{{#each item}}<li>{{name}}</li>',
              'issue63: {{test_join}} Test! {{this}} {{/test_join}}',
+             '{{../foo}}',
         );
 
         return array_map(function($i) {
