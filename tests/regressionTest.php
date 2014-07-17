@@ -134,6 +134,16 @@ class regressionTest extends PHPUnit_Framework_TestCase
             ),
 
             Array(
+                'id' => 66,
+                'template' => '{{&foo}} , {{foo}}, {{{foo}}}',
+                'options' => Array(
+                     'flags' => LightnCandy::FLAG_HANDLEBARSJS
+                ),
+                'data' => Array('foo' => 'Test & " \' :)'),
+                'expected' => 'Test & " \' :) , Test &amp; &quot; &#x27; :), Test & " \' :)',
+            ),
+
+            Array(
                 'id' => 68,
                 'template' => '{{#myeach foo}} Test! {{this}} {{/myeach}}',
                 'options' => Array(
