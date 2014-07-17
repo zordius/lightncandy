@@ -6,6 +6,10 @@ if [ "${TRAVIS_BUILD_NUMBER}.1" != "${TRAVIS_JOB_NUMBER}" ]; then
   exit 0
 fi
 
+# Push coverage report
+wget https://scrutinizer-ci.com/ocular.phar
+php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+
 # Set for all push in this script.
 git config --global user.name "Travis-CI"
 git config --global user.email "zordius@yahoo-inc.com"
