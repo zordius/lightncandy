@@ -433,7 +433,7 @@ $libstr
     /**
      * Read partial file content as string and store in context
      *
-     * @param string $name partial file name
+     * @param string $name partial name
      * @param array $context Current context of compiler progress.
      *
      * @codeCoverageIgnore
@@ -457,6 +457,16 @@ $libstr
         }
     }
 
+    /**
+     * locate partial file, return the file name
+     *
+     * @param string $name partial name
+     * @param array $context Current context of compiler progress.
+     *
+     * @return $filename located partial file name
+     *
+     * @codeCoverageIgnore
+     */
     protected static function resolvePartial(&$name, &$context) {
         foreach ($context['basedir'] as $dir) {
             foreach ($context['fileext'] as $ext) {
@@ -468,6 +478,15 @@ $libstr
         }
     }
 
+    /**
+     * compile partial file, stored in context
+     *
+     * @param string $name partial name
+     * @param array $context Current context of compiler progress.
+     * @param string $filename located partial file name
+     *
+     * @codeCoverageIgnore
+     */
     protected static function compilePartial(&$name, &$context, $filename) {
         $context['usedPartial'][$name] = addcslashes(file_get_contents($filename), "'");
         if ($context['flags']['runpart']) {
