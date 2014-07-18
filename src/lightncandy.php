@@ -1068,16 +1068,16 @@ $libstr
         }
 
         if ($context['flags']['advar'] && preg_match('/\\]/', $v)) {
-            preg_match_all(self::VARNAME_SEARCH, $v, $matched);
+            preg_match_all(self::VARNAME_SEARCH, $v, $matchedall);
         } else {
-            preg_match_all('/([^\\.\\/]+)/', $v, $matched);
+            preg_match_all('/([^\\.\\/]+)/', $v, $matchedall);
         }
 
         if (($v === '.') || ($v === '')) {
-            $matched = Array(Array('.'), Array('.'));
+            $matchedall = Array(Array('.'), Array('.'));
         }
 
-        foreach ($matched[1] as $m) {
+        foreach ($matchedall[1] as $m) {
             if ($context['flags']['advar'] && substr($m, 0, 1) === '[') {
                 $ret[] = substr($m, 1, -1);
             } else {
@@ -1123,16 +1123,16 @@ $libstr
         }
 
         $vars = Array();
-        $count = preg_match_all('/(\s*)([^\s]+)/', $token[self::POS_INNERTAG], $matched);
+        $count = preg_match_all('/(\s*)([^\s]+)/', $token[self::POS_INNERTAG], $matchedall);
 
         // Parse arguments and deal with "..." or [...]
         if (($count > 0) && $context['flags']['advar']) {
             $prev = '';
             $expect = 0;
-            foreach ($matched[2] as $index => $t) {
+            foreach ($matchedall[2] as $index => $t) {
                 // continue from previous match when expect something
                 if ($expect) {
-                    $prev .= "{$matched[1][$index]}$t";
+                    $prev .= "{$matchedall[1][$index]}$t";
                     // end an argument when end with expected charactor
                     if (substr($t, -1, 1) === $expect) {
                         $vars[] = $prev;
@@ -1172,7 +1172,7 @@ $libstr
                 $vars[] = $t;
             }
         } else {
-            $vars = ($count > 0) ? $matched[2] : explode(' ', $token[self::POS_INNERTAG]);
+            $vars = ($count > 0) ? $matchedall[2] : explode(' ', $token[self::POS_INNERTAG]);
         }
 
         // Check for advanced variable.
