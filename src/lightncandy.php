@@ -1131,7 +1131,7 @@ $libstr
             $expect = 0;
             foreach ($matchedall[2] as $index => $t) {
                 // Handle \" in "foo"
-                if (($except === '"') || (substr($t, 0, 1) === '"')) {
+                if (($expect === '"') || (substr($t, 0, 1) === '"')) {
                     $t = addcslashes(stripslashes(preg_replace('/\\\\\\\\/', '\\', $t)), "'");
                 }
 
