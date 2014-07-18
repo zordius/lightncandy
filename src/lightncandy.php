@@ -117,7 +117,7 @@ class LightnCandy {
 
         // Do PHP code generation.
         self::setupToken($context);
-        $code = self::compileTemplate($context, addcslashes(addcslashes($template, '\\'), "'"));
+        $code = self::compileTemplate($context, self::escapeTemplate($template));
 
         // return false when fatal error
         if (self::handleError($context)) {
@@ -126,6 +126,19 @@ class LightnCandy {
 
         // Or, return full PHP render codes as string
         return self::composePHPRender($context, $code);
+    }
+
+    /*
+     * Escape template
+     *
+     * @param string $template handlebars template string
+     *
+     * @return string Escaped template
+     *
+     * @codeCoverageIgnore$
+     */
+    protected static function escapeTemplate($template) {
+        return addcslashes(addcslashes($template, '\\'), "'");
     }
 
     /**
@@ -143,6 +156,8 @@ class LightnCandy {
         }
 
         $context['tokens']['startchar'] = substr($left, 0, 1);
+        $context['tokens']['left'] = $left;
+        $context['tokens']['right'] = $right;
 
         if (($left === '{{') && ($right === '}}')) {
             $left = '\\{{2,3}';
@@ -487,7 +502,24 @@ $libstr
      * @codeCoverageIgnore
      */
     protected static function compilePartial(&$name, &$context, $filename) {
-        $context['usedPartial'][$name] = addcslashes(file_get_contents($filename), "'");
+        // FIXME: auto append \n by file_get_contents is bad.
+        $cnt = file_get_contents($filename);
+        $context['usedPartial'][$name] = self::escapeTemplate($cnt);
+
+        $tmpContext = $context;
+        $tmpContext['level'] = 0;
+        self::setupToken($tmpContext);
+
+        self::verifyTemplate($tmpContext, $cnt);
+        if (self::handleError($tmpContext)) {
+            // FIXME: more error
+            return;
+        }
+
+        $originalToken = $context['tokens'];
+        $context = $tmpContext;
+        $context['tokens'] = $originalToken;
+
         if ($context['flags']['runpart']) {
             $code = self::compileTemplate($context, $context['usedPartial'][$name], $name);
             if ($context['flags']['mustpi']) {

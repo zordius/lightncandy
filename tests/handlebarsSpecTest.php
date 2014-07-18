@@ -22,6 +22,10 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
         if ($spec['template'] === '{{{{raw}}}} {{test}} {{{{/raw}}}}') {
             $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , bad spec, skip.");
         }
+        // missing partial in this spec
+        if ($spec['it'] === 'rendering function partial in vm mode') {
+            $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , bad spec, skip.");
+        }
         // Helper depend on an external class, skip it now.
         if ($spec['it'] === 'simple literals work') {
             $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , external class not found, skip.");
@@ -122,7 +126,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
            }, $json));
         }
 
-        return array_slice($ret, 0, 170);
+        return array_slice($ret, 0, 190);
     }
 }
 
