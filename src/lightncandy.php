@@ -1209,10 +1209,18 @@ $libstr
                 }
             }
 
-            if (is_string($idx)) {
-                $ret[$idx] = is_numeric($var) ? Array('"' . $var . '"') : self::fixVariable($var, $context);
+            if (is_numeric($var)) {
+                $var = Array('"' . $var . '"');
+            } else if (($idx === 0) && ($token[self::POS_OP] === '>')) {
+                $var = Array($var);
             } else {
-                $ret[$i] = (($idx === 0) && ($token[self::POS_OP] === '>')) ? Array($var) : self::fixVariable($var, $context);
+                $var = self::fixVariable($var, $context);
+            }
+
+            if (is_string($idx)) {
+                $ret[$idx] = $var;
+            } else {
+                $ret[$i] = $var;
                 $i++;
             }
         }

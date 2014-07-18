@@ -22,6 +22,10 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
         if ($spec['template'] === '{{{{raw}}}} {{test}} {{{{/raw}}}}') {
             $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , bad spec, skip.");
         }
+        // Helper depend on an external class, skip it now.
+        if ($spec['it'] === 'simple literals work') {
+            $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , external class not found, skip.");
+        }
 
         //// Skip unsupported features
         // can not get any hint of 'function' from handlebars-spec , maybe it is a conversion error.
@@ -112,7 +116,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
            }, $json));
         }
 
-        return array_slice($ret, 0, 130);
+        return array_slice($ret, 0, 150);
     }
 }
 
