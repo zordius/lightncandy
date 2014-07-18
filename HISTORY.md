@@ -10,6 +10,7 @@ master current trunk
    * 742126b440 fix {{>foo/bar}} partial not found bug.
    * d62c261ff9 support numbers as helper input {{helper 0.1 -1.2}}
    * d40c76b84f support escape in string arguments {{helper "test \" double quote"}}
+   * ecb57a2348 fix for missing partial in partial bug.
 
 v0.14 https://github.com/zordius/lightncandy/tree/v0.14
    * align with handlebars.js 2.0.0-alpha.4
