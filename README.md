@@ -179,8 +179,6 @@ With this setting, when you include a partial by `{{> partial_name}}`, LightnCan
 * /usr/local/share/my_project/partials/partial_name.mustache
 * /usr/local/share/my_project/partials/partial_name.handlebars
 
-LightnCandy supports parent context access in partial (access `{{../vars}}` inside the partial), so far no other PHP/JavaScript library can handle this correctly.
-
 Custom Helper
 -------------
 

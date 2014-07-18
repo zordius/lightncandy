@@ -239,7 +239,7 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
         $this->assertEquals('-b=', $method->invoke(null,
             Array('flags' => Array('spvar' => 0)), Array('a' => 'b'), Array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
         ));
-        $this->assertEquals(1, $method->invoke(null,
+        $this->assertEquals('1', $method->invoke(null,
             Array('flags' => Array('spvar' => 0)), 'b', 'b', false, function ($c, $i) {return count($i);}
         ));
         $this->assertEquals('1', $method->invoke(null,
