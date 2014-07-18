@@ -2156,7 +2156,7 @@ class LCRun3 {
      * @expect '-a=-b=' when input Array('flags' => Array('spvar' => 0)), Array('a','b'), Array('a','b'), false, function ($c, $i) {return "-$i=";}
      * @expect '' when input Array('flags' => Array('spvar' => 0)), 'abc', 'abc', true, function ($c, $i) {return "-$i=";}
      * @expect '-b=' when input Array('flags' => Array('spvar' => 0)), Array('a' => 'b'), Array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
-     * @expect 0 when input Array('flags' => Array('spvar' => 0)), 'b', 'b', false, function ($c, $i) {return count($i);}
+     * @expect 1 when input Array('flags' => Array('spvar' => 0)), 'b', 'b', false, function ($c, $i) {return count($i);}
      * @expect '1' when input Array('flags' => Array('spvar' => 0)), 1, 1, false, function ($c, $i) {return print_r($i, true);}
      * @expect '0' when input Array('flags' => Array('spvar' => 0)), 0, 0, false, function ($c, $i) {return print_r($i, true);}
      * @expect '{"b":"c"}' when input Array('flags' => Array('spvar' => 0)), Array('b' => 'c'), Array('b' => 'c'), false, function ($c, $i) {return json_encode($i);}
@@ -2247,9 +2247,11 @@ class LCRun3 {
             return $cb($cx, $in);
         } 
 
+/*
         if (is_string($v)) {
             return $cb($cx, Array());
         }
+*/
 
         if (!is_null($v) && ($v !== false)) {
             return $cb($cx, $v);

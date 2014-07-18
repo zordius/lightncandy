@@ -219,7 +219,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'id' => 90,
                 'template' => '{{#items}}{{#value}}{{.}}{{/value}}{{/items}}',
                 'data' => Array('items' => Array(Array('value'=>'123'))),
-                'expected' => 'Array',
+                'expected' => '123',
             ),
         );
 
