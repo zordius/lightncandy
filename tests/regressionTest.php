@@ -196,6 +196,17 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'data' => Array('foo' => 'BAR'),
                 'expected' => 'ARG1:1, ARG2:BAR, HASH:q',
             ),
+
+            Array(
+                'id' => 88,
+                'template' => '{{>test2}}',
+                'options' => Array(
+                    'flags' => 0,
+                    'basedir' => Array('tests'),
+                ),
+                'data' => null,
+                'expected' => "a123\nb\n",
+            ),
         );
 
         return array_map(function($i) {return Array($i);}, $issues);
