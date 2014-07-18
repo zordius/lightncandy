@@ -1130,6 +1130,11 @@ $libstr
             $prev = '';
             $expect = 0;
             foreach ($matchedall[2] as $index => $t) {
+                // Handle \" in "foo"
+                if (($except === '"') || (substr($t, 0, 1) === '"')) {
+                    $t = addcslashes(stripslashes(preg_replace('/\\\\\\\\/', '\\', $t)), "'");
+                }
+
                 // continue from previous match when expect something
                 if ($expect) {
                     $prev .= "{$matchedall[1][$index]}$t";
