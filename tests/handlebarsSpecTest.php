@@ -61,6 +61,11 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
             $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , lightncandy do not support this now.");
         }
 
+        // No do not support partials with named arguments
+        if ($spec['it'] == 'partials with parameters') {
+            $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , lightncandy do not support this now.");
+        }
+
         // Lightncandy will not support old path style as foo/bar , now only support foo.bar .
         if ($spec['it'] === 'literal paths') {
             $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , lightncandy do not support this now.");
