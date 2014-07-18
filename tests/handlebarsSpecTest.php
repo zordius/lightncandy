@@ -30,10 +30,16 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
         //// Skip unsupported features
         // can not get any hint of 'function' from handlebars-spec , maybe it is a conversion error.
         if (($spec['description'] === 'basic context') && preg_match('/functions/', $spec['it'])) {
-            $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , lightncandy do not support this now.");
+            $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , undefined function in spec json, skip.");
         }
         if (preg_match('/(.+) with function argument/', $spec['it'])) {
-            $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , lightncandy do not support this now.");
+            $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , undefined function in spec json, skip.");
+        }
+        if ($spec['it'] === 'Functions are bound to the context in knownHelpers only mode') {
+            $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , undefined function in spec json, skip.");
+        }
+        if ($spec['it'] === 'lambdas are resolved by blockHelperMissing, not handlebars proper') {
+            $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , undefined function in spec json, skip.");
         }
 
         // Do not support includeZero now
@@ -116,7 +122,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
            }, $json));
         }
 
-        return array_slice($ret, 0, 150);
+        return array_slice($ret, 0, 170);
     }
 }
 
