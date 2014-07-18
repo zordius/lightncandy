@@ -212,7 +212,6 @@ class errorTest extends PHPUnit_Framework_TestCase
              ),
              Array(
                  'template' => '{{#with items}}OK!{{/with}}',
-                 'options' => Array('flags' => LightnCandy::FLAG_WITH),
              ),
         );
 

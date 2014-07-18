@@ -1668,31 +1668,33 @@ $libstr
                 }
                 return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}){$context['ops']['seperator']}" : "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
             case 'with':
-                if ($pop !== 'with') {
-                   $context['error'][] = 'Unexpect token /with !';
-                   return;
-                }
-                return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
-            case 'each':
-                $each = true;
-                // Continue to same logic {{/each}} === {{/any_value}}
-            default:
-                switch($pop) {
-                case '#':
-                case '^':
-                    $pop2 = array_pop($context['stack']);
-                    if (!$each && ($pop2 !== self::getArrayCode($vars[0]))) {
-                        $context['error'][] = 'Unexpect token ' . self::tokenString($token) . " ! Previous token $pop$pop2 is not closed";
-                        return;
-                    }
-                    if ($pop == '^') {
-                        return "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
+                if ($context['flags']['with']) {
+                    if ($pop !== 'with') {
+                       $context['error'][] = 'Unexpect token /with !';
+                    return;
                     }
                     return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
-                default:
-                    $context['error'][] = 'Unexpect token: ' . self::tokenString($token) . ' !';
+                }
+                break;
+            case 'each':
+                $each = true;
+            }
+
+            switch($pop) {
+            case '#':
+            case '^':
+                $pop2 = array_pop($context['stack']);
+                if (!$each && ($pop2 !== self::getArrayCode($vars[0]))) {
+                    $context['error'][] = 'Unexpect token ' . self::tokenString($token) . " ! Previous token $pop$pop2 is not closed";
                     return;
                 }
+                if ($pop == '^') {
+                    return "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
+                }
+                return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
+            default:
+                $context['error'][] = 'Unexpect token: ' . self::tokenString($token) . ' !';
+                return;
             }
     }
 
@@ -1808,7 +1810,7 @@ $libstr
         if ($context['flags']['jsobj'] || $context['flags']['jstrue'] || $context['flags']['debug']) {
             return $context['ops']['seperator'] . self::getFuncName($context, $raw ? 'raw' : $context['ops']['enc'], $v[1]) . "\$cx, {$v[0]}){$context['ops']['seperator']}";
         } else {
-            return $raw ? "{$context['ops']['seperator']}$v[0]{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlentities({$v[0]}, ENT_QUOTES, 'UTF-8'){$context['ops']['seperator']}";
+            return $raw ? "{$context['ops']['seperator']}$v[0]{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlentities((string){$v[0]}, ENT_QUOTES, 'UTF-8'){$context['ops']['seperator']}";
         }
     }
 
