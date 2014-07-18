@@ -209,7 +209,11 @@ class errorTest extends PHPUnit_Framework_TestCase
              Array(
                  'template' => '{{#with a}OK!{{/with}}',
                  'expected' => 'Unclosed token {{{#with a}OK!{{/with}}} !!',
-             )
+             ),
+             Array(
+                 'template' => '{{#with items}}OK!{{/with}}',
+                 'options' => Array('flags' => LightnCandy::FLAG_WITH),
+             ),
         );
 
         return array_map(function($i) {
