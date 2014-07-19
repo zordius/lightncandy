@@ -600,7 +600,8 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{#unless var}}` : run unless logic with original scope (null, false, empty Array and '' will render this block)
 * `{{#with var}}` : change context scope. If the var is false, skip included section. (require `FLAG_WITH`)
 * `{{../var}}` : parent template scope. (require `FLAG_PARENT`)
-* `{{> file}}` : partial; include another template inside a template.
+* `{{>file}}` : partial; include another template inside a template.
+* `{{>file foo}}` : partial with new context (require `FLAG_RUNTIMEPARTIAL`)
 * `{{@index}}` : references to current index in a `{{#each}}` loop on an array.
 * `{{@key}}` : references to current key in a `{{#each}}` loop on an object.
 * `{{@root}}` : references to root context.
