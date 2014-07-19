@@ -1584,13 +1584,16 @@ $libstr
             if (!isset($context['usedPartial'][$vars[0][0]])) {
                 return $context['ops']['seperator'];
             }
-
+            $p = array_shift($vars);
+            if (!isset($vars[0])) {
+                $vars[0] = Array();
+            }
+            $v = self::getVariableNames($vars, $context, true);
             if ($context['flags']['runpart']) {
-                $v = self::getVariableName($vars[1], $context);
                 $sp = $context['tokens']['partialind'] ? ", '{$context['tokens']['partialind']}'" : '';
-                return $context['ops']['seperator'] . self::getFuncName($context, 'p', "{$vars[0][0]} {$v[1]}") . "\$cx, '{$vars[0][0]}', {$v[0]}{$sp}){$context['ops']['seperator']}";
+                return $context['ops']['seperator'] . self::getFuncName($context, 'p', ">$p[0] " .implode(' ', $v[1])) . "\$cx, '$p[0]', $v[0]$sp){$context['ops']['seperator']}";
             } else {
-                return "{$context['ops']['seperator']}'" . self::compileTemplate($context, $context['usedPartial'][$vars[0][0]], $vars[0][0]) . "'{$context['ops']['seperator']}";
+                return "{$context['ops']['seperator']}'" . self::compileTemplate($context, $context['usedPartial'][$p[0]], $p[0]) . "'{$context['ops']['seperator']}";
             }
         case '^':
             if (!$vars[0][0]) {
@@ -2294,7 +2297,7 @@ class LCRun3 {
      *
      */
     public static function p($cx, $p, $v, $sp = '') {
-        return call_user_func($cx['partials'][$p], $cx, $v, $sp);
+        return call_user_func($cx['partials'][$p], $cx, $v[0][0], $sp);
     }
 
     /**
