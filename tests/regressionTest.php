@@ -221,6 +221,15 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'data' => Array('items' => Array(Array('value'=>'123'))),
                 'expected' => '123',
             ),
+
+            Array(
+                'template' => '{{#each .}}{{..}}>{{/each}}',
+                'data' => Array('a', 'b', 'c'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                ),
+                'expected' => 'a,b,c>a,b,c>a,b,c>',
+            ),
         );
 
         return array_map(function($i) {return Array($i);}, $issues);
