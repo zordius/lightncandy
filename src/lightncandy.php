@@ -1380,11 +1380,14 @@ $libstr
 
             switch ($vars[0][0]) {
             case 'with':
-                if (isset($vars[1][0]) && !$context['flags']['with']) {
-                    $context['error'][] = 'Do not support {{#with var}}, you should do compile with LightnCandy::FLAG_WITH flag';
-                }
-                if ((count($vars) < 2) && $context['flags']['with']) {
-                    $context['error'][] = 'No argument after {{#with}} !';
+                if ($context['flags']['with']) {
+                    if (count($vars) < 2) {
+                        $context['error'][] = 'No argument after {{#with}} !';
+                    }
+                } else {
+                    if (isset($vars[1][0])) {
+                        $context['error'][] = 'Do not support {{#with var}}, you should do compile with LightnCandy::FLAG_WITH flag';
+                    }
                 }
                 // Continue to add usage...
             case 'each':
