@@ -1085,6 +1085,11 @@ $libstr
             return Array($v);
         }
 
+        // handle ..
+        if ($v === '..') {
+            $v = '../';
+        }
+
         // Trace to parent for ../ N times
         $v = preg_replace_callback('/\\.\\.\\//', function() use (&$levels) {
             $levels++;
@@ -1589,7 +1594,7 @@ $libstr
                 $vars[0] = Array();
             }
             $v = self::getVariableNames($vars, $context, true);
-            if ($context['flags']['runpart']) {
+            if ($context['flags']['runpart'] || $named) {
                 $sp = $context['tokens']['partialind'] ? ", '{$context['tokens']['partialind']}'" : '';
                 return $context['ops']['seperator'] . self::getFuncName($context, 'p', ">$p[0] " .implode(' ', $v[1])) . "\$cx, '$p[0]', $v[0]$sp){$context['ops']['seperator']}";
             } else {
@@ -2297,7 +2302,7 @@ class LCRun3 {
      *
      */
     public static function p($cx, $p, $v, $sp = '') {
-        return call_user_func($cx['partials'][$p], $cx, $v[0][0], $sp);
+        return call_user_func($cx['partials'][$p], $cx, is_array($v[0][0]) ? array_merge($v[0][0], $v[1]) : $v[0][0], $sp);
     }
 
     /**
