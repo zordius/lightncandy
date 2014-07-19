@@ -15,6 +15,10 @@ class regressionTest extends PHPUnit_Framework_TestCase
         global $tmpdir;
 
         $php = LightnCandy::compile($issue['template'], $issue['options']);
+        $context = LightnCandy::getContext();
+        if (count($context['error'])) {
+            $this->fail('Compile failed due to:' . print_r($context['error'], true));
+        }
         $renderer = LightnCandy::prepare($php);
 
         $this->assertEquals($issue['expected'], $renderer($issue['data']), "PHP CODE:\n$php");
@@ -210,7 +214,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
 
             Array(
                 'id' => 89,
-                'template' => '{{#with a}}SHOW:{{.}} {{/with}}',
+                'template' => '{{#with}}SHOW:{{.}} {{/with}}',
                 'data' => Array('with' => Array(1, 3, 7), 'a' => Array(2, 4, 9)),
                 'expected' => 'SHOW:1 SHOW:3 SHOW:7 ',
             ),

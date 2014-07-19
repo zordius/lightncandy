@@ -917,7 +917,7 @@ $libstr
         // strip outer ( ) from subexpression
         $token[self::POS_INNERTAG] = substr($subExpression, 1, -1);
 
-        list(, $vars) = self::parseTokenArgs( $token, $context );
+        list(, $vars) = self::parseTokenArgs($token, $context);
 
         // no separator is needed, this code will be used as a function argument
         $origSeperator = $context['ops']['seperator'];
@@ -1325,11 +1325,11 @@ $libstr
      * @expect 2 when input Array(0, 0, 0, 0, 0, '^', '...'), Array('usedFeature' => Array('isec' => 1), 'level' => 0), Array(Array('foo'))
      * @expect 3 when input Array(0, 0, 0, 0, 0, '!', '...'), Array('usedFeature' => Array('comment' => 2)), Array()
      * @expect true when input Array(0, 0, 0, 0, 0, '/'), Array('stack' => Array(1), 'level' => 1), Array()
-     * @expect 4 when input Array(0, 0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('sec' => 3), 'level' => 0), Array('x')
-     * @expect 5 when input Array(0, 0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('if' => 4), 'level' => 0), Array('if')
-     * @expect 6 when input Array(0, 0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('with' => 5), 'level' => 0, 'flags' => Array('with' => 1)), Array('with')
-     * @expect 7 when input Array(0, 0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('each' => 6), 'level' => 0), Array('each')
-     * @expect 8 when input Array(0, 0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('unless' => 7), 'level' => 0), Array('unless')
+     * @expect 4 when input Array(0, 0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('sec' => 3), 'level' => 0), Array(Array('x'))
+     * @expect 5 when input Array(0, 0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('if' => 4), 'level' => 0), Array(Array('if'))
+     * @expect 6 when input Array(0, 0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('with' => 5), 'level' => 0, 'flags' => Array('with' => 1)), Array(Array('with'))
+     * @expect 7 when input Array(0, 0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('each' => 6), 'level' => 0), Array(Array('each'))
+     * @expect 8 when input Array(0, 0, 0, 0, 0, '#', '...'), Array('usedFeature' => Array('unless' => 7), 'level' => 0), Array(Array('unless'))
      * @expect 9 when input Array(0, 0, 0, 0, 0, '#', '...'), Array('blockhelpers' => Array('abc' => ''), 'usedFeature' => Array('bhelper' => 8), 'level' => 0), Array(Array('abc'))
      * @expect 10 when input Array(0, 0, 0, 0, 0, ' ', '...'), Array('usedFeature' => Array('delimiter' => 9), 'level' => 0), Array()
      * @expect 11 when input Array(0, 0, 0, 0, 0, '#', '...'), Array('hbhelpers' => Array('abc' => ''), 'usedFeature' => Array('hbhelper' => 10), 'level' => 0), Array(Array('abc'))
@@ -1378,9 +1378,9 @@ $libstr
                 return ++$context['usedFeature']['bhelper'];
             }
 
-            switch ($vars[0]) {
+            switch ($vars[0][0]) {
             case 'with':
-                if (isset($vars[1]) && !$context['flags']['with']) {
+                if (isset($vars[1][0]) && !$context['flags']['with']) {
                     $context['error'][] = 'do not support {{#with var}}, you should do compile with LightnCandy::FLAG_WITH flag';
                 }
                 if ((count($vars) < 2) && $context['flags']['with']) {
@@ -1390,7 +1390,7 @@ $libstr
             case 'each':
             case 'unless':
             case 'if':
-                return ++$context['usedFeature'][$vars[0]];
+                return ++$context['usedFeature'][$vars[0][0]];
 
             default:
                 return ++$context['usedFeature']['sec'];

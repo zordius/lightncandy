@@ -26,7 +26,7 @@ class errorTest extends PHPUnit_Framework_TestCase
             return;
         }
 
-        $this->fail("This should be failed as '{$test['expected']}' !");
+        $this->fail("This should be failed as '{$test['expected']}' ! Context:" .print_r(LightnCandy::getContext(), true));
     }
 
     public function errorProvider()
@@ -220,10 +220,16 @@ class errorTest extends PHPUnit_Framework_TestCase
              ),
              Array(
                  'template' => '{{#with a}OK!{{/with}}',
+                 'options' => Array('flags' => LightnCandy::FLAG_WITH),
                  'expected' => 'Unclosed token {{{#with a}OK!{{/with}}} !!',
              ),
              Array(
+                 'template' => '{{#each a}OK!{{/each}}',
+                 'expected' => 'Unclosed token {{{#each a}OK!{{/each}}} !!',
+             ),
+             Array(
                  'template' => '{{#with items}}OK!{{/with}}',
+                 'options' => Array('flags' => LightnCandy::FLAG_WITH),
              ),
              Array(
                  'template' => '{{>not_found}}',
@@ -232,6 +238,10 @@ class errorTest extends PHPUnit_Framework_TestCase
              Array(
                  'template' => '{{>tests/test1 foo}}',
                  'expected' => 'Do not support {{>tests/test1 [foo]}}, you should do compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag',
+             ),
+             Array(
+                 'template' => '{{#with foo}}ABC{{/with}}',
+                 'expected' => 'do not support {{#with var}}, you should do compile with LightnCandy::FLAG_WITH flag',
              ),
         );
 
