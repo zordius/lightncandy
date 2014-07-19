@@ -376,6 +376,7 @@ $libstr
                 'hbhelpers' => Array(),
                 'lcrun' => Array(),
             ),
+            'partials' => (isset($options['partials']) && is_array($options['partials'])) ? $options['partials'] : Array(),
             'helpers' => Array(),
             'blockhelpers' => Array(),
             'hbhelpers' => Array(),
@@ -460,10 +461,10 @@ $libstr
             return;
         }
 
-        $fn = self::resolvePartial($name, $context);
+        $cnt = self::resolvePartial($name, $context);
 
-        if ($fn) {
-            return self::compilePartial($name, $context, $fn);
+        if ($cnt !== null) {
+            return self::compilePartial($name, $context, $cnt);
         }
 
         if (!$context['flags']['skippartial']) {
@@ -477,19 +478,24 @@ $libstr
      * @param string $name partial name
      * @param array $context Current context of compiler progress.
      *
-     * @return $filename located partial file name
+     * @return $content partial content
      *
      * @codeCoverageIgnore
      */
     protected static function resolvePartial(&$name, &$context) {
+        if (isset($context['partials'][$name])) {
+            return $context['partials'][$name];
+        }
+
         foreach ($context['basedir'] as $dir) {
             foreach ($context['fileext'] as $ext) {
                 $fn = "$dir/$name$ext";
                 if (file_exists($fn)) {
-                    return $fn;
+                    return file_get_contents($fn);
                 }
             }
         }
+        return null;
     }
 
     /**
@@ -497,20 +503,18 @@ $libstr
      *
      * @param string $name partial name
      * @param array $context Current context of compiler progress.
-     * @param string $filename located partial file name
+     * @param string $content partial content
      *
      * @codeCoverageIgnore
      */
-    protected static function compilePartial(&$name, &$context, $filename) {
-        // FIXME: auto append \n by file_get_contents is bad.
-        $cnt = file_get_contents($filename);
-        $context['usedPartial'][$name] = self::escapeTemplate($cnt);
+    protected static function compilePartial(&$name, &$context, $content) {
+        $context['usedPartial'][$name] = self::escapeTemplate($content);
 
         $tmpContext = $context;
         $tmpContext['level'] = 0;
         self::setupToken($tmpContext);
 
-        self::verifyTemplate($tmpContext, $cnt);
+        self::verifyTemplate($tmpContext, $content);
         if (self::handleError($tmpContext)) {
             // FIXME: more error
             return;

@@ -30,6 +30,10 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
         if ($spec['it'] === 'simple literals work') {
             $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , external class not found, skip.");
         }
+        // partial not found: global_test
+        if ($spec['message'] === 'Partials can use globals or passed') {
+            $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , partial not found, skip.");
+        }
 
         //// Skip unsupported features
         // can not get any hint of 'function' from handlebars-spec , maybe it is a conversion error.
@@ -71,13 +75,6 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
             unlink($file);
         }
 
-        // setup partials
-        if (isset($spec['partials'])) {
-            foreach ($spec['partials'] as $name => $cnt) {
-                file_put_contents("$tmpdir/$name.tmpl", $cnt);
-            }
-        }
-
         // setup helpers
         $helpers = Array();
         if (isset($spec['helpers'])) {
@@ -106,6 +103,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
             'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_EXTHELPER,
             'hbhelpers' => $helpers,
             'basedir' => $tmpdir,
+            'partials' => isset($spec['partials']) ? $spec['partials'] : null,
         ));
         $renderer = LightnCandy::prepare($php);
 
@@ -126,7 +124,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
            }, $json));
         }
 
-        return array_slice($ret, 0, 190);
+        return array_slice($ret, 0, 200);
     }
 }
 
