@@ -202,6 +202,14 @@ class errorTest extends PHPUnit_Framework_TestCase
                  'expected' => 'do not support {{../var}}, you should do compile with LightnCandy::FLAG_PARENT flag',
              ),
              Array(
+                 'template' => '{{test_join [a]=b}}',
+                 'options' => Array(
+                     'flags' => LightnCandy::FLAG_NAMEDARG,
+                     'helpers' => Array('test_join')
+                 ),
+                 'expected' => "Wrong argument name as '[a]' in {{test_join [a]=b}} ! You should fix your template or compile with LightnCandy::FLAG_ADVARNAME flag.",
+             ),
+             Array(
                  'template' => '{{a=b}}',
                  'options' => Array('flags' => LightnCandy::FLAG_NAMEDARG),
                  'expected' => 'do not support name=value in {{a=b}}!',

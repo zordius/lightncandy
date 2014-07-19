@@ -1233,7 +1233,7 @@ $libstr
             if ($context['flags']['namev']) {
                 if (preg_match('/^((\\[([^\\]]+)\\])|([^=^[]+))=(.+)$/', $var, $m)) {
                     if (!$context['flags']['advar'] && $m[3]) {
-                        $context['error'][] = "Wrong argument name as '$m[3]' in " . self::tokenString($token) . ' !';
+                        $context['error'][] = "Wrong argument name as '[$m[3]]' in " . self::tokenString($token) . ' ! You should fix your template or compile with LightnCandy::FLAG_ADVARNAME flag.';
                     }
                     $idx = $m[3] ? $m[3] : $m[4];
                     $var = $m[5];
