@@ -13,6 +13,8 @@ master current trunk
    * ecb57a2348 fix for missing partial in partial bug.
    * 1adad5dbfa fix {{#with}} error when FLAG_WITH not used.
    * ffd5e35c2d fix error when rendering array value as {{.}} without FLAG_JSOBJECT.
+   * bd4987adbd support changing context on partial {{>foo bar}}
+   * f5decaa7e3 support name sarguments on partial {{>foo bar name=tee}} . fix {{..}} bug.
 
 v0.14 https://github.com/zordius/lightncandy/tree/v0.14
    * align with handlebars.js 2.0.0-alpha.4
