@@ -941,6 +941,7 @@ $libstr
      * @expect Array('$in', 'this') when input Array(null), Array('flags'=>Array('spvar'=>true,'debug'=>0))
      * @expect Array('true', 'true') when input Array('true'), Array('flags'=>Array('spvar'=>true,'debug'=>0)), true
      * @expect Array('false', 'false') when input Array('false'), Array('flags'=>Array('spvar'=>true,'debug'=>0)), true
+     * @expect Array(2, '2') when input Array('2'), Array('flags'=>Array('spvar'=>true,'debug'=>0)), true
      * @expect Array('((is_array($in) && isset($in[\'@index\'])) ? $in[\'@index\'] : null)', '[@index]') when input Array('@index'), Array('flags'=>Array('spvar'=>false,'debug'=>0))
      * @expect Array('$cx[\'sp_vars\'][\'index\']', '@index') when input Array('@index'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
      * @expect Array('$cx[\'sp_vars\'][\'key\']', '@key') when input Array('@key'), Array('flags'=>Array('spvar'=>true,'debug'=>0))

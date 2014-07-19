@@ -208,6 +208,9 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(Array('false', 'false'), $method->invoke(null,
             Array('false'), Array('flags'=>Array('spvar'=>true,'debug'=>0)), true
         ));
+        $this->assertEquals(Array(2, '2'), $method->invoke(null,
+            Array('2'), Array('flags'=>Array('spvar'=>true,'debug'=>0)), true
+        ));
         $this->assertEquals(Array('((is_array($in) && isset($in[\'@index\'])) ? $in[\'@index\'] : null)', '[@index]'), $method->invoke(null,
             Array('@index'), Array('flags'=>Array('spvar'=>false,'debug'=>0))
         ));
