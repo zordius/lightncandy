@@ -1594,10 +1594,14 @@ $libstr
                 $vars[0] = Array();
             }
             $v = self::getVariableNames($vars, $context, true);
-            if ($context['flags']['runpart'] || $named) {
+            $tag = ">$p[0] " .implode(' ', $v[1]);
+            if ($context['flags']['runpart']) {
                 $sp = $context['tokens']['partialind'] ? ", '{$context['tokens']['partialind']}'" : '';
-                return $context['ops']['seperator'] . self::getFuncName($context, 'p', ">$p[0] " .implode(' ', $v[1])) . "\$cx, '$p[0]', $v[0]$sp){$context['ops']['seperator']}";
+                return $context['ops']['seperator'] . self::getFuncName($context, 'p', $tag) . "\$cx, '$p[0]', $v[0]$sp){$context['ops']['seperator']}";
             } else {
+                if ($named || $v[0] !== 'Array(Array($in),Array())') {
+                    $context['error'][] = "Do not support {{{$tag}}}, you should do compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag";
+                }
                 return "{$context['ops']['seperator']}'" . self::compileTemplate($context, $context['usedPartial'][$p[0]], $p[0]) . "'{$context['ops']['seperator']}";
             }
         case '^':

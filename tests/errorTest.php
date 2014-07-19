@@ -217,6 +217,14 @@ class errorTest extends PHPUnit_Framework_TestCase
              Array(
                  'template' => '{{#with items}}OK!{{/with}}',
              ),
+             Array(
+                 'template' => '{{>not_found}}',
+                 'expected' => "can not find partial file for 'not_found', you should set correct basedir and fileext in options",
+             ),
+             Array(
+                 'template' => '{{>tests/test1 foo}}',
+                 'expected' => 'Do not support {{>tests/test1 [foo]}}, you should do compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag',
+             ),
         );
 
         return array_map(function($i) {

@@ -179,6 +179,14 @@ With this setting, when you include a partial by `{{> partial_name}}`, LightnCan
 * /usr/local/share/my_project/partials/partial_name.mustache
 * /usr/local/share/my_project/partials/partial_name.handlebars
 
+By default, partial uses the same context with original template. If you want to change context for the partial, you may add one more argument after the partial name:
+
+```
+{{>partial_name .}} // Same as {{>partial_name}}
+{{>partial_name foo}} // Change input context to foo, FLAG_RUNTIMEPARTIAL required
+{{>partial_name ..}} // use {{..}} as new input context, FLAG_RUNTIMEPARTIAL required
+```
+
 Custom Helper
 -------------
 

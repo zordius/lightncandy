@@ -230,6 +230,24 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 ),
                 'expected' => 'a,b,c>a,b,c>a,b,c>',
             ),
+
+            Array(
+                'template' => '{{#each .}}->{{>tests/test3}}{{/each}}',
+                'data' => Array('a', 'b', 'c'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                ),
+                'expected' => "->New context:a\n->New context:b\n->New context:c\n",
+            ),
+
+            Array(
+                'template' => '{{#each .}}->{{>tests/test3 ../foo}}{{/each}}',
+                'data' => Array('a', 'foo' => Array('d', 'e', 'f')),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_RUNTIMEPARTIAL,
+                ),
+                'expected' => "->New context:d,e,f\n->New context:d,e,f\n",
+            ),
         );
 
         return array_map(function($i) {return Array($i);}, $issues);
