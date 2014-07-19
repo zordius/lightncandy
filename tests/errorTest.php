@@ -195,11 +195,11 @@ class errorTest extends PHPUnit_Framework_TestCase
              ),
              Array(
                  'template' => '{{../foo}}',
-                 'expected' => 'do not support {{../var}}, you should do compile with LightnCandy::FLAG_PARENT flag',
+                 'expected' => 'Do not support {{../var}}, you should do compile with LightnCandy::FLAG_PARENT flag',
              ),
              Array(
                  'template' => '{{..}}',
-                 'expected' => 'do not support {{../var}}, you should do compile with LightnCandy::FLAG_PARENT flag',
+                 'expected' => 'Do not support {{../var}}, you should do compile with LightnCandy::FLAG_PARENT flag',
              ),
              Array(
                  'template' => '{{test_join [a]=b}}',
@@ -212,11 +212,11 @@ class errorTest extends PHPUnit_Framework_TestCase
              Array(
                  'template' => '{{a=b}}',
                  'options' => Array('flags' => LightnCandy::FLAG_NAMEDARG),
-                 'expected' => 'do not support name=value in {{a=b}}!',
+                 'expected' => 'Do not support name=value in {{a=b}}!',
              ),
              Array(
                  'template' => '{{#foo}}1{{^}}2{{/foo}}',
-                 'expected' => 'do not support {{^}}, you should do compile with LightnCandy::FLAG_ELSE flag',
+                 'expected' => 'Do not support {{^}}, you should do compile with LightnCandy::FLAG_ELSE flag',
              ),
              Array(
                  'template' => '{{#with a}OK!{{/with}}',
@@ -232,8 +232,13 @@ class errorTest extends PHPUnit_Framework_TestCase
                  'options' => Array('flags' => LightnCandy::FLAG_WITH),
              ),
              Array(
+                 'template' => '{{#with}}OK!{{/with}}',
+                 'options' => Array('flags' => LightnCandy::FLAG_WITH),
+                 'expected' => 'No argument after {{#with}} !',
+             ),
+             Array(
                  'template' => '{{>not_found}}',
-                 'expected' => "can not find partial file for 'not_found', you should set correct basedir and fileext in options",
+                 'expected' => "Can not find partial file for 'not_found', you should set correct basedir and fileext in options",
              ),
              Array(
                  'template' => '{{>tests/test1 foo}}',
@@ -241,7 +246,7 @@ class errorTest extends PHPUnit_Framework_TestCase
              ),
              Array(
                  'template' => '{{#with foo}}ABC{{/with}}',
-                 'expected' => 'do not support {{#with var}}, you should do compile with LightnCandy::FLAG_WITH flag',
+                 'expected' => 'Do not support {{#with var}}, you should do compile with LightnCandy::FLAG_WITH flag',
              ),
         );
 

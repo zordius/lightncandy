@@ -467,7 +467,7 @@ $libstr
         }
 
         if (!$context['flags']['skippartial']) {
-            $context['error'][] = "can not find partial file for '$name', you should set correct basedir and fileext in options";
+            $context['error'][] = "Can not find partial file for '$name', you should set correct basedir and fileext in options";
         }
     }
 
@@ -1100,7 +1100,7 @@ $libstr
         if ($levels) {
             $ret[] = $levels;
             if (!$context['flags']['parent']) {
-                $context['error'][] = 'do not support {{../var}}, you should do compile with LightnCandy::FLAG_PARENT flag';
+                $context['error'][] = 'Do not support {{../var}}, you should do compile with LightnCandy::FLAG_PARENT flag';
             }
             $context['usedFeature']['parent']++;
         }
@@ -1352,7 +1352,7 @@ $libstr
             }
 
             if (!$context['flags']['else']) {
-                $context['error'][] = 'do not support {{^}}, you should do compile with LightnCandy::FLAG_ELSE flag';
+                $context['error'][] = 'Do not support {{^}}, you should do compile with LightnCandy::FLAG_ELSE flag';
             }
             return;
 
@@ -1381,10 +1381,10 @@ $libstr
             switch ($vars[0][0]) {
             case 'with':
                 if (isset($vars[1][0]) && !$context['flags']['with']) {
-                    $context['error'][] = 'do not support {{#with var}}, you should do compile with LightnCandy::FLAG_WITH flag';
+                    $context['error'][] = 'Do not support {{#with var}}, you should do compile with LightnCandy::FLAG_WITH flag';
                 }
                 if ((count($vars) < 2) && $context['flags']['with']) {
-                    $context['error'][] = 'no argument after {{#with}} !';
+                    $context['error'][] = 'No argument after {{#with}} !';
                 }
                 // Continue to add usage...
             case 'each':
@@ -1470,7 +1470,7 @@ $libstr
      */
     public static function noNamedArguments($token, &$context, $named) {
         if ($named) {
-            $context['error'][] = 'do not support name=value in ' . self::tokenString($token) . '!';
+            $context['error'][] = 'Do not support name=value in ' . self::tokenString($token) . '!';
         }
     }
 
