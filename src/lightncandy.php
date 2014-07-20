@@ -1250,10 +1250,10 @@ $libstr
                 }
             }
 
-            if (is_numeric($var)) {
+            if (($idx === 0) && ($token[self::POS_OP] === '>')) {
+                $var = Array(preg_replace('/^("(.+)")|(\\[(.+)\\])$/', '$2$4', $var));
+            } else if (is_numeric($var)) {
                 $var = Array('"' . $var . '"');
-            } else if (($idx === 0) && ($token[self::POS_OP] === '>')) {
-                $var = Array($var);
             } else {
                 $var = self::fixVariable($var, $context);
             }
