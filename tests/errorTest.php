@@ -14,19 +14,15 @@ class errorTest extends PHPUnit_Framework_TestCase
     {
         global $tmpdir;
 
-        try {
-            $php = LightnCandy::compile($test['template'], $test['options']);
-        } catch (Exception $e) {
-            $this->assertEquals($test['expected'], $e->getMessage());
-            return;
-        }
+        $php = LightnCandy::compile($test['template'], $test['options']);
+        $context = LightnCandy::getContext();
 
         // This case should be compiled without error
         if (!isset($test['expected'])) {
             return;
         }
 
-        $this->fail("This should be failed as '{$test['expected']}' ! Context:" .print_r(LightnCandy::getContext(), true));
+        $this->assertEquals($test['expected'], $context['error']);
     }
 
     public function errorProvider()
@@ -275,7 +271,10 @@ class errorTest extends PHPUnit_Framework_TestCase
              Array(
                  'template' => '{{>recursive}}',
                  'options' => Array('basedir' => 'tests', 'flags' => LightnCandy::FLAG_WITH),
-                 'expected' => "I found recursive partial includes as the path: recursive -> recursive! You should fix your template or compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag.\nSkip rendering partial 'recursive' again due to recursive detected",
+                 'expected' => Array(
+                     'I found recursive partial includes as the path: recursive -> recursive! You should fix your template or compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag.',
+                     "Skip rendering partial 'recursive' again due to recursive detected",
+                 )
              ),
         );
 
@@ -286,7 +285,9 @@ class errorTest extends PHPUnit_Framework_TestCase
             if (!isset($i['options']['flags'])) {
                 $i['options']['flags'] = 0;
             }
-            $i['options']['flags'] = $i['options']['flags'] | LightnCandy::FLAG_ERROR_EXCEPTION;
+            if (isset($i['expected']) && !is_array($i['expected'])) {
+                $i['expected'] = Array($i['expected']);
+            }
             return Array($i);
         }, $errorCases);
     }
