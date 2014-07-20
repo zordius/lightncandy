@@ -203,7 +203,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
             Array('2'), Array('flags'=>Array('spvar'=>true,'debug'=>0)), true
         ));
         $this->assertEquals(Array('((is_array($in) && isset($in[\'@index\'])) ? $in[\'@index\'] : null)', '[@index]'), $method->invoke(null,
-            Array('@index'), Array('flags'=>Array('spvar'=>false,'debug'=>0,'prop'=>0))
+            Array('@index'), Array('flags'=>Array('spvar'=>false,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0))
         ));
         $this->assertEquals(Array('$cx[\'sp_vars\'][\'index\']', '@index'), $method->invoke(null,
             Array('@index'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
@@ -221,22 +221,22 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
             Array('@root'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
         ));
         $this->assertEquals(Array('\'a\'', '"a"'), $method->invoke(null,
-            Array('"a"'), Array(), Array('flags'=>Array('spvar'=>true,'debug'=>0))
+            Array('"a"'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
         ));
         $this->assertEquals(Array('((is_array($in) && isset($in[\'a\'])) ? $in[\'a\'] : null)', '[a]'), $method->invoke(null,
-            Array('a'), Array('flags'=>Array('spvar'=>true,'debug'=>0,'prop'=>0))
+            Array('a'), Array('flags'=>Array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0))
         ));
         $this->assertEquals(Array('((is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)', '../[a]'), $method->invoke(null,
-            Array(1,'a'), Array('flags'=>Array('spvar'=>true,'debug'=>0,'prop'=>0))
+            Array(1,'a'), Array('flags'=>Array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0))
         ));
         $this->assertEquals(Array('((is_array($cx[\'scopes\'][count($cx[\'scopes\'])-3]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)', '../../../[a]'), $method->invoke(null,
-            Array(3,'a'), Array('flags'=>Array('spvar'=>true,'debug'=>0,'prop'=>0))
+            Array(3,'a'), Array('flags'=>Array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0))
         ));
         $this->assertEquals(Array('((is_array($in) && isset($in[\'id\'])) ? $in[\'id\'] : null)', 'this.[id]'), $method->invoke(null,
-            Array(null, 'id'), Array('flags'=>Array('spvar'=>true,'debug'=>0,'prop'=>0))
+            Array(null, 'id'), Array('flags'=>Array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0))
         ));
         $this->assertEquals(Array('LCRun3::v($cx, $in, Array(\'id\'))', 'this.[id]'), $method->invoke(null,
-            Array(null, 'id'), Array('flags'=>Array('prop'=>true,'spvar'=>true,'debug'=>0))
+            Array(null, 'id'), Array('flags'=>Array('prop'=>true,'spvar'=>true,'debug'=>0,'method'=>0,'mustlok'=>0,'standalone'=>0))
         ));
     }
     /**
@@ -382,10 +382,10 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $method = new ReflectionMethod('LightnCandy', 'validateStartEnd');
         $method->setAccessible(true);
         $this->assertEquals(null, $method->invoke(null,
-            array_fill(0, 8, ''), Array(), true
+            array_fill(0, 9, ''), Array(), true
         ));
         $this->assertEquals(true, $method->invoke(null,
-            range(0, 7), Array(), true
+            range(0, 8), Array(), true
         ));
     }
     /**
@@ -431,7 +431,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
             Array(0, 0, 0, 0, 0, '#', '...'), Array('hbhelpers' => Array('abc' => ''), 'usedFeature' => Array('hbhelper' => 10), 'level' => 0), Array(Array('abc'))
         ));
         $this->assertEquals(true, $method->invoke(null,
-            Array(0, 0, 0, 0, 0, '>', '...'), Array('basedir' => Array('.'), 'fileext' => Array('.tmpl'), 'usedFeature' => Array('unless' => 7), 'level' => 0), Array('test')
+            Array(0, 0, 0, 0, 0, '>', '...'), Array('basedir' => Array('.'), 'fileext' => Array('.tmpl'), 'usedFeature' => Array('unless' => 7, 'partial' => 7), 'level' => 0, 'flags' => Array('skippartial' => 0)), Array('test')
         ));
     }
     /**

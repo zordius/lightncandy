@@ -1295,8 +1295,8 @@ $libstr
      *
      * @return boolean|null Return true when invalid
      * 
-     * @expect null when input array_fill(0, 8, ''), Array(), true
-     * @expect true when input range(0, 7), Array(), true
+     * @expect null when input array_fill(0, 9, ''), Array(), true
+     * @expect true when input range(0, 8), Array(), true
      */
     protected static function validateStartEnd($token, &$context, $raw) {
         // {{ }}} or {{{ }} are invalid
@@ -1332,7 +1332,7 @@ $libstr
      * @expect 9 when input Array(0, 0, 0, 0, 0, '#', '...'), Array('blockhelpers' => Array('abc' => ''), 'usedFeature' => Array('bhelper' => 8), 'level' => 0), Array(Array('abc'))
      * @expect 10 when input Array(0, 0, 0, 0, 0, ' ', '...'), Array('usedFeature' => Array('delimiter' => 9), 'level' => 0), Array()
      * @expect 11 when input Array(0, 0, 0, 0, 0, '#', '...'), Array('hbhelpers' => Array('abc' => ''), 'usedFeature' => Array('hbhelper' => 10), 'level' => 0), Array(Array('abc'))
-     * @expect true when input Array(0, 0, 0, 0, 0, '>', '...'), Array('basedir' => Array('.'), 'fileext' => Array('.tmpl'), 'usedFeature' => Array('unless' => 7), 'level' => 0), Array('test')
+     * @expect true when input Array(0, 0, 0, 0, 0, '>', '...'), Array('basedir' => Array('.'), 'fileext' => Array('.tmpl'), 'usedFeature' => Array('unless' => 7, 'partial' => 7), 'level' => 0, 'flags' => Array('skippartial' => 0)), Array('test')
      */
     protected static function validateOperations($token, &$context, $vars) {
         switch ($token[self::POS_OP]) {
@@ -1428,6 +1428,10 @@ $libstr
 
         if (count($vars) == 0) {
             return $context['error'][] = 'Wrong variable naming in ' . self::tokenString($token);
+        }
+
+        if (!isset($vars[0])) {
+            return self::noNamedArguments($token, $context, true);
         }
 
         if ($vars[0] !== 'else') {
