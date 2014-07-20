@@ -933,7 +933,8 @@ $libstr
                 case '@first':
                 case '@last':
                 case '@key':
-                    return Array("\$cx['sp_vars']['" . substr($var[0], 1) . "']", $var[0]);
+                    $v = "\$cx['sp_vars']['" . substr($var[0], 1) . "']";
+                    return Array("(isset($v)?$v:'')", $var[0]);
                 }
             }
 
