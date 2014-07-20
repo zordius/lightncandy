@@ -33,6 +33,11 @@ class errorTest extends PHPUnit_Framework_TestCase
     {
         $errorCases = Array(
              Array(
+                 'template' => '{{{log}}',
+                 'options' => Array('flags' => LightnCandy::FLAG_ERROR_LOG),
+                 'expected' => 'Bad token {{{log}} ! Do you mean {{log}} or {{{log}}}?',
+             ),
+             Array(
                  'template' => '{{testerr1}}}',
                  'expected' => 'Bad token {{testerr1}}} ! Do you mean {{testerr1}} or {{{testerr1}}}?',
              ),
