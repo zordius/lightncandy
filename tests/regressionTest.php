@@ -114,7 +114,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'template' => '{{#each foo}} Test! {{this}} {{/each}}{{> test1}} ! >>> {{>recursive}}',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_RUNTIMEPARTIAL,                      
-                    'basedir' => Array('tests'),
+                    'basedir' => 'tests',
                 ),
                 'data' => Array(
                  'bar' => 1,
@@ -180,7 +180,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'id' => 83,
                 'template' => '{{> tests/test1}}',
                 'options' => Array(
-                    'basedir' => Array('')
+                    'basedir' => '.',
                 ),
                 'data' => null,
                 'expected' => "123\n"
@@ -206,7 +206,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'template' => '{{>test2}}',
                 'options' => Array(
                     'flags' => 0,
-                    'basedir' => Array('tests'),
+                    'basedir' => 'tests',
                 ),
                 'data' => null,
                 'expected' => "a123\nb\n",
@@ -240,6 +240,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'data' => Array('a', 'b', 'c'),
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'basedir' => '.',
                 ),
                 'expected' => "->New context:a\n->New context:b\n->New context:c\n",
             ),
@@ -249,6 +250,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'data' => Array('a', 'foo' => Array('d', 'e', 'f')),
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_RUNTIMEPARTIAL,
+                    'basedir' => '.',
                 ),
                 'expected' => "->New context:d,e,f\n->New context:d,e,f\n",
             ),

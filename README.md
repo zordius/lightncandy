@@ -104,7 +104,7 @@ Welcome Peter , You win $1000 dollars!!
 Compile Options
 ---------------
 
-You can apply more options by running `LightnCandy::compile($template, $options)` , for example:
+You can apply more options by running `LightnCandy::compile($template, $options)`:
 
 ```php
 LightnCandy::compile($template, Array(
@@ -161,8 +161,14 @@ LightnCandy::compile($template, Array(
 
 You can also provide partials by files. When `compile()`, LightnCandy will search template files from `basedir` in the option if you provided one or more. Default template file name is `*.tmpl`, you can change or add more template file extensions with `fileext` option. 
 
-for example:
 ```php
+// Loading partial from file system only when valid directory is provided by basedir option
+// '.' means getpwd()
+LightnCandy::compile($template, Array(
+    'basedir' => '.'
+));
+
+// Multiple basedir and fileext are supported
 LightnCandy::compile($template, Array(
     'flags' => LightnCandy::FLAG_STANDALONE,
     'basedir' => Array(
@@ -204,7 +210,7 @@ Custom helper can help you deal with common template tasks, for example: provide
 
 **NOTICE**: custom helpers to handle single tag `{{xxx}}` or a section `{{#yyy}} ... {{/yyy}}` are absolutely different in LightnCandy. Too know more about creating custom helpers to handle `{{#yyy}} ... {{/yyy}}`, please refer to <a href="#block-custom-helper">Block Custom Helper</a>.
 
-When `compile()`, LightnCandy will lookup helpers from generated custom helper name table. You can register custom helpers with `helpers` option.  For example:
+When `compile()`, LightnCandy will lookup helpers from generated custom helper name table. You can register custom helpers with `helpers` option:
 
 ```php
 LightnCandy::compile($template, Array(
@@ -246,7 +252,7 @@ LightnCandy::compile($template, Array(
 Custom Helper Interface
 -----------------------
 
-The input arguments are processed by LightnCandy automatically, you do not need to worry about variable name processing or current context. You can also use double quoted string as input, for example:
+The input arguments are processed by LightnCandy automatically, you do not need to worry about variable name processing or current context. You can also use double quoted string as input:
 
 ```
 {{{helper name}}}           // This send processed {{{name}}} into the helper
@@ -322,7 +328,7 @@ You may use block custom helper to:
 2. Modify current context for the inner block.
 3. Provide different context to the inner block.
 
-You can register block custom helpers with `blockhelpers` option.  For example:
+You can register block custom helpers with `blockhelpers` option:
 
 ```php
 LightnCandy::compile($template, Array(

@@ -242,6 +242,7 @@ class errorTest extends PHPUnit_Framework_TestCase
              ),
              Array(
                  'template' => '{{>tests/test1 foo}}',
+                 'options' => Array('basedir' => '.'),
                  'expected' => 'Do not support {{>tests/test1 [foo]}}, you should do compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag',
              ),
              Array(
