@@ -345,7 +345,8 @@ $libstr
             'tokens' => Array(
                 'ahead' => false,
                 'current' => 0,
-                'count' => 0
+                'count' => 0,
+                'partialind' => '',
             ),
             'usedPartial' => Array(),
             'partialStack' => Array(),
@@ -884,7 +885,7 @@ $libstr
         $vars = Array(Array(), Array());
         $exps = Array();
         foreach ($vn as $i => $v) {
-            if (preg_match('/^\(.+\)$/', $v[0])) {
+            if (isset($v[0]) && preg_match('/^\(.+\)$/', $v[0])) {
                 $V = self::compileSubExpression($v[0], $context);
             } else {
                 $V = self::getVariableName($v, $context, $ishelper);
