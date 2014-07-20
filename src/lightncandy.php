@@ -956,36 +956,38 @@ $libstr
      * @expect Array('LCRun3::v($cx, $in, Array(\'id\'))', 'this.[id]') when input Array(null, 'id'), Array('flags'=>Array('prop'=>true,'spvar'=>true,'debug'=>0,'method'=>0,'mustlok'=>0,'standalone'=>0))
      */
     protected static function getVariableName($var, &$context, $ishelper = false) {
+
+        if (isset($var[0])) {
+            if ($context['flags']['spvar']) {
+                switch ($var[0]) {
+                case '@index':
+                case '@first':
+                case '@last':
+                case '@key':
+                    return Array("\$cx['sp_vars']['" . substr($var[0], 1) . "']", $var[0]);
+                }
+            }
+
+            // Handle language constants or number , only for helpers
+            if ($ishelper) {
+                if ((count($var) == 1) && is_numeric($var[0])) {
+                    return Array(1 * $var[0], $var[0]); 
+                }
+                switch ($var[0]) {
+                case 'true':
+                    return Array('true', 'true');
+                case 'false':
+                    return Array('false', 'false');
+                }
+            }
+
+            // Handle double quoted string
+            if (preg_match('/^"(.*)"$/', $var[0], $matched)) {
+                return Array("'{$matched[1]}'", $var[0]);
+            }
+        }
+
         $levels = 0;
-
-        if ($context['flags']['spvar']) {
-            switch ($var[0]) {
-            case '@index':
-            case '@first':
-            case '@last':
-            case '@key':
-                return Array("\$cx['sp_vars']['" . substr($var[0], 1) . "']", $var[0]);
-            }
-        }
-
-        // Handle language constants or number , only for helpers
-        if ($ishelper) {
-            if ((count($var) == 1) && is_numeric($var[0])) {
-                return Array(1 * $var[0], $var[0]); 
-            }
-            switch ($var[0]) {
-            case 'true':
-                return Array('true', 'true');
-            case 'false':
-                return Array('false', 'false');
-            }
-        }
-
-        // Handle double quoted string
-        if (preg_match('/^"(.*)"$/', $var[0], $matched)) {
-            return Array("'{$matched[1]}'", $var[0]);
-        }
-
         $base = '$in';
         $root = false;
 
