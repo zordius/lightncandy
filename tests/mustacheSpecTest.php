@@ -13,14 +13,17 @@ class MustacheSpecTest extends PHPUnit_Framework_TestCase
     {
         global $tmpdir;
 
-        $php = LightnCandy::compile($spec['template'], Array(
-            'flags' => LightnCandy::FLAG_MUSTACHE | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_RUNTIMEPARTIAL,
-            'partials' => isset($spec['partials']) ? $spec['partials'] : null,
-            'basedir' => $tmpdir,
-        ));
-        $renderer = LightnCandy::prepare($php);
+        $flag = LightnCandy::FLAG_MUSTACHE | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_RUNTIMEPARTIAL;
 
-        $this->assertEquals($spec['expected'], $renderer($spec['data']), "[{$spec['file']}.{$spec['name']}]#{$spec['no']}:{$spec['desc']} PHP CODE: $php");
+        foreach (Array($flag, $flag | LightnCandy::FLAG_STANDALONE) as $f) {
+            $php = LightnCandy::compile($spec['template'], Array(
+                'flags' => $f,
+                'partials' => isset($spec['partials']) ? $spec['partials'] : null,
+                'basedir' => $tmpdir,
+            ));
+            $renderer = LightnCandy::prepare($php);
+            $this->assertEquals($spec['expected'], $renderer($spec['data']), "[{$spec['file']}.{$spec['name']}]#{$spec['no']}:{$spec['desc']} PHP CODE: $php");
+        }
     }
 
     public function jsonSpecProvider()
