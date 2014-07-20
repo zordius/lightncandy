@@ -344,6 +344,12 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
         $this->assertEquals('=&amp;&#x27;=', $method->invoke(null,
             Array('=&\'='), 'encq'
         ));
+        $this->assertEquals('=&amp;=', $method->invoke(null,
+            Array('=&=', false), 'enc'
+        ));
+        $this->assertEquals('=&=', $method->invoke(null,
+            Array('=&=', false), 'raw'
+        ));
         $this->assertEquals('=&=', $method->invoke(null,
             Array('=&=', 'raw'), 'enc'
         ));

@@ -2341,17 +2341,15 @@ class LCRun3 {
      * @expect '=&amp;&#x27;=' when input '=&\'=', 'encq'
      * @expect '=&amp;&#039;=' when input Array('=&\'='), 'enc'
      * @expect '=&amp;&#x27;=' when input Array('=&\'='), 'encq'
+     * @expect '=&amp;=' when input Array('=&=', false), 'enc'
+     * @expect '=&=' when input Array('=&=', false), 'raw'
      * @expect '=&=' when input Array('=&=', 'raw'), 'enc'
      * @expect '=&amp;&#x27;=' when input Array('=&\'=', 'encq'), 'raw'
      */
     public static function chret($ret, $op) {
         if (is_array($ret)) {
-            if (isset($ret[1])) {
-                if ($ret[1]) {
-                    $op = $ret[1];
-                } else {
-                    return $ret[0];
-                }
+            if (isset($ret[1]) && $ret[1]) {
+                $op = $ret[1];
             }
             $ret = $ret[0];
         }
