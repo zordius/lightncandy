@@ -941,17 +941,17 @@ $libstr
      * @expect Array('true', 'true') when input Array('true'), Array('flags'=>Array('spvar'=>true,'debug'=>0)), true
      * @expect Array('false', 'false') when input Array('false'), Array('flags'=>Array('spvar'=>true,'debug'=>0)), true
      * @expect Array(2, '2') when input Array('2'), Array('flags'=>Array('spvar'=>true,'debug'=>0)), true
-     * @expect Array('((is_array($in) && isset($in[\'@index\'])) ? $in[\'@index\'] : null)', '[@index]') when input Array('@index'), Array('flags'=>Array('spvar'=>false,'debug'=>0))
+     * @expect Array('((is_array($in) && isset($in[\'@index\'])) ? $in[\'@index\'] : null)', '[@index]') when input Array('@index'), Array('flags'=>Array('spvar'=>false,'debug'=>0,'prop'=>0))
      * @expect Array('$cx[\'sp_vars\'][\'index\']', '@index') when input Array('@index'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
      * @expect Array('$cx[\'sp_vars\'][\'key\']', '@key') when input Array('@key'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
      * @expect Array('$cx[\'sp_vars\'][\'first\']', '@first') when input Array('@first'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
      * @expect Array('$cx[\'sp_vars\'][\'last\']', '@last') when input Array('@last'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
      * @expect Array('$cx[\'scopes\'][0]', '@root') when input Array('@root'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
      * @expect Array('\'a\'', '"a"') when input Array('"a"'), Array(), Array('flags'=>Array('spvar'=>true,'debug'=>0))
-     * @expect Array('((is_array($in) && isset($in[\'a\'])) ? $in[\'a\'] : null)', '[a]') when input Array('a'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
-     * @expect Array('((is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)', '../[a]') when input Array(1,'a'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
-     * @expect Array('((is_array($cx[\'scopes\'][count($cx[\'scopes\'])-3]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)', '../../../[a]') when input Array(3,'a'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
-     * @expect Array('((is_array($in) && isset($in[\'id\'])) ? $in[\'id\'] : null)', 'this.[id]') when input Array(null, 'id'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
+     * @expect Array('((is_array($in) && isset($in[\'a\'])) ? $in[\'a\'] : null)', '[a]') when input Array('a'), Array('flags'=>Array('spvar'=>true,'debug'=>0,'prop'=>0))
+     * @expect Array('((is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)', '../[a]') when input Array(1,'a'), Array('flags'=>Array('spvar'=>true,'debug'=>0,'prop'=>0))
+     * @expect Array('((is_array($cx[\'scopes\'][count($cx[\'scopes\'])-3]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)', '../../../[a]') when input Array(3,'a'), Array('flags'=>Array('spvar'=>true,'debug'=>0,'prop'=>0))
+     * @expect Array('((is_array($in) && isset($in[\'id\'])) ? $in[\'id\'] : null)', 'this.[id]') when input Array(null, 'id'), Array('flags'=>Array('spvar'=>true,'debug'=>0,'prop'=>0))
      * @expect Array('LCRun3::v($cx, $in, Array(\'id\'))', 'this.[id]') when input Array(null, 'id'), Array('flags'=>Array('prop'=>true,'spvar'=>true,'debug'=>0))
      */
     protected static function getVariableName($var, &$context, $ishelper = false) {
@@ -1931,10 +1931,10 @@ class LCRun3 {
      *
      * @return mixed Return the value or null when not found
      *
-     * @expect null when input Array('flags' => Array('prop' => false, 'method' => false)), 0, Array('a', 'b')
-     * @expect 3 when input Array('flags' => Array('prop' => false, 'method' => false)), Array('a' => Array('b' => 3)), Array('a', 'b')
-     * @expect null when input Array('flags' => Array('prop' => false, 'method' => false)), (Object) Array('a' => Array('b' => 3)), Array('a', 'b')
-     * @expect 3 when input Array('flags' => Array('prop' => true, 'method' => false)), (Object) Array('a' => Array('b' => 3)), Array('a', 'b')
+     * @expect null when input Array('scopes' => Array(), 'flags' => Array('prop' => 0, 'method' => 0, 'mustlok' => 0)), 0, Array('a', 'b')
+     * @expect 3 when input Array('scopes' => Array(), 'flags' => Array('prop' => 0, 'method' => 0), 'mustlok' => 0), Array('a' => Array('b' => 3)), Array('a', 'b')
+     * @expect null when input Array('scopes' => Array(), 'flags' => Array('prop' => 0, 'method' => 0, 'mustlok' => 0)), (Object) Array('a' => Array('b' => 3)), Array('a', 'b')
+     * @expect 3 when input Array('scopes' => Array(), 'flags' => Array('prop' => 1, 'method' => 0, 'mustlok' => 0)), (Object) Array('a' => Array('b' => 3)), Array('a', 'b')
      */
     public static function v($cx, $base, $path) {
         $count = count($cx['scopes']);
@@ -2432,9 +2432,9 @@ class LCRun3 {
      *
      * @return string The rendered string of the token
      *
-     * @expect '4.2.3' when input Array('blockhelpers' => Array('a' => function ($cx) {return Array($cx,2,3);})), 'a', Array(), 4, function($cx, $i) {return implode('.', $i);}
-     * @expect '2.6.5' when input Array('blockhelpers' => Array('a' => function ($cx,$in) {return Array($cx,$in[0],5);})), 'a', Array('6'), 2, function($cx, $i) {return implode('.', $i);}
-     * @expect '' when input Array('blockhelpers' => Array('a' => function ($cx,$in) {})), 'a', Array('6'), 2, function($cx, $i) {return implode('.', $i);}
+     * @expect '4.2.3' when input Array('blockhelpers' => Array('a' => function ($cx) {return Array($cx,2,3);})), 'a', Array(0, 0), 4, function($cx, $i) {return implode('.', $i);}
+     * @expect '2.6.5' when input Array('blockhelpers' => Array('a' => function ($cx,$in) {return Array($cx,$in[0],5);})), 'a', Array('6', 0), 2, function($cx, $i) {return implode('.', $i);}
+     * @expect '' when input Array('blockhelpers' => Array('a' => function ($cx,$in) {})), 'a', Array('6', 0), 2, function($cx, $i) {return implode('.', $i);}
      */
     public static function bch($cx, $ch, $vars, $in, $cb) {
         $r = call_user_func($cx['blockhelpers'][$ch], $in, $vars[0], $vars[1]);

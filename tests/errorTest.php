@@ -255,6 +255,9 @@ class errorTest extends PHPUnit_Framework_TestCase
             if (!isset($i['options'])) {
                 $i['options'] = Array('flags' => 0);
             }
+            if (!isset($i['options']['flags'])) {
+                $i['options']['flags'] = 0;
+            }
             $i['options']['flags'] = $i['options']['flags'] | LightnCandy::FLAG_ERROR_EXCEPTION;
             return Array($i);
         }, $errorCases);

@@ -24,16 +24,16 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
     public function testOn_v() {
         $method = new ReflectionMethod('LCRun3', 'v');
         $this->assertEquals(null, $method->invoke(null,
-            Array('flags' => Array('prop' => false, 'method' => false)), 0, Array('a', 'b')
+            Array('scopes' => Array(), 'flags' => Array('prop' => 0, 'method' => 0, 'mustlok' => 0)), 0, Array('a', 'b')
         ));
         $this->assertEquals(3, $method->invoke(null,
-            Array('flags' => Array('prop' => false, 'method' => false)), Array('a' => Array('b' => 3)), Array('a', 'b')
+            Array('scopes' => Array(), 'flags' => Array('prop' => 0, 'method' => 0), 'mustlok' => 0), Array('a' => Array('b' => 3)), Array('a', 'b')
         ));
         $this->assertEquals(null, $method->invoke(null,
-            Array('flags' => Array('prop' => false, 'method' => false)), (Object) Array('a' => Array('b' => 3)), Array('a', 'b')
+            Array('scopes' => Array(), 'flags' => Array('prop' => 0, 'method' => 0, 'mustlok' => 0)), (Object) Array('a' => Array('b' => 3)), Array('a', 'b')
         ));
         $this->assertEquals(3, $method->invoke(null,
-            Array('flags' => Array('prop' => true, 'method' => false)), (Object) Array('a' => Array('b' => 3)), Array('a', 'b')
+            Array('scopes' => Array(), 'flags' => Array('prop' => 1, 'method' => 0, 'mustlok' => 0)), (Object) Array('a' => Array('b' => 3)), Array('a', 'b')
         ));
     }
     /**
@@ -363,13 +363,13 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
     public function testOn_bch() {
         $method = new ReflectionMethod('LCRun3', 'bch');
         $this->assertEquals('4.2.3', $method->invoke(null,
-            Array('blockhelpers' => Array('a' => function ($cx) {return Array($cx,2,3);})), 'a', Array(), 4, function($cx, $i) {return implode('.', $i);}
+            Array('blockhelpers' => Array('a' => function ($cx) {return Array($cx,2,3);})), 'a', Array(0, 0), 4, function($cx, $i) {return implode('.', $i);}
         ));
         $this->assertEquals('2.6.5', $method->invoke(null,
-            Array('blockhelpers' => Array('a' => function ($cx,$in) {return Array($cx,$in[0],5);})), 'a', Array('6'), 2, function($cx, $i) {return implode('.', $i);}
+            Array('blockhelpers' => Array('a' => function ($cx,$in) {return Array($cx,$in[0],5);})), 'a', Array('6', 0), 2, function($cx, $i) {return implode('.', $i);}
         ));
         $this->assertEquals('', $method->invoke(null,
-            Array('blockhelpers' => Array('a' => function ($cx,$in) {})), 'a', Array('6'), 2, function($cx, $i) {return implode('.', $i);}
+            Array('blockhelpers' => Array('a' => function ($cx,$in) {})), 'a', Array('6', 0), 2, function($cx, $i) {return implode('.', $i);}
         ));
     }
 }
