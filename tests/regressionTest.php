@@ -10,7 +10,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider issueProvider
      */
-    public function testSpecs($issue)
+    public function testIssues($issue)
     {
         global $tmpdir;
 
@@ -21,7 +21,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
         }
         $renderer = LightnCandy::prepare($php);
 
-        $this->assertEquals($issue['expected'], $renderer($issue['data']), "PHP CODE:\n$php");
+        $this->assertEquals($issue['expected'], $renderer($issue['data'], $issue['debug']), "PHP CODE:\n$php");
     }
 
     public function issueProvider()
@@ -290,9 +290,38 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'data' => true,
                 'expected' => 'YES',
             ),
+
+            Array(
+                'template' => '{{foo}}',
+                'options' => Array('flags' => LightnCandy::FLAG_RENDER_DEBUG),
+                'data' => Array('foo' => 'OK'),
+                'expected' => 'OK',
+            ),
+
+            Array(
+                'template' => '{{foo}}',
+                'options' => Array('flags' => LightnCandy::FLAG_RENDER_DEBUG),
+                'debug' => LCRun3::DEBUG_TAGS_ANSI,
+                'data' => Array('foo' => 'OK'),
+                'expected' => hex2bin('1b5b303b33326d7b7b5b666f6f5d7d7d1b5b306d'),
+            ),
+
+            Array(
+                'template' => '{{foo}}',
+                'options' => Array('flags' => LightnCandy::FLAG_RENDER_DEBUG),
+                'debug' => LCRun3::DEBUG_TAGS_HTML,
+                'data' => null,
+                'expected' => '<!--MISSED((-->{{[foo]}}<!--))-->',
+            ),
+
         );
 
-        return array_map(function($i) {return Array($i);}, $issues);
+        return array_map(function($i) {
+            if (!isset($i['debug'])) {
+                $i['debug'] = 0;
+            }
+            return Array($i);
+        }, $issues);
     }
 }
 
