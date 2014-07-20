@@ -98,7 +98,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
 
         }
 
-        if ($spec['it'] === 'tokenizes hash arguments') {
+        if (($spec['it'] === 'tokenizes hash arguments') || ($spec['it'] === 'tokenizes special @ identifiers')) {
             $helpers['foo'] = function () {return 'ABC';};
         }
 
@@ -140,9 +140,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
            }, $json));
         }
 
-        return array_slice($ret, 0, 650);
+        return array_slice($ret, 0, 700);
     }
 }
-
-
 ?>
