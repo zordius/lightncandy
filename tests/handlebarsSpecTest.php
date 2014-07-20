@@ -106,6 +106,11 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
         ));
         $renderer = LightnCandy::prepare($php);
 
+        if ($spec['description'] === 'Tokenizer') {
+            // no compile error means passed
+            return;
+        }
+
         $this->assertEquals($spec['expected'], $renderer($spec['data']), "[{$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']} PHP CODE: $php");
     }
 
@@ -123,7 +128,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
            }, $json));
         }
 
-        return array_slice($ret, 0, 220);
+        return array_slice($ret, 0, 240);
     }
 }
 
