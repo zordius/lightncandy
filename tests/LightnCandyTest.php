@@ -205,16 +205,16 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(Array('((isset($in[\'@index\']) && is_array($in)) ? $in[\'@index\'] : null)', '[@index]'), $method->invoke(null,
             Array('@index'), Array('flags'=>Array('spvar'=>false,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0))
         ));
-        $this->assertEquals(Array('$cx[\'sp_vars\'][\'index\']', '@index'), $method->invoke(null,
+        $this->assertEquals(Array("(isset(\$cx['sp_vars']['index'])?\$cx['sp_vars']['index']:'')", '@index'), $method->invoke(null,
             Array('@index'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
         ));
-        $this->assertEquals(Array('$cx[\'sp_vars\'][\'key\']', '@key'), $method->invoke(null,
+        $this->assertEquals(Array("(isset(\$cx['sp_vars']['key'])?\$cx['sp_vars']['key']:'')", '@key'), $method->invoke(null,
             Array('@key'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
         ));
-        $this->assertEquals(Array('$cx[\'sp_vars\'][\'first\']', '@first'), $method->invoke(null,
+        $this->assertEquals(Array("(isset(\$cx['sp_vars']['first'])?\$cx['sp_vars']['first']:'')", '@first'), $method->invoke(null,
             Array('@first'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
         ));
-        $this->assertEquals(Array('$cx[\'sp_vars\'][\'last\']', '@last'), $method->invoke(null,
+        $this->assertEquals(Array("(isset(\$cx['sp_vars']['last'])?\$cx['sp_vars']['last']:'')", '@last'), $method->invoke(null,
             Array('@last'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
         ));
         $this->assertEquals(Array('$cx[\'scopes\'][0]', '@root'), $method->invoke(null,

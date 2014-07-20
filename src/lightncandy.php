@@ -912,10 +912,10 @@ $libstr
      * @expect Array('false', 'false') when input Array('false'), Array('flags'=>Array('spvar'=>true,'debug'=>0)), true
      * @expect Array(2, '2') when input Array('2'), Array('flags'=>Array('spvar'=>true,'debug'=>0)), true
      * @expect Array('((isset($in[\'@index\']) && is_array($in)) ? $in[\'@index\'] : null)', '[@index]') when input Array('@index'), Array('flags'=>Array('spvar'=>false,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0))
-     * @expect Array('$cx[\'sp_vars\'][\'index\']', '@index') when input Array('@index'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
-     * @expect Array('$cx[\'sp_vars\'][\'key\']', '@key') when input Array('@key'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
-     * @expect Array('$cx[\'sp_vars\'][\'first\']', '@first') when input Array('@first'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
-     * @expect Array('$cx[\'sp_vars\'][\'last\']', '@last') when input Array('@last'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
+     * @expect Array("(isset(\$cx['sp_vars']['index'])?\$cx['sp_vars']['index']:'')", '@index') when input Array('@index'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
+     * @expect Array("(isset(\$cx['sp_vars']['key'])?\$cx['sp_vars']['key']:'')", '@key') when input Array('@key'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
+     * @expect Array("(isset(\$cx['sp_vars']['first'])?\$cx['sp_vars']['first']:'')", '@first') when input Array('@first'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
+     * @expect Array("(isset(\$cx['sp_vars']['last'])?\$cx['sp_vars']['last']:'')", '@last') when input Array('@last'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
      * @expect Array('$cx[\'scopes\'][0]', '@root') when input Array('@root'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
      * @expect Array('\'a\'', '"a"') when input Array('"a"'), Array('flags'=>Array('spvar'=>true,'debug'=>0))
      * @expect Array('((isset($in[\'a\']) && is_array($in)) ? $in[\'a\'] : null)', '[a]') when input Array('a'), Array('flags'=>Array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0))
