@@ -2372,10 +2372,8 @@ class LCRun3 {
                 return htmlentities($ret, ENT_QUOTES, 'UTF-8');
             case 'encq':
                 return preg_replace('/&#039;/', '&#x27;', htmlentities($ret, ENT_QUOTES, 'UTF-8'));
-            case 'raw':
-            default:
-                return $ret;
         }
+        return $ret;
     }
 
     /**
