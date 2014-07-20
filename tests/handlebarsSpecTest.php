@@ -144,6 +144,12 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
            $ret = array_merge($ret, array_map(function ($d) use ($file, &$i) {
                $d['file'] = $file;
                $d['no'] = ++$i;
+               if (!isset($d['message']) {
+                   $d['message'] = null;
+               }
+               if (!isset($d['data']) {
+                   $d['data'] = null;
+               }
                return Array($d);
            }, $json));
         }
