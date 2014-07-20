@@ -53,23 +53,14 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
     public function testOn_buildCXBasedir() {
         $method = new ReflectionMethod('LightnCandy', 'buildCXBasedir');
         $method->setAccessible(true);
-        $this->assertEquals(Array(getcwd()), $method->invoke(null,
+        $this->assertEquals(Array(), $method->invoke(null,
             Array()
         ));
-        $this->assertEquals(Array(getcwd()), $method->invoke(null,
-            Array('basedir' => 0)
-        ));
-        $this->assertEquals(Array(getcwd()), $method->invoke(null,
-            Array('basedir' => '')
-        ));
-        $this->assertEquals(Array(getcwd()), $method->invoke(null,
+        $this->assertEquals(Array(), $method->invoke(null,
             Array('basedir' => Array())
         ));
         $this->assertEquals(Array('src'), $method->invoke(null,
             Array('basedir' => Array('src'))
-        ));
-        $this->assertEquals(Array(getcwd()), $method->invoke(null,
-            Array('basedir' => Array('dir_not_found'))
         ));
         $this->assertEquals(Array('src'), $method->invoke(null,
             Array('basedir' => Array('src', 'dir_not_found'))

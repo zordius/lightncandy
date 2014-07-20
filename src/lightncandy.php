@@ -560,12 +560,9 @@ $libstr
      *
      * @return array base directories
      *
-     * @expect Array(getcwd()) when input Array()
-     * @expect Array(getcwd()) when input Array('basedir' => 0)
-     * @expect Array(getcwd()) when input Array('basedir' => '')
-     * @expect Array(getcwd()) when input Array('basedir' => Array())
+     * @expect Array() when input Array()
+     * @expect Array() when input Array('basedir' => Array())
      * @expect Array('src') when input Array('basedir' => Array('src'))
-     * @expect Array(getcwd()) when input Array('basedir' => Array('dir_not_found'))
      * @expect Array('src') when input Array('basedir' => Array('src', 'dir_not_found'))
      * @expect Array('src', 'tests') when input Array('basedir' => Array('src', 'tests'))
      */
@@ -578,10 +575,6 @@ $libstr
             if (is_string($dir) && is_dir($dir)) {
                 $ret[] = $dir;
             }
-        }
-
-        if (count($ret) === 0) {
-            $ret[] = getcwd();
         }
 
         return $ret;
