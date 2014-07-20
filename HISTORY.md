@@ -15,6 +15,9 @@ master current trunk
    * ffd5e35c2d fix error when rendering array value as {{.}} without FLAG_JSOBJECT.
    * bd4987adbd support changing context on partial {{>foo bar}} ( require FLAG_RUNTIMEPARTIAL )
    * f5decaa7e3 support name sarguments on partial {{>foo bar name=tee}} . fix {{..}} bug.
+   * c20bb36457 support `partials` in options.
+   * e8779dbe8c change default `basedir` hehavior, stop partial files lookup when do not prodive `basedir` in options.
+   * c4e3401fe4 fix {{>"test"}} or {{>[test]}} or {{>1234}} bug.
 
 v0.14 https://github.com/zordius/lightncandy/tree/v0.14
    * align with handlebars.js 2.0.0-alpha.4
