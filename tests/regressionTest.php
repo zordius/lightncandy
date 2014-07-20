@@ -260,6 +260,15 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'data' => null,
                 'expected' => '{{',
             ),
+
+            Array(
+                'template' => '{{good_helper}}',
+                'data' => null,
+                'options' => Array(
+                    'helpers' => Array('good_helper' => 'foo::bar'),
+                ),
+                'expected' => 'OK!',
+            ),
         );
 
         return array_map(function($i) {return Array($i);}, $issues);
