@@ -14,7 +14,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
     {
         global $tmpdir;
 
-        $php = LightnCandy::compile($issue['template'], $issue['options']);
+        $php = LightnCandy::compile($issue['template'], isset($issue['options']) ? $issue['options'] : null);
         $context = LightnCandy::getContext();
         if (count($context['error'])) {
             $this->fail('Compile failed due to:' . print_r($context['error'], true));
