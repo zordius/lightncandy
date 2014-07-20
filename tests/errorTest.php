@@ -258,6 +258,11 @@ class errorTest extends PHPUnit_Framework_TestCase
                  'template' => '{{=~= =~=}}',
                  'expected' => "Can not set delimiter contains '=' , you try to set delimiter as '~=' and '=~'.",
              ),
+             Array(
+                 'template' => '{{>recursive}}',
+                 'options' => Array('basedir' => 'tests', 'flags' => LightnCandy::FLAG_WITH),
+                 'expected' => "I found recursive partial includes as the path: recursive -> recursive! You should fix your template or compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag.\nSkip rendering partial 'recursive' again due to recursive detected",
+             ),
         );
 
         return array_map(function($i) {
