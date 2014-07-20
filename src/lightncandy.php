@@ -1652,7 +1652,7 @@ $libstr
             case 'with':
                 if ($context['flags']['with']) {
                     if ($pop !== 'with') {
-                       $context['error'][] = 'Unexpect token /with !';
+                       $context['error'][] = 'Unexpect token: {{/with}} !';
                     return;
                     }
                     return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
