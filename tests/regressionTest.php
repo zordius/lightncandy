@@ -284,6 +284,12 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'expected' => '-123-',
             ),
 
+            Array(
+                'template' => '{{#if .}}YES{{else}}NO{{/if}}',
+                'options' => Array('flags' => LightnCandy::FLAG_ELSE),
+                'data' => true,
+                'expected' => 'YES',
+            ),
         );
 
         return array_map(function($i) {return Array($i);}, $issues);
