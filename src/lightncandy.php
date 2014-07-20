@@ -1805,17 +1805,19 @@ $libstr
      */
     protected static function compileElse(&$context, &$vars) {
         if ($vars[0][0] === 'else') {
-            switch ($context['stack'][count($context['stack']) - 1]) {
-            case 'if':
-            case 'unless':
-                $context['stack'][] = ':';
-                return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}" : "{$context['ops']['cnd_else']}";
-            case 'each':
-            case '#':
-                return "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}";
-            default:
-                $context['error'][] = '{{else}} only valid in if, unless, each, and #section context';
+            $c = count($context['stack']) - 1;
+            if ($c >= 0) {
+                switch ($context['stack'][count($context['stack']) - 1]) {
+                case 'if':
+                case 'unless':
+                    $context['stack'][] = ':';
+                    return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}" : "{$context['ops']['cnd_else']}";
+                case 'each':
+                case '#':
+                    return "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}";
+                }
             }
+            $context['error'][] = '{{else}} only valid in if, unless, each, and #section context';
         }
     }
 

@@ -91,7 +91,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                 }
 
                 // Wrong PHP helper interface in spec, skip.
-                preg_match('/function\s*\(.+?\)/', $func['javascript'], $js_args);
+                preg_match('/function\s*\(.+?\)/', isset($func['javascript']) ? $func['javascript'] : '', $js_args);
                 preg_match('/function\s*\(.+?\)/', $func['php'], $php_args);
                 $jsn = isset($js_args[0]) ? substr_count($js_args[0], ',') : 0;
                 $phpn = isset($php_args[0]) ? substr_count($php_args[0], ',') : 0;
