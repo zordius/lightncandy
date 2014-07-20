@@ -254,6 +254,10 @@ class errorTest extends PHPUnit_Framework_TestCase
                  'options' => Array('helpers' => Array('abc')),
                  'expected' => 'Can not find custom helper function defination abc() !',
              ),
+             Array(
+                 'template' => '{{=~= =~=}}',
+                 'expected' => "Can not set delimiter contains '=' , you try to set delimiter as '~=' and '=~'.",
+             ),
         );
 
         return array_map(function($i) {
