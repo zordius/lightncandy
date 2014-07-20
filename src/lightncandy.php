@@ -500,11 +500,6 @@ $libstr
         self::setupToken($tmpContext);
 
         self::verifyTemplate($tmpContext, $content);
-        if (self::handleError($tmpContext)) {
-            // FIXME: more error
-            return;
-        }
-
         $originalToken = $context['tokens'];
         $context = $tmpContext;
         $context['tokens'] = $originalToken;
