@@ -34,6 +34,10 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
         if ($spec['message'] === 'Partials can use globals or passed') {
             $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , partial not found, skip.");
         }
+        // lambda not found in spec
+        if ($spec['it'] === "bug reported by @fat where lambdas weren't being properly resolved") {
+            $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , lambda not found, skip.");
+        }
 
         //// Skip unsupported features
         // can not get any hint of 'function' from handlebars-spec , maybe it is a conversion error.
@@ -119,7 +123,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
            }, $json));
         }
 
-        return array_slice($ret, 0, 200);
+        return array_slice($ret, 0, 220);
     }
 }
 
