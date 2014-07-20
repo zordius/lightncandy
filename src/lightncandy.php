@@ -190,8 +190,6 @@ class LightnCandy {
      * @param string $partial partial name when $template is come from the template
      *
      * @return string generated PHP code
-     *
-     * @codeCoverageIgnore
      */
     protected static function compileTemplate(&$context, $template, $partial = '') {
         // Check for recursive partial
@@ -246,8 +244,6 @@ class LightnCandy {
      * @param string $code generated PHP code
      *
      * @return string Composed PHP code
-     *
-     * @codeCoverageIgnore
      */
     protected static function composePHPRender($context, $code) {
         $flagJStrue = self::getBoolStr($context['flags']['jstrue']);
@@ -294,8 +290,6 @@ $libstr
      * @param mixed $options input options
      *
      * @return array Context from options
-     *
-     * @codeCoverageIgnore
      */
     protected static function buildContext($options) {
         if (!is_array($options)) {
@@ -448,8 +442,6 @@ $libstr
      *
      * @param string $name partial name
      * @param array $context Current context of compiler progress.
-     *
-     * @codeCoverageIgnore
      */
     protected static function readPartial($name, &$context) {
         $context['usedFeature']['partial']++;
@@ -476,8 +468,6 @@ $libstr
      * @param array $context Current context of compiler progress.
      *
      * @return $content partial content
-     *
-     * @codeCoverageIgnore
      */
     protected static function resolvePartial(&$name, &$context) {
         if (isset($context['partials'][$name])) {
@@ -501,8 +491,6 @@ $libstr
      * @param string $name partial name
      * @param array $context Current context of compiler progress.
      * @param string $content partial content
-     *
-     * @codeCoverageIgnore
      */
     protected static function compilePartial(&$name, &$context, $content) {
         $context['usedPartial'][$name] = self::escapeTemplate($content);
@@ -612,8 +600,6 @@ $libstr
      * @param array  $context current compile context
      *
      * @return string
-     *
-     * @codeCoverageIgnore
      */
     protected static function exportHelper($context, $tname = 'helpers') {
         $ret = '';
@@ -637,8 +623,6 @@ $libstr
      * @param array $context current compile context
      *
      * @return string
-     *
-     * @codeCoverageIgnore
      */
     protected static function exportLCRun($context) {
         if ($context['flags']['standalone'] == 0) {
@@ -693,8 +677,6 @@ $libstr
      * @param string $code PHP code string of the method
      *
      * @return array list of converted code and children array
-     *
-     * @codeCoverageIgnore
      */
     protected static function scanLCRunDependency($context, $code) {
         $child = Array();
@@ -763,8 +745,6 @@ $libstr
      * Get last compiler context.
      *
      * @return array Context data
-     *
-     * @codeCoverageIgnore
      */
     public static function getContext() {
         return self::$lastContext;
@@ -1404,8 +1384,6 @@ $libstr
      *
      * @param string[] $token detected handlebars {{ }} token
      * @param array $context current compile context
-     *
-     * @codeCoverageIgnore
      */
     protected static function scanFeatures($token, &$context) {
         list($raw, $vars) = self::parseTokenArgs($token, $context);
@@ -1470,8 +1448,6 @@ $libstr
      * @param array $token detected handlebars {{ }} token
      * @param array $context current compile context
      * @param boolean $named is named arguments
-     *
-     * @codeCoverageIgnore
      */
     public static function noNamedArguments($token, &$context, $named) {
         if ($named) {
@@ -1539,8 +1515,6 @@ $libstr
      * @param array $context current compile context
      *
      * @return string Return compiled code segment for the token
-     *
-     * @codeCoverageIgnore
      */
     public static function compileToken(&$token, &$context) {
         list($raw, $vars) = self::parseTokenArgs($token, $context);
@@ -1586,8 +1560,6 @@ $libstr
      * @param boolean $named is named arguments or not
      *
      * @return string|null Return compiled code segment for the token when the token is section
-     *
-     * @codeCoverageIgnore
      */
     protected static function compileSection(&$token, &$context, &$vars, $named) {
         switch ($token[self::POS_OP]) {
@@ -1644,8 +1616,6 @@ $libstr
      * @param array $vars parsed arguments list
      *
      * @return string Return compiled code segment for the token
-     *
-     * @codeCoverageIgnore
      */
     protected static function compileBlockCustomHelper(&$context, $vars) {
         $notBCH = !isset($context['blockhelpers'][$vars[0][0]]);
@@ -1672,8 +1642,6 @@ $libstr
      * @param array $vars parsed arguments list
      *
      * @return string Return compiled code segment for the token
-     *
-     * @codeCoverageIgnore
      */
     protected static function compileBlockEnd(&$token, &$context, $vars) {
             $each = false;
@@ -1724,8 +1692,6 @@ $libstr
      * @param array $vars parsed arguments list
      *
      * @return string Return compiled code segment for the token
-     *
-     * @codeCoverageIgnore
      */
     protected static function compileBlockBegin(&$context, $vars) {
         $each = 'false';
@@ -1769,8 +1735,6 @@ $libstr
      * @param boolean $raw is this {{{ token or not
      *
      * @return string|null Return compiled code segment for the token when the token is custom helper
-     *
-     * @codeCoverageIgnore
      */
     protected static function compileCustomHelper(&$context, &$vars, $raw) {
         $notH = !isset($context['helpers'][$vars[0][0]]);
@@ -1794,8 +1758,6 @@ $libstr
      * @param array $vars parsed arguments list
      *
      * @return string|null Return compiled code segment for the token when the token is else
-     *
-     * @codeCoverageIgnore
      */
     protected static function compileElse(&$context, &$vars) {
         if ($vars[0][0] === 'else') {
@@ -1823,8 +1785,6 @@ $libstr
      * @param boolean $raw is this {{{ token or not
      *
      * @return string Return compiled code segment for the token
-     *
-     * @codeCoverageIgnore
      */
     protected static function compileVariable(&$context, &$vars, $raw) {
         $v = self::getVariableName($vars[0], $context);
