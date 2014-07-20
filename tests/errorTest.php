@@ -249,6 +249,11 @@ class errorTest extends PHPUnit_Framework_TestCase
                  'template' => '{{#with foo}}ABC{{/with}}',
                  'expected' => 'Do not support {{#with var}}, you should do compile with LightnCandy::FLAG_WITH flag',
              ),
+             Array(
+                 'templte' => '{{abc}}',
+                 'options' => Array('helpers' => Array('abc')),
+                 'expected' => 'Can not find custom helper function defination abc() !',
+             ),
         );
 
         return array_map(function($i) {
