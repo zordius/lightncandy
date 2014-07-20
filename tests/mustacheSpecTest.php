@@ -13,21 +13,9 @@ class MustacheSpecTest extends PHPUnit_Framework_TestCase
     {
         global $tmpdir;
 
-        // clean up old partials
-        foreach (glob("$tmpdir/*.tmpl") as $file) {
-            unlink($file);
-        }
-
-        if (isset($spec['partials'])) {
-            foreach ($spec['partials'] as $name => $cnt) {
-                file_put_contents("$tmpdir/$name.tmpl", $cnt);
-            }
-        }
-
         $php = LightnCandy::compile($spec['template'], Array(
             'flags' => LightnCandy::FLAG_MUSTACHE | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_RUNTIMEPARTIAL,
-            'helpers' => array(
-            ),
+            'partials' => isset($spec['partials']) ? $spec['partials'] : null,
             'basedir' => $tmpdir,
         ));
         $renderer = LightnCandy::prepare($php);
