@@ -53,6 +53,9 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
         if ($spec['it'] === 'lambdas are resolved by blockHelperMissing, not handlebars proper') {
             $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , undefined function in spec json, skip.");
         }
+        if ($spec['description'] === '#SafeString') {
+            $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , undefined function in spec json, skip.");
+        }
 
         // Do not support includeZero now
         if (($spec['description'] === '#if') && preg_match('/includeZero=true/', $spec['template'])) {
@@ -140,7 +143,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
            }, $json));
         }
 
-        return array_slice($ret, 0, 700);
+        return array_slice($ret, 0, 800);
     }
 }
 ?>
