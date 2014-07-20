@@ -254,6 +254,12 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 ),
                 'expected' => "->New context:d,e,f\n->New context:d,e,f\n",
             ),
+
+            Array(
+                'template' => '{{{"{{"}}}',
+                'data' => null,
+                'expected' => '{{',
+            ),
         );
 
         return array_map(function($i) {return Array($i);}, $issues);
