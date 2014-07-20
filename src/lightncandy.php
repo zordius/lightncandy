@@ -1532,9 +1532,9 @@ $libstr
             if ($context['flags']['mustpi'] && ($token[self::POS_OP] === '>')) {
                 $context['tokens']['partialind'] = $lsp ? $lmatch[3] : $token[self::POS_LSPACE];
             } else {
-                $token[self::POS_LSPACE] = $lmatch[1] . $lmatch[2];
+                $token[self::POS_LSPACE] = isset($lmatch[2]) ? ($lmatch[1] . $lmatch[2]) : '';
             }
-            $token[self::POS_RSPACE] = $rmatch[3];
+            $token[self::POS_RSPACE] = isset($rmatch[3]) ? $rmatch[3] : '';
         }
     }
 
