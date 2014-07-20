@@ -7,10 +7,16 @@ $tmpdir = sys_get_temp_dir();
 
 class errorTest extends PHPUnit_Framework_TestCase
 {
+    public function testException()
+    {
+        $this->setExpectedException('Exception', 'Bad token {{{foo}} ! Do you mean {{foo}} or {{{foo}}}?');
+        $php = LightnCandy::compile('{{{foo}}', Array('flags' => LightnCandy::FLAG_ERROR_EXCEPTION));
+    }
+
     /**
      * @dataProvider errorProvider
      */
-    public function testSpecs($test)
+    public function testErrors($test)
     {
         global $tmpdir;
 
