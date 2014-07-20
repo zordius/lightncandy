@@ -110,28 +110,30 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
             $helpers['foo'] = function () {return 'ABC';};
         }
 
-        try {
-            $php = LightnCandy::compile($spec['template'], Array(
-                'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_EXTHELPER | LightnCandy::FLAG_ERROR_SKIPPARTIAL | LightnCandy::FLAG_EXTHELPER,
-                'hbhelpers' => $helpers,
-                'basedir' => $tmpdir,
-                'partials' => isset($spec['partials']) ? $spec['partials'] : null,
-            ));
-        } catch (Exception $e) {
-            if (($spec['description'] === 'Tokenizer') && preg_match('/tokenizes inverse .+ as "OPEN_INVERSE.+CLOSE"/', $spec['it'])) {
-                return;
+        $flag = LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_EXTHELPER | LightnCandy::FLAG_ERROR_SKIPPARTIAL | LightnCandy::FLAG_EXTHELPER;
+
+        foreach (Array($flag, $flag | LightnCandy::FLAG_STANDALONE) as $f) {
+            try {
+                $php = LightnCandy::compile($spec['template'], Array(
+                    'flags' => $f,
+                    'hbhelpers' => $helpers,
+                    'basedir' => $tmpdir,
+                    'partials' => isset($spec['partials']) ? $spec['partials'] : null,
+                ));
+            } catch (Exception $e) {
+                if (($spec['description'] === 'Tokenizer') && preg_match('/tokenizes inverse .+ as "OPEN_INVERSE.+CLOSE"/', $spec['it'])) {
+                    continue;
+                }
+                print_r(LightnCandy::getContext());
+                $this->fail('Exception:' . $e->getMessage());
             }
-            print_r(LightnCandy::getContext());
-            $this->fail('Exception:' . $e->getMessage());
+            $renderer = LightnCandy::prepare($php);
+            if ($spec['description'] === 'Tokenizer') {
+                // no compile error means passed
+                continue;
+            }
+            $this->assertEquals($spec['expected'], $renderer($spec['data']), "[{$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']} PHP CODE: $php");
         }
-        $renderer = LightnCandy::prepare($php);
-
-        if ($spec['description'] === 'Tokenizer') {
-            // no compile error means passed
-            return;
-        }
-
-        $this->assertEquals($spec['expected'], $renderer($spec['data']), "[{$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']} PHP CODE: $php");
     }
 
     public function jsonSpecProvider()
