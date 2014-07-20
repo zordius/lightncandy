@@ -98,9 +98,13 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
 
         }
 
+        if ($spec['it'] === 'tokenizes hash arguments') {
+            $helpers['foo'] = function () {return 'ABC';};
+        }
+
         try {
             $php = LightnCandy::compile($spec['template'], Array(
-                'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_EXTHELPER | LightnCandy::FLAG_ERROR_SKIPPARTIAL,
+                'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_EXTHELPER | LightnCandy::FLAG_ERROR_SKIPPARTIAL | LightnCandy::FLAG_EXTHELPER,
                 'hbhelpers' => $helpers,
                 'basedir' => $tmpdir,
                 'partials' => isset($spec['partials']) ? $spec['partials'] : null,
@@ -109,6 +113,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
             if (($spec['description'] === 'Tokenizer') && preg_match('/tokenizes inverse .+ as "OPEN_INVERSE.+CLOSE"/', $spec['it'])) {
                 return;
             }
+            print_r(LightnCandy::getContext());
             $this->fail('Exception:' . $e->getMessage());
         }
         $renderer = LightnCandy::prepare($php);
@@ -135,7 +140,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
            }, $json));
         }
 
-        return array_slice($ret, 0, 600);
+        return array_slice($ret, 0, 650);
     }
 }
 
