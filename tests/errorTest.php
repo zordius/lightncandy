@@ -204,6 +204,10 @@ class errorTest extends PHPUnit_Framework_TestCase
                  'expected' => 'Unexpect token: {{/with}} !',
              ),
              Array(
+                 'template' => '{{#foo}}error{{/bar}}',
+                 'expected' => 'Unexpect token {{/bar}} ! Previous token {{#[foo]}} is not closed',
+             ),
+             Array(
                  'template' => '{{../foo}}',
                  'expected' => 'Do not support {{../var}}, you should do compile with LightnCandy::FLAG_PARENT flag',
              ),

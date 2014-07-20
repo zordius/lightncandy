@@ -1585,7 +1585,7 @@ $libstr
                 return;
             }
             $v = self::getVariableName($vars[0], $context);
-            $context['stack'][] = self::getArrayCode($vars[0]);
+            $context['stack'][] = $v[1];
             $context['stack'][] = '^';
             self::noNamedArguments($token, $context, $named);
             return "{$context['ops']['cnd_start']}(" . self::getFuncName($context, 'isec', '^' . $v[1]) . "\$cx, {$v[0]})){$context['ops']['cnd_then']}";
@@ -1620,7 +1620,8 @@ $libstr
             return;
         }
 
-        $context['stack'][] = self::getArrayCode($vars[0]);
+        $v = self::getVariableName($vars[0], $context);
+        $context['stack'][] = $v[1];
         $context['stack'][] = '#';
         $ch = array_shift($vars);
 
@@ -1666,8 +1667,9 @@ $libstr
             case '#':
             case '^':
                 $pop2 = array_pop($context['stack']);
-                if (!$each && ($pop2 !== self::getArrayCode($vars[0]))) {
-                    $context['error'][] = 'Unexpect token ' . self::tokenString($token) . " ! Previous token $pop$pop2 is not closed";
+                $v = self::getVariableName($vars[0], $context);
+                if (!$each && ($pop2 !== $v[1])) {
+                    $context['error'][] = 'Unexpect token ' . self::tokenString($token) . " ! Previous token {{{$pop}$pop2}} is not closed";
                     return;
                 }
                 if ($pop == '^') {
@@ -1717,7 +1719,7 @@ $libstr
         }
 
         $v = self::getVariableName($vars[0], $context);
-        $context['stack'][] = self::getArrayCode($vars[0]);
+        $context['stack'][] = $v[1];
         $context['stack'][] = '#';
         return $context['ops']['seperator'] . self::getFuncName($context, 'sec', (($each == 'true') ? 'each ' : '') . $v[1]) . "\$cx, {$v[0]}, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
