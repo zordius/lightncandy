@@ -94,8 +94,6 @@ class LightnCandy {
      * @param array $options LightnCandy compile time and run time options, default is Array('flags' => LightnCandy::FLAG_BESTPERFORMANCE)
      *
      * @return string Compiled PHP code when successed. If error happened and compile failed, return false.
-     *
-     * @codeCoverageIgnore
      */
     public static function compile($template, $options = Array('flags' => self::FLAG_BESTPERFORMANCE)) {
         $context = self::buildContext($options);
@@ -148,8 +146,6 @@ class LightnCandy {
      *
      * @param array $context Current context
      * @param string $template handlebars template
-     *
-     * @codeCoverageIgnore
      */
     protected static function setupToken(&$context, $left = '{{', $right = '}}') {
         if (preg_match('/=/', "$left$right")) {
@@ -177,8 +173,6 @@ class LightnCandy {
      *
      * @param array $context Current context
      * @param string $template handlebars template
-     *
-     * @codeCoverageIgnore
      */
     protected static function verifyTemplate(&$context, $template) {
         while (preg_match($context['tokens']['search'], $template, $matches)) {
