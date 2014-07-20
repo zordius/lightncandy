@@ -988,21 +988,23 @@ $libstr
         $base = '$in';
         $root = false;
 
-        // trace to parent
-        if (!is_string($var[0]) && is_int($var[0])) {
-            $levels = array_shift($var);
-        }
+        if (isset($var[0])) {
+            // trace to parent
+            if (!is_string($var[0]) && is_int($var[0])) {
+                $levels = array_shift($var);
+            }
 
-        // change base when trace to parent
-        if ($levels > 0) {
-            $base = "\$cx['scopes'][count(\$cx['scopes'])-$levels]";
-        }
+            // change base when trace to parent
+            if ($levels > 0) {
+                $base = "\$cx['scopes'][count(\$cx['scopes'])-$levels]";
+            }
 
-        // Handle @root
-        if ($context['flags']['spvar'] && ($var[0] === '@root')) {
-            $root = true;
-            array_shift($var);
-            $base = '$cx[\'scopes\'][0]';
+            // Handle @root
+            if ($context['flags']['spvar'] && ($var[0] === '@root')) {
+                $root = true;
+                array_shift($var);
+                $base = '$cx[\'scopes\'][0]';
+            }
         }
 
         // Generate normalized expression for debug
