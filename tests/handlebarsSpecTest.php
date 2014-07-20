@@ -77,6 +77,11 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
             $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , lightncandy do not support this now.");
         }
 
+        // Do not support {{~{foo}~}} , use {{{~foo~}}}
+        if ($spec['template'] === ' {{~{foo}~}} ') {
+            $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , lightncandy do not support this now.");
+        }
+
         // setup helpers
         $helpers = Array();
         if (isset($spec['helpers'])) {
