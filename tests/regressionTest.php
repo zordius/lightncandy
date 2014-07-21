@@ -349,6 +349,24 @@ class regressionTest extends PHPUnit_Framework_TestCase
             ),
 
             Array(
+                'template' => '{{#mylogic 0 foo bar}}YES:{{.}}{{else}}NO:{{.}}{{/mylogic}}',
+                'data' => Array('foo' => 'FOO', 'bar' => 'BAR'),
+                'options' => Array(
+                    'hbhelpers' => Array('mylogic'),
+                ),
+                'expected' => 'NO:BAR',
+            ),
+
+            Array(
+                'template' => '{{#mylogic true foo bar}}YES:{{.}}{{else}}NO:{{.}}{{/mylogic}}',
+                'data' => Array('foo' => 'FOO', 'bar' => 'BAR'),
+                'options' => Array(
+                    'hbhelpers' => Array('mylogic'),
+                ),
+                'expected' => 'YES:FOO',
+            ),
+
+            Array(
                 'template' => '{{#mywith foo}}YA: {{name}}{{/mywith}}',
                 'data' => Array('name' => 'OK?', 'foo' => Array('name' => 'OK!')),
                 'options' => Array(

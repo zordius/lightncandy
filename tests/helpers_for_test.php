@@ -53,4 +53,12 @@ function myeach ($context, $options) {
     return $ret;
 }
 
+function mylogic ($input, $yes, $no, $options) {
+    if ($input === true) {
+        return $options['fn']($yes);
+    } else {
+        return $options['inverse']($no);
+    }
+}
+
 ?>
