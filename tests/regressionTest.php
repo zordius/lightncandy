@@ -315,12 +315,37 @@ class regressionTest extends PHPUnit_Framework_TestCase
             ),
 
             Array(
+                'template' => '{{#foo}}OK{{/foo}}',
+                'options' => Array('flags' => LightnCandy::FLAG_RENDER_DEBUG),
+                'debug' => LCRun3::DEBUG_TAGS_HTML,
+                'data' => null,
+                'expected' => '<!--MISSED((-->{{#[foo]}}<!--))--><!--SKIPPED--><!--MISSED((-->{{/[foo]}}<!--))-->',
+            ),
+
+            Array(
+                'template' => '{{#foo}}OK{{/foo}}',
+                'options' => Array('flags' => LightnCandy::FLAG_RENDER_DEBUG),
+                'debug' => LCRun3::DEBUG_TAGS_ANSI,
+                'data' => null,
+                'expected' => pack('H*', '1b5b303a33316d7b7b235b666f6f5d7d7d1b5b306d1b5b303b33336d534b49505045441b5b306d1b5b303a33316d7b7b2f5b666f6f5d7d7d1b5b306d'),
+            ),
+
+            Array(
                 'template' => '{{#myif foo}}YES{{else}}NO{{/myif}}',
                 'data' => null,
                 'options' => Array(
                     'hbhelpers' => Array('myif'),
                 ),
                 'expected' => 'NO',
+            ),
+
+            Array(
+                'template' => '{{#myif foo}}YES{{else}}NO{{/myif}}',
+                'data' => Array('foo' => 1),
+                'options' => Array(
+                    'hbhelpers' => Array('myif'),
+                ),
+                'expected' => 'YES',
             ),
 
             Array(
