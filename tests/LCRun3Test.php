@@ -237,7 +237,7 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
             Array('flags' => Array('spvar' => 0)), 'abc', 'abc', true, function ($c, $i) {return "-$i=";}
         ));
         $this->assertEquals('-b=', $method->invoke(null,
-            Array('flags' => Array('spvar' => 0)), Array('a' => 'b'), Array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
+            Array('flags' => Array('spvar' => 0, 'mustsec' => 0)), Array('a' => 'b'), Array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
         ));
         $this->assertEquals('1', $method->invoke(null,
             Array('flags' => Array('spvar' => 0)), 'b', 'b', false, function ($c, $i) {return count($i);}
@@ -249,7 +249,7 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
             Array('flags' => Array('spvar' => 0)), 0, 0, false, function ($c, $i) {return print_r($i, true);}
         ));
         $this->assertEquals('{"b":"c"}', $method->invoke(null,
-            Array('flags' => Array('spvar' => 0)), Array('b' => 'c'), Array('b' => 'c'), false, function ($c, $i) {return json_encode($i);}
+            Array('flags' => Array('spvar' => 0, 'mustsec' => 0)), Array('b' => 'c'), Array('b' => 'c'), false, function ($c, $i) {return json_encode($i);}
         ));
         $this->assertEquals('inv', $method->invoke(null,
             Array('flags' => Array('spvar' => 0)), Array(), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
