@@ -758,7 +758,6 @@ $libstr
      * @return Closure result of include()
      *
      * @deprecated
-     * @codeCoverageIgnore
      */
     public static function prepare($php, $tmp_dir = null) {
         if (!ini_get('allow_url_include') || !ini_get('allow_url_fopen')) {
@@ -880,8 +879,6 @@ $libstr
      * @param array &$context current compile context
      *
      * @return array code representing passed expression
-     *
-     * @codeCoverageIgnore
      */
     protected static function compileSubExpression($subExpression, &$context) {
         // mock up a token for this expression
@@ -1875,8 +1872,6 @@ class LCRun3 {
      *
      * @param array $cx render time context
      * @param mixed $v expression
-     *
-     * @codeCoverageIgnore
      */
     public static function miss($cx, $v) {
         $e = "LCRun3: $v is not exist";
