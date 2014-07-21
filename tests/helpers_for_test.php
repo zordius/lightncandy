@@ -41,4 +41,16 @@ function myif ($conditional, $options) {
     }
 }
 
+function mywith ($context, $options) {
+    return $options['fn']($context);
+}
+
+function myeach ($context, $options) {
+    $ret = '';
+    foreach ($context as $cx) {
+        $ret .= $options['fn']($cx);
+    }
+    return $ret;
+}
+
 ?>

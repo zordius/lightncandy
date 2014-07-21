@@ -322,6 +322,15 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 ),
                 'expected' => 'NO',
             ),
+
+            Array(
+                'template' => '{{#mywith foo}}YA: {{name}}{{/mywith}}',
+                'data' => Array('name' => 'OK?', 'foo' => Array('name' => 'OK!')),
+                'options' => Array(
+                    'hbhelpers' => Array('mywith'),
+                ),
+                'expected' => 'YA: OK!',
+            ),
         );
 
         return array_map(function($i) {
