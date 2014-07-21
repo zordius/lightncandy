@@ -318,7 +318,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'template' => '{{#myif foo}}YES{{else}}NO{{/myif}}',
                 'data' => null,
                 'options' => Array(
-                    'helpers' => Array('myif'),
+                    'hbhelpers' => Array('myif'),
                 ),
                 'expected' => 'NO',
             ),
