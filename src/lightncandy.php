@@ -86,7 +86,7 @@ class LightnCandy {
     const POS_RSPACE = 9;
     const POS_ROTHER = 10;
 
-    private static $lastContext;
+    protected static $lastContext;
 
     /**
      * Compile handlebars template into PHP code.
