@@ -1416,7 +1416,7 @@ $libstr
         }
 
         // validate else and this.
-        switch ($vars[0]) {
+        switch ($vars[0][0]) {
         case 'else':
             if ($context['flags']['else']) {
                 return $context['usedFeature']['else']++;
