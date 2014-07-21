@@ -57,6 +57,7 @@ class LightnCandy {
     const FLAG_MUSTACHESP = 131072;
     const FLAG_MUSTACHELOOKUP = 262144;
     const FLAG_MUSTACHEPAIN = 2097152;
+    const FLAG_MUSTACHESEC = 33554432;
 
     // Template rendering time debug flags
     const FLAG_RENDER_DEBUG = 524288;
@@ -64,7 +65,7 @@ class LightnCandy {
     // alias flags
     const FLAG_BESTPERFORMANCE = 16384; // FLAG_ECHO
     const FLAG_JS = 24; // FLAG_JSTRUE + FLAG_JSOBJECT
-    const FLAG_MUSTACHE = 6684672; // FLAG_ERROR_SKIPPARTIAL + FLAG_MUSTACHESP + FLAG_MUSTACHELOOKUP + FLAG_MUSTACHEPAIN
+    const FLAG_MUSTACHE = 40239104; // FLAG_ERROR_SKIPPARTIAL + FLAG_MUSTACHESP + FLAG_MUSTACHELOOKUP + FLAG_MUSTACHEPAIN + FLAG_MUSTACHESEC
     const FLAG_HANDLEBARS = 25173984; // FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME + FLAG_SPACECTL + FLAG_NAMEDARG + FLAG_SPVARS + FLAG_SLASH + FLAG_ELSE
     const FLAG_HANDLEBARSJS = 25174008; // FLAG_JS + FLAG_HANDLEBARS
     const FLAG_INSTANCE = 98304; // FLAG_PROPERTY + FLAG_METHOD
@@ -252,6 +253,7 @@ class LightnCandy {
         $flagProp = self::getBoolStr($context['flags']['prop']);
         $flagMethod = self::getBoolStr($context['flags']['method']);
         $flagMustlok = self::getBoolStr($context['flags']['mustlok']);
+        $flagMustsec = self::getBoolStr($context['flags']['mustsec']);
 
         $libstr = self::exportLCRun($context);
         $helpers = self::exportHelper($context);
@@ -269,6 +271,7 @@ class LightnCandy {
             'prop' => $flagProp,
             'method' => $flagMethod,
             'mustlok' => $flagMustlok,
+            'mustsec' => $flagMustsec,
             'debug' => \$debugopt,
         ),
         'helpers' => $helpers,
@@ -320,6 +323,7 @@ $libstr
                 'mustsp' => $flags & self::FLAG_MUSTACHESP,
                 'mustlok' => $flags & self::FLAG_MUSTACHELOOKUP,
                 'mustpi' => $flags & self::FLAG_MUSTACHEPAIN,
+                'mustsec' => $flags & self::FLAG_MUSTACHESEC,
                 'debug' => $flags & self::FLAG_RENDER_DEBUG,
                 'prop' => $flags & self::FLAG_PROPERTY,
                 'method' => $flags & self::FLAG_METHOD,
@@ -2216,9 +2220,13 @@ class LCRun3 {
             return '';
         }
         if ($isary) {
-            $cx['scopes'][] = $v;
+            if ($cx['flags']['mustsec']) {
+                $cx['scopes'][] = $v;
+            }
             $ret = $cb($cx, $v);
-            array_pop($cx['scopes']);
+            if ($cx['flags']['mustsec']) {
+                array_pop($cx['scopes']);
+            }
             return $ret;
         }
 
