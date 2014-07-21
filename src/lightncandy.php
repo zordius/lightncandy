@@ -926,7 +926,6 @@ $libstr
      * @expect Array('LCRun3::v($cx, $in, Array(\'id\'))', 'this.[id]') when input Array(null, 'id'), Array('flags'=>Array('prop'=>true,'spvar'=>true,'debug'=>0,'method'=>0,'mustlok'=>0,'standalone'=>0))
      */
     protected static function getVariableName($var, &$context, $ishelper = false) {
-
         if (isset($var[0])) {
             if ($context['flags']['spvar']) {
                 switch ($var[0]) {
@@ -1615,10 +1614,9 @@ $libstr
      * @return string Return compiled code segment for the token
      */
     protected static function compileBlockCustomHelper(&$context, $vars) {
-        $notBCH = !isset($context['blockhelpers'][$vars[0][0]]);
         $notHBCH = !isset($context['hbhelpers'][$vars[0][0]]);
 
-        if ($notBCH && $notHBCH) {
+        if (!isset($context['blockhelpers'][$vars[0][0]]) && $notHBCH) {
             return;
         }
 
@@ -1642,46 +1640,46 @@ $libstr
      * @return string Return compiled code segment for the token
      */
     protected static function compileBlockEnd(&$token, &$context, $vars) {
-            $each = false;
-            $pop = array_pop($context['stack']);
-            switch ($token[self::POS_INNERTAG]) {
-            case 'if':
-            case 'unless':
-                if ($pop == ':') {
-                    array_pop($context['stack']);
-                    return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}){$context['ops']['seperator']}" : "{$context['ops']['cnd_end']}";
-                }
-                return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}){$context['ops']['seperator']}" : "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
-            case 'with':
-                if ($context['flags']['with']) {
-                    if ($pop !== 'with') {
-                       $context['error'][] = 'Unexpect token: {{/with}} !';
-                    return;
-                    }
-                    return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
-                }
-                break;
-            case 'each':
-                $each = true;
+        $each = false;
+        $pop = array_pop($context['stack']);
+        switch ($token[self::POS_INNERTAG]) {
+        case 'if':
+        case 'unless':
+            if ($pop == ':') {
+                array_pop($context['stack']);
+                return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}){$context['ops']['seperator']}" : "{$context['ops']['cnd_end']}";
             }
-
-            switch($pop) {
-            case '#':
-            case '^':
-                $pop2 = array_pop($context['stack']);
-                $v = static::getVariableName($vars[0], $context);
-                if (!$each && ($pop2 !== $v[1])) {
-                    $context['error'][] = 'Unexpect token ' . static::tokenString($token) . " ! Previous token {{{$pop}$pop2}} is not closed";
-                    return;
-                }
-                if ($pop == '^') {
-                    return "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
+            return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}){$context['ops']['seperator']}" : "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
+        case 'with':
+            if ($context['flags']['with']) {
+                if ($pop !== 'with') {
+                   $context['error'][] = 'Unexpect token: {{/with}} !';
+                return;
                 }
                 return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
-            default:
-                $context['error'][] = 'Unexpect token: ' . static::tokenString($token) . ' !';
+            }
+            break;
+        case 'each':
+            $each = true;
+        }
+
+        switch($pop) {
+        case '#':
+        case '^':
+            $pop2 = array_pop($context['stack']);
+            $v = static::getVariableName($vars[0], $context);
+            if (!$each && ($pop2 !== $v[1])) {
+                $context['error'][] = 'Unexpect token ' . static::tokenString($token) . " ! Previous token {{{$pop}$pop2}} is not closed";
                 return;
             }
+            if ($pop == '^') {
+                return "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
+            }
+            return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
+        default:
+            $context['error'][] = 'Unexpect token: ' . static::tokenString($token) . ' !';
+            return;
+        }
     }
 
     /**
@@ -1736,10 +1734,8 @@ $libstr
      * @return string|null Return compiled code segment for the token when the token is custom helper
      */
     protected static function compileCustomHelper(&$context, &$vars, $raw) {
-        $notH = !isset($context['helpers'][$vars[0][0]]);
         $notHH = !isset($context['hbhelpers'][$vars[0][0]]);
-
-        if ($notH && $notHH) {
+        if (!isset($context['helpers'][$vars[0][0]]) && $notHH) {
             return;
         }
 
