@@ -314,6 +314,14 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'expected' => '<!--MISSED((-->{{[foo]}}<!--))-->',
             ),
 
+            Array(
+                'template' => '{{#myif foo}}YES{{else}}NO{{/myif}}',
+                'data' => null,
+                'options' => Array(
+                    'helpers' => Array('myif'),
+                ),
+                'expected' => 'NO',
+            ),
         );
 
         return array_map(function($i) {

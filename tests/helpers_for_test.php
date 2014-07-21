@@ -32,4 +32,13 @@ function test_join ($input) {
    return join('.', $input[0]);
 }
 
+// Custom helpers for handlebars (should be used in hbhelpers)
+function myif ($conditional, $options) {
+    if ($conditional) {
+        return $options['fn']();
+    } else {
+        return $options['inverse']();
+    }
+}
+
 ?>
