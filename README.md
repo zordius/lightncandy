@@ -633,4 +633,4 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{helper var}}` : Execute custom helper then render the HTML escaped result
 * `{{helper name1=var name2="str"}}` : Execute custom helper with named arguments
 * `{{#helper ...}}...{{/helper}}` : Execute block custom helper
-* `{{helper (helper2 foo) bar}}` : Execute custom helpers as subexpression
+* `{{helper (helper2 foo) bar}}` : Execute custom helpers as subexpression (require `FLAG_ADVARNAME`)

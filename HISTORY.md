@@ -19,6 +19,8 @@ master current trunk
    * e8779dbe8c change default `basedir` hehavior, stop partial files lookup when do not prodive `basedir` in options.
    * c4e3401fe4 fix {{>"test"}} or {{>[test]}} or {{>1234}} bug.
    * e59f62ea9b fix seciton behavior when input is object, and add one new flag: FLAG_MUSTACHESEC.
+   * 80eaf8e007 use static::method not self::method for subclass.
+   * 0bad5c8f20 fix usedFeature generation bugs
 
 v0.14 https://github.com/zordius/lightncandy/tree/v0.14
    * align with handlebars.js 2.0.0-alpha.4
