@@ -4,6 +4,24 @@ require_once('src/lightncandy.php');
 require_once('tests/helpers_for_test.php');
 
 $tmpdir = sys_get_temp_dir();
+$errlog_fn = tempnam($tmp_dir, 'terr_');
+
+function start_catch_error_log() {
+    global $errlog_fn;
+    date_default_timezone_set('GMT');
+    unlink($errlog_fn);
+    ini_set('error_log', $errlog_fn);
+}
+
+function stop_catch_error_log() {
+    global $errlog_fn;
+    ini_restore('error_log');
+    return array_map(function ($l) {
+        $l = rtrim($l);
+        preg_match('/GMT\] (.+)/', $l, $m);
+        return isset($m[1]) ? $m[1] : $l;
+    }, file($errlog_fn));
+}
 
 class errorTest extends PHPUnit_Framework_TestCase
 {
@@ -11,6 +29,30 @@ class errorTest extends PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('Exception', 'Bad token {{{foo}} ! Do you mean {{foo}} or {{{foo}}}?');
         $php = LightnCandy::compile('{{{foo}}', Array('flags' => LightnCandy::FLAG_ERROR_EXCEPTION));
+    }
+
+    public function testErrorLog()
+    {
+        start_catch_error_log();
+        $php = LightnCandy::compile('{{{foo}}', Array('flags' => LightnCandy::FLAG_ERROR_LOG));
+        $this->assertEquals(Array('Bad token {{{foo}} ! Do you mean {{foo}} or {{{foo}}}?'), stop_catch_error_log());
+    }
+
+    public function testRenderingException()
+    {
+        $this->setExpectedException('Exception', 'LCRun3: [foo] is not exist');
+        $php = LightnCandy::compile('{{{foo}}}', Array('flags' => LightnCandy::FLAG_RENDER_DEBUG));
+        $renderer = LightnCandy::prepare($php);
+        $renderer(null, \LCRun3::DEBUG_ERROR_EXCEPTION);
+    }
+
+    public function testRenderingErrorLog()
+    {
+        start_catch_error_log();
+        $php = LightnCandy::compile('{{{foo}}}', Array('flags' => LightnCandy::FLAG_RENDER_DEBUG));
+        $renderer = LightnCandy::prepare($php);
+        $renderer(null, \LCRun3::DEBUG_ERROR_LOG);
+        $this->assertEquals(Array('LCRun3: [foo] is not exist'), stop_catch_error_log());
     }
 
     /**
@@ -34,11 +76,6 @@ class errorTest extends PHPUnit_Framework_TestCase
     public function errorProvider()
     {
         $errorCases = Array(
-             Array(
-                 'template' => '{{{log}}',
-                 'options' => Array('flags' => LightnCandy::FLAG_ERROR_LOG),
-                 'expected' => 'Bad token {{{log}} ! Do you mean {{log}} or {{{log}}}?',
-             ),
              Array(
                  'template' => '{{testerr1}}}',
                  'expected' => 'Bad token {{testerr1}}} ! Do you mean {{testerr1}} or {{{testerr1}}}?',
