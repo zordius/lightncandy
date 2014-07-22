@@ -374,6 +374,36 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 ),
                 'expected' => 'YA: OK!',
             ),
+
+            Array(
+                'template' => '{{mydash "abc" "dev"}}',
+                'data' => Array('a' => 'a', 'b' => 'b', 'c' => Array('c' => 'c'), 'd' => 'd', 'e' => 'e'),
+                'options' => Array(
+                    'hbhelpers' => Array('mydash'),
+                ),
+                'expected' => 'abc-dev',
+            ),
+
+            Array(
+                'template' => '{{mydash "abc" (test_array 1)}}',
+                'data' => Array('a' => 'a', 'b' => 'b', 'c' => Array('c' => 'c'), 'd' => 'd', 'e' => 'e'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_ADVARNAME,
+                    'hbhelpers' => Array('mydash'),
+                    'helpers' => Array('test_array'),
+                ),
+                'expected' => 'abc-NOT_ARRAY',
+            ),
+
+            Array(
+                'template' => '{{mydash "abc" (myjoin a b)}}',
+                'data' => Array('a' => 'a', 'b' => 'b', 'c' => Array('c' => 'c'), 'd' => 'd', 'e' => 'e'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_ADVARNAME,
+                    'hbhelpers' => Array('mydash', 'myjoin'),
+                ),
+                'expected' => 'abc-ab',
+            ),
         );
 
         return array_map(function($i) {
@@ -384,6 +414,5 @@ class regressionTest extends PHPUnit_Framework_TestCase
         }, $issues);
     }
 }
-
 
 ?>

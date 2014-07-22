@@ -61,4 +61,12 @@ function mylogic ($input, $yes, $no, $options) {
     }
 }
 
+function mydash ($a, $b) {
+    return "$a-$b";
+}
+
+function myjoin ($a, $b) {
+    return "$a$b";
+}
+
 ?>

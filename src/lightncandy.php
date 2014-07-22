@@ -1138,7 +1138,7 @@ $libstr
         $vars = Array();
         $count = preg_match_all('/(\s*)([^\s]+)/', $token[self::POS_INNERTAG], $matchedall);
 
-        // Parse arguments and deal with "..." or [...]
+        // Parse arguments and deal with "..." or [...] or (...)
         if (($count > 0) && $context['flags']['advar']) {
             $prev = '';
             $expect = 0;
