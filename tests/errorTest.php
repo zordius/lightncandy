@@ -4,7 +4,7 @@ require_once('src/lightncandy.php');
 require_once('tests/helpers_for_test.php');
 
 $tmpdir = sys_get_temp_dir();
-$errlog_fn = tempnam($tmp_dir, 'terr_');
+$errlog_fn = tempnam($tmpdir, 'terr_');
 
 function start_catch_error_log() {
     global $errlog_fn;
@@ -12,7 +12,7 @@ function start_catch_error_log() {
     if (file_exists($errlog_fn)) {
         unlink($errlog_fn);
     }
-    ini_set('error_log', $errlog_fn);
+    return ini_set('error_log', $errlog_fn);
 }
 
 function stop_catch_error_log() {
