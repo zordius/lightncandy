@@ -18,6 +18,7 @@ function start_catch_error_log() {
 function stop_catch_error_log() {
     global $errlog_fn;
     ini_restore('error_log');
+    error_log();
     return array_map(function ($l) {
         $l = rtrim($l);
         preg_match('/GMT\] (.+)/', $l, $m);
