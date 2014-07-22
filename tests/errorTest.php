@@ -9,7 +9,9 @@ $errlog_fn = tempnam($tmp_dir, 'terr_');
 function start_catch_error_log() {
     global $errlog_fn;
     date_default_timezone_set('GMT');
-    unlink($errlog_fn);
+    if (file_exists($errlog_fn)) {
+        unlink($errlog_fn);
+    }
     ini_set('error_log', $errlog_fn);
 }
 
@@ -43,7 +45,7 @@ class errorTest extends PHPUnit_Framework_TestCase
         $this->setExpectedException('Exception', 'LCRun3: [foo] is not exist');
         $php = LightnCandy::compile('{{{foo}}}', Array('flags' => LightnCandy::FLAG_RENDER_DEBUG));
         $renderer = LightnCandy::prepare($php);
-        $renderer(null, \LCRun3::DEBUG_ERROR_EXCEPTION);
+        $renderer(null, LCRun3::DEBUG_ERROR_EXCEPTION);
     }
 
     public function testRenderingErrorLog()
@@ -51,7 +53,7 @@ class errorTest extends PHPUnit_Framework_TestCase
         start_catch_error_log();
         $php = LightnCandy::compile('{{{foo}}}', Array('flags' => LightnCandy::FLAG_RENDER_DEBUG));
         $renderer = LightnCandy::prepare($php);
-        $renderer(null, \LCRun3::DEBUG_ERROR_LOG);
+        $renderer(null, LCRun3::DEBUG_ERROR_LOG);
         $this->assertEquals(Array('LCRun3: [foo] is not exist'), stop_catch_error_log());
     }
 
