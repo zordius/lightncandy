@@ -1444,6 +1444,7 @@ $libstr
      * @param array $token detected handlebars {{ }} token
      * @param array $context current compile context
      * @param boolean $named is named arguments
+     * @param string $suggest extended hint for this no named argument error
      */
     public static function noNamedArguments($token, &$context, $named, $suggest = '!') {
         if ($named) {
