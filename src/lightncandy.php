@@ -1404,7 +1404,7 @@ $libstr
         }
 
         if (!isset($vars[0])) {
-            return static::noNamedArguments($token, $context, true);
+            return static::noNamedArguments($token, $context, true, ', you should use it after a custom helper.');
         }
 
         if ($vars[0] !== 'else') {
@@ -1445,9 +1445,9 @@ $libstr
      * @param array $context current compile context
      * @param boolean $named is named arguments
      */
-    public static function noNamedArguments($token, &$context, $named) {
+    public static function noNamedArguments($token, &$context, $named, $suggest = '!') {
         if ($named) {
-            $context['error'][] = 'Do not support name=value in ' . static::tokenString($token) . '!';
+            $context['error'][] = 'Do not support name=value in ' . static::tokenString($token) . $suggest;
         }
     }
 
@@ -1542,7 +1542,7 @@ $libstr
             return $ret;
         }
 
-        static::noNamedArguments($token, $context, $named);
+        static::noNamedArguments($token, $context, $named, ', maybe you missing the custom helper?');
 
         return static::compileVariable($context, $vars, $raw);
     }
@@ -1600,7 +1600,7 @@ $libstr
             if ($r) {
                 return $r;
             }
-            static::noNamedArguments($token, $context, $named);
+            static::noNamedArguments($token, $context, $named, ', maybe you missing the block custom helper?');
             return static::compileBlockBegin($context, $vars);
         }
     }

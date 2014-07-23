@@ -280,7 +280,17 @@ class errorTest extends PHPUnit_Framework_TestCase
              Array(
                  'template' => '{{a=b}}',
                  'options' => Array('flags' => LightnCandy::FLAG_NAMEDARG),
-                 'expected' => 'Do not support name=value in {{a=b}}!',
+                 'expected' => 'Do not support name=value in {{a=b}}, you should use it after a custom helper.',
+             ),
+             Array(
+                 'template' => '{{test a=b}}',
+                 'options' => Array('flags' => LightnCandy::FLAG_NAMEDARG),
+                 'expected' => 'Do not support name=value in {{test a=b}}, maybe you missing the custom helper?',
+             ),
+             Array(
+                 'template' => '{{#test a=b}}YA~{{/test}}',
+                 'options' => Array('flags' => LightnCandy::FLAG_NAMEDARG),
+                 'expected' => 'Do not support name=value in {{#test a=b}}, maybe you missing the block custom helper?',
              ),
              Array(
                  'template' => '{{#foo}}1{{^}}2{{/foo}}',
