@@ -837,7 +837,9 @@ $libstr
      * @expect "['a']['b']['c']" when input array('a', 'b', 'c')
      */
     protected static function getArrayCode($list) {
-        return static::getArrayStr(array_map(function ($v) {return "'$v'";}, $list));
+        return static::getArrayStr(array_map(function ($v) {
+            return "'$v'";
+        }, $list));
     }
 
     /**
