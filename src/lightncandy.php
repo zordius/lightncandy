@@ -1029,7 +1029,7 @@ $libstr
     protected static function getExpression($levels, $root, $var) {
         return str_repeat('../', $levels) . ((is_array($var) && count($var)) ? (($root ? '@root.' : '') . implode('.', array_map(function($v) {
             return is_null($v) ? 'this' : "[$v]";
-        }, $var))) : ($root ? '@root' :  'this'));
+        }, $var))) : ($root ? '@root' : 'this'));
     }
 
     /**
@@ -1660,9 +1660,9 @@ $libstr
                 break;
             case 'each':
                 $each = true;
-            }
+        }
 
-            switch($pop) {
+        switch($pop) {
             case '#':
             case '^':
                 $pop2 = array_pop($context['stack']);
@@ -1678,86 +1678,86 @@ $libstr
                 default:
                     $context['error'][] = 'Unexpect token: ' . static::tokenString($token) . ' !';
                     return;
-            }
+        }
+    }
+
+    /**
+     * Internal method used by compile(). Return compiled PHP code partial for a handlebars block begin token.
+     *
+     * @param array $context current compile context
+     * @param array $vars parsed arguments list
+     *
+     * @return string Return compiled code segment for the token
+     */
+    protected static function compileBlockBegin(&$context, $vars) {
+        $each = 'false';
+        $v = isset($vars[1]) ? static::getVariableName($vars[1], $context, true) : array(null, array());
+        switch ($vars[0][0]) {
+            case 'if':
+                $context['stack'][] = 'if';
+                return $context['usedFeature']['parent']
+                    ? $context['ops']['seperator'] . static::getFuncName($context, 'ifv', 'if ' . $v[1]) . "\$cx, {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
+                    : "{$context['ops']['cnd_start']}(" . static::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]})){$context['ops']['cnd_then']}";
+            case 'unless':
+                $context['stack'][] = 'unless';
+                return $context['usedFeature']['parent']
+                    ? $context['ops']['seperator'] . static::getFuncName($context, 'unl', 'unless ' . $v[1]) . "\$cx, {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
+                    : "{$context['ops']['cnd_start']}(!" . static::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]})){$context['ops']['cnd_then']}";
+            case 'each':
+                $each = 'true';
+                array_shift($vars);
+                if (!isset($vars[0])) {
+                    $vars[0] = array(null);
+                }
+                break;
+            case 'with':
+                if ($context['flags']['with']) {
+                    $context['stack'][] = 'with';
+                    return $context['ops']['seperator'] . static::getFuncName($context, 'wi', 'with ' . $v[1]) . "\$cx, {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
+                }
         }
 
-        /**
-         * Internal method used by compile(). Return compiled PHP code partial for a handlebars block begin token.
-         *
-         * @param array $context current compile context
-         * @param array $vars parsed arguments list
-         *
-         * @return string Return compiled code segment for the token
-         */
-        protected static function compileBlockBegin(&$context, $vars) {
-            $each = 'false';
-            $v = isset($vars[1]) ? static::getVariableName($vars[1], $context, true) : array(null, array());
-            switch ($vars[0][0]) {
-                case 'if':
-                    $context['stack'][] = 'if';
-                    return $context['usedFeature']['parent']
-                        ? $context['ops']['seperator'] . static::getFuncName($context, 'ifv', 'if ' . $v[1]) . "\$cx, {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
-                        : "{$context['ops']['cnd_start']}(" . static::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]})){$context['ops']['cnd_then']}";
-                case 'unless':
-                    $context['stack'][] = 'unless';
-                    return $context['usedFeature']['parent']
-                        ? $context['ops']['seperator'] . static::getFuncName($context, 'unl', 'unless ' . $v[1]) . "\$cx, {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
-                        : "{$context['ops']['cnd_start']}(!" . static::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]})){$context['ops']['cnd_then']}";
-                case 'each':
-                    $each = 'true';
-                    array_shift($vars);
-                    if (!isset($vars[0])) {
-                        $vars[0] = array(null);
-                    }
-                    break;
-                case 'with':
-                    if ($context['flags']['with']) {
-                        $context['stack'][] = 'with';
-                        return $context['ops']['seperator'] . static::getFuncName($context, 'wi', 'with ' . $v[1]) . "\$cx, {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
-                    }
-            }
+        $v = static::getVariableName($vars[0], $context);
+        $context['stack'][] = $v[1];
+        $context['stack'][] = '#';
+        return $context['ops']['seperator'] . static::getFuncName($context, 'sec', (($each == 'true') ? 'each ' : '') . $v[1]) . "\$cx, {$v[0]}, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
+    }
 
-            $v = static::getVariableName($vars[0], $context);
-            $context['stack'][] = $v[1];
-            $context['stack'][] = '#';
-            return $context['ops']['seperator'] . static::getFuncName($context, 'sec', (($each == 'true') ? 'each ' : '') . $v[1]) . "\$cx, {$v[0]}, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
+    /**
+     * Internal method used by compile(). Return compiled PHP code partial for a handlebars custom helper token.
+     *
+     * @param array $context current compile context
+     * @param array $vars parsed arguments list
+     * @param boolean $raw is this {{{ token or not
+     *
+     * @return string|null Return compiled code segment for the token when the token is custom helper
+     */
+    protected static function compileCustomHelper(&$context, &$vars, $raw) {
+        $notHH = !isset($context['hbhelpers'][$vars[0][0]]);
+        if (!isset($context['helpers'][$vars[0][0]]) && $notHH) {
+            return;
         }
 
-        /**
-         * Internal method used by compile(). Return compiled PHP code partial for a handlebars custom helper token.
-         *
-         * @param array $context current compile context
-         * @param array $vars parsed arguments list
-         * @param boolean $raw is this {{{ token or not
-         *
-         * @return string|null Return compiled code segment for the token when the token is custom helper
-         */
-        protected static function compileCustomHelper(&$context, &$vars, $raw) {
-            $notHH = !isset($context['hbhelpers'][$vars[0][0]]);
-            if (!isset($context['helpers'][$vars[0][0]]) && $notHH) {
-                return;
-            }
+        $fn = $raw ? 'raw' : $context['ops']['enc'];
+        $ch = array_shift($vars);
+        $v = static::getVariableNames($vars, $context, true);
+        static::addUsageCount($context, $notHH ? 'helpers' : 'hbhelpers', $ch[0]);
+        return $context['ops']['seperator'] . static::getFuncName($context, $notHH ? 'ch' : 'hbch', "$ch[0] " . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, '$fn'" . ($notHH ? '' : ', \'$in\'') . "){$context['ops']['seperator']}";
+    }
 
-            $fn = $raw ? 'raw' : $context['ops']['enc'];
-            $ch = array_shift($vars);
-            $v = static::getVariableNames($vars, $context, true);
-            static::addUsageCount($context, $notHH ? 'helpers' : 'hbhelpers', $ch[0]);
-            return $context['ops']['seperator'] . static::getFuncName($context, $notHH ? 'ch' : 'hbch', "$ch[0] " . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, '$fn'" . ($notHH ? '' : ', \'$in\'') . "){$context['ops']['seperator']}";
-        }
-
-       /**
-         * Internal method used by compile(). Return compiled PHP code partial for a handlebars else token.
-         *
-         * @param array $context current compile context
-         * @param array $vars parsed arguments list
-         *
-         * @return string|null Return compiled code segment for the token when the token is else
-         */
-        protected static function compileElse(&$context, &$vars) {
-            if ($vars[0][0] === 'else') {
-                $c = count($context['stack']) - 1;
-                if ($c >= 0) {
-                    switch ($context['stack'][count($context['stack']) - 1]) {
+   /**
+     * Internal method used by compile(). Return compiled PHP code partial for a handlebars else token.
+     *
+     * @param array $context current compile context
+     * @param array $vars parsed arguments list
+     *
+     * @return string|null Return compiled code segment for the token when the token is else
+     */
+    protected static function compileElse(&$context, &$vars) {
+        if ($vars[0][0] === 'else') {
+            $c = count($context['stack']) - 1;
+            if ($c >= 0) {
+                switch ($context['stack'][count($context['stack']) - 1]) {
                     case 'if':
                     case 'unless':
                         $context['stack'][] = ':';
@@ -1771,7 +1771,7 @@ $libstr
         }
     }
 
-   /**
+    /**
      * Internal method used by compile(). Return compiled PHP code partial for a handlebars variable token.
      *
      * @param array $context current compile context
