@@ -47,7 +47,6 @@ checks:
         require_scope_for_methods: true
         require_php_tag_first: true
         require_closing_tag: true
-        require_braces_around_control_structures: true
         prefer_while_loop_over_for_loop: true
         prefer_unix_line_ending: true
         prefer_sapi_constant: true
