@@ -1652,8 +1652,8 @@ $libstr
             case 'with':
                 if ($context['flags']['with']) {
                     if ($pop !== 'with') {
-                       $context['error'][] = 'Unexpect token: {{/with}} !';
-                    return;
+                        $context['error'][] = 'Unexpect token: {{/with}} !';
+                        return;
                     }
                     return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
                 }
@@ -1668,16 +1668,16 @@ $libstr
                 $pop2 = array_pop($context['stack']);
                 $v = static::getVariableName($vars[0], $context);
                 if (!$each && ($pop2 !== $v[1])) {
-                        $context['error'][] = 'Unexpect token ' . static::tokenString($token) . " ! Previous token {{{$pop}$pop2}} is not closed";
-                        return;
-                    }
-                    if ($pop == '^') {
-                        return "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
-                    }
-                    return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
-                default:
-                    $context['error'][] = 'Unexpect token: ' . static::tokenString($token) . ' !';
+                    $context['error'][] = 'Unexpect token ' . static::tokenString($token) . " ! Previous token {{{$pop}$pop2}} is not closed";
                     return;
+                }
+                if ($pop == '^') {
+                    return "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
+                }
+                return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
+            default:
+                $context['error'][] = 'Unexpect token: ' . static::tokenString($token) . ' !';
+                return;
         }
     }
 
@@ -1745,7 +1745,7 @@ $libstr
         return $context['ops']['seperator'] . static::getFuncName($context, $notHH ? 'ch' : 'hbch', "$ch[0] " . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, '$fn'" . ($notHH ? '' : ', \'$in\'') . "){$context['ops']['seperator']}";
     }
 
-   /**
+    /**
      * Internal method used by compile(). Return compiled PHP code partial for a handlebars else token.
      *
      * @param array $context current compile context
@@ -2184,7 +2184,7 @@ class LCRun3 {
                         $cx['sp_vars']['last'] = ($i == $last);
                         $cx['sp_vars']['index'] = $index;
                     }
-                $i++;
+                    $i++;
                 }
                 $ret[] = $cb($cx, $raw);
             }
