@@ -1789,7 +1789,7 @@ $libstr
         }
     }
 
-   /**
+    /**
      * Internal method used by compile(). Add usage count to context
      *
      * @param array $context current context
@@ -1802,10 +1802,10 @@ $libstr
      * @expect 5 when input array('usedCount' => array('test' => array('testname' => 2))), 'test', 'testname', 3
      */
     protected static function addUsageCount(&$context, $category, $name, $count = 1) {
-         if (!isset($context['usedCount'][$category][$name])) {
-             $context['usedCount'][$category][$name] = 0;
-         }
-         return ($context['usedCount'][$category][$name] += $count);
+        if (!isset($context['usedCount'][$category][$name])) {
+            $context['usedCount'][$category][$name] = 0;
+        }
+        return ($context['usedCount'][$category][$name] += $count);
     }
 }
 
