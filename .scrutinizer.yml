@@ -71,7 +71,6 @@ checks:
         avoid_perl_style_comments: true
         avoid_multiple_statements_on_same_line: true
         avoid_length_functions_in_loops: true
-        no_commented_out_code: true
         missing_arguments: true
         method_calls_on_non_object: true
         no_mixed_inline_html: true
