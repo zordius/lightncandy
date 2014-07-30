@@ -909,7 +909,7 @@ $libstr
      * @param array<array|string|integer> $context current compile context
      * @param boolean $ishelper true when compile for helper$
      *
-     * @return array<array|string|integer> variable names
+     * @return array<string> variable names
      *
      * @expect array('$in', 'this') when input array(null), array('flags'=>array('spvar'=>true,'debug'=>0))
      * @expect array('true', 'true') when input array('true'), array('flags'=>array('spvar'=>true,'debug'=>0)), true
@@ -2288,7 +2288,7 @@ class LCRun3 {
      * @param array<array> $vars variables for the helper
      * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
      *
-     * @return string|array<string> The rendered string of the token, or Array with the rendered string and encode_flag
+     * @return string The rendered string of the token
      *
      * @expect '=-=' when input array('helpers' => array('a' => function ($i) {return "=$i[0]=";})), 'a', array(array('-'),array()), 'raw'
      * @expect '=&amp;=' when input array('helpers' => array('a' => function ($i) {return "=$i[0]=";})), 'a', array(array('&'),array()), 'enc'
@@ -2343,7 +2343,7 @@ class LCRun3 {
      * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
      * @param boolean $named input arguments are named
      *
-     * @return string|array<array|string|integer> The rendered string of the token, or Array with the rendered string and encode_flag
+     * @return string The rendered string of the token
      */
     public static function hbch($cx, $ch, $vars, $op, $cb = false, $inv = false) {
         $isBlock = (is_object($cb) && ($cb instanceof Closure));
