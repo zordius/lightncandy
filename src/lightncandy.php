@@ -92,9 +92,9 @@ class LightnCandy {
      * Compile handlebars template into PHP code.
      *
      * @param string $template handlebars template string
-     * @param array $options LightnCandy compile time and run time options, default is array('flags' => LightnCandy::FLAG_BESTPERFORMANCE)
+     * @param array<array|string|int> $options LightnCandy compile time and run time options, default is array('flags' => LightnCandy::FLAG_BESTPERFORMANCE)
      *
-     * @return string Compiled PHP code when successed. If error happened and compile failed, return false.
+     * @return string|false Compiled PHP code when successed. If error happened and compile failed, return false.
      */
     public static function compile($template, $options = array('flags' => self::FLAG_BESTPERFORMANCE)) {
         $context = static::buildContext($options);
