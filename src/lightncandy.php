@@ -1762,6 +1762,7 @@ $libstr
                     case 'unless':
                         $context['stack'][] = ':';
                         return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}" : "{$context['ops']['cnd_else']}";
+                    case 'with':
                     case 'each':
                     case '#':
                         return "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}";
@@ -2250,9 +2251,9 @@ class LCRun3 {
      * @expect '-Array=' when input array(), array('a'=>'b'), array('a' => 'b'), function ($c, $i) {return "-$i=";}
      * @expect '-b=' when input array(), 'b', array('a' => 'b'), function ($c, $i) {return "-$i=";}
      */
-    public static function wi($cx, $v, $in, $cb) {
+    public static function wi($cx, $v, $in, $cb, $inv = null) {
         if (($v === false) || ($v === null)) {
-            return '';
+            return $inv ? $inv($cx, $in) : '';
         }
         $cx['scopes'][] = $in;
         $ret = $cb($cx, $v);

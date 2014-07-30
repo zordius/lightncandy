@@ -404,6 +404,20 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 ),
                 'expected' => 'abc-ab',
             ),
+
+            Array(
+                'template' => '{{#with people}}Yes , {{name}}{{else}}No, {{name}}{{/with}}',
+                'data' => Array('people' => Array('name' => 'Peter'), 'name' => 'NoOne'),
+                'options' => Array('flags' => LightnCandy::FLAG_WITH),
+                'expected' => 'Yes , Peter',
+            ),
+
+            Array(
+                'template' => '{{#with people}}Yes , {{name}}{{else}}No, {{name}}{{/with}}',
+                'data' => Array('name' => 'NoOne'),
+                'options' => Array('flags' => LightnCandy::FLAG_WITH),
+                'expected' => 'No, NoOne',
+            ),
         );
 
         return array_map(function($i) {
