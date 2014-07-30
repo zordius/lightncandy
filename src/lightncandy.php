@@ -425,7 +425,6 @@ $libstr
      */
     protected static function buildHelperTable($context, $options, $tname = 'helpers') {
         if (isset($options[$tname]) && is_array($options[$tname])) {
-            /** @var array $options[$tname] */
             foreach ($options[$tname] as $name => $func) {
                 if (is_callable($func)) {
                     $context[$tname][is_int($name) ? $func : $name] = $func;
@@ -480,9 +479,7 @@ $libstr
             return $context['partials'][$name];
         }
 
-        /** @var array<string> $context['basedir'] */
         foreach ($context['basedir'] as $dir) {
-            /** @var array<string> $context['fileext'] */
             foreach ($context['fileext'] as $ext) {
                 $fn = "$dir/$name$ext";
                 if (file_exists($fn)) {
@@ -747,7 +744,7 @@ $libstr
     /**
      * Get last compiler context.
      *
-     * @return array<*> Context data
+     * @return array<array|string|integer> Context data
      */
     public static function getContext() {
         return static::$lastContext;
