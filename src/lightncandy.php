@@ -92,7 +92,7 @@ class LightnCandy {
      * Compile handlebars template into PHP code.
      *
      * @param string $template handlebars template string
-     * @param array<array|string|int> $options LightnCandy compile time and run time options, default is array('flags' => LightnCandy::FLAG_BESTPERFORMANCE)
+     * @param array<array|string|integer> $options LightnCandy compile time and run time options, default is array('flags' => LightnCandy::FLAG_BESTPERFORMANCE)
      *
      * @return string|false Compiled PHP code when successed. If error happened and compile failed, return false.
      */
@@ -145,7 +145,7 @@ class LightnCandy {
     /**
      * Setup token delimiter by default or provided string
      *
-     * @param array<array|string|int> $context Current context
+     * @param array<array|string|integer> $context Current context
      * @param string $left left string of a token
      * @param string $right right string of a token
      */
@@ -173,7 +173,7 @@ class LightnCandy {
     /**
      * Verify template and scan for used features
      *
-     * @param array<array|string|int> $context Current context
+     * @param array<array|string|integer> $context Current context
      * @param string $template handlebars template
      */
     protected static function verifyTemplate(&$context, $template) {
@@ -187,7 +187,7 @@ class LightnCandy {
     /**
      * Compile template into PHP code (internal method)
      *
-     * @param array<array|string|int> $context Current context
+     * @param array<array|string|integer> $context Current context
      * @param string $template handlebars template
      * @param string $partial partial name when $template is come from the template
      *
@@ -242,7 +242,7 @@ class LightnCandy {
     /**
      * Compose LightnCandy render codes for include()
      *
-     * @param array<array|string|int> $context Current context
+     * @param array<array|string|integer> $context Current context
      * @param string $code generated PHP code
      *
      * @return string Composed PHP code
@@ -291,9 +291,9 @@ $libstr
     /**
      * Build context from options
      *
-     * @param array<array|string|int> $options input options
+     * @param array<array|string|integer> $options input options
      *
-     * @return array<array|string|int> Context from options
+     * @return array<array|string|integer> Context from options
      */
     protected static function buildContext($options) {
         if (!is_array($options)) {
@@ -411,11 +411,11 @@ $libstr
     /**
      * Build custom helper table
      *
-     * @param array<array|string|int> $context prepared context
-     * @param array<array|string|int> $options input options
+     * @param array<array|string|integer> $context prepared context
+     * @param array<array|string|integer> $options input options
      * @param string $tname helper table name
      *
-     * @return array<array|string|int> context with generated helper table
+     * @return array<array|string|integer> context with generated helper table
      *
      * @expect array() when input array(), array()
      * @expect array('flags' => array('exhlp' => 1)) when input array('flags' => array('exhlp' => 1)), array('helpers' => array('abc'))
@@ -425,6 +425,7 @@ $libstr
      */
     protected static function buildHelperTable($context, $options, $tname = 'helpers') {
         if (isset($options[$tname]) && is_array($options[$tname])) {
+            /** @var array $options[$tname] */
             foreach ($options[$tname] as $name => $func) {
                 if (is_callable($func)) {
                     $context[$tname][is_int($name) ? $func : $name] = $func;
@@ -446,7 +447,7 @@ $libstr
      * Read partial file content as string and store in context
      *
      * @param string $name partial name
-     * @param array<array|string|int> $context Current context of compiler progress.
+     * @param array<array|string|integer> $context Current context of compiler progress.
      */
     protected static function readPartial($name, &$context) {
         $context['usedFeature']['partial']++;
@@ -470,7 +471,7 @@ $libstr
      * locate partial file, return the file name
      *
      * @param string $name partial name
-     * @param array<array|string|int> $context Current context of compiler progress.
+     * @param array<array|string|integer> $context Current context of compiler progress.
      *
      * @return string|null $content partial content
      */
@@ -479,7 +480,9 @@ $libstr
             return $context['partials'][$name];
         }
 
+        /** @var array<string> $context['basedir'] */
         foreach ($context['basedir'] as $dir) {
+            /** @var array<string> $context['fileext'] */
             foreach ($context['fileext'] as $ext) {
                 $fn = "$dir/$name$ext";
                 if (file_exists($fn)) {
@@ -494,7 +497,7 @@ $libstr
      * compile partial file, stored in context
      *
      * @param string $name partial name
-     * @param array<array|string|int> $context Current context of compiler progress.
+     * @param array<array|string|integer> $context Current context of compiler progress.
      * @param string $content partial content
      */
     protected static function compilePartial(&$name, &$context, $content) {
@@ -524,7 +527,7 @@ $libstr
     /**
      * Internal method used by compile(). Check options and handle fileext.
      *
-     * @param array<array|string|int> $options current compile option
+     * @param array<array|string|integer> $options current compile option
      *
      * @return array<string> file extensions
      *
@@ -541,7 +544,7 @@ $libstr
     /**
      * Internal method used by compile(). Check options and handle basedir.
      *
-     * @param array<array|string|int> $options current compile option
+     * @param array<array|string|integer> $options current compile option
      *
      * @return array<string> base directories
      *
@@ -597,7 +600,7 @@ $libstr
      * Internal method used by compile(). Export required custom helper functions.
      *
      * @param string $tname   helper table name
-     * @param array<array|string|int> $context current compile context
+     * @param array<array|string|integer> $context current compile context
      *
      * @return string
      */
@@ -620,7 +623,7 @@ $libstr
     /**
      * Internal method used by compile(). Export required standalone functions.
      *
-     * @param array<array|string|int> $context current compile context
+     * @param array<array|string|integer> $context current compile context
      *
      * @return string
      */
@@ -673,7 +676,7 @@ $libstr
     /**
      * Internal method used by compile(). Export required standalone functions.
      *
-     * @param array<array|string|int> $context current compile context
+     * @param array<array|string|integer> $context current compile context
      * @param string $code PHP code string of the method
      *
      * @return array<string|array> list of converted code and children array
@@ -696,7 +699,7 @@ $libstr
     /**
      * Internal method used by compile(). Handle exists error and return error status.
      *
-     * @param array<array|string|int> $context Current context of compiler progress.
+     * @param array<array|string|integer> $context Current context of compiler progress.
      *
      * @throws Exception
      * @return boolean True when error detected
@@ -744,7 +747,7 @@ $libstr
     /**
      * Get last compiler context.
      *
-     * @return array<array|string|int> Context data
+     * @return array<*> Context data
      */
     public static function getContext() {
         return static::$lastContext;
@@ -786,7 +789,7 @@ $libstr
     /**
      * Internal method used by compile(). Get function name for standalone or none standalone template.
      *
-     * @param array<array|string|int> $context Current context of compiler progress.
+     * @param array<array|string|integer> $context Current context of compiler progress.
      * @param string $name base function name
      * @param string $tag original handlabars tag for debug
      *
@@ -814,7 +817,7 @@ $libstr
     /**
      * Internal method used by getArrayCode(). Get variable names translated string.
      *
-     * @param array<array|string|int> $scopes an array of variable names with single quote
+     * @param array<array|string|integer> $scopes an array of variable names with single quote
      *
      * @return string PHP array names string
      *
@@ -847,7 +850,7 @@ $libstr
      * Internal method used by compile().
      *
      * @param array<array> $vn variable name array.
-     * @param array<array|string|int> $context current compile context
+     * @param array<array|string|integer> $context current compile context
      * @param boolean $ishelper true when compile for helper
      *
      * @return array<string|array> variable names
@@ -879,9 +882,9 @@ $libstr
      * Internal method used by compile().
      *
      * @param string $subExpression subExpression to compile
-     * @param array<array|string|int> $context current compile context
+     * @param array<array|string|integer> $context current compile context
      *
-     * @return array<string> code representing passed expression
+     * @return array<string|null> code representing passed expression
      */
     protected static function compileSubExpression($subExpression, &$context) {
         // mock up a token for this expression
@@ -905,11 +908,11 @@ $libstr
     /**
      * Internal method used by compile().
      *
-     * @param array<array|string|int> $var variable parsed path
-     * @param array<array|string|int> $context current compile context
+     * @param array<array|string|integer> $var variable parsed path
+     * @param array<array|string|integer> $context current compile context
      * @param boolean $ishelper true when compile for helper$
      *
-     * @return array<array|string|int> variable names
+     * @return array<array|string|integer> variable names
      *
      * @expect array('$in', 'this') when input array(null), array('flags'=>array('spvar'=>true,'debug'=>0))
      * @expect array('true', 'true') when input array('true'), array('flags'=>array('spvar'=>true,'debug'=>0)), true
@@ -1015,7 +1018,7 @@ $libstr
      *
      * @param integer $levels trace N levels top parent scope
      * @param boolean $root is the path start from root or not
-     * @param array<string|int> $var variable parsed path
+     * @param array<string|integer> $var variable parsed path
      *
      * @return string normalized expression for debug display
      *
@@ -1037,7 +1040,7 @@ $libstr
      * Internal method used by compile(). Return array presentation for a variable name
      *
      * @param string $v variable name to be fixed.
-     * @param array<array|string|int> $context Current compile content.
+     * @param array<array|string|integer> $context Current compile content.
      *
      * @return array<integer,string> Return variable name array
      *
@@ -1106,7 +1109,7 @@ $libstr
      * Internal method used by scanFeatures() and compile(). Parse the token and return parsed result.
      *
      * @param array<string> $token preg_match results
-     * @param array<array|string|int> $context current compile context
+     * @param array<array|string|integer> $context current compile context
      *
      * @return array<boolean|array> Return parsed result
      *
@@ -1267,7 +1270,7 @@ $libstr
      * Internal method used by scanFeatures(). Validate start and and.
      *
      * @param string[] $token detected handlebars {{ }} token
-     * @param array<array|string|int> $context current compile context
+     * @param array<array|string|integer> $context current compile context
      * @param boolean $raw the token is started with {{{ or not
      *
      * @return boolean|null Return true when invalid
@@ -1292,7 +1295,7 @@ $libstr
      * Internal method used by compile(). Collect handlebars usage information, detect template error.
      *
      * @param string[] $token detected handlebars {{ }} token
-     * @param array<array|string|int> $context current compile context
+     * @param array<array|string|integer> $context current compile context
      * @param array<array> $vars parsed arguments list
      *
      * @return boolean|integer|null Return true when invalid or detected
@@ -1381,7 +1384,7 @@ $libstr
      * Internal method used by compile(). Collect handlebars usage information, detect template error.
      *
      * @param string[] $token detected handlebars {{ }} token
-     * @param array<array|string|int> $context current compile context
+     * @param array<array|string|integer> $context current compile context
      */
     protected static function scanFeatures($token, &$context) {
         list($raw, $vars) = static::parseTokenArgs($token, $context);
@@ -1441,7 +1444,7 @@ $libstr
      * Internal method used by compile(). Show error message when named arguments appear without custom helper.
      *
      * @param array<string> $token detected handlebars {{ }} token
-     * @param array<array|string|int> $context current compile context
+     * @param array<array|string|integer> $context current compile context
      * @param boolean $named is named arguments
      * @param string $suggest extended hint for this no named argument error
      */
@@ -1455,7 +1458,7 @@ $libstr
      * Internal method used by compileToken(). Modify $token when mustache rules matched.
      *
      * @param array<string> $token detected handlebars {{ }} token
-     * @param array<array|string|int> $context current compile context
+     * @param array<array|string|integer> $context current compile context
      *
      * @return string|null Return compiled code segment for the token
      */
@@ -1508,7 +1511,7 @@ $libstr
      * Internal method used by compile(). Return compiled PHP code partial for a handlebars token.
      *
      * @param array<string> $token detected handlebars {{ }} token
-     * @param array<array|string|int> $context current compile context
+     * @param array<array|string|integer> $context current compile context
      *
      * @return string Return compiled code segment for the token
      */
@@ -1551,8 +1554,8 @@ $libstr
      * Internal method used by compile(). Return compiled PHP code partial for a handlebars section token.
      *
      * @param array<string> $token detected handlebars {{ }} token
-     * @param array<array|string|int> $context current compile context
-     * @param array<array|string|int> $vars parsed arguments list
+     * @param array<array|string|integer> $context current compile context
+     * @param array<array|string|integer> $vars parsed arguments list
      * @param boolean $named is named arguments or not
      *
      * @return string|null Return compiled code segment for the token when the token is section
@@ -1608,7 +1611,7 @@ $libstr
     /**
      * Internal method used by compile(). Return compiled PHP code partial for a handlebars block custom helper begin token.
      *
-     * @param array<array|string|int> $context current compile context
+     * @param array<array|string|integer> $context current compile context
      * @param array<array> $vars parsed arguments list
      *
      * @return string|null Return compiled code segment for the token
@@ -1634,8 +1637,8 @@ $libstr
      * Internal method used by compile(). Return compiled PHP code partial for a handlebars block end token.
      *
      * @param array<string> $token detected handlebars {{ }} token
-     * @param array<array|string|int> $context current compile context
-     * @param array<array|string|int> $vars parsed arguments list
+     * @param array<array|string|integer> $context current compile context
+     * @param array<array|string|integer> $vars parsed arguments list
      *
      * @return string Return compiled code segment for the token
      */
@@ -1685,8 +1688,8 @@ $libstr
     /**
      * Internal method used by compile(). Return compiled PHP code partial for a handlebars block begin token.
      *
-     * @param array<array|string|int> $context current compile context
-     * @param array<array|string|int> $vars parsed arguments list
+     * @param array<array|string|integer> $context current compile context
+     * @param array<array|string|integer> $vars parsed arguments list
      *
      * @return string Return compiled code segment for the token
      */
@@ -1727,8 +1730,8 @@ $libstr
     /**
      * Internal method used by compile(). Return compiled PHP code partial for a handlebars custom helper token.
      *
-     * @param array<array|string|int> $context current compile context
-     * @param array<array|string|int> $vars parsed arguments list
+     * @param array<array|string|integer> $context current compile context
+     * @param array<array|string|integer> $vars parsed arguments list
      * @param boolean $raw is this {{{ token or not
      *
      * @return string|null Return compiled code segment for the token when the token is custom helper
@@ -1749,7 +1752,7 @@ $libstr
     /**
      * Internal method used by compile(). Return compiled PHP code partial for a handlebars else token.
      *
-     * @param array<array|string|int> $context current compile context
+     * @param array<array|string|integer> $context current compile context
      * @param array<array> $vars parsed arguments list
      *
      * @return string|null Return compiled code segment for the token when the token is else
@@ -1776,8 +1779,8 @@ $libstr
     /**
      * Internal method used by compile(). Return compiled PHP code partial for a handlebars variable token.
      *
-     * @param array<array|string|int> $context current compile context
-     * @param array<array|string|int> $vars parsed arguments list
+     * @param array<array|string|integer> $context current compile context
+     * @param array<array|string|integer> $vars parsed arguments list
      * @param boolean $raw is this {{{ token or not
      *
      * @return string Return compiled code segment for the token
@@ -1826,7 +1829,7 @@ class LCRun3 {
      *
      * @param string $v expression
      * @param string $f runtime function name
-     * @param array<array|string|int> $cx render time context
+     * @param array<array|string|integer> $cx render time context
      *
      * @expect '{{123}}' when input '123', 'miss', array('flags' => array('debug' => LCRun3::DEBUG_TAGS)), ''
      * @expect '<!--MISSED((-->{{#123}}<!--))--><!--SKIPPED--><!--MISSED((-->{{/123}}<!--))-->' when input '123', 'wi', array('flags' => array('debug' => LCRun3::DEBUG_TAGS_HTML)), false, false, function () {return 'A';}
@@ -1867,7 +1870,7 @@ class LCRun3 {
     /**
      * LightnCandy runtime method for missing data error.
      *
-     * @param array<array|string|int> $cx render time context
+     * @param array<array|string|integer> $cx render time context
      * @param string $v expression
      */
     public static function miss($cx, $v) {
@@ -1884,9 +1887,9 @@ class LCRun3 {
     /**
      * LightnCandy runtime method for variable lookup. It is slower and only be used for instance property or method detection.
      *
-     * @param array<array|string|int> $cx render time context
-     * @param array<array|string|int> $base current variable context
-     * @param array<string|int> $path array of names for path
+     * @param array<array|string|integer> $cx render time context
+     * @param array<array|string|integer> $base current variable context
+     * @param array<string|integer> $path array of names for path
      *
      * @return null|string Return the value or null when not found
      *
@@ -1935,7 +1938,7 @@ class LCRun3 {
     /**
      * LightnCandy runtime method for {{#if var}}.
      *
-     * @param array<array|string|int> $cx render time context
+     * @param array<array|string|integer> $cx render time context
      * @param array|string|int|null $v value to be tested
      *
      * @return boolean Return true when the value is not null nor false.
@@ -1957,9 +1960,9 @@ class LCRun3 {
     /**
      * LightnCandy runtime method for {{#if var}} when {{../var}} used.
      *
-     * @param array<array|string|int> $cx render time context
+     * @param array<array|string|integer> $cx render time context
      * @param array|string|int|null $v value to be tested
-     * @param array<array|string|int> $in input data with current scope
+     * @param array<array|string|integer> $in input data with current scope
      * @param Closure $truecb callback function when test result is true
      * @param Closure|null $falsecb callback function when test result is false
      *
@@ -1991,7 +1994,7 @@ class LCRun3 {
     /**
      * LightnCandy runtime method for {{#unless var}} when {{../var}} used.
      *
-     * @param array<array|string|int> $cx render time context
+     * @param array<array|string|integer> $cx render time context
      * @param mixed $var value be tested
      * @param array $in input data with current scope
      * @param Closure $truecb callback function when test result is true
@@ -2012,7 +2015,7 @@ class LCRun3 {
     /**
      * LightnCandy runtime method for {{^var}} inverted section.
      *
-     * @param array<array|string|int> $cx render time context
+     * @param array<array|string|integer> $cx render time context
      * @param mixed $v value to be tested
      *
      * @return boolean Return true when the value is not null nor false.
@@ -2031,7 +2034,7 @@ class LCRun3 {
     /**
      * LightnCandy runtime method for {{{var}}} .
      *
-     * @param array<array|string|int> $cx render time context
+     * @param array<array|string|integer> $cx render time context
      * @param mixed $v value to be output
      * @param boolean $loop true when in loop
      *
@@ -2084,7 +2087,7 @@ class LCRun3 {
     /**
      * LightnCandy runtime method for {{var}} .
      *
-     * @param array<array|string|int> $cx render time context
+     * @param array<array|string|integer> $cx render time context
      * @param mixed $var value to be htmlencoded
      *
      * @return string The htmlencoded value of the specified variable
@@ -2100,7 +2103,7 @@ class LCRun3 {
     /**
      * LightnCandy runtime method for {{var}} , and deal with single quote to same as handlebars.js .
      *
-     * @param array<array|string|int> $cx render time context
+     * @param array<array|string|integer> $cx render time context
      * @param mixed $var value to be htmlencoded
      *
      * @return string The htmlencoded value of the specified variable
@@ -2117,7 +2120,7 @@ class LCRun3 {
     /**
      * LightnCandy runtime method for {{#var}} section.
      *
-     * @param array<array|string|int> $cx render time context
+     * @param array<array|string|integer> $cx render time context
      * @param mixed $v value for the section
      * @param array $in input data with current scope
      * @param boolean $each true when rendering #each
@@ -2243,7 +2246,7 @@ class LCRun3 {
     /**
      * LightnCandy runtime method for {{#with var}} .
      *
-     * @param array<array|string|int> $cx render time context
+     * @param array<array|string|integer> $cx render time context
      * @param mixed $v value to be the new context
      * @param array $in input data with current scope
      * @param Closure $cb callback function to render child context
@@ -2269,7 +2272,7 @@ class LCRun3 {
     /**
      * LightnCandy runtime method for {{> partial}} .
      *
-     * @param array<array|string|int> $cx render time context
+     * @param array<array|string|integer> $cx render time context
      * @param mixed $p partial name
      * @param mixed $v value to be the new context
      *
@@ -2283,7 +2286,7 @@ class LCRun3 {
     /**
      * LightnCandy runtime method for custom helpers.
      *
-     * @param array<array|string|int> $cx render time context
+     * @param array<array|string|integer> $cx render time context
      * @param string $ch the name of custom helper to be executed
      * @param array<array> $vars variables for the helper
      * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
@@ -2302,7 +2305,7 @@ class LCRun3 {
     /**
      * LightnCandy runtime method to handle response of custom helpers.
      *
-     * @param string|array<array|string|int> $ret return value from custom helper
+     * @param string|array<array|string|integer> $ret return value from custom helper
      * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
      *
      * @expect '=&=' when input '=&=', 'raw'
@@ -2335,13 +2338,13 @@ class LCRun3 {
     /**
      * LightnCandy runtime method for Handlebars.js style custom helpers.
      *
-     * @param array<array|string|int> $cx render time context
+     * @param array<array|string|integer> $cx render time context
      * @param string $ch the name of custom helper to be executed
      * @param array $vars variables for the helper
      * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
      * @param boolean $named input arguments are named
      *
-     * @return string|array<array|string|int> The rendered string of the token, or Array with the rendered string and encode_flag
+     * @return string|array<array|string|integer> The rendered string of the token, or Array with the rendered string and encode_flag
      */
     public static function hbch($cx, $ch, $vars, $op, $cb = false, $inv = false) {
         $isBlock = (is_object($cb) && ($cb instanceof Closure));
@@ -2389,7 +2392,7 @@ class LCRun3 {
     /**
      * LightnCandy runtime method for block custom helpers.
      *
-     * @param array<array|string|int> $cx render time context
+     * @param array<array|string|integer> $cx render time context
      * @param string $ch the name of custom helper to be executed
      * @param array $vars variables for the helper
      * @param array $in input data with current scope
