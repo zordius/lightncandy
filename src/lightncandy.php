@@ -145,8 +145,9 @@ class LightnCandy {
     /**
      * Setup token delimiter by default or provided string
      *
-     * @param array $context Current context
-     * @param string $template handlebars template
+     * @param array<array|string|int> $context Current context
+     * @param string $left left string of a token
+     * @param string $right right string of a token
      */
     protected static function setupToken(&$context, $left = '{{', $right = '}}') {
         if (preg_match('/=/', "$left$right")) {
@@ -172,7 +173,7 @@ class LightnCandy {
     /**
      * Verify template and scan for used features
      *
-     * @param array $context Current context
+     * @param array<array|string|int> $context Current context
      * @param string $template handlebars template
      */
     protected static function verifyTemplate(&$context, $template) {
@@ -241,7 +242,7 @@ class LightnCandy {
     /**
      * Compose LightnCandy render codes for include()
      *
-     * @param array $context Current context
+     * @param array<array|string|int> $context Current context
      * @param string $code generated PHP code
      *
      * @return string Composed PHP code
@@ -290,9 +291,9 @@ $libstr
     /**
      * Build context from options
      *
-     * @param mixed $options input options
+     * @param array<array|string|int> $options input options
      *
-     * @return array Context from options
+     * @return array<array|string|int> Context from options
      */
     protected static function buildContext($options) {
         if (!is_array($options)) {
@@ -410,11 +411,11 @@ $libstr
     /**
      * Build custom helper table
      *
-     * @param array $context prepared context
-     * @param mixed $options input options
+     * @param array<array|string|int> $context prepared context
+     * @param array<array|string|int> $options input options
      * @param string $tname helper table name
      *
-     * @return array context with generated helper table
+     * @return array<array|string|int> context with generated helper table
      *
      * @expect array() when input array(), array()
      * @expect array('flags' => array('exhlp' => 1)) when input array('flags' => array('exhlp' => 1)), array('helpers' => array('abc'))
@@ -445,7 +446,7 @@ $libstr
      * Read partial file content as string and store in context
      *
      * @param string $name partial name
-     * @param array $context Current context of compiler progress.
+     * @param array<array|string|int> $context Current context of compiler progress.
      */
     protected static function readPartial($name, &$context) {
         $context['usedFeature']['partial']++;
@@ -469,9 +470,9 @@ $libstr
      * locate partial file, return the file name
      *
      * @param string $name partial name
-     * @param array $context Current context of compiler progress.
+     * @param array<array|string|int> $context Current context of compiler progress.
      *
-     * @return $content partial content
+     * @return string|null $content partial content
      */
     protected static function resolvePartial(&$name, &$context) {
         if (isset($context['partials'][$name])) {
@@ -493,7 +494,7 @@ $libstr
      * compile partial file, stored in context
      *
      * @param string $name partial name
-     * @param array $context Current context of compiler progress.
+     * @param array<array|string|int> $context Current context of compiler progress.
      * @param string $content partial content
      */
     protected static function compilePartial(&$name, &$context, $content) {
@@ -523,9 +524,9 @@ $libstr
     /**
      * Internal method used by compile(). Check options and handle fileext.
      *
-     * @param array $options current compile option
+     * @param array<array|string|int> $options current compile option
      *
-     * @return array file extensions
+     * @return array<string> file extensions
      *
      * @expect array('.tmpl') when input array()
      * @expect array('test') when input array('fileext' => 'test')
@@ -540,9 +541,9 @@ $libstr
     /**
      * Internal method used by compile(). Check options and handle basedir.
      *
-     * @param array $options current compile option
+     * @param array<array|string|int> $options current compile option
      *
-     * @return array base directories
+     * @return array<string> base directories
      *
      * @expect array() when input array()
      * @expect array() when input array('basedir' => array())
@@ -596,7 +597,7 @@ $libstr
      * Internal method used by compile(). Export required custom helper functions.
      *
      * @param string $tname   helper table name
-     * @param array  $context current compile context
+     * @param array<array|string|int> $context current compile context
      *
      * @return string
      */
@@ -619,7 +620,7 @@ $libstr
     /**
      * Internal method used by compile(). Export required standalone functions.
      *
-     * @param array $context current compile context
+     * @param array<array|string|int> $context current compile context
      *
      * @return string
      */
@@ -672,10 +673,10 @@ $libstr
     /**
      * Internal method used by compile(). Export required standalone functions.
      *
-     * @param array $context current compile context
+     * @param array<array|string|int> $context current compile context
      * @param string $code PHP code string of the method
      *
-     * @return array list of converted code and children array
+     * @return array<string|array> list of converted code and children array
      */
     protected static function scanLCRunDependency($context, $code) {
         $child = array();
@@ -695,7 +696,7 @@ $libstr
     /**
      * Internal method used by compile(). Handle exists error and return error status.
      *
-     * @param array $context Current context of compiler progress.
+     * @param array<array|string|int> $context Current context of compiler progress.
      *
      * @throws Exception
      * @return boolean True when error detected
@@ -727,7 +728,7 @@ $libstr
     /**
      * Internal method used by compile(). Return 'true' or 'false' string.
      *
-     * @param mixed $v value
+     * @param integer $v value
      *
      * @return string 'true' when the value larger then 0
      *
@@ -785,7 +786,7 @@ $libstr
     /**
      * Internal method used by compile(). Get function name for standalone or none standalone template.
      *
-     * @param array $context Current context of compiler progress.
+     * @param array<array|string|int> $context Current context of compiler progress.
      * @param string $name base function name
      * @param string $tag original handlabars tag for debug
      *
@@ -813,7 +814,7 @@ $libstr
     /**
      * Internal method used by getArrayCode(). Get variable names translated string.
      *
-     * @param array $scopes an array of variable names with single quote
+     * @param array<array|string|int> $scopes an array of variable names with single quote
      *
      * @return string PHP array names string
      *
@@ -828,7 +829,7 @@ $libstr
     /**
      * Internal method used by getVariableName(). Get variable names translated string.
      *
-     * @param array $list an array of variable names.
+     * @param array<string> $list an array of variable names.
      *
      * @return string PHP array names string
      *
@@ -845,11 +846,11 @@ $libstr
     /**
      * Internal method used by compile().
      *
-     * @param array $vn variable name array.
-     * @param array $context current compile context
+     * @param array<string> $vn variable name array.
+     * @param array<array|string|int> $context current compile context
      * @param boolean $ishelper true when compile for helper
      *
-     * @return string variable names
+     * @return array<array> variable names
      *
      * @expect array('array(array($in),array())', array('this')) when input array(null), array('flags'=>array('spvar'=>true))
      * @expect array('array(array($in,$in),array())', array('this', 'this')) when input array(null, null), array('flags'=>array('spvar'=>true))
@@ -878,9 +879,9 @@ $libstr
      * Internal method used by compile().
      *
      * @param string $subExpression subExpression to compile
-     * @param array &$context current compile context
+     * @param array<array|string|int> &$context current compile context
      *
-     * @return array code representing passed expression
+     * @return array<string> code representing passed expression
      */
     protected static function compileSubExpression($subExpression, &$context) {
         // mock up a token for this expression
@@ -904,11 +905,11 @@ $libstr
     /**
      * Internal method used by compile().
      *
-     * @param array $var variable parsed path
-     * @param array $context current compile context
+     * @param array<array> $var variable parsed path
+     * @param array<array|string|int> $context current compile context
      * @param boolean $ishelper true when compile for helper$
      *
-     * @return array variable names
+     * @return array<string> variable names
      *
      * @expect array('$in', 'this') when input array(null), array('flags'=>array('spvar'=>true,'debug'=>0))
      * @expect array('true', 'true') when input array('true'), array('flags'=>array('spvar'=>true,'debug'=>0)), true
@@ -1014,7 +1015,7 @@ $libstr
      *
      * @param integer $levels trace N levels top parent scope
      * @param boolean $root is the path start from root or not
-     * @param mixed $var variable parsed path
+     * @param array<string|int> $var variable parsed path
      *
      * @return string normalized expression for debug display
      *
@@ -1035,10 +1036,10 @@ $libstr
     /**
      * Internal method used by compile(). Return array presentation for a variable name
      *
-     * @param mixed $v variable name to be fixed.
-     * @param array $context Current compile content.
+     * @param string $v variable name to be fixed.
+     * @param array<array|string|int> $context Current compile content.
      *
-     * @return array Return variable name array
+     * @return array<integer,string> Return variable name array
      *
      * @expect array('this') when input 'this', array('flags' => array('advar' => 0, 'this' => 0))
      * @expect array(null) when input 'this', array('flags' => array('advar' => 0, 'this' => 1))
@@ -1104,10 +1105,10 @@ $libstr
     /**
      * Internal method used by scanFeatures() and compile(). Parse the token and return parsed result.
      *
-     * @param array $token preg_match results
-     * @param array $context current compile context
+     * @param array<string> $token preg_match results
+     * @param array<array|string|int> $context current compile context
      *
-     * @return array Return parsed result
+     * @return array<boolean|array> Return parsed result
      *
      * @expect array(false, array(array(null))) when input array(0,0,0,0,0,0,''), array('flags' => array('advar' => 0, 'this' => 1, 'namev' => 0))
      * @expect array(true, array(array(null))) when input array(0,0,0,'{{{',0,0,''), array('flags' => array('advar' => 0, 'this' => 1, 'namev' => 0))
@@ -1266,7 +1267,7 @@ $libstr
      * Internal method used by scanFeatures(). Validate start and and.
      *
      * @param string[] $token detected handlebars {{ }} token
-     * @param array $context current compile context
+     * @param array<array|string|int> $context current compile context
      * @param boolean $raw the token is started with {{{ or not
      *
      * @return boolean|null Return true when invalid
@@ -1291,8 +1292,8 @@ $libstr
      * Internal method used by compile(). Collect handlebars usage information, detect template error.
      *
      * @param string[] $token detected handlebars {{ }} token
-     * @param array $context current compile context
-     * @param array $vars parsed arguments list
+     * @param array<array|string|int> $context current compile context
+     * @param array<array> $vars parsed arguments list
      *
      * @return mixed Return true when invalid or detected
      *
@@ -1380,7 +1381,7 @@ $libstr
      * Internal method used by compile(). Collect handlebars usage information, detect template error.
      *
      * @param string[] $token detected handlebars {{ }} token
-     * @param array $context current compile context
+     * @param array<array|string|int> $context current compile context
      */
     protected static function scanFeatures($token, &$context) {
         list($raw, $vars) = static::parseTokenArgs($token, $context);
@@ -1439,8 +1440,8 @@ $libstr
     /**
      * Internal method used by compile(). Show error message when named arguments appear without custom helper.
      *
-     * @param array $token detected handlebars {{ }} token
-     * @param array $context current compile context
+     * @param array<string> $token detected handlebars {{ }} token
+     * @param array<array|string|int> $context current compile context
      * @param boolean $named is named arguments
      * @param string $suggest extended hint for this no named argument error
      */
