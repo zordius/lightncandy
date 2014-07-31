@@ -881,7 +881,7 @@ $libstr
      * @param string $subExpression subExpression to compile
      * @param array<string,array|string|integer> $context current compile context
      *
-     * @return array<string|null> code representing passed expression
+     * @return array<string> code representing passed expression
      */
     protected static function compileSubExpression($subExpression, &$context) {
         // mock up a token for this expression
