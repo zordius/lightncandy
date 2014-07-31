@@ -508,7 +508,9 @@ When a Handlebars.js style custom helper be used as block tags, LightnCandy will
 Template Debugging
 ------------------
 
-You may generate debug version of templates with `FLAG_ERROR_LOG` when compile() . The debug template contained more debug information and slower (TBD: performance result) , you may pass extra LCRun3 options into render function to know more rendering error. For example:
+When template error happened, LightnCandy::compile() will return false. You may compile with `FLAG_ERROR_LOG` to see more error message, or compile with `FLAG_ERROR_EXCEPTION` to catch the exception.
+
+You may generate debug version of templates with `FLAG_RENDER_DEBUG` when compile() . The debug template contained more debug information and slower (TBD: performance result) , you may pass extra LCRun3 options into render function to know more rendering error (missing data). For example:
 
 ```php
 $template = <<<VAREND
