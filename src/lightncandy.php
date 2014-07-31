@@ -92,7 +92,7 @@ class LightnCandy {
      * Compile handlebars template into PHP code.
      *
      * @param string $template handlebars template string
-     * @param array<array|string|integer> $options LightnCandy compile time and run time options, default is array('flags' => LightnCandy::FLAG_BESTPERFORMANCE)
+     * @param array<string,array|string|integer> $options LightnCandy compile time and run time options, default is array('flags' => LightnCandy::FLAG_BESTPERFORMANCE)
      *
      * @return string|false Compiled PHP code when successed. If error happened and compile failed, return false.
      */
@@ -145,7 +145,7 @@ class LightnCandy {
     /**
      * Setup token delimiter by default or provided string
      *
-     * @param array<array|string|integer> $context Current context
+     * @param array<string,array|string|integer> $context Current context
      * @param string $left left string of a token
      * @param string $right right string of a token
      */
