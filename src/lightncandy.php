@@ -945,7 +945,7 @@ $libstr
             if ($ishelper) {
                 if ((count($var) == 1) && is_numeric($var[0])) {
                     // convert 0x00 or 0b00 numbers to decimal
-                    return array((string)1 * $var[0], $var[0]);
+                    return array((string) 1 * $var[0], $var[0]);
                 }
                 switch ($var[0]) {
                     case 'true':
