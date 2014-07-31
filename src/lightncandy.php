@@ -896,10 +896,10 @@ $libstr
         $origSeperator = $context['ops']['seperator'];
         $context['ops']['seperator'] = '';
         // override $raw, subexpressions are never escaped
-        $ret = static::compileCustomHelper($context, $vars, true);
+        $ret = static::compileCustomHelper($context, $vars, true, true);
         $context['ops']['seperator'] = $origSeperator;
 
-        return array($ret, $subExpression);
+        return array($ret ? $ret : '', $subExpression);
     }
 
     /**
@@ -1730,12 +1730,16 @@ $libstr
      * @param array<string,array|string|integer> $context current compile context
      * @param array<array|string|integer> $vars parsed arguments list
      * @param boolean $raw is this {{{ token or not
+     * @param boolean $err should cause error when missing helper or not
      *
      * @return string|null Return compiled code segment for the token when the token is custom helper
      */
-    protected static function compileCustomHelper(&$context, &$vars, $raw) {
+    protected static function compileCustomHelper(&$context, &$vars, $raw, $err = false) {
         $notHH = !isset($context['hbhelpers'][$vars[0][0]]);
         if (!isset($context['helpers'][$vars[0][0]]) && $notHH) {
+            if ($err) {
+                $context['error'][] = "Custom helper '{$vars[0][0]}' not found!";
+            }
             return;
         }
 

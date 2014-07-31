@@ -85,7 +85,7 @@ class errorTest extends PHPUnit_Framework_TestCase
             return;
         }
 
-        $this->assertEquals($test['expected'], $context['error']);
+        $this->assertEquals($test['expected'], $context['error'], "Code: $php");
     }
 
     public function errorProvider()
@@ -343,6 +343,14 @@ class errorTest extends PHPUnit_Framework_TestCase
                      'I found recursive partial includes as the path: recursive -> recursive! You should fix your template or compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag.',
                      "Skip rendering partial 'recursive' again due to recursive detected",
                  )
+             ),
+             Array(
+                 'template' => '{{test_join (foo bar)}}',
+                 'options' => Array(
+                     'flags' => LightnCandy::FLAG_ADVARNAME,
+                     'helpers' => Array('test_join'),
+                 ),
+                 'expected' => "Custom helper 'foo' not found!",
              ),
         );
 
