@@ -24,11 +24,11 @@ Features
    * Runs 10~30 times faster than <a href="https://github.com/XaminProject/handlebars.php">handlebars.php</a>.
    * Detail performance test reports can be found <a href="https://github.com/zordius/HandlebarsTest">here</a>, go http://zordius.github.io/HandlebarsTest/ to see charts.
 * **SMALL!** single PHP file, only 105K!
-* **Robust!**
+* **ROBUST!**
    * 100% support <a href="https://github.com/mustache/spec">mustache spec v1.1.2</a> (without lambda module)
    * Supports almost all <a href="https://github.com/kasperisager/handlebars-spec">handlebars.js spec</a>
    * Output <a href="https://github.com/zordius/HandlebarsTest/blob/master/FEATURES.md">SAME</a> with <a href="https://github.com/wycats/handlebars.js">handlebars.js</a>
-* **Flexible!**
+* **FLEXIBLE!**
    * Lot of <a href="#compile-options">options</a> to change features and behaviors.
 * Context generation
    * Analyze used feature from your template.
