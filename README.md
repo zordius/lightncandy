@@ -521,10 +521,20 @@ You may generate debug version of templates with `FLAG_RENDER_DEBUG` when compil
 ```php
 $template = <<<VAREND
 Hello! {{name}} is {{gender}}.
-Test: {{../test}}
+Test1: {{@root.name}}
+Test2: {{@root.gender}}
+Test3: {{../test3}}
+Test4: {{../../test4}}
+Test5: {{../../.}}
+Test6: {{../../[test'6]}}
 {{#each .}}
 each Value: {{.}}
 {{/each}}
+{{#.}}
+section Value: {{.}}
+{{/.}}
+{{#if .}}IF OK!{{/if}}
+{{#unless .}}Unless not OK!{{/unless}}
 VAREND
 ;
 
@@ -542,21 +552,15 @@ $renderer = LightnCandy::prepare($php);
 $renderer(Array('name' => 'John'), LCRun3::DEBUG_ERROR_LOG);
 
 // Output visual debug template with ANSI color:
-//   Hello! {{[name]}} is {{[gender]}}.
-//   Test: {{../[test]}}
-//   {{#each this}}
-//   each Value: {{this}}
-//   {{/each this}}
 echo $renderer(Array('name' => 'John'), LCRun3::DEBUG_TAGS_ANSI);
 
 // Output debug template with HTML comments:
-// Hello! <!!--OK((-->{{[name]}}<!--))--> is <!--MISSED((-->{{[gender]}}<!--))-->.
-// Test: <!--MISSED((-->{{../[test]}}<!--))-->
-// <!!--OK((-->{{#each this}}<!--))-->
-// each Value: <!!--OK((-->{{this}}<!--))-->
-// <!!--OK((-->{{/each this}}<!--))-->
 echo $renderer(Array('name' => 'John'), LCRun3::DEBUG_TAGS_HTML);
 ```
+
+The ANSI output will be: 
+
+<a href="sample.png" style="border:10px solid #000"><img src="sample.png"/></a>
 
 Here are the list of LCRun3 debug options for render function:
 
