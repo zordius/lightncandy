@@ -1844,7 +1844,7 @@ class LCRun3 {
             $ansi = $cx['flags']['debug'] & (self::DEBUG_TAGS_ANSI - self::DEBUG_TAGS);
             $html = $cx['flags']['debug'] & (self::DEBUG_TAGS_HTML - self::DEBUG_TAGS);
             $cs = ($html ? (($r !== '') ? '<!!--OK((-->' : '<!--MISSED((-->') : '')
-                  . ($ansi ? (($r !== '') ? "\033[0;32m" : "\033[0:31m") : '');
+                  . ($ansi ? (($r !== '') ? "\033[0;32m" : "\033[0;31m") : '');
             $ce = ($html ? '<!--))-->' : '')
                   . ($ansi ? "\033[0m" : '');
             switch ($f) {

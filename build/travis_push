@@ -14,6 +14,12 @@ php ocular.phar code-coverage:upload --format=php-clover coverage.clover
 git config --global user.name "Travis-CI"
 git config --global user.email "zordius@yahoo-inc.com"
 
+# Generate ANSI sample
+git clone https://github.com/fcambus/ansilove
+php tests/debug.php > sample
+php ansilove/ansilove sample
+git add sample.png
+
 # Push new tests back to this branch
 git commit -a -m "Auto generated tests from Travis [ci skip]"
 git push "https://${GHTK}@github.com/zordius/lightncandy.git" HEAD:${TRAVIS_BRANCH} > /dev/null 2>&1
