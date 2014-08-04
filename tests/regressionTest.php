@@ -418,6 +418,56 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'options' => Array('flags' => LightnCandy::FLAG_WITH),
                 'expected' => 'No, NoOne',
             ),
+
+            Array(
+                'template' => <<<VAREND
+<ul>
+ <li>1. {{helper1 name}}</li>
+ <li>2. {{helper1 value}}</li>
+ <li>3. {{myClass::helper2 name}}</li>
+ <li>4. {{myClass::helper2 value}}</li>
+ <li>5. {{he name}}</li>
+ <li>6. {{he value}}</li>
+ <li>7. {{h2 name}}</li>
+ <li>8. {{h2 value}}</li>
+ <li>9. {{link name}}</li>
+ <li>10. {{link value}}</li>
+ <li>11. {{alink url text}}</li>
+ <li>12. {{{alink url text}}}</li>
+</ul>
+VAREND
+                ,
+                'data' => Array('name' => 'John', 'value' => 10000, 'url' => 'http://yahoo.com', 'text' => 'You&Me!'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_HANDLEBARSJS,
+                    'helpers' => Array(
+                        'helper1',
+                        'myClass::helper2',
+                        'he' => 'helper1',
+                        'h2' => 'myClass::helper2',
+                        'link' => function ($arg) {
+                            return "<a href=\"{$arg}\">click here</a>";
+                        },
+                        'alink',
+                    )
+                ),
+                'expected' => <<<VAREND
+<ul>
+ <li>1. -Array-</li>
+ <li>2. -Array-</li>
+ <li>3. =Array=</li>
+ <li>4. =Array=</li>
+ <li>5. -Array-</li>
+ <li>6. -Array-</li>
+ <li>7. =Array=</li>
+ <li>8. =Array=</li>
+ <li>9. &lt;a href=&quot;Array&quot;&gt;click here&lt;/a&gt;</li>
+ <li>10. &lt;a href=&quot;Array&quot;&gt;click here&lt;/a&gt;</li>
+ <li>11. &lt;a href=&quot;Array&quot;&gt;Array&lt;/a&gt;</li>
+ <li>12. <a href="Array">Array</a></li>
+</ul>
+VAREND
+            ),
         );
 
         return array_map(function($i) {

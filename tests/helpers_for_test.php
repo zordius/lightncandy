@@ -1,5 +1,19 @@
 <?php
 
+function helper1($arg) {
+    return "-$arg-";
+}                                                                                                                                          
+
+function alink($u, $t) {
+    return "<a href=\"$u\">$t</a>";
+}
+
+class myClass {
+    function helper2($arg) {
+        return "=$arg=";
+    }
+}
+
 class foo {
     public $prop = 'Yes!';
 
