@@ -327,7 +327,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'options' => Array('flags' => LightnCandy::FLAG_RENDER_DEBUG),
                 'debug' => LCRun3::DEBUG_TAGS_ANSI,
                 'data' => null,
-                'expected' => pack('H*', '1b5b303a33316d7b7b235b666f6f5d7d7d1b5b306d1b5b303b33336d534b49505045441b5b306d1b5b303a33316d7b7b2f5b666f6f5d7d7d1b5b306d'),
+                'expected' => pack('H*', '1b5b303b33316d7b7b235b666f6f5d7d7d1b5b306d1b5b303b33336d534b49505045441b5b306d1b5b303b33316d7b7b2f5b666f6f5d7d7d1b5b306d'),
             ),
 
             Array(
