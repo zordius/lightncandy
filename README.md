@@ -564,9 +564,9 @@ Here are the list of LCRun3 debug options for render function:
 
 * `DEBUG_ERROR_LOG` : error_log() when missing required data
 * `DEBUG_ERROR_EXCEPTION` : throw exception when missing required data
-* `DEBUG_TAGS` : turn the return value of render function turn into visual debug map
-* `DEBUG_TAGS_ANSI` : turn the return value of render function turn into color visual debug map
-* `DEBUG_TAGS_HTML` : turn the return value of render function turn into HTML debug map.
+* `DEBUG_TAGS` : turn the return value of render function into normalized mustache tags
+* `DEBUG_TAGS_ANSI` : turn the return value of render function into normalized mustache tags with ANSI color
+* `DEBUG_TAGS_HTML` : turn the return value of render function into normalized mustache tags with HTML comments
 
 Unsupported Feature (so far)
 ----------------------------
