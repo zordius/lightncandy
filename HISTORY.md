@@ -5,6 +5,7 @@ master current trunk
    * align with handlebars.js master
    * 4f036aff62 better error message for named arguments.
    * 0b462a387b support {{#with var}} ... {{else}} ... {{/with}}.
+   * 4ca624f651 fix 1 ANSI code error.
 
 v0.15 https://github.com/zordius/lightncandy/tree/v0.15
    * align with handlebars.js master
