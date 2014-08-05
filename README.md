@@ -519,8 +519,7 @@ When template error happened, LightnCandy::compile() will return false. You may 
 You may generate debug version of templates with `FLAG_RENDER_DEBUG` when compile() . The debug template contained more debug information and slower (TBD: performance result) , you may pass extra LCRun3 options into render function to know more rendering error (missing data). For example:
 
 ```php
-$template = <<<VAREND
-Hello! {{name}} is {{gender}}.
+$template = "Hello! {{name}} is {{gender}}.
 Test1: {{@root.name}}
 Test2: {{@root.gender}}
 Test3: {{../test3}}
@@ -535,8 +534,7 @@ section Value: {{.}}
 {{/.}}
 {{#if .}}IF OK!{{/if}}
 {{#unless .}}Unless not OK!{{/unless}}
-VAREND
-;
+";
 
 // compile to debug version
 $php = LightnCandy::compile($template, Array(
@@ -560,7 +558,7 @@ echo $renderer(Array('name' => 'John'), LCRun3::DEBUG_TAGS_HTML);
 
 The ANSI output will be: 
 
-<a href="sample.png" style="border:10px solid #000"><img src="sample.png"/></a>
+<a href="test/example_debug.php"><img src="example_debug.png"/></a>
 
 Here are the list of LCRun3 debug options for render function:
 
