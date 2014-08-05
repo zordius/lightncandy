@@ -25,5 +25,5 @@ $php = LightnCandy::compile($template, Array(
 ));
 
 $renderer = LightnCandy::prepare($php);
-echo $renderer(Array('name' => 'John'), LCRun3::DEBUG_TAGS_ANSI);
+@echo $renderer(Array('name' => 'John'), LCRun3::DEBUG_TAGS_ANSI);
 ?>
