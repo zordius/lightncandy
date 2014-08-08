@@ -475,6 +475,14 @@ VAREND
                 'options' => Array('flags' => LightnCandy::FLAG_INSTANCE),
                 'expected' => "testMethod OK! == -- test3:Array\n(\n)\n",
             ),
+
+            Array(
+                'template' => '{{test.test}} == {{test.bar}}',
+                'data' => Array('test' => new foo()),
+                'options' => Array('flags' => LightnCandy::FLAG_INSTANCE),
+                'expected' => ' == OK!',
+            ),
+
         );
 
         return array_map(function($i) {
