@@ -468,6 +468,13 @@ VAREND
 </ul>
 VAREND
             ),
+
+            Array(
+                'template' => '{{test.test}} == {{test.test3}}',
+                'data' => Array('test' => new myClass()),
+                'options' => Array('flags' => LightnCandy::FLAG_INSTANCE),
+                'expected' => "testMethod OK! == -- test3:Array\n(\n)\n",
+            ),
         );
 
         return array_map(function($i) {

@@ -1914,7 +1914,7 @@ class LCRun3 {
                         $v = $v->$name;
                         continue;
                     }
-                    if ($cx['flags']['method'] && method_exists($v, $name)) {
+                    if ($cx['flags']['method'] && is_callable(array($v, $name))) {
                         $v = $v->$name();
                         continue;
                     }

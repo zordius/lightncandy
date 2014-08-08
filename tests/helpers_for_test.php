@@ -9,8 +9,16 @@ function alink($u, $t) {
 }
 
 class myClass {
+    function test() {
+        return 'testMethod OK!';
+    }
+
     function helper2($arg) {
         return "=$arg=";
+    }
+
+    function __call($method, $args) {
+        return "-- $method:" . print_r($args, true);
     }
 }
 
