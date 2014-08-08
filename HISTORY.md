@@ -6,6 +6,7 @@ master current trunk
    * 4f036aff62 better error message for named arguments.
    * 0b462a387b support {{#with var}} ... {{else}} ... {{/with}}.
    * 4ca624f651 fix 1 ANSI code error.
+   * 01ea3e9f42 support instances with PHP __call magic funciton.
 
 v0.15 https://github.com/zordius/lightncandy/tree/v0.15
    * align with handlebars.js master
