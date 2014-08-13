@@ -483,6 +483,19 @@ VAREND
                 'expected' => ' == OK!',
             ),
 
+            Array(
+                'template' => '{{#each foo}}{{@key}}: {{.}},{{/each}}',
+                'data' => Array('foo' => Array(1,'a'=>'b',5)),
+                'expected' => ': 1,: b,: 5,',
+            ),
+
+            Array(
+                'template' => '{{#each foo}}{{@key}}: {{.}},{{/each}}',
+                'data' => Array('foo' => Array(1,'a'=>'b',5)),
+                'options' => Array('flags' => LightnCandy::FLAG_SPVARS),
+                'expected' => '0: 1,a: b,1: 5,',
+            ),
+
         );
 
         return array_map(function($i) {
