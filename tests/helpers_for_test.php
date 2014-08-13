@@ -1,13 +1,6 @@
 <?php
 
-function helper1($arg) {
-    return "-$arg-";
-}                                                                                                                                          
-
-function alink($u, $t) {
-    return "<a href=\"$u\">$t</a>";
-}
-
+// Classes for inputs or helpers
 class myClass {
     function test() {
         return 'testMethod OK!';
@@ -28,6 +21,14 @@ class foo {
     function bar() {
         return 'OK!';
     }
+}
+
+// Custom helpers
+function helper1($arg) {
+    return "-$arg-";
+}                                                                                                                                          
+function alink($u, $t) {
+    return "<a href=\"$u\">$t</a>";
 }
 
  function meetup_date_format() {
