@@ -23,6 +23,44 @@ class foo {
     }
 }
 
+class twoDimensionIterator implements Iterator {
+    private $position = 0;
+    private $x = 0;
+    private $y = 0;
+    private $w = 0;
+    private $h = 0;
+
+    public function __construct($w, $h) {
+        $this->w = $w;
+        $this->h = $h;
+        $this->rewind();
+    }
+
+    function rewind() {
+        $this->position = 0;
+        $this->x = 0;
+        $this->y = 0;
+    }
+
+    function current() {
+        return $this->x * $this->y;
+    }
+
+    function key() {
+        return $this->x . 'x' . $this->y;
+    }
+
+    function next() {
+        ++$this->position;
+        $this->x = $this->position % $this->w;
+        $this->y = floor($this->position / $this->w);
+    }
+
+    function valid() {
+        return $this->position < $this->w * $this->h;
+    }
+}
+
 // Custom helpers
 function helper1($arg) {
     return "-$arg-";
