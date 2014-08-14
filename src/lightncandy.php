@@ -754,27 +754,27 @@ $libstr
      * Get a working render function by a string of PHP code. This method may requires php setting allow_url_include=1 and allow_url_fopen=1 , or access right to tmp file system.
      *
      * @param string      $php PHP code
-     * @param string|null $tmp_dir Optional, change temp directory for php include file saved by prepare() when cannot include PHP code with data:// format.
+     * @param string|null $tmpDir Optional, change temp directory for php include file saved by prepare() when cannot include PHP code with data:// format.
      *
      * @return Closure result of include()
      *
      * @deprecated
      */
-    public static function prepare($php, $tmp_dir = null) {
+    public static function prepare($php, $tmpDir = null) {
         if (!ini_get('allow_url_include') || !ini_get('allow_url_fopen')) {
-            if (!$tmp_dir || !is_dir($tmp_dir)) {
-                $tmp_dir = sys_get_temp_dir();
+            if (!$tmpDir || !is_dir($tmpDir)) {
+                $tmpDir = sys_get_temp_dir();
             }
         }
 
-        if ($tmp_dir) {
-            $fn = tempnam($tmp_dir, 'lci_');
+        if ($tmpDir) {
+            $fn = tempnam($tmpDir, 'lci_');
             if (!$fn) {
-                error_log("Can not generate tmp file under $tmp_dir!!\n");
+                error_log("Can not generate tmp file under $tmpDir!!\n");
                 return false;
             }
             if (!file_put_contents($fn, $php)) {
-                error_log("Can not include saved temp php code from $fn, you should add $tmp_dir into open_basedir!!\n");
+                error_log("Can not include saved temp php code from $fn, you should add $tmpDir into open_basedir!!\n");
                 return false;
             }
             return include($fn);
