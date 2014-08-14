@@ -2157,25 +2157,25 @@ class LCRun3 {
      * @expect '038' when input array('flags' => array('spvar' => 1), 'sp_vars'=>array()), array(1,3,'a'=>4), 0, true, function ($c, $i) {return $i * $c['sp_vars']['index'];}
      */
     public static function sec($cx, $v, $in, $each, $cb, $inv = null) {
-        $isary = is_array($v);
+        $isAry = is_array($v);
         $isTrav = $v instanceof Traversable;
         $loop = $each;
         $keys = null;
         $last = null;
         $isObj = false;
 
-        if ($isary && $inv !== null && count($v) === 0) {
+        if ($isAry && $inv !== null && count($v) === 0) {
             return $inv($cx, $in);
         }
 
         // #var, detect input type is object or not
-        if (!$loop && $isary) {
+        if (!$loop && $isAry) {
             $keys = array_keys($v);
             $loop = (count(array_diff_key($v, array_keys($keys))) == 0);
             $isObj = !$loop;
         }
 
-        if (($loop && $isary) || $isTrav) {
+        if (($loop && $isAry) || $isTrav) {
             if ($each && !$isTrav) {
                 // Detect input type is object or not when never done once
                 if ($keys == null) {
@@ -2224,7 +2224,7 @@ class LCRun3 {
             }
             return '';
         }
-        if ($isary) {
+        if ($isAry) {
             if ($cx['flags']['mustsec']) {
                 $cx['scopes'][] = $v;
             }
