@@ -2157,7 +2157,8 @@ class LCRun3 {
      * @expect '038' when input array('flags' => array('spvar' => 1), 'sp_vars'=>array()), array(1,3,'a'=>4), 0, true, function ($c, $i) {return $i * $c['sp_vars']['index'];}
      */
     public static function sec($cx, $v, $in, $each, $cb, $inv = null) {
-        $isary = is_array($v) || $v instanceof Traversable;
+        $isary = is_array($v);
+        $isTrav = $v instanceof Traversable;
         $loop = $each;
         $keys = null;
         $last = null;
@@ -2166,33 +2167,32 @@ class LCRun3 {
         if ($isary && $inv !== null && count($v) === 0) {
             return $inv($cx, $in);
         }
-        if (!$loop && $isary) {
-            try {
-                $keys = array_keys($v);
-            } catch (Exception $e) { }
 
-            $loop = $v instanceof Traversable || (count(array_diff_key($v, array_keys($keys))) == 0);
+        // #var, detect input type is object or not
+        if (!$loop && $isary) {
+            $keys = array_keys($v);
+            $loop = count(array_diff_key($v, array_keys($keys))) == 0;
             $is_obj = !$loop;
         }
-        if ($loop && $isary) {
-            if ($each) {
+
+        if (($loop && $isary) || $isTrav) {
+            if ($each && !$isTrav) {
+                // Detect input type is object or not when never done once
                 if ($keys == null) {
-                    try {
-                        $keys = array_keys($v);
-                    } catch (Exception $e) {}
-                    $is_obj = $v instanceof Traversable || (count(array_diff_key($v, array_keys($keys))) > 0);
+                    $keys = array_keys($v);
+                    $is_obj = count(array_diff_key($v, array_keys($keys))) > 0;
                 }
             }
             $ret = array();
             $cx['scopes'][] = $in;
             $i = 0;
-            if ($cx['flags']['spvar']) {
+            if ($cx['flags']['spvar'] && !$isTrav) {
                 $last = count($keys) - 1;
             }
             foreach ($v as $index => $raw) {
                 if ($cx['flags']['spvar']) {
                     $cx['sp_vars']['first'] = ($i === 0);
-                    if ($is_obj) {
+                    if ($is_obj || $isTrav) {
                         $cx['sp_vars']['key'] = $index;
                         $cx['sp_vars']['index'] = $i;
                     } else {
