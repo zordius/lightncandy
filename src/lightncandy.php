@@ -2157,7 +2157,7 @@ class LCRun3 {
      * @expect '038' when input array('flags' => array('spvar' => 1), 'sp_vars'=>array()), array(1,3,'a'=>4), 0, true, function ($c, $i) {return $i * $c['sp_vars']['index'];}
      */
     public static function sec($cx, $v, $in, $each, $cb, $inv = null) {
-        $isary = is_array($v);
+        $isary = is_array($v) || $v instanceof Traversable;
         $loop = $each;
         $keys = null;
         $last = null;
@@ -2167,15 +2167,20 @@ class LCRun3 {
             return $inv($cx, $in);
         }
         if (!$loop && $isary) {
-            $keys = array_keys($v);
-            $loop = (count(array_diff_key($v, array_keys($keys))) == 0);
+            try {
+                $keys = array_keys($v);
+            } catch (Exception $e) { }
+
+            $loop = $v instanceof Traversable || (count(array_diff_key($v, array_keys($keys))) == 0);
             $is_obj = !$loop;
         }
         if ($loop && $isary) {
             if ($each) {
                 if ($keys == null) {
-                    $keys = array_keys($v);
-                    $is_obj = (count(array_diff_key($v, array_keys($keys))) > 0);
+                    try {
+                        $keys = array_keys($v);
+                    } catch (Exception $e) {}
+                    $is_obj = $v instanceof Traversable || (count(array_diff_key($v, array_keys($keys))) > 0);
                 }
             }
             $ret = array();
