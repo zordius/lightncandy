@@ -2204,7 +2204,7 @@ class LCRun3 {
                 $ret[] = $cb($cx, $raw);
             }
             if ($cx['flags']['spvar']) {
-                if ($is_obj) {
+                if ($isObj) {
                     unset($cx['sp_vars']['key']);
                 } else {
                     unset($cx['sp_vars']['last']);
