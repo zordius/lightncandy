@@ -496,6 +496,13 @@ VAREND
                 'expected' => '0: 1,a: b,1: 5,',
             ),
 
+            Array(
+                'template' => '{{#each foo}}{{@key}}: {{.}},{{/each}}',
+                'data' => Array('foo' => new twoDimensionIterator(2, 3)),
+                'options' => Array('flags' => LightnCandy::FLAG_SPVARS),
+                'expected' => '0x0: 0,1x0: 0,0x1: 0,1x1: 1,0x2: 0,1x2: 2,',
+            ),
+
         );
 
         return array_map(function($i) {
