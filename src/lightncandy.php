@@ -2171,7 +2171,7 @@ class LCRun3 {
         // #var, detect input type is object or not
         if (!$loop && $isary) {
             $keys = array_keys($v);
-            $loop = count(array_diff_key($v, array_keys($keys))) == 0;
+            $loop = (count(array_diff_key($v, array_keys($keys))) == 0);
             $is_obj = !$loop;
         }
 
@@ -2180,7 +2180,7 @@ class LCRun3 {
                 // Detect input type is object or not when never done once
                 if ($keys == null) {
                     $keys = array_keys($v);
-                    $is_obj = count(array_diff_key($v, array_keys($keys))) > 0;
+                    $is_obj = (count(array_diff_key($v, array_keys($keys))) > 0);
                 }
             }
             $ret = array();
