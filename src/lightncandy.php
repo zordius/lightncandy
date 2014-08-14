@@ -2162,7 +2162,7 @@ class LCRun3 {
         $loop = $each;
         $keys = null;
         $last = null;
-        $is_obj = false;
+        $isObj = false;
 
         if ($isary && $inv !== null && count($v) === 0) {
             return $inv($cx, $in);
@@ -2172,7 +2172,7 @@ class LCRun3 {
         if (!$loop && $isary) {
             $keys = array_keys($v);
             $loop = (count(array_diff_key($v, array_keys($keys))) == 0);
-            $is_obj = !$loop;
+            $isObj = !$loop;
         }
 
         if (($loop && $isary) || $isTrav) {
@@ -2180,7 +2180,7 @@ class LCRun3 {
                 // Detect input type is object or not when never done once
                 if ($keys == null) {
                     $keys = array_keys($v);
-                    $is_obj = (count(array_diff_key($v, array_keys($keys))) > 0);
+                    $isObj = (count(array_diff_key($v, array_keys($keys))) > 0);
                 }
             }
             $ret = array();
@@ -2192,7 +2192,7 @@ class LCRun3 {
             foreach ($v as $index => $raw) {
                 if ($cx['flags']['spvar']) {
                     $cx['sp_vars']['first'] = ($i === 0);
-                    if ($is_obj || $isTrav) {
+                    if ($isObj || $isTrav) {
                         $cx['sp_vars']['key'] = $index;
                         $cx['sp_vars']['index'] = $i;
                     } else {
