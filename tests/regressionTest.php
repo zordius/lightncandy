@@ -503,6 +503,20 @@ VAREND
                 'expected' => '0x0: 0,1x0: 0,0x1: 0,1x1: 1,0x2: 0,1x2: 2,',
             ),
 
+            Array(
+                'template' => "   {{#foo}}\n {{name}}\n{{/foo}}  ",
+                'data' => Array('foo' => Array(Array('name' => 'A'),Array('name' => 'd'),Array('name' => 'E'))),
+                'options' => Array('flags' => LightnCandy::FLAG_MUSTACHESP),
+                'expected' => " A\n d\n E\n  ",
+            ),
+
+            Array(
+                'template' => "{{bar}}\n   {{#foo}}\n {{name}}\n{{/foo}}  ",
+                'data' => Array('bar' => 'OK', 'foo' => Array(Array('name' => 'A'),Array('name' => 'd'),Array('name' => 'E'))),
+                'options' => Array('flags' => LightnCandy::FLAG_MUSTACHESP),
+                'expected' => "OK\n A\n d\n E\n  ",
+            ),
+
         );
 
         return array_map(function($i) {
