@@ -503,6 +503,7 @@ $libstr
     protected static function compilePartial(&$name, &$context, $content) {
         $context['usedPartial'][$name] = static::escapeTemplate($content);
 
+        $originalAhead = $context['tokens']['ahead'];
         $tmpContext = $context;
         $tmpContext['level'] = 0;
         static::setupToken($tmpContext);
@@ -511,6 +512,7 @@ $libstr
         $originalToken = $context['tokens'];
         $context = $tmpContext;
         $context['tokens'] = $originalToken;
+        $context['tokens']['ahead'] = $originalAhead;
 
         if ($context['flags']['runpart']) {
             $code = static::compileTemplate($context, $context['usedPartial'][$name], $name);
@@ -1501,7 +1503,7 @@ $libstr
 
         // setup ahead flag
         $ahead = $context['tokens']['ahead'];
-        $context['tokens']['ahead'] = !$rsp;
+        $context['tokens']['ahead'] = preg_match('/^[^\n]*{{/s', $token[self::POS_RSPACE] . $token[self::POS_ROTHER]);
 
         // reset partial indent
         $context['tokens']['partialind'] = '';
