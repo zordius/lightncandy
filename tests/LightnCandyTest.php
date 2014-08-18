@@ -369,10 +369,10 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $method = new ReflectionMethod('LightnCandy', 'tokenString');
         $method->setAccessible(true);
         $this->assertEquals('b', $method->invoke(null,
-            array('a', 'b', 'c'), 1
+            array(0, 'a', 'b', 'c'), 1
         ));
         $this->assertEquals('c', $method->invoke(null,
-            array('a', 'b', 'c', 'd', 'e')
+            array(0, 'a', 'b', 'c', 'd', 'e')
         ));
     }
     /**

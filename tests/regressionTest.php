@@ -504,14 +504,14 @@ VAREND
             ),
 
             Array(
-                'template' => "   {{#foo}}\n {{name}}\n{{/foo}}  ",
+                'template' => "   {{#foo}}\n {{name}}\n{{/foo}}\n  ",
                 'data' => Array('foo' => Array(Array('name' => 'A'),Array('name' => 'd'),Array('name' => 'E'))),
                 'options' => Array('flags' => LightnCandy::FLAG_MUSTACHESP),
                 'expected' => " A\n d\n E\n  ",
             ),
 
             Array(
-                'template' => "{{bar}}\n   {{#foo}}\n {{name}}\n{{/foo}}  ",
+                'template' => "{{bar}}\n   {{#foo}}\n {{name}}\n{{/foo}}\n  ",
                 'data' => Array('bar' => 'OK', 'foo' => Array(Array('name' => 'A'),Array('name' => 'd'),Array('name' => 'E'))),
                 'options' => Array('flags' => LightnCandy::FLAG_MUSTACHESP),
                 'expected' => "OK\n A\n d\n E\n  ",

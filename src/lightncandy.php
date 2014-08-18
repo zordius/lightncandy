@@ -228,8 +228,8 @@ class LightnCandy {
             } else {
                 $tmpl = "'$tmpl'";
             }
-            $code .= "{$matches[self::POS_LOTHER]}{$matches[self::POS_LSPACE]}$tmpl{$matches[self::POS_RSPACE]}";
-            $template = $matches[self::POS_ROTHER];
+            $code .= "{$matches[self::POS_LOTHER]}{$matches[self::POS_LSPACE]}$tmpl";
+            $template = "{$matches[self::POS_RSPACE]}{$matches[self::POS_ROTHER]}";
         }
 
         if ($partial && !$context['flags']['runpart']) {
@@ -1257,11 +1257,11 @@ $libstr
      *
      * @return string Return whole token
      *
-     * @expect 'b' when input array('a', 'b', 'c'), 1
-     * @expect 'c' when input array('a', 'b', 'c', 'd', 'e')
+     * @expect 'b' when input array(0, 'a', 'b', 'c'), 1
+     * @expect 'c' when input array(0, 'a', 'b', 'c', 'd', 'e')
      */
     protected static function tokenString($token, $remove = 2) {
-        return implode('', array_slice($token, $remove, -$remove));
+        return implode('', array_slice($token, 1 + $remove, -$remove));
     }
 
     /**
