@@ -342,6 +342,7 @@ $libstr
                 'current' => 0,
                 'count' => 0,
                 'partialind' => '',
+                'secind' => array(''),
             ),
             'usedPartial' => array(),
             'partialStack' => array(),
@@ -1455,7 +1456,7 @@ $libstr
     }
 
     /**
-     * Internal method used by compileToken(). Modify $token when mustache rules matched.
+     * Internal method used by compileToken(). Modify $token when spacing rules matched.
      *
      * @param array<string> $token detected handlebars {{ }} token
      * @param array<array|string|integer> $vars parsed arguments list
@@ -1463,7 +1464,11 @@ $libstr
      *
      * @return string|null Return compiled code segment for the token
      */
-    public static function handleMustacheSpacing(&$token, $vars, &$context) {
+    public static function handleSpacing(&$token, $vars, &$context) {
+        if (!$context['flags']['mustsp'] && !$context['flags']['mustpi'] && !$context['flags']['indent']) {
+            return;
+        }
+
         // Line change detection
         $lsp = preg_match('/^(.*)(\\r?\\n)([ \\t]*?)$/s', $token[self::POS_LSPACE], $lmatch);
         $rsp = preg_match('/^([ \\t]*?)(\\r?\\n)(.*)$/s', $token[self::POS_RSPACE], $rmatch);
@@ -1522,10 +1527,8 @@ $libstr
         list($raw, $vars) = static::parseTokenArgs($token, $context);
         $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;
 
-        // Handle Mustache spacing
-        if ($context['flags']['mustsp']) {
-            static::handleMustacheSpacing($token, $vars, $context);
-        }
+        // Handle spacing (standalone tags, section indent, partial indent)
+        static::handleSpacing($token, $vars, $context);
 
         // Handle space control.
         if ($token[self::POS_LSPACECTL]) {
