@@ -545,7 +545,7 @@ VAREND
                     'flags' => LightnCandy::FLAG_MUSTACHESP | LightnCandy::FLAG_MUSTACHEPAIN,
                     'partials' => Array('test1' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n"),
                 ),
-                'expected' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n    1:A\n   2:B\n    3:C\n   4:D\n  5:E\n",
+                'expected' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n  1:A\n   2:B\n    3:C\n   4:D\n  5:E\nDONE\n",
             ),
 
         );

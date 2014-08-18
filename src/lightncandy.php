@@ -516,7 +516,7 @@ $libstr
             $code = static::compileTemplate($context, $context['usedPartial'][$name], $name);
             if ($context['flags']['mustpi']) {
                 $sp = ', $sp';
-                $code = preg_replace('/\n\r?([^\r\n])/s', "\n'{$context['ops']['seperator']}\$sp{$context['ops']['seperator']}'\$1", $code);
+                $code = preg_replace('/^/m', "'{$context['ops']['seperator']}\$sp{$context['ops']['seperator']}'", $code);
             } else {
                 $sp = '';
             }
@@ -1535,13 +1535,10 @@ $libstr
             // handle partial
             if ($context['flags']['mustpi'] && ($token[self::POS_OP] === '>')) {
                 $context['tokens']['partialind'] = $ind;
-            } else {
-                if ($context['flags']['mustsp']) {
-                    $token[self::POS_LSPACE] = (isset($lmatch[2]) ? ($lmatch[1] . $lmatch[2]) : '');
-                }
             }
 
             if ($context['flags']['mustsp']) {
+                $token[self::POS_LSPACE] = (isset($lmatch[2]) ? ($lmatch[1] . $lmatch[2]) : '');
                 $token[self::POS_RSPACE] = isset($rmatch[3]) ? $rmatch[3] : '';
             }
         }
