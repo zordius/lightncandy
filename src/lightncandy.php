@@ -1611,14 +1611,14 @@ $libstr
                 }
                 $v = static::getVariableNames($vars, $context, true);
                 $tag = ">$p[0] " .implode(' ', $v[1]);
-                $sp = $context['tokens']['partialind'] ? ", '{$context['tokens']['partialind']}'" : '';
                 if ($context['flags']['runpart']) {
+                    $sp = $context['tokens']['partialind'] ? ", '{$context['tokens']['partialind']}'" : '';
                     return $context['ops']['seperator'] . static::getFuncName($context, 'p', $tag) . "\$cx, '$p[0]', $v[0]$sp){$context['ops']['seperator']}";
                 } else {
                     if ($named || $v[0] !== 'array(array($in),array())') {
                         $context['error'][] = "Do not support {{{$tag}}}, you should do compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag";
                     }
-                    return "{$context['ops']['seperator']}'" . static::compileTemplate($context, preg_replace('/^/m', $sp, $context['usedPartial'][$p[0]]), $p[0]) . "'{$context['ops']['seperator']}";
+                    return "{$context['ops']['seperator']}'" . static::compileTemplate($context, preg_replace('/^/m', $context['tokens']['partialind'], $context['usedPartial'][$p[0]]), $p[0]) . "'{$context['ops']['seperator']}";
                 }
             case '^':
                 if (!$vars[0][0]) {

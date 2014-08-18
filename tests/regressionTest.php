@@ -538,6 +538,16 @@ VAREND
                 'expected' => "  a: A\n  b: BOY!\nDONE",
             ),
 
+            Array(
+                'template' => "{{>test1}}\n  {{>test1}}\nDONE\n",
+                'data' => null,
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_MUSTACHESP | LightnCandy::FLAG_MUSTACHEPAIN,
+                    'partials' => Array('test1' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n"),
+                ),
+                'expected' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n    1:A\n   2:B\n    3:C\n   4:D\n  5:E\n",
+            ),
+
         );
 
         return array_map(function($i) {
