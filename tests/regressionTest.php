@@ -517,6 +517,13 @@ VAREND
                 'expected' => "OK\n A\n d\n E\n  ",
             ),
 
+            Array(
+                'template' => "   {{#if foo}}\nYES\n{{else}}\nNO\n{{/if}}\n",
+                'data' => null,
+                'options' => Array('flags' => LightnCandy::FLAG_MUSTACHESP | LightnCandy::FLAG_ELSE),
+                'expected' => "NO\n",
+            ),
+
         );
 
         return array_map(function($i) {

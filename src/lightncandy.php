@@ -1456,11 +1456,12 @@ $libstr
      * Internal method used by compileToken(). Modify $token when mustache rules matched.
      *
      * @param array<string> $token detected handlebars {{ }} token
+     * @param array<array|string|integer> $vars parsed arguments list
      * @param array<string,array|string|integer> $context current compile context
      *
      * @return string|null Return compiled code segment for the token
      */
-    public static function handleMustacheSpacing(&$token, &$context) {
+    public static function handleMustacheSpacing(&$token, $vars, &$context) {
         // Line change detection
         $lsp = preg_match('/^(.*)(\\r?\\n)([ \\t]*?)$/s', $token[self::POS_LSPACE], $lmatch);
         $rsp = preg_match('/^([ \\t]*?)(\\r?\\n)(.*)$/s', $token[self::POS_RSPACE], $rmatch);
@@ -1479,7 +1480,9 @@ $libstr
 
         // Do need standalone detection for these tags
         if (!$token[self::POS_OP] || ($token[self::POS_OP] === '&')) {
-            return;
+            if (!$context['flags']['else'] || (isset($vars[0][0]) && ($vars[0][0] !== 'else'))) {
+                return;
+            }
         }
 
         // not standalone because other things in the same line ahead
@@ -1519,7 +1522,7 @@ $libstr
 
         // Handle Mustache spacing
         if ($context['flags']['mustsp']) {
-            static::handleMustacheSpacing($token, $context);
+            static::handleMustacheSpacing($token, $vars, $context);
         }
 
         // Handle space control.
