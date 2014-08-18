@@ -321,7 +321,7 @@ $libstr
                 'spvar' => $flags & self::FLAG_SPVARS,
                 'slash' => $flags & self::FLAG_SLASH,
                 'else' => $flags & self::FLAG_ELSE,
-                'indent' => $flags & self::FLAG_SECTIONIND,
+                'secind' => $flags & self::FLAG_SECTIONIND,
                 'exhlp' => $flags & self::FLAG_EXTHELPER,
                 'mustsp' => $flags & self::FLAG_MUSTACHESP,
                 'mustlok' => $flags & self::FLAG_MUSTACHELOOKUP,
@@ -1465,7 +1465,7 @@ $libstr
      * @return string|null Return compiled code segment for the token
      */
     public static function handleSpacing(&$token, $vars, &$context) {
-        if (!$context['flags']['mustsp'] && !$context['flags']['mustpi'] && !$context['flags']['indent']) {
+        if (!$context['flags']['mustsp'] && !$context['flags']['mustpi'] && !$context['flags']['secind']) {
             return;
         }
 
@@ -1506,12 +1506,28 @@ $libstr
             || ($rsp && !$token[self::POS_LOTHER]) // first line without left
             || ($lsp && ($context['tokens']['current'] == $context['tokens']['count']) && !$token[self::POS_ROTHER]) // final line
            ) {
+            $ind = $lsp ? $lmatch[3] : $token[self::POS_LSPACE];
             if ($context['flags']['mustpi'] && ($token[self::POS_OP] === '>')) {
-                $context['tokens']['partialind'] = $lsp ? $lmatch[3] : $token[self::POS_LSPACE];
+                $context['tokens']['partialind'] = $ind;
             } else {
-                $token[self::POS_LSPACE] = isset($lmatch[2]) ? ($lmatch[1] . $lmatch[2]) : '';
+                if ($context['flags']['secind']) {
+                    switch ($token[self::POS_OP]) {
+                        case '#':
+                        case '^':
+                            array_unshift($context['tokens']['secind'], "{$ind}{$context['tokens']['secind'][0]}");
+                            break;
+                        case '/':
+                            array_shift($context['tokens']['secind']);
+                            break;
+                    }
+                }
+                if ($context['flags']['mustsp']) {
+                    $token[self::POS_LSPACE] = (isset($lmatch[2]) ? ($lmatch[1] . $lmatch[2]) : '');
+                }
             }
-            $token[self::POS_RSPACE] = isset($rmatch[3]) ? $rmatch[3] : '';
+            if ($context['flags']['mustsp']) {
+                $token[self::POS_RSPACE] = isset($rmatch[3]) ? $rmatch[3] : '';
+            }
         }
     }
 
