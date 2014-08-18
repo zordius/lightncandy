@@ -1469,9 +1469,35 @@ $libstr
             return;
         }
 
-        // Line change detection
+        // left line change detection
         $lsp = preg_match('/^(.*)(\\r?\\n)([ \\t]*?)$/s', $token[self::POS_LSPACE], $lmatch);
+        $ind = $lsp ? $lmatch[3] : $token[self::POS_LSPACE];
+
+        // handle section indent
+        if ($context['flags']['secind']) {
+            $oind = $context['tokens']['secind'][0];
+            switch ($token[self::POS_OP]) {
+                case '#':
+                case '^':
+                    $nind = "$ind$oind";
+                    array_unshift($context['tokens']['secind'], $nind);
+                    break;
+                case '/':
+                    array_shift($context['tokens']['secind']);
+                    $nind = $context['tokens']['secind'][0];
+                    break;
+                default:
+                    $nind = null;
+            }
+            if ($nind !== null) {
+                $token[self::POS_RSPACE] = preg_replace("/\n\r?$oind/s", "\n$nind", $token[self::POS_RSPACE]);
+                $token[self::POS_ROTHER] = preg_replace("/\n\r?$oind/s", "\n$nind", $token[self::POS_ROTHER]);
+            }
+        }
+
+        // right line change detection
         $rsp = preg_match('/^([ \\t]*?)(\\r?\\n)(.*)$/s', $token[self::POS_RSPACE], $rmatch);
+        $st = true;
 
         // setup ahead flag
         $ahead = $context['tokens']['ahead'];
@@ -1482,49 +1508,39 @@ $libstr
 
         // same tags in the same line , not standalone
         if (!$lsp && $ahead) {
-            return;
+            $st = false;
         }
 
-        // Do need standalone detection for these tags
+        // Do not need standalone detection for these tags
         if (!$token[self::POS_OP] || ($token[self::POS_OP] === '&')) {
             if (!$context['flags']['else'] || (isset($vars[0][0]) && ($vars[0][0] !== 'else'))) {
-                return;
+                $st = false;
             }
         }
 
         // not standalone because other things in the same line ahead
         if ($token[self::POS_LOTHER] && !$token[self::POS_LSPACE]) {
-            return;
+            $st = false;
         }
 
         // not standalone because other things in the same line behind
         if ($token[self::POS_ROTHER] && !$token[self::POS_RSPACE]) {
-            return;
+            $st = false;
         }
 
-        if (($lsp && $rsp) // both side cr
+        if ($st && (($lsp && $rsp) // both side cr
             || ($rsp && !$token[self::POS_LOTHER]) // first line without left
             || ($lsp && ($context['tokens']['current'] == $context['tokens']['count']) && !$token[self::POS_ROTHER]) // final line
-           ) {
-            $ind = $lsp ? $lmatch[3] : $token[self::POS_LSPACE];
+           )) {
+            // handle partial
             if ($context['flags']['mustpi'] && ($token[self::POS_OP] === '>')) {
                 $context['tokens']['partialind'] = $ind;
             } else {
-                if ($context['flags']['secind']) {
-                    switch ($token[self::POS_OP]) {
-                        case '#':
-                        case '^':
-                            array_unshift($context['tokens']['secind'], "{$ind}{$context['tokens']['secind'][0]}");
-                            break;
-                        case '/':
-                            array_shift($context['tokens']['secind']);
-                            break;
-                    }
-                }
                 if ($context['flags']['mustsp']) {
                     $token[self::POS_LSPACE] = (isset($lmatch[2]) ? ($lmatch[1] . $lmatch[2]) : '');
                 }
             }
+
             if ($context['flags']['mustsp']) {
                 $token[self::POS_RSPACE] = isset($rmatch[3]) ? $rmatch[3] : '';
             }
@@ -1595,14 +1611,14 @@ $libstr
                 }
                 $v = static::getVariableNames($vars, $context, true);
                 $tag = ">$p[0] " .implode(' ', $v[1]);
+                $sp = $context['tokens']['partialind'] ? ", '{$context['tokens']['partialind']}'" : '';
                 if ($context['flags']['runpart']) {
-                    $sp = $context['tokens']['partialind'] ? ", '{$context['tokens']['partialind']}'" : '';
                     return $context['ops']['seperator'] . static::getFuncName($context, 'p', $tag) . "\$cx, '$p[0]', $v[0]$sp){$context['ops']['seperator']}";
                 } else {
                     if ($named || $v[0] !== 'array(array($in),array())') {
                         $context['error'][] = "Do not support {{{$tag}}}, you should do compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag";
                     }
-                    return "{$context['ops']['seperator']}'" . static::compileTemplate($context, $context['usedPartial'][$p[0]], $p[0]) . "'{$context['ops']['seperator']}";
+                    return "{$context['ops']['seperator']}'" . static::compileTemplate($context, preg_replace('/^/m', $sp, $context['usedPartial'][$p[0]]), $p[0]) . "'{$context['ops']['seperator']}";
                 }
             case '^':
                 if (!$vars[0][0]) {

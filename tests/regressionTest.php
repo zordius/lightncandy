@@ -525,17 +525,17 @@ VAREND
             ),
 
             Array(
-                'template' => "  {{#each foo}}\n{{@key}}: {{.}}\n{{/each}}\n",
+                'template' => "  {{#each foo}}\n{{@key}}: {{.}}\n{{/each}}\nDONE",
                 'data' => Array('foo' => Array('a' => 'A', 'b' => 'BOY!')),
                 'options' => Array('flags' => LightnCandy::FLAG_SPVARS | LightnCandy::FLAG_MUSTACHESP),
-                'expected' => "a: A\nb: BOY!\n",
+                'expected' => "a: A\nb: BOY!\nDONE",
             ),
 
             Array(
-                'template' => "  {{#each foo}}\n{{@key}}: {{.}}\n{{/each}}\n",
+                'template' => "  {{#each foo}}\n{{@key}}: {{.}}\n{{/each}}\nDONE",
                 'data' => Array('foo' => Array('a' => 'A', 'b' => 'BOY!')),
                 'options' => Array('flags' => LightnCandy::FLAG_SPVARS | LightnCandy::FLAG_MUSTACHESP | LightnCandy::FLAG_SECTIONIND),
-                'expected' => "  a: A\n  b: BOY!\n",
+                'expected' => "  a: A\n  b: BOY!\nDONE",
             ),
 
         );
