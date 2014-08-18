@@ -548,6 +548,16 @@ VAREND
                 'expected' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n  1:A\n   2:B\n    3:C\n   4:D\n  5:E\nDONE\n",
             ),
 
+            Array(
+                'template' => "ST:\n{{#foo}}\n {{>test1}}\n{{/foo}}\nOK\n",
+                'data' => Array('foo' => Array(1, 2)),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_MUSTACHESP | LightnCandy::FLAG_MUSTACHEPAIN | LightnCandy::FLAG_HANDLEBARSJS,
+                    'partials' => Array('test1' => "1:A\n 2:B({{@index}})\n"),
+                ),
+                'expected' => "ST:\n 1:A\n  2:B(0)\n 1:A\n  2:B(1)\nOK\n",
+            ),
+
         );
 
         return array_map(function($i) {
