@@ -45,6 +45,7 @@ class LightnCandy {
     const FLAG_SPVARS = 4096;
     const FLAG_SLASH = 8388608;
     const FLAG_ELSE = 16777216;
+    const FLAG_SECTIONIND = 67108864;
 
     // PHP behavior flags
     const FLAG_EXTHELPER = 8192;
@@ -320,6 +321,7 @@ $libstr
                 'spvar' => $flags & self::FLAG_SPVARS,
                 'slash' => $flags & self::FLAG_SLASH,
                 'else' => $flags & self::FLAG_ELSE,
+                'indent' => $flags & self::FLAG_SECTIONIND,
                 'exhlp' => $flags & self::FLAG_EXTHELPER,
                 'mustsp' => $flags & self::FLAG_MUSTACHESP,
                 'mustlok' => $flags & self::FLAG_MUSTACHELOOKUP,
