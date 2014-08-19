@@ -45,7 +45,6 @@ class LightnCandy {
     const FLAG_SPVARS = 4096;
     const FLAG_SLASH = 8388608;
     const FLAG_ELSE = 16777216;
-    const FLAG_SECTIONIND = 67108864;
 
     // PHP behavior flags
     const FLAG_EXTHELPER = 8192;
@@ -321,7 +320,6 @@ $libstr
                 'spvar' => $flags & self::FLAG_SPVARS,
                 'slash' => $flags & self::FLAG_SLASH,
                 'else' => $flags & self::FLAG_ELSE,
-                'secind' => $flags & self::FLAG_SECTIONIND,
                 'exhlp' => $flags & self::FLAG_EXTHELPER,
                 'mustsp' => $flags & self::FLAG_MUSTACHESP,
                 'mustlok' => $flags & self::FLAG_MUSTACHELOOKUP,
@@ -342,7 +340,6 @@ $libstr
                 'current' => 0,
                 'count' => 0,
                 'partialind' => '',
-                'secind' => array(''),
             ),
             'usedPartial' => array(),
             'partialStack' => array(),
@@ -1466,36 +1463,14 @@ $libstr
      *
      * @return string|null Return compiled code segment for the token
      */
-    public static function handleSpacing(&$token, $vars, &$context) {
-        if (!$context['flags']['mustsp'] && !$context['flags']['mustpi'] && !$context['flags']['secind']) {
+    public static function handleMustacheSpacing(&$token, $vars, &$context) {
+        if (!$context['flags']['mustsp'] && !$context['flags']['mustpi']) {
             return;
         }
 
         // left line change detection
         $lsp = preg_match('/^(.*)(\\r?\\n)([ \\t]*?)$/s', $token[self::POS_LSPACE], $lmatch);
         $ind = $lsp ? $lmatch[3] : $token[self::POS_LSPACE];
-
-        // handle section indent
-        if ($context['flags']['secind']) {
-            $oind = $context['tokens']['secind'][0];
-            switch ($token[self::POS_OP]) {
-                case '#':
-                case '^':
-                    $nind = "$ind$oind";
-                    array_unshift($context['tokens']['secind'], $nind);
-                    break;
-                case '/':
-                    array_shift($context['tokens']['secind']);
-                    $nind = $context['tokens']['secind'][0];
-                    break;
-                default:
-                    $nind = null;
-            }
-            if ($nind !== null) {
-                $token[self::POS_RSPACE] = preg_replace("/\n\r?$oind/s", "\n$nind", $token[self::POS_RSPACE]);
-                $token[self::POS_ROTHER] = preg_replace("/\n\r?$oind/s", "\n$nind", $token[self::POS_ROTHER]);
-            }
-        }
 
         // right line change detection
         $rsp = preg_match('/^([ \\t]*?)(\\r?\\n)(.*)$/s', $token[self::POS_RSPACE], $rmatch);
@@ -1559,7 +1534,7 @@ $libstr
         $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;
 
         // Handle spacing (standalone tags, section indent, partial indent)
-        static::handleSpacing($token, $vars, $context);
+        static::handleMustacheSpacing($token, $vars, $context);
 
         // Handle space control.
         if ($token[self::POS_LSPACECTL]) {

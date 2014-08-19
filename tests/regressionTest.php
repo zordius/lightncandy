@@ -532,13 +532,6 @@ VAREND
             ),
 
             Array(
-                'template' => "  {{#each foo}}\n{{@key}}: {{.}}\n{{/each}}\nDONE",
-                'data' => Array('foo' => Array('a' => 'A', 'b' => 'BOY!')),
-                'options' => Array('flags' => LightnCandy::FLAG_SPVARS | LightnCandy::FLAG_MUSTACHESP | LightnCandy::FLAG_SECTIONIND),
-                'expected' => "  a: A\n  b: BOY!\nDONE",
-            ),
-
-            Array(
                 'template' => "{{>test1}}\n  {{>test1}}\nDONE\n",
                 'data' => null,
                 'options' => Array(
