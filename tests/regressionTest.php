@@ -503,6 +503,68 @@ VAREND
                 'expected' => '0x0: 0,1x0: 0,0x1: 0,1x1: 1,0x2: 0,1x2: 2,',
             ),
 
+            Array(
+                'template' => "   {{#foo}}\n {{name}}\n{{/foo}}\n  ",
+                'data' => Array('foo' => Array(Array('name' => 'A'),Array('name' => 'd'),Array('name' => 'E'))),
+                'options' => Array('flags' => LightnCandy::FLAG_MUSTACHESP),
+                'expected' => " A\n d\n E\n  ",
+            ),
+
+            Array(
+                'template' => "{{bar}}\n   {{#foo}}\n {{name}}\n{{/foo}}\n  ",
+                'data' => Array('bar' => 'OK', 'foo' => Array(Array('name' => 'A'),Array('name' => 'd'),Array('name' => 'E'))),
+                'options' => Array('flags' => LightnCandy::FLAG_MUSTACHESP),
+                'expected' => "OK\n A\n d\n E\n  ",
+            ),
+
+            Array(
+                'template' => "   {{#if foo}}\nYES\n{{else}}\nNO\n{{/if}}\n",
+                'data' => null,
+                'options' => Array('flags' => LightnCandy::FLAG_MUSTACHESP | LightnCandy::FLAG_ELSE),
+                'expected' => "NO\n",
+            ),
+
+            Array(
+                'template' => "  {{#each foo}}\n{{@key}}: {{.}}\n{{/each}}\nDONE",
+                'data' => Array('foo' => Array('a' => 'A', 'b' => 'BOY!')),
+                'options' => Array('flags' => LightnCandy::FLAG_SPVARS | LightnCandy::FLAG_MUSTACHESP),
+                'expected' => "a: A\nb: BOY!\nDONE",
+            ),
+
+            Array(
+                'template' => "{{>test1}}\n  {{>test1}}\nDONE\n",
+                'data' => null,
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_MUSTACHESP | LightnCandy::FLAG_MUSTACHEPAIN,
+                    'partials' => Array('test1' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n"),
+                ),
+                'expected' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n  1:A\n   2:B\n    3:C\n   4:D\n  5:E\nDONE\n",
+            ),
+
+            Array(
+                'template' => "ST:\n{{#foo}}\n {{>test1}}\n{{/foo}}\nOK\n",
+                'data' => Array('foo' => Array(1, 2)),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_MUSTACHESP | LightnCandy::FLAG_MUSTACHEPAIN | LightnCandy::FLAG_HANDLEBARSJS,
+                    'partials' => Array('test1' => "1:A\n 2:B({{@index}})\n"),
+                ),
+                'expected' => "ST:\n 1:A\n  2:B(0)\n 1:A\n  2:B(1)\nOK\n",
+            ),
+
+            Array(
+                'template' => "A\n {{#if 1}} \n\na\n{{#with 2}}\n123\n\n{{/with}}\n{{/if}}  \n \n\n456",
+                'data' => null,
+                'options' => Array('flags' => LightnCandy::FLAG_WITH | LightnCandy::FLAG_MUSTACHESP),
+                'expected' => "A\n\na\n123\n \n\n456",
+            ),
+
+            Array(
+                'template' => "\n{{#with 1}}\n\n{{#with 1}}\nb\n\n{{/with}}\n{{/with}}\nC",
+                'data' => null,
+                'options' => Array('flags' => LightnCandy::FLAG_WITH | LightnCandy::FLAG_MUSTACHESP),
+                'expected' => "b\nC",
+            ),
+
         );
 
         return array_map(function($i) {

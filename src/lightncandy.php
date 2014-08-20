@@ -66,8 +66,8 @@ class LightnCandy {
     const FLAG_BESTPERFORMANCE = 16384; // FLAG_ECHO
     const FLAG_JS = 24; // FLAG_JSTRUE + FLAG_JSOBJECT
     const FLAG_MUSTACHE = 40239104; // FLAG_ERROR_SKIPPARTIAL + FLAG_MUSTACHESP + FLAG_MUSTACHELOOKUP + FLAG_MUSTACHEPAIN + FLAG_MUSTACHESEC
-    const FLAG_HANDLEBARS = 25173984; // FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME + FLAG_SPACECTL + FLAG_NAMEDARG + FLAG_SPVARS + FLAG_SLASH + FLAG_ELSE
-    const FLAG_HANDLEBARSJS = 25174008; // FLAG_JS + FLAG_HANDLEBARS
+    const FLAG_HANDLEBARS = 27402208; // FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME + FLAG_SPACECTL + FLAG_NAMEDARG + FLAG_SPVARS + FLAG_SLASH + FLAG_ELSE + FLAG_MUSTACHESP + FLAG_MUSTACHEPAIN
+    const FLAG_HANDLEBARSJS = 27402232; // FLAG_JS + FLAG_HANDLEBARS
     const FLAG_INSTANCE = 98304; // FLAG_PROPERTY + FLAG_METHOD
 
     // RegExps
@@ -228,8 +228,8 @@ class LightnCandy {
             } else {
                 $tmpl = "'$tmpl'";
             }
-            $code .= "{$matches[self::POS_LOTHER]}{$matches[self::POS_LSPACE]}$tmpl{$matches[self::POS_RSPACE]}";
-            $template = $matches[self::POS_ROTHER];
+            $code .= "{$matches[self::POS_LOTHER]}{$matches[self::POS_LSPACE]}$tmpl";
+            $template = "{$matches[self::POS_RSPACE]}{$matches[self::POS_ROTHER]}";
         }
 
         if ($partial && !$context['flags']['runpart']) {
@@ -336,6 +336,7 @@ $libstr
             'basedir' => static::buildCXBasedir($options),
             'fileext' => static::buildCXFileext($options),
             'tokens' => array(
+                'standalone' => true,
                 'ahead' => false,
                 'current' => 0,
                 'count' => 0,
@@ -500,6 +501,7 @@ $libstr
     protected static function compilePartial(&$name, &$context, $content) {
         $context['usedPartial'][$name] = static::escapeTemplate($content);
 
+        $originalAhead = $context['tokens']['ahead'];
         $tmpContext = $context;
         $tmpContext['level'] = 0;
         static::setupToken($tmpContext);
@@ -508,12 +510,13 @@ $libstr
         $originalToken = $context['tokens'];
         $context = $tmpContext;
         $context['tokens'] = $originalToken;
+        $context['tokens']['ahead'] = $originalAhead;
 
         if ($context['flags']['runpart']) {
             $code = static::compileTemplate($context, $context['usedPartial'][$name], $name);
             if ($context['flags']['mustpi']) {
                 $sp = ', $sp';
-                $code = preg_replace('/\n\r?([^\r\n])/s', "\n'{$context['ops']['seperator']}\$sp{$context['ops']['seperator']}'\$1", $code);
+                $code = preg_replace('/^/m', "'{$context['ops']['seperator']}\$sp{$context['ops']['seperator']}'", $code);
             } else {
                 $sp = '';
             }
@@ -1257,11 +1260,11 @@ $libstr
      *
      * @return string Return whole token
      *
-     * @expect 'b' when input array('a', 'b', 'c'), 1
-     * @expect 'c' when input array('a', 'b', 'c', 'd', 'e')
+     * @expect 'b' when input array(0, 'a', 'b', 'c'), 1
+     * @expect 'c' when input array(0, 'a', 'b', 'c', 'd', 'e')
      */
     protected static function tokenString($token, $remove = 2) {
-        return implode('', array_slice($token, $remove, -$remove));
+        return implode('', array_slice($token, 1 + $remove, -$remove));
     }
 
     /**
@@ -1453,55 +1456,84 @@ $libstr
     }
 
     /**
-     * Internal method used by compileToken(). Modify $token when mustache rules matched.
+     * Internal method used by compileToken(). Modify $token when spacing rules matched.
      *
      * @param array<string> $token detected handlebars {{ }} token
+     * @param array<array|string|integer> $vars parsed arguments list
      * @param array<string,array|string|integer> $context current compile context
      *
      * @return string|null Return compiled code segment for the token
      */
-    public static function handleMustacheSpacing(&$token, &$context) {
-        // Line change detection
+    public static function handleMustacheSpacing(&$token, $vars, &$context) {
+        if (!$context['flags']['mustsp'] && !$context['flags']['mustpi']) {
+            return;
+        }
+
+        // left line change detection
         $lsp = preg_match('/^(.*)(\\r?\\n)([ \\t]*?)$/s', $token[self::POS_LSPACE], $lmatch);
+        $ind = $lsp ? $lmatch[3] : $token[self::POS_LSPACE];
+
+        // right line change detection
         $rsp = preg_match('/^([ \\t]*?)(\\r?\\n)(.*)$/s', $token[self::POS_RSPACE], $rmatch);
+        $st = true;
 
         // setup ahead flag
         $ahead = $context['tokens']['ahead'];
-        $context['tokens']['ahead'] = !$rsp;
+        $context['tokens']['ahead'] = preg_match('/^[^\n]*{{/s', $token[self::POS_RSPACE] . $token[self::POS_ROTHER]);
 
         // reset partial indent
         $context['tokens']['partialind'] = '';
 
         // same tags in the same line , not standalone
         if (!$lsp && $ahead) {
-            return;
+            $st = false;
         }
 
-        // Do need standalone detection for these tags
+        // Do not need standalone detection for these tags
         if (!$token[self::POS_OP] || ($token[self::POS_OP] === '&')) {
-            return;
+            if (!$context['flags']['else'] || (isset($vars[0][0]) && ($vars[0][0] !== 'else'))) {
+                $st = false;
+            }
         }
 
         // not standalone because other things in the same line ahead
         if ($token[self::POS_LOTHER] && !$token[self::POS_LSPACE]) {
-            return;
+            $st = false;
         }
 
         // not standalone because other things in the same line behind
         if ($token[self::POS_ROTHER] && !$token[self::POS_RSPACE]) {
-            return;
+            $st = false;
         }
 
-        if (($lsp && $rsp) // both side cr
+        if ($st && (($lsp && $rsp) // both side cr
             || ($rsp && !$token[self::POS_LOTHER]) // first line without left
             || ($lsp && ($context['tokens']['current'] == $context['tokens']['count']) && !$token[self::POS_ROTHER]) // final line
-           ) {
+           )) {
+            // handle partial
             if ($context['flags']['mustpi'] && ($token[self::POS_OP] === '>')) {
-                $context['tokens']['partialind'] = $lsp ? $lmatch[3] : $token[self::POS_LSPACE];
-            } else {
-                $token[self::POS_LSPACE] = isset($lmatch[2]) ? ($lmatch[1] . $lmatch[2]) : '';
+                $context['tokens']['partialind'] = $ind;
             }
-            $token[self::POS_RSPACE] = isset($rmatch[3]) ? $rmatch[3] : '';
+            if ($context['flags']['mustsp']) {
+                $token[self::POS_LSPACE] = (isset($lmatch[2]) ? ($lmatch[1] . $lmatch[2]) : '');
+                if ($token[self::POS_OP] !== ' ') {
+                    if ($context['tokens']['standalone'] && !$token[self::POS_LOTHER]) {
+                        $token[self::POS_LSPACE] = preg_replace('/^\n(\n?)$/s', '$1', $token[self::POS_LSPACE]);
+                    } else {
+                        $token[self::POS_LSPACE] = preg_replace('/^\n\n$/s', "\n", $token[self::POS_LSPACE]);
+                    }
+                }
+                $token[self::POS_RSPACE] = isset($rmatch[3]) ? $rmatch[3] : '';
+                $context['tokens']['standalone'] = ($token[self::POS_OP] !== ' ');
+            }
+        } else {
+            $context['tokens']['standalone'] = false;
+            // Align with handlebars.js current behavior, not sure this is correct or not
+            // https://github.com/wycats/handlebars.js/issues/852
+            if ($token[self::POS_RSPACECTL]) {
+                $token[self::POS_RSPACECTL] = 0;
+                $token[self::POS_RSPACE] = isset($rmatch[3]) ? $rmatch[3] : '';
+            }
         }
     }
 
@@ -1517,10 +1549,8 @@ $libstr
         list($raw, $vars) = static::parseTokenArgs($token, $context);
         $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;
 
-        // Handle Mustache spacing
-        if ($context['flags']['mustsp']) {
-            static::handleMustacheSpacing($token, $context);
-        }
+        // Handle spacing (standalone tags, partial indent)
+        static::handleMustacheSpacing($token, $vars, $context);
 
         // Handle space control.
         if ($token[self::POS_LSPACECTL]) {
@@ -1578,7 +1608,7 @@ $libstr
                     if ($named || $v[0] !== 'array(array($in),array())') {
                         $context['error'][] = "Do not support {{{$tag}}}, you should do compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag";
                     }
-                    return "{$context['ops']['seperator']}'" . static::compileTemplate($context, $context['usedPartial'][$p[0]], $p[0]) . "'{$context['ops']['seperator']}";
+                    return "{$context['ops']['seperator']}'" . static::compileTemplate($context, preg_replace('/^/m', $context['tokens']['partialind'], $context['usedPartial'][$p[0]]), $p[0]) . "'{$context['ops']['seperator']}";
                 }
             case '^':
                 if (!$vars[0][0]) {
