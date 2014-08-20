@@ -558,6 +558,13 @@ VAREND
                 'expected' => "A\n\na\n123\n \n\n456",
             ),
 
+            Array(
+                'template' => "\n{{#with 1}}\n\n{{#with 1}}\nb\n\n{{/with}}\n{{/with}}\nC",
+                'data' => null,
+                'options' => Array('flags' => LightnCandy::FLAG_WITH | LightnCandy::FLAG_MUSTACHESP),
+                'expected' => "b\nC",
+            ),
+
         );
 
         return array_map(function($i) {

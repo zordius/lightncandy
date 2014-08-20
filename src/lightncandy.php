@@ -336,6 +336,7 @@ $libstr
             'basedir' => static::buildCXBasedir($options),
             'fileext' => static::buildCXFileext($options),
             'tokens' => array(
+                'standalone' => true,
                 'ahead' => false,
                 'current' => 0,
                 'count' => 0,
@@ -1513,15 +1514,20 @@ $libstr
             if ($context['flags']['mustpi'] && ($token[self::POS_OP] === '>')) {
                 $context['tokens']['partialind'] = $ind;
             }
-
             if ($context['flags']['mustsp']) {
                 $token[self::POS_LSPACE] = (isset($lmatch[2]) ? ($lmatch[1] . $lmatch[2]) : '');
-                if ($token[self::POS_LSPACE] == "\n\n") {
-                    $token[self::POS_LSPACE] = "\n";
+                if ($token[self::POS_OP] !== ' ') {
+                    if ($context['tokens']['standalone'] && !$token[self::POS_LOTHER]) {
+                        $token[self::POS_LSPACE] = preg_replace('/^\n(\n?)$/s', '$1', $token[self::POS_LSPACE]);
+                    } else {
+                        $token[self::POS_LSPACE] = preg_replace('/^\n\n$/s', "\n", $token[self::POS_LSPACE]);
+                    }
                 }
                 $token[self::POS_RSPACE] = isset($rmatch[3]) ? $rmatch[3] : '';
+                $context['tokens']['standalone'] = ($token[self::POS_OP] !== ' ');
             }
         } else {
+            $context['tokens']['standalone'] = false;
             // Align with handlebars.js current behavior, not sure this is correct or not
             // https://github.com/wycats/handlebars.js/issues/852
             if ($token[self::POS_RSPACECTL]) {
