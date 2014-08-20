@@ -1549,7 +1549,7 @@ $libstr
         list($raw, $vars) = static::parseTokenArgs($token, $context);
         $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;
 
-        // Handle spacing (standalone tags, section indent, partial indent)
+        // Handle spacing (standalone tags, partial indent)
         static::handleMustacheSpacing($token, $vars, $context);
 
         // Handle space control.
