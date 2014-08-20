@@ -1516,6 +1516,16 @@ $libstr
 
             if ($context['flags']['mustsp']) {
                 $token[self::POS_LSPACE] = (isset($lmatch[2]) ? ($lmatch[1] . $lmatch[2]) : '');
+                if ($token[self::POS_LSPACE] == "\n\n") {
+                    $token[self::POS_LSPACE] = "\n";
+                }
+                $token[self::POS_RSPACE] = isset($rmatch[3]) ? $rmatch[3] : '';
+            }
+        } else {
+            // Align with handlebars.js current behavior, not sure this is correct or not
+            // https://github.com/wycats/handlebars.js/issues/852
+            if ($token[self::POS_RSPACECTL]) {
+                $token[self::POS_RSPACECTL] = 0;
                 $token[self::POS_RSPACE] = isset($rmatch[3]) ? $rmatch[3] : '';
             }
         }
