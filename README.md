@@ -9,6 +9,8 @@ Scrutinizer CI status: [![Code Coverage](https://scrutinizer-ci.com/g/zordius/li
 
 Package on packagist: [![Latest Stable Version](https://poser.pugx.org/zordius/lightncandy/v/stable.svg)](https://packagist.org/packages/zordius/lightncandy)
 
+[![License](https://poser.pugx.org/zordius/lightncandy/license.svg)](https://packagist.org/packages/zordius/lightncandy)
+
 [![HHVM Status](http://hhvm.h4cc.de/badge/zordius/lightncandy.png)](http://hhvm.h4cc.de/package/zordius/lightncandy)
 
 Features
