@@ -575,14 +575,14 @@ VAREND
                 'template' => "A\n {{#if 1}} \n\na\n{{#with 2}}\n123\n\n{{/with}}\n{{/if}}  \n \n\n456",
                 'data' => null,
                 'options' => Array('flags' => LightnCandy::FLAG_WITH | LightnCandy::FLAG_MUSTACHESP),
-                'expected' => "A\n\na\n123\n \n\n456",
+                'expected' => "A\n\na\n123\n\n \n\n456",
             ),
 
             Array(
                 'template' => "\n{{#with 1}}\n\n{{#with 1}}\nb\n\n{{/with}}\n{{/with}}\nC",
                 'data' => null,
                 'options' => Array('flags' => LightnCandy::FLAG_WITH | LightnCandy::FLAG_MUSTACHESP),
-                'expected' => "b\nC",
+                'expected' => "\n\nb\n\nC",
             ),
 
         );

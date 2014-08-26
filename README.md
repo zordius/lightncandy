@@ -122,7 +122,7 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * `FLAG_ERROR_EXCEPTION` : throw exception when found any template error
 * `FLAG_ERROR_SKIPPARTIAL` : skip 'partial not found' error/exception. Use this to align with mustache specification.
 * `FLAG_STANDALONE` : generate stand-alone PHP codes, which can be execute without including LightnCandy.php. The compiled PHP code will contain scoped user function, somehow larger. And, the performance of the template will slow 1 ~ 10%.
-* `FLAG_JSTRUE` : generate 'true' when value is true (JavaScript behavior). Otherwise, true will generate ''.
+* `FLAG_JSTRUE` : generate 'true' or 'false' when value is true or false (JavaScript behavior). Otherwise, true/false will generate ''.
 * `FLAG_JSOBJECT` : generate '[object Object]' for associated array, generate ',' separated values for array (JavaScript behavior). Otherwise, all PHP array will generate '' or 'Array'.
 * `FLAG_THIS` : resolve `{{this}}` as `{{.}}` in template. Otherwise, `{{this}}` will be resolved as normal variable.
 * `FLAG_WITH` : support `{{#with var}}` in template. Otherwise, `{{#with var}}` will cause template error.
@@ -589,17 +589,17 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 
 * Exact same CR/LF behavior with handlebars.js
 * Exact same CR/LF bahavior with mustache spec (require `FLAG_MUSTACHESP`)
-* Exact same 'true' output with handlebars.js (require `FLAG_JSTRUE`)
+* Exact same 'true' or 'false' output with handlebars.js (require `FLAG_JSTRUE`)
 * Exact same '[object Object]' output or join(',' array) output with handlebars.js (require `FLAG_JSOBJECT`)
 * Can place heading/tailing space, tab, CR/LF inside `{{ var }}` or `{{{ var }}}`
 * Indent behavior of the partial same with mustache spec (require `FLAG_MUSTACHEPAIN`)
 * Recursive variable lookup to parent context behavior same with mustache spec (require `FLAG_MUSTACHELOOKUP`)
 * `{{{value}}}` or `{{&value}}` : raw variable
    * true as 'true' (require `FLAG_JSTRUE`)
-   * false as ''
+   * false as 'false' (require `FLAG_TRUE`)
 * `{{value}}` : HTML escaped variable
    * true as 'true' (require `FLAG_JSTRUE`)
-   * false as ''
+   * false as 'false' (require `FLAG_JSTRUE`)
 * `{{{path.to.value}}}` : dot notation, raw
 * `{{path.to.value}}` : dot notation, HTML escaped 
 * `{{.}}` : current context, HTML escaped

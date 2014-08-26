@@ -1516,22 +1516,6 @@ $libstr
             }
             if ($context['flags']['mustsp']) {
                 $token[self::POS_LSPACE] = (isset($lmatch[2]) ? ($lmatch[1] . $lmatch[2]) : '');
-                if ($token[self::POS_OP] !== ' ') {
-                    if ($context['tokens']['standalone'] && !$token[self::POS_LOTHER]) {
-                        $token[self::POS_LSPACE] = preg_replace('/^\n(\n?)$/s', '$1', $token[self::POS_LSPACE]);
-                    } else {
-                        $token[self::POS_LSPACE] = preg_replace('/^\n\n$/s', "\n", $token[self::POS_LSPACE]);
-                    }
-                }
-                $token[self::POS_RSPACE] = isset($rmatch[3]) ? $rmatch[3] : '';
-                $context['tokens']['standalone'] = ($token[self::POS_OP] !== ' ');
-            }
-        } else {
-            $context['tokens']['standalone'] = false;
-            // Align with handlebars.js current behavior, not sure this is correct or not
-            // https://github.com/wycats/handlebars.js/issues/852
-            if ($token[self::POS_RSPACECTL]) {
-                $token[self::POS_RSPACECTL] = 0;
                 $token[self::POS_RSPACE] = isset($rmatch[3]) ? $rmatch[3] : '';
             }
         }
@@ -2068,14 +2052,13 @@ class LCRun3 {
      *
      * @param array<string,array|string|integer> $cx render time context
      * @param array<array|string|integer>|string|integer|null $v value to be output
-     * @param boolean $loop true when in loop
      *
      * @return string The raw value of the specified variable
      *
      * @expect true when input array('flags' => array('jstrue' => 0)), true
      * @expect 'true' when input array('flags' => array('jstrue' => 1)), true
      * @expect '' when input array('flags' => array('jstrue' => 0)), false
-     * @expect '' when input array('flags' => array('jstrue' => 1)), false
+     * @expect 'false' when input array('flags' => array('jstrue' => 1)), false
      * @expect 'false' when input array('flags' => array('jstrue' => 1)), false, true
      * @expect array('a', 'b') when input array('flags' => array('jstrue' => 1, 'jsobj' => 0)), array('a', 'b')
      * @expect 'a,b' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1)), array('a', 'b')
@@ -2086,14 +2069,14 @@ class LCRun3 {
      * @expect 'a,' when input array('flags' => array('jstrue' => 0, 'jsobj' => 1)), array('a',false)
      * @expect 'a,false' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1)), array('a',false)
      */
-    public static function raw($cx, $v, $loop = false) {
+    public static function raw($cx, $v) {
         if ($v === true) {
             if ($cx['flags']['jstrue']) {
                 return 'true';
             }
         }
 
-        if ($loop && ($v === false)) {
+        if (($v === false)) {
             if ($cx['flags']['jstrue']) {
                 return 'false';
             }
@@ -2106,7 +2089,7 @@ class LCRun3 {
                 } else {
                     $ret = array();
                     foreach ($v as $k => $vv) {
-                        $ret[] = self::raw($cx, $vv, true);
+                        $ret[] = self::raw($cx, $vv);
                     }
                     return join(',', $ret);
                 }
