@@ -9,6 +9,7 @@ master current trunk
    * 01ea3e9f42 support instances with PHP __call magic funciton.
    * 38059036a7 support {{#foo}} or {{#each foo}} on PHP Traversable instance.
    * b61d7b4a81 align with handlebars.js standalone tags behavior.
+   * b211e1742e now render false as 'false'.
 
 v0.15 https://github.com/zordius/lightncandy/tree/v0.15
    * align with handlebars.js master
