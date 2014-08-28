@@ -8,6 +8,7 @@ master current trunk
    * 4ca624f651 fix 1 ANSI code error.
    * 01ea3e9f42 support instances with PHP __call magic funciton.
    * 38059036a7 support {{#foo}} or {{#each foo}} on PHP Traversable instance.
+   * 366f5ec0ac add FLAG_MUSTACHESP and FLAG_MUSTACHEPAIN into FLAG_HANDLEBARS and FLAG_HANDLEBARSJS now.
    * b61d7b4a81 align with handlebars.js standalone tags behavior.
    * b211e1742e now render false as 'false'.
 
