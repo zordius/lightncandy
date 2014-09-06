@@ -12,7 +12,7 @@ before_script:
 script:
   - build/runphp build/gen_test.php
   - vendor/bin/phpunit --coverage-clover=coverage.clover
-  - build/travis_push
+  - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && build/travis_push'
 
 env:
   global:
