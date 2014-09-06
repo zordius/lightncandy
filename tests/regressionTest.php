@@ -585,6 +585,18 @@ VAREND
                 'expected' => "\n\nb\n\nC",
             ),
 
+            Array(
+                'template' => ">{{helper1 \"===\"}}<",
+                'data' => null,
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'helper1',
+                    )
+                ),
+                'expected' => ">-===-<",
+            ),
+
         );
 
         return array_map(function($i) {
