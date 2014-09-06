@@ -1,5 +1,10 @@
 #!/bin/sh
-echo "DEBUG ENV: ${TRAVIS_JOB_NUMBER} ${TRAVIS_BUILD_NUMBER} ..."
+echo "DEBUG ENV: ${TRAVIS_JOB_NUMBER} , ${TRAVIS_BUILD_NUMBER} , ${TRAVIS_PULL_REQUEST} ..."
+
+if [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then
+  echo "This is a PR, skip push."
+  exit 0
+fi
 
 if [ "${TRAVIS_BUILD_NUMBER}.1" != "${TRAVIS_JOB_NUMBER}" ]; then
   echo "Only push documents 1 time... quit."
