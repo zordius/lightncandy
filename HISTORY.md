@@ -3,6 +3,9 @@ HISTORY
 
 master current trunk
    * align with handlebars.js master
+
+v0.16 https://github.com/zordius/lightncandy/tree/v0.16
+   * align with handlebars.js 2.0.0
    * 4f036aff62 better error message for named arguments.
    * 0b462a387b support {{#with var}} ... {{else}} ... {{/with}}.
    * 4ca624f651 fix 1 ANSI code error.
@@ -11,9 +14,11 @@ master current trunk
    * 366f5ec0ac add FLAG_MUSTACHESP and FLAG_MUSTACHEPAIN into FLAG_HANDLEBARS and FLAG_HANDLEBARSJS now.
    * b61d7b4a81 align with handlebars.js standalone tags behavior.
    * b211e1742e now render false as 'false'.
+   * 655a2485be fix bug for {{helper "==="}}
+   * bb58669162 support FLAG_NOESCAPE
 
 v0.15 https://github.com/zordius/lightncandy/tree/v0.15
-   * align with handlebars.js master
+   * align with handlebars.js 2.0.0
    * 4c750806e8 fix for \ in template
    * 12ab6626d6 support escape. \{{foo}} will be rendered as is. ( handlebars spec , require FLAG_SLASH )
    * 876bd44d9c escape &#x60; to &amp;#x60; ( require FLAG_JSQUOTE )
