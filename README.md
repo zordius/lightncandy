@@ -121,6 +121,7 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * `FLAG_ERROR_LOG` : error_log() when found any template error
 * `FLAG_ERROR_EXCEPTION` : throw exception when found any template error
 * `FLAG_ERROR_SKIPPARTIAL` : skip 'partial not found' error/exception. Use this to align with mustache specification.
+* `FLAG_NOESCAPE` : do not do any HTML escape on {{var}}.
 * `FLAG_STANDALONE` : generate stand-alone PHP codes, which can be execute without including LightnCandy.php. The compiled PHP code will contain scoped user function, somehow larger. And, the performance of the template will slow 1 ~ 10%.
 * `FLAG_JSTRUE` : generate 'true' or 'false' when value is true or false (JavaScript behavior). Otherwise, true/false will generate ''.
 * `FLAG_JSOBJECT` : generate '[object Object]' for associated array, generate ',' separated values for array (JavaScript behavior). Otherwise, all PHP array will generate '' or 'Array'.
