@@ -597,6 +597,19 @@ VAREND
                 'expected' => ">-===-<",
             ),
 
+            Array(
+                'template' => "{{foo}}",
+                'data' => Array('foo' => 'A&B " \''),
+                'options' => Array('flags' => LightnCandy::FLAG_NOESCAPE),
+                'expected' => "A&B \" '",
+            ),
+
+            Array(
+                'template' => "{{foo}}",
+                'data' => Array('foo' => 'A&B " \''),
+                'options' => null,
+                'expected' => "A&amp;B &quot; &#039;",
+            ),
         );
 
         return array_map(function($i) {
