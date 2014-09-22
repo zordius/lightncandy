@@ -48,26 +48,46 @@ class errorTest extends PHPUnit_Framework_TestCase
         }
     }
 
-    public function testRenderingException()
+    /**
+     * @dataProvider renderErrorProvider
+     */
+    public function testRenderingException($test)
     {
-        $this->setExpectedException('Exception', 'LCRun3: [foo] is not exist');
-        $php = LightnCandy::compile('{{{foo}}}', Array('flags' => LightnCandy::FLAG_RENDER_DEBUG));
+        $this->setExpectedException('Exception', $test['expected']);
+        $php = LightnCandy::compile($test['template'], Array('flags' => LightnCandy::FLAG_RENDER_DEBUG));
         $renderer = LightnCandy::prepare($php);
         $renderer(null, LCRun3::DEBUG_ERROR_EXCEPTION);
     }
 
-    public function testRenderingErrorLog()
+    /**
+     * @dataProvider renderErrorProvider
+     */
+    public function testRenderingErrorLog($test)
     {
         start_catch_error_log();
-        $php = LightnCandy::compile('{{{foo}}}', Array('flags' => LightnCandy::FLAG_RENDER_DEBUG));
+        $php = LightnCandy::compile($test['template'], Array('flags' => LightnCandy::FLAG_RENDER_DEBUG));
         $renderer = LightnCandy::prepare($php);
         $renderer(null, LCRun3::DEBUG_ERROR_LOG);
         $e = stop_catch_error_log();
         if ($e) {
-            $this->assertEquals(Array('LCRun3: [foo] is not exist'), $e);
+            $this->assertEquals(Array($test['expected']), $e);
         } else {
             $this->markTestIncomplete('skip HHVM');
         }
+    }
+
+    public function renderErrorProvider()
+    {
+        $errorCases = Array(
+             Array(
+                 'template' => '{{{foo}}}',
+                 'expected' => 'LCRun3: [foo] is not exist',
+             )
+        );
+
+        return array_map(function($i) {
+            return Array($i);
+        }, $errorCases);
     }
 
     /**
