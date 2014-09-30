@@ -761,7 +761,7 @@ $libstr
      * @param string      $php PHP code
      * @param string|null $tmpDir Optional, change temp directory for php include file saved by prepare() when cannot include PHP code with data:// format.
      *
-     * @return Closure result of include()
+     * @return Closure|false result of include()
      *
      * @deprecated
      */
@@ -2099,7 +2099,7 @@ class LCRun3 {
             }
         }
 
-        return $v;
+        return "$v";
     }
 
     /**
@@ -2411,7 +2411,20 @@ class LCRun3 {
 
         $args[] = $options;
 
-        return self::chret(call_user_func_array($cx['hbhelpers'][$ch], $args), $isBlock ? 'raw' : $op);
+        $r = call_user_func_array($cx['hbhelpers'][$ch], $args);
+
+        if ($r === false) {
+error_log('error?!');
+            $e = "LCRun3: call custom helper $ch error";
+            if ($cx['flags']['debug'] & self::DEBUG_ERROR_LOG) {
+                error_log($e);
+            }
+            if ($cx['flags']['debug'] & self::DEBUG_ERROR_EXCEPTION) {
+                throw new Exception($e);
+            }
+        }
+
+        return self::chret($r, $isBlock ? 'raw' : $op);
     }
 
     /**
