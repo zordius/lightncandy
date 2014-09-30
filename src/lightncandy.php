@@ -2414,7 +2414,6 @@ class LCRun3 {
         $r = call_user_func_array($cx['hbhelpers'][$ch], $args);
 
         if ($r === false) {
-error_log('error?!');
             $e = "LCRun3: call custom helper $ch error";
             if ($cx['flags']['debug'] & self::DEBUG_ERROR_LOG) {
                 error_log($e);
