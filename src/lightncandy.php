@@ -2063,7 +2063,7 @@ class LCRun3 {
      * @expect '' when input array('flags' => array('jstrue' => 0)), false
      * @expect 'false' when input array('flags' => array('jstrue' => 1)), false
      * @expect 'false' when input array('flags' => array('jstrue' => 1)), false, true
-     * @expect array('a', 'b') when input array('flags' => array('jstrue' => 1, 'jsobj' => 0)), array('a', 'b')
+     * @expect 'Array' when input array('flags' => array('jstrue' => 1, 'jsobj' => 0)), array('a', 'b')
      * @expect 'a,b' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1)), array('a', 'b')
      * @expect '[object Object]' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1)), array('a', 'c' => 'b')
      * @expect '[object Object]' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1)), array('c' => 'b')
