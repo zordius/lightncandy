@@ -617,7 +617,7 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
    * All others will skip the section (includes 0, 1, -1, '', '1', '0', '-1', 'false', Array, ...)
 * `{{! comment}}` : comment
 * `{{!-- comment or {{ or }} --}}` : extended comment that can contain }} or {{ .
-* `{{=<% %>=}}` : set delimiter to custom string , the custom string can not contain = . Check http://mustache.github.io/mustache.5.html for more example.
+* `{{=<% %>=}}` : set delimiter to custom string , the custom string can not contain `=` . Check http://mustache.github.io/mustache.5.html for more example.
 * `{{#each var}}` : each loop
 * `{{#each}}` : each loop on {{.}}
 * `{{/each}}` : end loop
