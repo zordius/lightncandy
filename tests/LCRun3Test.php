@@ -152,7 +152,7 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
         $this->assertEquals('false', $method->invoke(null,
             array('flags' => array('jstrue' => 1)), false, true
         ));
-        $this->assertEquals(array('a', 'b'), $method->invoke(null,
+        $this->assertEquals('Array', $method->invoke(null,
             array('flags' => array('jstrue' => 1, 'jsobj' => 0)), array('a', 'b')
         ));
         $this->assertEquals('a,b', $method->invoke(null,
