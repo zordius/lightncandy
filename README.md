@@ -216,7 +216,7 @@ Custom helper can help you deal with common template tasks, for example: provide
 
 **NOTICE**: custom helpers to handle single tag `{{xxx}}` or a section `{{#yyy}} ... {{/yyy}}` are absolutely different in LightnCandy. To know more about creating custom helpers to handle `{{#yyy}} ... {{/yyy}}`, please refer to <a href="#block-custom-helper">Block Custom Helper</a>.
 
-When `compile()`, LightnCandy will lookup helpers from generated custom helper name table. You can register custom helpers with `helpers` option:
+When `compile()`, LightnCandy will lookup helpers from generated custom helper name table. You can register custom helpers with `helpers` option (**NOTICE**: `FLAG_NAMEDARG` is required for named arguments):
 
 ```php
 LightnCandy::compile($template, Array(
