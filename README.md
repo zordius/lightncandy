@@ -157,7 +157,7 @@ Partial Support
 
 LightnCandy supports partial when compile time. You can provide partials by `partials` option when `compile()`:
 
-```
+```php
 LightnCandy::compile($template, Array(
     'partials' => Array(
         'name' => 'template: {{name}}',
