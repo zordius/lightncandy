@@ -129,7 +129,7 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * `FLAG_WITH` : support `{{#with var}}` in template. Otherwise, `{{#with var}}` will cause template error.
 * `FLAG_PARENT` : support `{{../var}}` in template. Otherwise, `{{../var}}` will cause template error.
 * `FLAG_JSQUOTE` : escape `'` to `&#x27;` , <code>&#x60;</code> to `&#x60;` . Otherwise, `'` will be escaped to `&#039;` , <code>&#x60;</code> will not be touched.
-* `FLAG_ADVARNAME` : support `{{foo.[0].[#te#st].bar}}` style advanced variable naming in template.
+* `FLAG_ADVARNAME` : support `{{foo.[0].[#te#st].bar}}` style advanced variable naming in template. Use this flag if you wanna use `"some string"` or `(subexpresssion)` as argument.
 * `FLAG_NAMEDARG` : support named arguments for custom helper `{{helper name1=val1 nam2=val2 ...}}`.
 * `FLAG_EXTHELPER` : do not including custom helper codes into compiled PHP codes. This reduces the code size, but you need to take care of your helper functions when rendering. If you forget to include required functions when execute rendering function, `undefined function` runtime error will be triggered. NOTE: Anonymous functions will always be placed into generated codes.
 * `FLAG_RUNTIMEPARTIAL` : compile partial as runtime function, This enables recursive partials or context change for partials.
@@ -216,7 +216,7 @@ Custom helper can help you deal with common template tasks, for example: provide
 
 **NOTICE**: custom helpers to handle single tag `{{xxx}}` or a section `{{#yyy}} ... {{/yyy}}` are absolutely different in LightnCandy. To know more about creating custom helpers to handle `{{#yyy}} ... {{/yyy}}`, please refer to <a href="#block-custom-helper">Block Custom Helper</a>.
 
-When `compile()`, LightnCandy will lookup helpers from generated custom helper name table. You can register custom helpers with `helpers` option (**NOTICE**: `FLAG_NAMEDARG` is required for named arguments):
+When `compile()`, LightnCandy will lookup helpers from generated custom helper name table. You can register custom helpers with `helpers` option (**NOTICE**: `FLAG_NAMEDARG` is required for named arguments, `FLAG_ADVARNAME` is required for string or subexpression arguments):
 
 ```php
 LightnCandy::compile($template, Array(
@@ -263,7 +263,7 @@ The input arguments are processed by LightnCandy automatically, you do not need 
 ```
 {{{helper name}}}           // This send processed {{{name}}} into the helper
 {{{helper ../name}}}        // This send processed {{{../name}}} into the helper
-{{{helper "Test"}}}         // This send the string "Test" into the helper
+{{{helper "Test"}}}         // This send the string "Test" into the helper (FLAG_ADVARNAME is required)
 {{helper "Test"}}           // This send the string "Test" into the helper and escape the helper result
 {{{helper "Test" ../name}}} // This send string "Test" as first parameter,
                             // and processed {{{../name}}} as second parameter into the helper
@@ -640,6 +640,7 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{any_valid_tag~}}` : Space control, remove all next spacing (includes CR/LF, tab, space; stop on any none spacing character) (require `FLAG_SPACECTL`)
 * `{{{helper var}}}` : Execute custom helper then render the result
 * `{{helper var}}` : Execute custom helper then render the HTML escaped result
-* `{{helper name1=var name2="str"}}` : Execute custom helper with named arguments
+* `{{helper "str"}} : Execute custom helper with string arguments (require `FLAG_ADVARNAME`)
+* `{{helper name1=var name2=var2}}` : Execute custom helper with named arguments (require `FLAG_NAMEDARG`)
 * `{{#helper ...}}...{{/helper}}` : Execute block custom helper
 * `{{helper (helper2 foo) bar}}` : Execute custom helpers as subexpression (require `FLAG_ADVARNAME`)
