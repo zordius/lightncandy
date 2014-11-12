@@ -1275,14 +1275,14 @@ $libstr
      *
      * @param string[] $token detected handlebars {{ }} token
      * @param array<string,array|string|integer> $context current compile context
-     * @param boolean $raw the token is started with {{{ or not
      *
      * @return boolean|null Return true when invalid
      *
-     * @expect null when input array_fill(0, 9, ''), array(), true
-     * @expect true when input array_fill(0, 9, '{{{'), array(), true
+     * @expect null when input array_fill(0, 9, ''), array()
+     * @expect null when input array_fill(0, 9, '}}'), array()
+     * @expect true when input array_fill(0, 9, '{{{'), array()
      */
-    protected static function validateStartEnd($token, &$context, $raw) {
+    protected static function validateStartEnd($token, &$context) {
         // {{ }}} or {{{ }} are invalid
         if (strlen($token[self::POS_BEGINTAG]) !== strlen($token[self::POS_ENDTAG])) {
             $context['error'][] = 'Bad token ' . static::tokenString($token) . ' ! Do you mean {{' . static::tokenString($token, 4) . '}} or {{{' . static::tokenString($token, 4) . '}}}?';
@@ -1393,7 +1393,7 @@ $libstr
     protected static function scanFeatures($token, &$context) {
         list($raw, $vars) = static::parseTokenArgs($token, $context);
 
-        if (static::validateStartEnd($token, $context, $raw)) {
+        if (static::validateStartEnd($token, $context)) {
             return;
         }
 

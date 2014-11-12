@@ -385,10 +385,13 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $method = new ReflectionMethod('LightnCandy', 'validateStartEnd');
         $method->setAccessible(true);
         $this->assertEquals(null, $method->invoke(null,
-            array_fill(0, 9, ''), array(), true
+            array_fill(0, 9, ''), array()
+        ));
+        $this->assertEquals(null, $method->invoke(null,
+            array_fill(0, 9, '}}'), array()
         ));
         $this->assertEquals(true, $method->invoke(null,
-            array_fill(0, 9, '{{{'), array(), true
+            array_fill(0, 9, '{{{'), array()
         ));
     }
     /**
