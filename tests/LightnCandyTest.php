@@ -388,7 +388,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
             array_fill(0, 9, ''), array(), true
         ));
         $this->assertEquals(true, $method->invoke(null,
-            range(0, 8), array(), true
+            array_fill(0, 9, '{{{'), array(), true
         ));
     }
     /**

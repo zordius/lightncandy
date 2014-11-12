@@ -1280,7 +1280,7 @@ $libstr
      * @return boolean|null Return true when invalid
      *
      * @expect null when input array_fill(0, 9, ''), array(), true
-     * @expect true when input range(0, 8), array(), true
+     * @expect true when input array_fill(0, 9, '{{{'), array(), true
      */
     protected static function validateStartEnd($token, &$context, $raw) {
         // {{ }}} or {{{ }} are invalid
@@ -1289,7 +1289,7 @@ $libstr
             return true;
         }
         // {{{# }}} or {{{! }}} or {{{/ }}} or {{{^ }}} are invalid.
-        if ($raw && $token[self::POS_OP] && ($token[self::POS_OP] !== '&')) {
+        if ((strlen($token[self::POS_BEGINTAG]) === 3) && $token[self::POS_OP] && ($token[self::POS_OP] !== '&')) {
             $context['error'][] = 'Bad token ' . static::tokenString($token) . ' ! Do you mean {{' . static::tokenString($token, 4) . '}} ?';
             return true;
         }
