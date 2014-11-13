@@ -54,7 +54,7 @@ class errorTest extends PHPUnit_Framework_TestCase
     public function testRenderingException($test)
     {
         $this->setExpectedException('Exception', $test['expected']);
-        $php = LightnCandy::compile($test['template'], Array('flags' => LightnCandy::FLAG_RENDER_DEBUG));
+        $php = LightnCandy::compile($test['template'], $test['options']);
         $renderer = LightnCandy::prepare($php);
         $renderer(null, LCRun3::DEBUG_ERROR_EXCEPTION);
     }
@@ -65,7 +65,7 @@ class errorTest extends PHPUnit_Framework_TestCase
     public function testRenderingErrorLog($test)
     {
         start_catch_error_log();
-        $php = LightnCandy::compile($test['template'], Array('flags' => LightnCandy::FLAG_RENDER_DEBUG));
+        $php = LightnCandy::compile($test['template'], $test['options']);
         $renderer = LightnCandy::prepare($php);
         $renderer(null, LCRun3::DEBUG_ERROR_LOG);
         $e = stop_catch_error_log();
@@ -82,10 +82,27 @@ class errorTest extends PHPUnit_Framework_TestCase
              Array(
                  'template' => '{{{foo}}}',
                  'expected' => 'LCRun3: [foo] is not exist',
-             )
+             ),
+             Array(
+                 'template' => '{{foo}}',
+                 'options' => Array(
+                     'hbhelpers' => Array(
+                         'foo' => function () {
+                             return 1/0;
+                         }
+                     ),
+                 ),
+                 'expected' => 'LCRun3: call custom helper \'foo\' error: Division by zero',
+             ),
         );
 
         return array_map(function($i) {
+            if (!isset($i['options'])) {
+                $i['options'] = Array('flags' => LightnCandy::FLAG_RENDER_DEBUG);
+            }
+            if (!isset($i['options']['flags'])) {
+                $i['options']['flags'] = LightnCandy::FLAG_RENDER_DEBUG;
+            }
             return Array($i);
         }, $errorCases);
     }

@@ -2416,11 +2416,21 @@ class LCRun3 {
         }
 
         $args[] = $options;
+        $e = null;
 
-        $r = call_user_func_array($cx['hbhelpers'][$ch], $args);
+        try {
+            $r = call_user_func_array($cx['hbhelpers'][$ch], $args);
+        } catch (Exception $E) {
+            $e = "LCRun3: call custom helper '$ch' error: " . $E->getMessage();
+        }
 
         if ($r === false) {
-            $e = "LCRun3: call custom helper $ch error";
+            if ($e === null) {
+                $e = "LCRun3: call custom helper '$ch' error";
+            }
+        }
+
+        if($e !== null) {
             if ($cx['flags']['debug'] & self::DEBUG_ERROR_LOG) {
                 error_log($e);
             }
