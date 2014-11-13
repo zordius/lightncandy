@@ -2417,6 +2417,7 @@ class LCRun3 {
 
         $args[] = $options;
         $e = null;
+        $r = true;
 
         try {
             $r = call_user_func_array($cx['hbhelpers'][$ch], $args);
