@@ -256,6 +256,7 @@ class LightnCandy {
         $flagMethod = static::getBoolStr($context['flags']['method']);
         $flagMustlok = static::getBoolStr($context['flags']['mustlok']);
         $flagMustsec = static::getBoolStr($context['flags']['mustsec']);
+        $flagEcho = static::getBoolStr($context['flags']['echo']);
 
         $libstr = static::exportLCRun($context);
         $helpers = static::exportHelper($context);
@@ -274,6 +275,7 @@ class LightnCandy {
             'method' => $flagMethod,
             'mustlok' => $flagMustlok,
             'mustsec' => $flagMustsec,
+            'echo' => $flagEcho,
             'debug' => \$debugopt,
         ),
         'helpers' => $helpers,
@@ -2381,13 +2383,17 @@ class LCRun3 {
 
         if ($isBlock) {
             $options['fn'] = function ($context = '_NO_INPUT_HERE_') use ($cx, $op, $cb) {
-                if ($context === '_NO_INPUT_HERE_') {
-                    return $cb($cx, $op);
+                if ($cx['flags']['echo']) {
+                    ob_start();
                 }
-                $cx['scopes'][] = $op;
-                $ret = $cb($cx, $context);
-                array_pop($cx['scopes']);
-                return $ret;
+                if ($context === '_NO_INPUT_HERE_') {
+                    $ret = $cb($cx, $op);
+                } else {
+                    $cx['scopes'][] = $op;
+                    $ret = $cb($cx, $context);
+                    array_pop($cx['scopes']);
+                }
+                return $cx['flags']['echo'] ? ob_get_clean() : $ret;
             };
         }
 
