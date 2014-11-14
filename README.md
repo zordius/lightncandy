@@ -29,7 +29,7 @@ Features
 * **FLEXIBLE!**
    * Lot of <a href="#compile-options">options</a> to change features and behaviors.
 * Context generation
-   * Analyze used features from your template (use `.getContext()` to get) .
+   * Analyze used features from your template (use `LightnCandy::getContext()` to get it) .
 * Debug
    * <a href="#template-debugging">Generate debug version template</a>
       * Find out missing data when rendering template.
