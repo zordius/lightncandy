@@ -2369,7 +2369,6 @@ class LCRun3 {
      * @param string $ch the name of custom helper to be executed
      * @param array<array|string|integer>|string|integer|null $vars variables for the helper
      * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
-     * @param boolean $named input arguments are named
      *
      * @return string The rendered string of the token
      */
