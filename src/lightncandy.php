@@ -2399,13 +2399,17 @@ class LCRun3 {
 
         if ($inv) {
             $options['inverse'] = function ($context = '_NO_INPUT_HERE_') use ($cx, $op, $inv) {
-                if ($context === '_NO_INPUT_HERE_') {
-                    return $inv($cx, $op);
+                if ($cx['flags']['echo']) {
+                    ob_start();
                 }
-                $cx['scopes'][] = $op;
-                $ret = $inv($cx, $context);
-                array_pop($cx['scopes']);
-                return $ret;
+                if ($context === '_NO_INPUT_HERE_') {
+                    $ret = $inv($cx, $op);
+                } else {
+                    $cx['scopes'][] = $op;
+                    $ret = $inv($cx, $context);
+                    array_pop($cx['scopes']);
+                }
+                return $cx['flags']['echo'] ? ob_get_clean() : $ret;
             };
         }
 
