@@ -3,6 +3,9 @@ HISTORY
 
 master current trunk
    * align with handlebars.js master
+   * 3b48a0acf7 fix parsing bug when FLAG_NOESCAPE enabled
+   * 5c774b1b08 fix hbhelpers response error with options['fn'] when FLAG_BESTPERFORMANCE enabled
+   * c60fe70bdb fix hbhelpers response error with options['inverse'] when FLAG_BESTPERFORMANCE enabled
 
 v0.16 https://github.com/zordius/lightncandy/tree/v0.16
    * align with handlebars.js 2.0.0
