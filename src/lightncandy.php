@@ -937,17 +937,6 @@ $libstr
      */
     protected static function getVariableName($var, &$context, $ishelper = false) {
         if (isset($var[0])) {
-            if ($context['flags']['spvar']) {
-                switch ($var[0]) {
-                    case '@index':
-                    case '@first':
-                    case '@last':
-                    case '@key':
-                        $v = "\$cx['sp_vars']['" . substr($var[0], 1) . "']";
-                        return array("(isset($v)?$v:'')", $var[0]);
-                }
-            }
-
             // Handle language constants or number , only for helpers
             if ($ishelper) {
                 if ((count($var) == 1) && is_numeric($var[0])) {
@@ -971,6 +960,7 @@ $libstr
         $levels = 0;
         $base = '$in';
         $root = false;
+        $spvar = false;
 
         if (isset($var[0])) {
             // trace to parent
@@ -978,16 +968,25 @@ $libstr
                 $levels = array_shift($var);
             }
 
-            // change base when trace to parent
-            if ($levels > 0) {
-                $base = "\$cx['scopes'][count(\$cx['scopes'])-$levels]";
+            // handle @root, @index, @key, @last, etc
+            if ($context['flags']['spvar']) {
+                if (substr($var[0], 0, 1) === '@') {
+                    $spvar = true;
+                    $base = "\$cx['sp_vars']";
+                    $var[0] = substr($var[0], 1);
+                    if ($var[0] === 'root') {
+                        $root = true;
+                    }
+                }
             }
 
-            // Handle @root
-            if ($context['flags']['spvar'] && ($var[0] === '@root')) {
-                $root = true;
-                array_shift($var);
-                $base = '$cx[\'scopes\'][0]';
+            // change base when trace to parent
+            if ($levels > 0) {
+                if ($spvar) {
+                    $base .= str_repeat("['_parent']", $levels);
+                } else {
+                    $base = "\$cx['scopes'][count(\$cx['scopes'])-$levels]";
+                }
             }
         }
 
