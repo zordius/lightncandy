@@ -2200,7 +2200,7 @@ class LCRun3 {
             $i = 0;
             if ($cx['flags']['spvar']) {
                 $old_spvar = $cx['sp_vars'];
-                $cx['sp_vars'] = Array(
+                $cx['sp_vars'] = array(
                     '_parent' => $old_spvar,
                     'root' => $old_spvar['root'],
                 );
