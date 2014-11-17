@@ -265,6 +265,14 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'expected' => 'ABC1-YES!-2-DEFbarGHI-3JKL',
             ),
 
+            Array(
+                'template' => 'A{{#each .}}-{{#each .}}={{.}},{{@key}},{{@index}},{{@../index}}~{{/each}}%{{/each}}B',
+                'data' => Array(Array('a' => 'b'), Array('c' => 'd'), Array('e' => 'f')),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_PARENT | LightnCandy::FLAG_THIS,
+                ),
+                'expected' => 'A-=b,a,0,0~%-=d,c,0,1~%-=f,e,0,2~%B',
+            ),
 
             Array(
                 'template' => 'ABC{{#block "YES!"}}TRUE{{else}}DEF{{foo}}GHI{{/block}}JKL',
