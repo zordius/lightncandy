@@ -266,6 +266,16 @@ class regressionTest extends PHPUnit_Framework_TestCase
             ),
 
             Array(
+                'template' => '-{{getroot}}=',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_SPVARS,
+                    'hbhelpers' => Array('getroot'),
+                ),
+                'data' => 'ROOT!',
+                'expected' => '-ROOT!=',
+            ),
+
+            Array(
                 'template' => 'A{{#each .}}-{{#each .}}={{.}},{{@key}},{{@index}},{{@../index}}~{{/each}}%{{/each}}B',
                 'data' => Array(Array('a' => 'b'), Array('c' => 'd'), Array('e' => 'f')),
                 'options' => Array(

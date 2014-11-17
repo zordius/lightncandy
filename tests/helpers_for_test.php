@@ -130,4 +130,8 @@ function myjoin ($a, $b) {
     return "$a$b";
 }
 
+function getroot ($options) {
+    return $options['data']['root'];
+}
+
 ?>

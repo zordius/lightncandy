@@ -283,7 +283,7 @@ class LightnCandy {
         'hbhelpers' => $hbhelpers,
         'partials' => array({$context['partialCode']}),
         'scopes' => array(\$in),
-        'sp_vars' => array(),
+        'sp_vars' => array('root' => \$in),
 $libstr
     );
     {$context['ops']['op_start']}'$code'{$context['ops']['op_end']}
@@ -2204,8 +2204,15 @@ class LCRun3 {
             $ret = array();
             $cx['scopes'][] = $in;
             $i = 0;
-            if ($cx['flags']['spvar'] && !$isTrav) {
-                $last = count($keys) - 1;
+            if ($cx['flags']['spvar']) {
+                $old_spvar = $cx['sp_vars'];
+                $cx['sp_vars'] = Array(
+                    '_parent' => $old_spvar,
+                    'root' => $old_spvar['root'],
+                );
+                if (!$isTrav) {
+                    $last = count($keys) - 1;
+                }
             }
             foreach ($v as $index => $raw) {
                 if ($cx['flags']['spvar']) {
@@ -2229,6 +2236,7 @@ class LCRun3 {
                 }
                 unset($cx['sp_vars']['index']);
                 unset($cx['sp_vars']['first']);
+                $cx['sp_vars'] = $old_spvar;
             }
             array_pop($cx['scopes']);
             return join('', $ret);
