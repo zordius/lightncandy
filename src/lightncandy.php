@@ -923,11 +923,10 @@ $libstr
      * @expect array('false', 'false') when input array('false'), array('flags'=>array('spvar'=>true,'debug'=>0)), true
      * @expect array(2, '2') when input array('2'), array('flags'=>array('spvar'=>true,'debug'=>0)), true
      * @expect array('((isset($in[\'@index\']) && is_array($in)) ? $in[\'@index\'] : null)', '[@index]') when input array('@index'), array('flags'=>array('spvar'=>false,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0))
-     * @expect array("(isset(\$cx['sp_vars']['index'])?\$cx['sp_vars']['index']:'')", '@index') when input array('@index'), array('flags'=>array('spvar'=>true,'debug'=>0))
-     * @expect array("(isset(\$cx['sp_vars']['key'])?\$cx['sp_vars']['key']:'')", '@key') when input array('@key'), array('flags'=>array('spvar'=>true,'debug'=>0))
-     * @expect array("(isset(\$cx['sp_vars']['first'])?\$cx['sp_vars']['first']:'')", '@first') when input array('@first'), array('flags'=>array('spvar'=>true,'debug'=>0))
-     * @expect array("(isset(\$cx['sp_vars']['last'])?\$cx['sp_vars']['last']:'')", '@last') when input array('@last'), array('flags'=>array('spvar'=>true,'debug'=>0))
-     * @expect array('$cx[\'scopes\'][0]', '@root') when input array('@root'), array('flags'=>array('spvar'=>true,'debug'=>0))
+     * @expect array("((isset(\$cx['sp_vars']['index']) && is_array(\$cx['sp_vars'])) ? \$cx['sp_vars']['index'] : null)", '@[index]') when input array('@index'), array('flags'=>array('spvar'=>true,'debug'=>0))
+     * @expect array("((isset(\$cx['sp_vars']['key']) && is_array(\$cx['sp_vars'])) ? \$cx['sp_vars']['key'] : null)", '@[key]') when input array('@key'), array('flags'=>array('spvar'=>true,'debug'=>0))
+     * @expect array("((isset(\$cx['sp_vars']['first']) && is_array(\$cx['sp_vars'])) ? \$cx['sp_vars']['first'] : null)", '@[first]') when input array('@first'), array('flags'=>array('spvar'=>true,'debug'=>0))
+     * @expect array("((isset(\$cx['sp_vars']['last']) && is_array(\$cx['sp_vars'])) ? \$cx['sp_vars']['last'] : null)", '@[last]') when input array('@last'), array('flags'=>array('spvar'=>true,'debug'=>0))
      * @expect array('\'a\'', '"a"') when input array('"a"'), array('flags'=>array('spvar'=>true,'debug'=>0))
      * @expect array('((isset($in[\'a\']) && is_array($in)) ? $in[\'a\'] : null)', '[a]') when input array('a'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0))
      * @expect array('((isset($cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\']) && is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)', '../[a]') when input array(1,'a'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0))
@@ -959,7 +958,6 @@ $libstr
 
         $levels = 0;
         $base = '$in';
-        $root = false;
         $spvar = false;
 
         if (isset($var[0])) {
@@ -974,9 +972,6 @@ $libstr
                     $spvar = true;
                     $base = "\$cx['sp_vars']";
                     $var[0] = substr($var[0], 1);
-                    if ($var[0] === 'root') {
-                        $root = true;
-                    }
                 }
             }
 
@@ -991,7 +986,7 @@ $libstr
         }
 
         // Generate normalized expression for debug
-        $exp = static::getExpression($levels, $root, $var);
+        $exp = static::getExpression($levels, $spvar, $var);
 
         if ((count($var) == 0) || (is_null($var[0]) && (count($var) == 1))) {
             return array($base, $exp);
@@ -1021,23 +1016,23 @@ $libstr
      * Internal method used by compile().
      *
      * @param integer $levels trace N levels top parent scope
-     * @param boolean $root is the path start from root or not
+     * @param boolean $spvar is the path start with @ or not
      * @param array<string|integer> $var variable parsed path
      *
      * @return string normalized expression for debug display
      *
      * @expect '[a].[b]' when input 0, false, array('a', 'b')
-     * @expect '@root' when input 0, true, array()
+     * @expect '@[root]' when input 0, true, array('root')
      * @expect 'this' when input 0, false, null
      * @expect 'this.[id]' when input 0, false, array(null, 'id')
-     * @expect '@root.[a].[b]' when input 0, true, array('a', 'b')
+     * @expect '@[root].[a].[b]' when input 0, true, array('root', 'a', 'b')
      * @expect '../../[a].[b]' when input 2, false, array('a', 'b')
      * @expect '../[a\'b]' when input 1, false, array('a\'b')
      */
-    protected static function getExpression($levels, $root, $var) {
-        return str_repeat('../', $levels) . ((is_array($var) && count($var)) ? (($root ? '@root.' : '') . implode('.', array_map(function($v) {
+    protected static function getExpression($levels, $spvar, $var) {
+        return ($spvar ? '@' : '') . str_repeat('../', $levels) . ((is_array($var) && count($var)) ? implode('.', array_map(function($v) {
             return is_null($v) ? 'this' : "[$v]";
-        }, $var))) : ($root ? '@root' : 'this'));
+        }, $var)) : 'this');
     }
 
     /**

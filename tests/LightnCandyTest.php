@@ -205,20 +205,17 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(array('((isset($in[\'@index\']) && is_array($in)) ? $in[\'@index\'] : null)', '[@index]'), $method->invoke(null,
             array('@index'), array('flags'=>array('spvar'=>false,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0))
         ));
-        $this->assertEquals(array("(isset(\$cx['sp_vars']['index'])?\$cx['sp_vars']['index']:'')", '@index'), $method->invoke(null,
+        $this->assertEquals(array("((isset(\$cx['sp_vars']['index']) && is_array(\$cx['sp_vars'])) ? \$cx['sp_vars']['index'] : null)", '@[index]'), $method->invoke(null,
             array('@index'), array('flags'=>array('spvar'=>true,'debug'=>0))
         ));
-        $this->assertEquals(array("(isset(\$cx['sp_vars']['key'])?\$cx['sp_vars']['key']:'')", '@key'), $method->invoke(null,
+        $this->assertEquals(array("((isset(\$cx['sp_vars']['key']) && is_array(\$cx['sp_vars'])) ? \$cx['sp_vars']['key'] : null)", '@[key]'), $method->invoke(null,
             array('@key'), array('flags'=>array('spvar'=>true,'debug'=>0))
         ));
-        $this->assertEquals(array("(isset(\$cx['sp_vars']['first'])?\$cx['sp_vars']['first']:'')", '@first'), $method->invoke(null,
+        $this->assertEquals(array("((isset(\$cx['sp_vars']['first']) && is_array(\$cx['sp_vars'])) ? \$cx['sp_vars']['first'] : null)", '@[first]'), $method->invoke(null,
             array('@first'), array('flags'=>array('spvar'=>true,'debug'=>0))
         ));
-        $this->assertEquals(array("(isset(\$cx['sp_vars']['last'])?\$cx['sp_vars']['last']:'')", '@last'), $method->invoke(null,
+        $this->assertEquals(array("((isset(\$cx['sp_vars']['last']) && is_array(\$cx['sp_vars'])) ? \$cx['sp_vars']['last'] : null)", '@[last]'), $method->invoke(null,
             array('@last'), array('flags'=>array('spvar'=>true,'debug'=>0))
-        ));
-        $this->assertEquals(array('$cx[\'scopes\'][0]', '@root'), $method->invoke(null,
-            array('@root'), array('flags'=>array('spvar'=>true,'debug'=>0))
         ));
         $this->assertEquals(array('\'a\'', '"a"'), $method->invoke(null,
             array('"a"'), array('flags'=>array('spvar'=>true,'debug'=>0))
@@ -248,8 +245,8 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('[a].[b]', $method->invoke(null,
             0, false, array('a', 'b')
         ));
-        $this->assertEquals('@root', $method->invoke(null,
-            0, true, array()
+        $this->assertEquals('@[root]', $method->invoke(null,
+            0, true, array('root')
         ));
         $this->assertEquals('this', $method->invoke(null,
             0, false, null
@@ -257,8 +254,8 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('this.[id]', $method->invoke(null,
             0, false, array(null, 'id')
         ));
-        $this->assertEquals('@root.[a].[b]', $method->invoke(null,
-            0, true, array('a', 'b')
+        $this->assertEquals('@[root].[a].[b]', $method->invoke(null,
+            0, true, array('root', 'a', 'b')
         ));
         $this->assertEquals('../../[a].[b]', $method->invoke(null,
             2, false, array('a', 'b')
