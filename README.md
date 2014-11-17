@@ -627,12 +627,14 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{../var}}` : parent template scope. (require `FLAG_PARENT`)
 * `{{>file}}` : partial; include another template inside a template.
 * `{{>file foo}}` : partial with new context (require `FLAG_RUNTIMEPARTIAL`)
-* `{{@index}}` : references to current index in a `{{#each}}` loop on an array.
-* `{{@key}}` : references to current key in a `{{#each}}` loop on an object.
-* `{{@root}}` : references to root context.
-* `{{@first}}` : true when looping at first item
-* `{{@last}}` : true when looping at last item
-* `{{@root.path.to.value}}` : references to root context then follow the path.
+* `{{@index}}` : references to current index in a `{{#each}}` loop on an array. (require `FLAG_SPVARS`)
+* `{{@key}}` : references to current key in a `{{#each}}` loop on an object. (require `FLAG_SPVARS`)
+* `{{@root}}` : references to root context. (require `FLAG_SPVARS`)
+* `{{@first}}` : true when looping at first item. (require `FLAG_SPVARS`)
+* `{{@last}}` : true when looping at last item. (require `FLAG_SPVARS`)
+* `{{@root.path.to.value}}` : references to root context then follow the path. (require `FLAG_SPVARS`)
+* `{{@../index}}` : access to parent loop index. (require `FLAG_SPVARS` and `FLAG_PARENT`)
+* `{{@../key}}` : access to parent loop key. (require `FLAG_SPVARS` and `FLAG_PARENT`)
 * `{{foo.[ba.r].[#spec].0.ok}}` : references to $CurrentConext['foo']['ba.r']['#spec'][0]['ok'] . (require `FLAG_ADVARNAME`)
 * `{{~any_valid_tag}}` : Space control, remove all previous spacing (includes CR/LF, tab, space; stop on any none spacing character) (require `FLAG_SPACECTL`)
 * `{{any_valid_tag~}}` : Space control, remove all next spacing (includes CR/LF, tab, space; stop on any none spacing character) (require `FLAG_SPACECTL`)
