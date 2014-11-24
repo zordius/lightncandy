@@ -1,6 +1,6 @@
 {
-    "name": "zordius/lightncandy",
-    "description": "An extremely fast PHP implementation of handlebars ( http://handlebarsjs.com/ ) and mustache ( http://mustache.github.io/ ).",
+    "name": "opine/lightncandy",
+    "description": "Opine-PHP form of an extremely fast PHP implementation of handlebars ( http://handlebarsjs.com/ ) and mustache ( http://mustache.github.io/ ).",
     "homepage": "https://github.com/zordius/lightncandy",
     "keywords": ["handlebars", "mustache", "PHP", "template", "logicless"],
     "license": "MIT",
