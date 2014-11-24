@@ -584,7 +584,13 @@ $libstr
      */
     protected static function getPHPCode($closure) {
         if (is_string($closure) && preg_match('/(.+)::(.+)/', $closure, $matched)) {
-            $ref = new ReflectionMethod($matched[1], $matched[2]);
+            if (method_exists($matched[1], $matched[2])) {
+                $ref = new ReflectionMethod($matched[1], $matched[2]);
+            } elseif (method_exists($matched[1], '__callStatic')) {
+                return "'" . $closure . "'";
+            } else {
+                throw new Exception ('Class: ' . $matched[1] . ' does not contain method: ' . $matched[2]);
+            }
         } else {
             $ref = new ReflectionFunction($closure);
         }
