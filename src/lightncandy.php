@@ -2211,13 +2211,9 @@ class LCRun3 {
             foreach ($v as $index => $raw) {
                 if ($cx['flags']['spvar']) {
                     $cx['sp_vars']['first'] = ($i === 0);
-                    if ($isObj || $isTrav) {
-                        $cx['sp_vars']['key'] = $index;
-                        $cx['sp_vars']['index'] = $i;
-                    } else {
-                        $cx['sp_vars']['last'] = ($i == $last);
-                        $cx['sp_vars']['index'] = $index;
-                    }
+                    $cx['sp_vars']['last'] = ($i == $last);
+                    $cx['sp_vars']['key'] = $index;
+                    $cx['sp_vars']['index'] = $i;
                     $i++;
                 }
                 $ret[] = $cb($cx, $raw);
