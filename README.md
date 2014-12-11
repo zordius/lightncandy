@@ -395,7 +395,7 @@ function helper_categories($cx, $args) {
 }
 ```
 
-The mission of a block custom helper is only focus on providing different context or logic to inner block, nothing else.
+The mission of a block custom helper is only focus on providing different context or logic to inner block, nothing else. If you like to do things beyond these restrictions, please using `hbhelpers` and keep reading to next section.
 
 Handlebars.js' Custom Helper
 ----------------------------
