@@ -1186,6 +1186,20 @@ $libstr
                     continue;
                 }
 
+                // continue to next match when begin with ' without ending '
+                if (preg_match('/^\'[^\']+$/', $t)) {
+                    $prev = $t;
+                    $expect = '\'';
+                    continue;
+                }
+
+                // continue to next match when =' exists without ending '
+                if (preg_match('/=\'[^\']+$/', $t)) {
+                    $prev = $t;
+                    $expect = '\'';
+                    continue;
+                }
+
                 // continue to next match when '[' exists without ending ']'
                 if (preg_match('/\\[[^\\]]+$/', $t)) {
                     $prev = $t;
