@@ -1637,11 +1637,12 @@ $libstr
         $v = static::getVariableName($vars[0], $context);
         $context['stack'][] = $v[1];
         $context['stack'][] = '#';
+        $exportedtag = var_export($vars, true);
         $ch = array_shift($vars);
 
         static::addUsageCount($context, $notHBCH ? 'blockhelpers' : 'hbhelpers', $ch[0]);
         $v = static::getVariableNames($vars, $context, true);
-        return $context['ops']['seperator'] . static::getFuncName($context, $notHBCH ? 'bch' : 'hbch', '#' . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
+        return $context['ops']['seperator'] . static::getFuncName($context, $notHBCH ? 'bch' : 'hbch', '#' . implode(' ', $v[1])) . "\$cx, '$ch[0]', $exportedtag, {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
     /**
@@ -1758,10 +1759,11 @@ $libstr
         }
 
         $fn = $raw ? 'raw' : $context['ops']['enc'];
+        $exportedtag = var_export($vars, true);
         $ch = array_shift($vars);
         $v = static::getVariableNames($vars, $context, true);
         static::addUsageCount($context, $notHH ? 'helpers' : 'hbhelpers', $ch[0]);
-        return $context['ops']['seperator'] . static::getFuncName($context, $notHH ? 'ch' : 'hbch', "$ch[0] " . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, '$fn'" . ($notHH ? '' : ', \'$in\'') . "){$context['ops']['seperator']}";
+        return $context['ops']['seperator'] . static::getFuncName($context, $notHH ? 'ch' : 'hbch', "$ch[0] " . implode(' ', $v[1])) . "\$cx, '$ch[0]', $exportedtag, {$v[0]}, '$fn'" . ($notHH ? '' : ', \'$in\'') . "){$context['ops']['seperator']}";
     }
 
     /**
@@ -2321,7 +2323,7 @@ class LCRun3 {
      * @expect '=&#x27;=' when input array('helpers' => array('a' => function ($i) {return "=$i[0]=";})), 'a', array(array('\''),array()), 'encq'
      * @expect '=b=' when input array('helpers' => array('a' => function ($i,$j) {return "={$j['a']}=";})), 'a', array(array(),array('a' => 'b')), 'raw'
      */
-    public static function ch($cx, $ch, $vars, $op) {
+    public static function ch($cx, $ch, $tag, $vars, $op) {
         return self::chret(call_user_func_array($cx['helpers'][$ch], $vars), $op);
     }
 
@@ -2370,7 +2372,7 @@ class LCRun3 {
      *
      * @return string The rendered string of the token
      */
-    public static function hbch($cx, $ch, $vars, $op, $cb = false, $inv = false) {
+    public static function hbch($cx, $ch, $tag, $vars, $op, $cb = false, $inv = false) {
         $isBlock = (is_object($cb) && ($cb instanceof Closure));
         $args = $vars[0];
         $options = array(
@@ -2449,17 +2451,18 @@ class LCRun3 {
      *
      * @param array<string,array|string|integer> $cx render time context
      * @param string $ch the name of custom helper to be executed
+     * @param array<array|string|integer>|string|integer|null $tag variables for the helper
      * @param array<array|string|integer>|string|integer|null $vars variables for the helper
      * @param array<array|string|integer>|string|integer|null $in input data with current scope
      * @param Closure $cb callback function to render child context
      *
      * @return string The rendered string of the token
      *
-     * @expect '4.2.3' when input array('blockhelpers' => array('a' => function ($cx) {return array($cx,2,3);})), 'a', array(0, 0), 4, function($cx, $i) {return implode('.', $i);}
-     * @expect '2.6.5' when input array('blockhelpers' => array('a' => function ($cx,$in) {return array($cx,$in[0],5);})), 'a', array('6', 0), 2, function($cx, $i) {return implode('.', $i);}
-     * @expect '' when input array('blockhelpers' => array('a' => function ($cx,$in) {})), 'a', array('6', 0), 2, function($cx, $i) {return implode('.', $i);}
+     * @expect '4.2.3' when input array('blockhelpers' => array('a' => function ($cx) {return array($cx,2,3);})), 'a', array(), array(0, 0), 4, function($cx, $i) {return implode('.', $i);}
+     * @expect '2.6.5' when input array('blockhelpers' => array('a' => function ($cx,$in) {return array($cx,$in[0],5);})), 'a', array(), array('6', 0), 2, function($cx, $i) {return implode('.', $i);}
+     * @expect '' when input array('blockhelpers' => array('a' => function ($cx,$in) {})), 'a', array(), array('6', 0), 2, function($cx, $i) {return implode('.', $i);}
      */
-    public static function bch($cx, $ch, $vars, $in, $cb) {
+    public static function bch($cx, $ch, $tag, $vars, $in, $cb) {
         $r = call_user_func($cx['blockhelpers'][$ch], $in, $vars[0], $vars[1]);
         if (is_null($r)) {
             return '';
@@ -2471,4 +2474,3 @@ class LCRun3 {
         return $ret;
     }
 }
-?>
