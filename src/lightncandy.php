@@ -2377,7 +2377,8 @@ class LCRun3 {
         $args = $vars[0];
         $options = array(
             'name' => $ch,
-            'hash' => $vars[1]
+            'hash' => $vars[1],
+            'tag' => $tag
         );
 
         if ($isBlock) {
