@@ -468,6 +468,16 @@ class regressionTest extends PHPUnit_Framework_TestCase
             ),
 
             Array(
+                'template' => '{{mydash \'a b c\' "d e f"}}',
+                'data' => Array('a' => 'a', 'b' => 'b', 'c' => Array('c' => 'c'), 'd' => 'd', 'e' => 'e'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_ADVARNAME,
+                    'hbhelpers' => Array('mydash'),
+                ),
+                'expected' => 'a b c-d e f',
+            ),
+
+            Array(
                 'template' => '{{mydash "abc" (test_array 1)}}',
                 'data' => Array('a' => 'a', 'b' => 'b', 'c' => Array('c' => 'c'), 'd' => 'd', 'e' => 'e'),
                 'options' => Array(
