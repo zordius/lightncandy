@@ -952,7 +952,8 @@ $libstr
 
             // Handle double quoted string
             if (preg_match('/^"(.*)"$/', $var[0], $matched)) {
-                return array("'{$matched[1]}'", $var[0]);
+                $t = addcslashes(stripslashes(preg_replace('/\\\\\\\\/', '\\', $matched[1])), "'");
+                return array("'{$t}'", "\"{$t}\"");
             }
         }
 
@@ -1064,6 +1065,11 @@ $libstr
             return array($v);
         }
 
+        // handle single quoted string
+        if (preg_match('/^\\\\\'(.*)\\\\\'$/', $v, $matched)) {
+            return array("\"{$matched[1]}\"");
+        }
+
         // handle ..
         if ($v === '..') {
             $v = '../';
@@ -1148,11 +1154,6 @@ $libstr
             $prev = '';
             $expect = 0;
             foreach ($matchedall[2] as $index => $t) {
-                // Handle \" in "foo"
-                if (($expect === '"') || (substr($t, 0, 1) === '"')) {
-                    $t = addcslashes(stripslashes(preg_replace('/\\\\\\\\/', '\\', $t)), "'");
-                }
-
                 // continue from previous match when expect something
                 if ($expect) {
                     $prev .= "{$matchedall[1][$index]}$t";
@@ -1186,15 +1187,15 @@ $libstr
                     continue;
                 }
 
-                // continue to next match when begin with ' without ending '
-                if (preg_match('/^\'[^\']+$/', $t)) {
+                // continue to next match when begin with \' without ending '
+                if (preg_match('/^\\\'[^\']+$/', $t)) {
                     $prev = $t;
                     $expect = '\'';
                     continue;
                 }
 
-                // continue to next match when =' exists without ending '
-                if (preg_match('/=\'[^\']+$/', $t)) {
+                // continue to next match when =\' exists without ending '
+                if (preg_match('/=\\\'[^\']+$/', $t)) {
                     $prev = $t;
                     $expect = '\'';
                     continue;

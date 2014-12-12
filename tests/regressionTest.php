@@ -459,7 +459,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
             ),
 
             Array(
-                'template' => '{{mydash "abc" "dev"}}',
+                'template' => '{{mydash \'abc\' "dev"}}',
                 'data' => Array('a' => 'a', 'b' => 'b', 'c' => Array('c' => 'c'), 'd' => 'd', 'e' => 'e'),
                 'options' => Array(
                     'hbhelpers' => Array('mydash'),
