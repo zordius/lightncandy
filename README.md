@@ -565,6 +565,30 @@ Here are the list of LCRun3 debug options for render function:
 * `DEBUG_TAGS_ANSI` : turn the return value of render function into normalized mustache tags with ANSI color
 * `DEBUG_TAGS_HTML` : turn the return value of render function into normalized mustache tags with HTML comments
 
+Customize Render Function
+-------------------------
+
+If you want to do extra tasks inside render function or add more comment, you may use `renderex` when `compile()` . For example, this sample embed the compile time comment into the template:
+
+```php
+$php = LightnCandy::compile($template, Array(
+    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+    'renderex' => '// Compiled at ' . date('Y-m-d h:i:s')
+));
+```
+
+Your render function will be:
+
+```php
+function ($in) {$
+    $cx = array(...);
+    // compiled at 1999-12-31 00:00:00
+    return .....
+}
+```
+
+Please make sure the passed in `renderex` is valid PHP, LightnCandy will not check it.
+
 Unsupported Feature (so far)
 ----------------------------
 

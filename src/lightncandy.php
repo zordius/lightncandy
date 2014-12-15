@@ -286,6 +286,7 @@ class LightnCandy {
         'sp_vars' => array('root' => \$in),
 $libstr
     );
+    {$context['renderex']}
     {$context['ops']['op_start']}'$code'{$context['ops']['op_end']}
 }
 ?>";
@@ -381,6 +382,7 @@ $libstr
             'helpers' => array(),
             'blockhelpers' => array(),
             'hbhelpers' => array(),
+            'renderex' => isset($options['renderex']) ? $options['renderex'] : '',
         );
 
         $context['ops'] = $context['flags']['echo'] ? array(
