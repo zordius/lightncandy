@@ -259,6 +259,7 @@ class LightnCandy {
         $flagEcho = static::getBoolStr($context['flags']['echo']);
 
         $libstr = static::exportLCRun($context);
+        $constants = static::exportLCRunConstant($context);
         $helpers = static::exportHelper($context);
         $bhelpers = static::exportHelper($context, 'blockhelpers');
         $hbhelpers = static::exportHelper($context, 'hbhelpers');
@@ -278,6 +279,7 @@ class LightnCandy {
             'echo' => $flagEcho,
             'debug' => \$debugopt,
         ),
+        'constants' => $constants,
         'helpers' => $helpers,
         'blockhelpers' => $bhelpers,
         'hbhelpers' => $hbhelpers,
@@ -680,6 +682,28 @@ $libstr
     }
 
     /**
+     * Internal method used by compile(). Export standalone constants.
+     *
+     * @param array<string,array|string|integer> $context current compile context
+     *
+     * @return string
+     */
+    protected static function exportLCRunConstant($context) {
+        if ($context['flags']['standalone'] == 0) {
+            return 'array()';
+        }
+
+        $class = new ReflectionClass('LCRun3');
+        $constants = $class->getConstants();
+        $ret = " array(\n";
+        foreach($constants as $name => $value) {
+            $ret .= "            '$name' => ".  (is_string($value) ? "'$value'" : $value ) . ",\n";
+        }
+        $ret .= "        )";
+        return $ret;
+    }
+
+    /**
      * Internal method used by compile(). Export required standalone functions.
      *
      * @param array<string,array|string|integer> $context current compile context
@@ -690,7 +714,7 @@ $libstr
     protected static function scanLCRunDependency($context, $code) {
         $child = array();
 
-        $code = preg_replace_callback('/self::(.+?)\(/', function ($matches) use ($context, &$child) {
+        $code = preg_replace_callback('/self::(\w+?)\s*\(/', function ($matches) use ($context, &$child) {
             if (!isset($child[$matches[1]])) {
                 $child[$matches[1]] = 0;
             }
@@ -699,6 +723,8 @@ $libstr
             return "\$cx['funcs']['{$matches[1]}'](";
         }, $code);
 
+        // replace the constants
+        $code = preg_replace('/self::([A-Z0-9_]+)/', "\$cx['constants']['$1']", $code);
         return array($code, $child);
     }
 
@@ -1868,7 +1894,7 @@ class LCRun3 {
      */
     public static function debug($v, $f, $cx) {
         $params = array_slice(func_get_args(), 2);
-        $r = call_user_func_array((isset($cx['funcs']) ? "\$cx['funcs']['$f']" : "LCRun3::$f"), $params);
+        $r = call_user_func_array((isset($cx['funcs'][$f]) ? $cx['funcs'][$f] : "LCRun3::$f"), $params);
 
         if ($cx['flags']['debug'] & self::DEBUG_TAGS) {
             $ansi = $cx['flags']['debug'] & (self::DEBUG_TAGS_ANSI - self::DEBUG_TAGS);
