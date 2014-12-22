@@ -358,8 +358,8 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(array(false, array(array('a'), 'q' => array('"b c"'))), $method->invoke(null,
             array(0,0,0,0,0,0,'a q="b c"'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0))
         ));
-        $this->assertEquals(array(false, array(array('(foo bar)'))), $method->invoke(null,
-            array(0,0,0,0,0,0,'(foo bar)'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0))
+        $this->assertEquals(array(false, array(array('foo'), array("'=='"), array('bar'))), $method->invoke(null,
+            array(0,0,0,0,0,0,"foo '==' bar"), array('flags' => array('advar' => 1, 'namev' => 1))
         ));
     }
     /**
