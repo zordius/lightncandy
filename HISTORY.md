@@ -2,9 +2,14 @@ HISTORY
 =======
 
 master current trunk
-   * 7bcce4c1a7 suport {{@last}} for {{#each}} on both object and array.
+   * 7bcce4c1a7 support {{@last}} for {{#each}} on both object and array.
    * b0c44c3b40 remove ending \n in lightncandy.php
    * e130875d5a support single quoted string input: {{foo 'bar'}}.
+   * c603aa39d8 support `renderex` to extend anything in render function.
+   * f063e5302c now render function debug constants works well in standalone mode.
+   * 53f6a6816d fix parsing bug when there is a `=` inside single quoted string.
+   * 2f16c0c393 now really autoload when installed with composer.
+   * c4da1f576c supports {{^myHelper}}.
 
 v0.17 https://github.com/zordius/lightncandy/tree/v0.17
    * align with handlebars.js master
