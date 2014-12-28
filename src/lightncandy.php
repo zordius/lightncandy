@@ -1638,6 +1638,7 @@ $libstr
                     return "{$context['ops']['seperator']}'" . static::compileTemplate($context, preg_replace('/^/m', $context['tokens']['partialind'], $context['usedPartial'][$p[0]]), $p[0]) . "'{$context['ops']['seperator']}";
                 }
             case '^':
+                // {{^}} means {{else}}
                 if (!$vars[0][0]) {
                     $vars[0][0] = 'else';
                     $token[self::POS_OP] = '';
