@@ -1646,10 +1646,12 @@ $libstr
                 }
 
                 // Try to compile as custom helper {{^myHelper}}
+/*
                 $r = static::compileBlockCustomHelper($context, $vars, true);
                 if ($r) {
                     return $r;
                 }
+*/
                 $v = static::getVariableName($vars[0], $context);
                 $context['stack'][] = $v[1];
                 $context['stack'][] = '^';
@@ -1696,7 +1698,7 @@ $libstr
 
         static::addUsageCount($context, $notHBCH ? 'blockhelpers' : 'hbhelpers', $ch[0]);
         $v = static::getVariableNames($vars, $context, true);
-        return $context['ops']['seperator'] . static::getFuncName($context, $notHBCH ? 'bch' : 'hbch', ($inverted ? '^' : '#') . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, \$in, \$inverted, function(\$cx, \$in) {{$context['ops']['f_start']}";
+        return $context['ops']['seperator'] . static::getFuncName($context, $notHBCH ? 'bch' : 'hbch', ($inverted ? '^' : '#') . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
     /**
@@ -2194,7 +2196,7 @@ class LCRun3 {
      * @param array<array|string|integer>|string|integer|null $in input data with current scope
      * @param boolean $each true when rendering #each
      * @param Closure $cb callback function to render child context
-     * @param Closure|null $inv callback function to render child context when {{else}}
+     * @param Closure|null $else callback function to render child context when {{else}}
      *
      * @return string The rendered string of the section
      *
@@ -2223,7 +2225,7 @@ class LCRun3 {
      * @expect '268' when input array('flags' => array('spvar' => 1)), array(1,3,4), 0, false, function ($c, $i) {return $i * 2;}
      * @expect '038' when input array('flags' => array('spvar' => 1), 'sp_vars'=>array()), array(1,3,'a'=>4), 0, true, function ($c, $i) {return $i * $c['sp_vars']['index'];}
      */
-    public static function sec($cx, $v, $in, $each, $cb, $inv = null) {
+    public static function sec($cx, $v, $in, $each, $cb, $else = null) {
         $isAry = is_array($v);
         $isTrav = $v instanceof Traversable;
         $loop = $each;
@@ -2231,8 +2233,8 @@ class LCRun3 {
         $last = null;
         $isObj = false;
 
-        if ($isAry && $inv !== null && count($v) === 0) {
-            return $inv($cx, $in);
+        if ($isAry && $else !== null && count($v) === 0) {
+            return $else($cx, $in);
         }
 
         // #var, detect input type is object or not
@@ -2287,9 +2289,9 @@ class LCRun3 {
             return join('', $ret);
         }
         if ($each) {
-            if ($inv !== null) {
+            if ($else !== null) {
                 $cx['scopes'][] = $in;
-                $ret = $inv($cx, $v);
+                $ret = $else($cx, $v);
                 array_pop($cx['scopes']);
                 return $ret;
             }
@@ -2314,8 +2316,8 @@ class LCRun3 {
             return $cb($cx, $v);
         }
 
-        if ($inv !== null) {
-            return $inv($cx, $in);
+        if ($else !== null) {
+            return $else($cx, $in);
         }
 
         return '';
@@ -2328,7 +2330,7 @@ class LCRun3 {
      * @param array<array|string|integer>|string|integer|null $v value to be the new context
      * @param array<array|string|integer>|string|integer|null $in input data with current scope
      * @param Closure $cb callback function to render child context
-     * @param Closure|null $inv callback function to render child context when {{else}}
+     * @param Closure|null $else callback function to render child context when {{else}}
      *
      * @return string The rendered string of the token
      *
@@ -2337,9 +2339,9 @@ class LCRun3 {
      * @expect '-Array=' when input array(), array('a'=>'b'), array('a' => 'b'), function ($c, $i) {return "-$i=";}
      * @expect '-b=' when input array(), 'b', array('a' => 'b'), function ($c, $i) {return "-$i=";}
      */
-    public static function wi($cx, $v, $in, $cb, $inv = null) {
+    public static function wi($cx, $v, $in, $cb, $else = null) {
         if (($v === false) || ($v === null)) {
-            return $inv ? $inv($cx, $in) : '';
+            return $else ? $else($cx, $in) : '';
         }
         $cx['scopes'][] = $in;
         $ret = $cb($cx, $v);
@@ -2423,11 +2425,11 @@ class LCRun3 {
      * @param array<array|string|integer>|string|integer|null $vars variables for the helper
      * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
      * @param Closure $cb callback function to render child context
-     * @param Closure $inv callback function to render else child context
+     * @param Closure $else callback function to render else child context
      *
      * @return string The rendered string of the token
      */
-    public static function hbch($cx, $ch, $vars, $op, $cb = false, $inv = false) {
+    public static function hbch($cx, $ch, $vars, $op, $cb = false, $else = false) {
         $isBlock = (is_object($cb) && ($cb instanceof Closure));
         $args = $vars[0];
         $options = array(
@@ -2451,16 +2453,16 @@ class LCRun3 {
             };
         }
 
-        if ($inv) {
-            $options['inverse'] = function ($context = '_NO_INPUT_HERE_') use ($cx, $op, $inv) {
+        if ($else) {
+            $options['inverse'] = function ($context = '_NO_INPUT_HERE_') use ($cx, $op, $else) {
                 if ($cx['flags']['echo']) {
                     ob_start();
                 }
                 if ($context === '_NO_INPUT_HERE_') {
-                    $ret = $inv($cx, $op);
+                    $ret = $else($cx, $op);
                 } else {
                     $cx['scopes'][] = $op;
-                    $ret = $inv($cx, $context);
+                    $ret = $else($cx, $context);
                     array_pop($cx['scopes']);
                 }
                 return $cx['flags']['echo'] ? ob_get_clean() : $ret;
