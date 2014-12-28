@@ -2,13 +2,17 @@ HISTORY
 =======
 
 master current trunk
+   * 7bcce4c1a7 suport {{@last}} for {{#each}} on both object and array.
+   * b0c44c3b40 remove ending \n in lightncandy.php
+   * e130875d5a support single quoted string input: {{foo 'bar'}}.
+
+v0.17 https://github.com/zordius/lightncandy/tree/v0.17
    * align with handlebars.js master
    * 3b48a0acf7 fix parsing bug when FLAG_NOESCAPE enabled
    * 5c774b1b08 fix hbhelpers response error with options['fn'] when FLAG_BESTPERFORMANCE enabled
    * c60fe70bdb fix hbhelpers response error with options['inverse'] when FLAG_BESTPERFORMANCE enabled
    * e19b3e3426 provide options['root'] and options['_parent'] to hbhelpers
    * d8a288e83b refine variable parsing logic to support {{@../index}}, {{@../key}}, etc.
-   * 7bcce4c1a7 suport {{@last}} for {{#each}} on both object and array.
 
 v0.16 https://github.com/zordius/lightncandy/tree/v0.16
    * align with handlebars.js 2.0.0
