@@ -1644,10 +1644,17 @@ $libstr
                     $token[self::POS_OP] = '';
                     return;
                 }
+
+                // Try to compile as custom helper {{^myHelper}}
+                $r = static::compileBlockCustomHelper($context, $vars, true);
+                if ($r) {
+                    return $r;
+                }
                 $v = static::getVariableName($vars[0], $context);
                 $context['stack'][] = $v[1];
                 $context['stack'][] = '^';
                 static::noNamedArguments($token, $context, $named);
+                // Compile to inverted section {{^myVar}}
                 return "{$context['ops']['cnd_start']}(" . static::getFuncName($context, 'isec', '^' . $v[1]) . "\$cx, {$v[0]})){$context['ops']['cnd_then']}";
             case '/':
                 return static::compileBlockEnd($token, $context, $vars);
@@ -1655,11 +1662,13 @@ $libstr
             case ' ':
                 return $context['ops']['seperator'];
             case '#':
+                // Try to compile as custom helper {{#myHelper}}
                 $r = static::compileBlockCustomHelper($context, $vars);
                 if ($r) {
                     return $r;
                 }
                 static::noNamedArguments($token, $context, $named, ', maybe you missing the block custom helper?');
+                // Compile to section {{#myVar}}
                 return static::compileBlockBegin($context, $vars);
         }
     }
