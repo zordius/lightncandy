@@ -1678,10 +1678,11 @@ $libstr
      *
      * @param array<string,array|string|integer> $context current compile context
      * @param array<array|string|integer> $vars parsed arguments list
+     * @param boolean $inverted the logic will be inverted
      *
      * @return string|null Return compiled code segment for the token
      */
-    protected static function compileBlockCustomHelper(&$context, $vars) {
+    protected static function compileBlockCustomHelper(&$context, $vars, $inverted = false) {
         $notHBCH = !isset($context['hbhelpers'][$vars[0][0]]);
 
         if (!isset($context['blockhelpers'][$vars[0][0]]) && $notHBCH) {
@@ -1695,7 +1696,7 @@ $libstr
 
         static::addUsageCount($context, $notHBCH ? 'blockhelpers' : 'hbhelpers', $ch[0]);
         $v = static::getVariableNames($vars, $context, true);
-        return $context['ops']['seperator'] . static::getFuncName($context, $notHBCH ? 'bch' : 'hbch', '#' . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
+        return $context['ops']['seperator'] . static::getFuncName($context, $notHBCH ? 'bch' : 'hbch', ($inverted ? '^' : '#') . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, \$in, \$inverted, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
     /**
@@ -2421,6 +2422,8 @@ class LCRun3 {
      * @param string $ch the name of custom helper to be executed
      * @param array<array|string|integer>|string|integer|null $vars variables for the helper
      * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
+     * @param Closure $cb callback function to render child context
+     * @param Closure $inv callback function to render else child context
      *
      * @return string The rendered string of the token
      */
