@@ -2530,13 +2530,29 @@ class LCRun3 {
      */
     public static function bch($cx, $ch, $vars, $in, $inverted, $cb, $else = false) {
         $r = call_user_func($cx['blockhelpers'][$ch], $in, $vars[0], $vars[1]);
-        if (is_null($r)) {
-            return '';
+
+        // $invert the logic
+        if ($inverted) {
+            $tmp = $else;
+            $else = $cb;
+            $cb = $tmp;
         }
 
-        $cx['scopes'][] = $in;
-        $ret = $cb($cx, $r);
-        array_pop($cx['scopes']);
+        $ret = '';
+        if (is_null($r)) {
+            if ($else) {
+                $cx['scopes'][] = $in;
+                $ret = $else($cx, $r);
+                array_pop($cx['scopes']);
+            }
+        } else {
+            if ($cb) {
+                $cx['scopes'][] = $in;
+                $ret = $cb($cx, $r);
+                array_pop($cx['scopes']);
+            }
+        }
+
         return $ret;
     }
 }
