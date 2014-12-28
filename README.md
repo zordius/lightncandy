@@ -5,7 +5,7 @@ An extremely fast PHP implementation of handlebars ( http://handlebarsjs.com/ ) 
 
 Travis CI status: [![Unit testing](https://travis-ci.org/zordius/lightncandy.svg?branch=master)](https://travis-ci.org/zordius/lightncandy) [![Regression testing](https://travis-ci.org/zordius/HandlebarsTest.svg?branch=master)](https://travis-ci.org/zordius/HandlebarsTest)
 
-Scrutinizer CI status: [![Code Coverage](https://scrutinizer-ci.com/g/zordius/lightncandy/badges/coverage.png)](https://scrutinizer-ci.com/g/zordius/lightncandy/)
+Scrutinizer CI status: [![Code Coverage](https://img.shields.io/scrutinizer/coverage/g/zordius/lightncandy.svg)](https://scrutinizer-ci.com/g/zordius/lightncandy/)
 
 Package on packagist: [![Latest Stable Version](https://poser.pugx.org/zordius/lightncandy/v/stable.svg)](https://packagist.org/packages/zordius/lightncandy) [![License](https://poser.pugx.org/zordius/lightncandy/license.svg)](https://packagist.org/packages/zordius/lightncandy) [![HHVM Status](http://hhvm.h4cc.de/badge/zordius/lightncandy.svg)](http://hhvm.h4cc.de/package/zordius/lightncandy)
 
