@@ -1646,12 +1646,11 @@ $libstr
                 }
 
                 // Try to compile as custom helper {{^myHelper}}
-/*
                 $r = static::compileBlockCustomHelper($context, $vars, true);
                 if ($r) {
                     return $r;
                 }
-*/
+
                 $v = static::getVariableName($vars[0], $context);
                 $context['stack'][] = $v[1];
                 $context['stack'][] = '^';
@@ -1695,10 +1694,11 @@ $libstr
         $context['stack'][] = $v[1];
         $context['stack'][] = '#';
         $ch = array_shift($vars);
+        $inverted = $inverted ? 'true' : 'false';
 
         static::addUsageCount($context, $notHBCH ? 'blockhelpers' : 'hbhelpers', $ch[0]);
         $v = static::getVariableNames($vars, $context, true);
-        return $context['ops']['seperator'] . static::getFuncName($context, $notHBCH ? 'bch' : 'hbch', ($inverted ? '^' : '#') . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
+        return $context['ops']['seperator'] . static::getFuncName($context, $notHBCH ? 'bch' : 'hbch', ($inverted ? '^' : '#') . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, \$in, $inverted, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
     /**
@@ -2424,18 +2424,26 @@ class LCRun3 {
      * @param string $ch the name of custom helper to be executed
      * @param array<array|string|integer>|string|integer|null $vars variables for the helper
      * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
+     * @param boolean $inverted the logic will be inverted
      * @param Closure $cb callback function to render child context
-     * @param Closure $else callback function to render else child context
+     * @param Closure|null $else callback function to render child context when {{else}}
      *
      * @return string The rendered string of the token
      */
-    public static function hbch($cx, $ch, $vars, $op, $cb = false, $else = false) {
+    public static function hbch($cx, $ch, $vars, $op, $inverted, $cb = false, $else = false) {
         $isBlock = (is_object($cb) && ($cb instanceof Closure));
         $args = $vars[0];
         $options = array(
             'name' => $ch,
             'hash' => $vars[1]
         );
+
+        // $invert the logic
+        if ($inverted) {
+            $tmp = $else;
+            $else = $cb;
+            $cb = $tmp;
+        }
 
         if ($isBlock) {
             $options['fn'] = function ($context = '_NO_INPUT_HERE_') use ($cx, $op, $cb) {
@@ -2510,15 +2518,17 @@ class LCRun3 {
      * @param string $ch the name of custom helper to be executed
      * @param array<array|string|integer>|string|integer|null $vars variables for the helper
      * @param array<array|string|integer>|string|integer|null $in input data with current scope
+     * @param boolean $inverted the logic will be inverted
      * @param Closure $cb callback function to render child context
+     * @param Closure|null $else callback function to render child context when {{else}}
      *
      * @return string The rendered string of the token
      *
-     * @expect '4.2.3' when input array('blockhelpers' => array('a' => function ($cx) {return array($cx,2,3);})), 'a', array(0, 0), 4, function($cx, $i) {return implode('.', $i);}
-     * @expect '2.6.5' when input array('blockhelpers' => array('a' => function ($cx,$in) {return array($cx,$in[0],5);})), 'a', array('6', 0), 2, function($cx, $i) {return implode('.', $i);}
-     * @expect '' when input array('blockhelpers' => array('a' => function ($cx,$in) {})), 'a', array('6', 0), 2, function($cx, $i) {return implode('.', $i);}
+     * @expect '4.2.3' when input array('blockhelpers' => array('a' => function ($cx) {return array($cx,2,3);})), 'a', array(0, 0), 4, false, function($cx, $i) {return implode('.', $i);}
+     * @expect '2.6.5' when input array('blockhelpers' => array('a' => function ($cx,$in) {return array($cx,$in[0],5);})), 'a', array('6', 0), 2, false, function($cx, $i) {return implode('.', $i);}
+     * @expect '' when input array('blockhelpers' => array('a' => function ($cx,$in) {})), 'a', array('6', 0), 2, false, function($cx, $i) {return implode('.', $i);}
      */
-    public static function bch($cx, $ch, $vars, $in, $cb) {
+    public static function bch($cx, $ch, $vars, $in, $inverted, $cb, $else = false) {
         $r = call_user_func($cx['blockhelpers'][$ch], $in, $vars[0], $vars[1]);
         if (is_null($r)) {
             return '';

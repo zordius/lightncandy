@@ -363,13 +363,13 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
     public function testOn_bch() {
         $method = new ReflectionMethod('LCRun3', 'bch');
         $this->assertEquals('4.2.3', $method->invoke(null,
-            array('blockhelpers' => array('a' => function ($cx) {return array($cx,2,3);})), 'a', array(0, 0), 4, function($cx, $i) {return implode('.', $i);}
+            array('blockhelpers' => array('a' => function ($cx) {return array($cx,2,3);})), 'a', array(0, 0), 4, false, function($cx, $i) {return implode('.', $i);}
         ));
         $this->assertEquals('2.6.5', $method->invoke(null,
-            array('blockhelpers' => array('a' => function ($cx,$in) {return array($cx,$in[0],5);})), 'a', array('6', 0), 2, function($cx, $i) {return implode('.', $i);}
+            array('blockhelpers' => array('a' => function ($cx,$in) {return array($cx,$in[0],5);})), 'a', array('6', 0), 2, false, function($cx, $i) {return implode('.', $i);}
         ));
         $this->assertEquals('', $method->invoke(null,
-            array('blockhelpers' => array('a' => function ($cx,$in) {})), 'a', array('6', 0), 2, function($cx, $i) {return implode('.', $i);}
+            array('blockhelpers' => array('a' => function ($cx,$in) {})), 'a', array('6', 0), 2, false, function($cx, $i) {return implode('.', $i);}
         ));
     }
 }
