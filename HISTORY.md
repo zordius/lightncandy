@@ -2,6 +2,8 @@ HISTORY
 =======
 
 master current trunk
+
+v0.17 https://github.com/zordius/lightncandy/tree/v0.17
    * 7bcce4c1a7 support {{@last}} for {{#each}} on both object and array.
    * b0c44c3b40 remove ending \n in lightncandy.php
    * e130875d5a support single quoted string input: {{foo 'bar'}}.
