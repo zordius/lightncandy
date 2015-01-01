@@ -2,6 +2,7 @@ HISTORY
 =======
 
 master current trunk
+   * align with handlebars.js master
 
 v0.17 https://github.com/zordius/lightncandy/tree/v0.17
    * 7bcce4c1a7 support {{@last}} for {{#each}} on both object and array.
@@ -14,7 +15,6 @@ v0.17 https://github.com/zordius/lightncandy/tree/v0.17
    * c4da1f576c supports {{^myHelper}}.
 
 v0.17 https://github.com/zordius/lightncandy/tree/v0.17
-   * align with handlebars.js master
    * 3b48a0acf7 fix parsing bug when FLAG_NOESCAPE enabled
    * 5c774b1b08 fix hbhelpers response error with options['fn'] when FLAG_BESTPERFORMANCE enabled
    * c60fe70bdb fix hbhelpers response error with options['inverse'] when FLAG_BESTPERFORMANCE enabled
