@@ -1223,6 +1223,13 @@ $libstr
                     continue;
                 }
 
+                // continue to next match when '[' exists without ending ']'
+                if (preg_match('/\\[[^\\]]+$/', $t)) {
+                    $prev = $t;
+                    $expect = ']';
+                    continue;
+                }
+
                 // continue to next match when =\' exists without ending '
                 if (preg_match('/=\\\\\'[^\']+$/', $t)) {
                     $prev = $t;
@@ -1230,12 +1237,6 @@ $libstr
                     continue;
                 }
 
-                // continue to next match when '[' exists without ending ']'
-                if (preg_match('/\\[[^\\]]+$/', $t)) {
-                    $prev = $t;
-                    $expect = ']';
-                    continue;
-                }
                 $vars[] = $t;
             }
         } else {

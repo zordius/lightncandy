@@ -322,14 +322,14 @@ print_r($args);
                     'hbhelpers' => Array(
                         'hash' => function ($options) {
                             $ret = '';
-                            foreach ($options as $k => $v) {
-                                $ret .= "$k => $v,";
+                            foreach ($options['hash'] as $k => $v) {
+                                $ret .= "$k : $v,";
                             }
                             return $ret;
                         }
                     ),
                 ),
-                'expected' => 'abc=def=123',
+                'expected' => 'abc : def=123,',
             ),
 
             Array(
