@@ -18,6 +18,18 @@ Origin: https://github.com/zordius/lightncandy
  * @author     Zordius <zordius@yahoo-inc.com>
  */
 
+class LightnCandyVarName {
+    private $string;
+
+    function __construct($string) {
+       $this->string = $string;
+    }
+
+    function __toString() {
+       return $this->string;
+    }
+}
+
 /**
  * LightnCandy static core class.
  */
@@ -979,9 +991,13 @@ $libstr
             }
 
             // Handle double quoted string
-            if (preg_match('/^"(.*)"$/', $var[0], $matched)) {
-                $t = addcslashes(stripslashes(preg_replace('/\\\\\\\\/', '\\', $matched[1])), "'");
-                return array("'{$t}'", "\"{$t}\"");
+            if (is_object($var[0]) && (get_class($var[0]) === 'LightnCandyVarName')) {
+                $var[0] = "$var[0]";
+            } else {
+                if (preg_match('/^"(.*)"$/', $var[0], $matched)) {
+                    $t = addcslashes(stripslashes(preg_replace('/\\\\\\\\/', '\\', $matched[1])), "'");
+                    return array("'{$t}'", "\"{$t}\"");
+                }
             }
         }
 
@@ -1129,7 +1145,7 @@ $libstr
 
         foreach ($matchedall[1] as $m) {
             if ($context['flags']['advar'] && substr($m, 0, 1) === '[') {
-                $ret[] = substr($m, 1, -1);
+                $ret[] = new LightnCandyVarName(substr($m, 1, -1));
             } else {
                 $ret[] = (($context['flags']['this'] && ($m === 'this')) || ($m === '.')) ? null : $m;
             }
@@ -1475,12 +1491,12 @@ $libstr
         }
 
         // detect handlebars custom helpers.
-        if (isset($context['hbhelpers'][$vars[0][0]])) {
+        if (isset($context['hbhelpers']["{$vars[0][0]}"])) {
             return $context['usedFeature']['hbhelper']++;
         }
 
         // detect custom helpers.
-        if (isset($context['helpers'][$vars[0][0]])) {
+        if (isset($context['helpers']["{$vars[0][0]}"])) {
             return $context['usedFeature']['helper']++;
         }
     }
@@ -1807,8 +1823,8 @@ $libstr
      * @return string|null Return compiled code segment for the token when the token is custom helper
      */
     protected static function compileCustomHelper(&$context, &$vars, $raw, $err = false) {
-        $notHH = !isset($context['hbhelpers'][$vars[0][0]]);
-        if (!isset($context['helpers'][$vars[0][0]]) && $notHH) {
+        $notHH = !isset($context['hbhelpers']["{$vars[0][0]}"]);
+        if (!isset($context['helpers']["{$vars[0][0]}"]) && $notHH) {
             if ($err) {
                 $context['error'][] = "Custom helper '{$vars[0][0]}' not found!";
             }
