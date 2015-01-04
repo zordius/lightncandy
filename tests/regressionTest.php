@@ -314,6 +314,21 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'expected' => 'List:)OK! , )OK2 , ]abc=10>3 , ',
             ),
 
+
+            Array(
+                'template' => '{{#[helper3]}}ABC{{/[helper3]}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'blockhelpers' => Array(
+                        'helper3' => function () {
+                            return Array('a', 'b', 'c');
+                        }
+                    )
+                ),
+                'data' => Array(),
+                'expected' => 'ABC'
+            ),
+
             Array(
                 'template' => '{{hash abc=["def=123"]}}',
                 'options' => Array(

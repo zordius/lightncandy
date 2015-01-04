@@ -1418,12 +1418,12 @@ $libstr
                 $context['level']++;
 
                 // detect handlebars custom helpers.
-                if (isset($context['hbhelpers'][$vars[0][0]])) {
+                if (isset($context['hbhelpers']["{$vars[0][0]}"])) {
                     return ++$context['usedFeature']['hbhelper'];
                 }
 
                 // detect block custom helpers.
-                if (isset($context['blockhelpers'][$vars[0][0]])) {
+                if (isset($context['blockhelpers']["{$vars[0][0]}"])) {
                     return ++$context['usedFeature']['bhelper'];
                 }
 
@@ -1710,9 +1710,9 @@ $libstr
      * @return string|null Return compiled code segment for the token
      */
     protected static function compileBlockCustomHelper(&$context, $vars, $inverted = false) {
-        $notHBCH = !isset($context['hbhelpers'][$vars[0][0]]);
+        $notHBCH = !isset($context['hbhelpers']["{$vars[0][0]}"]);
 
-        if (!isset($context['blockhelpers'][$vars[0][0]]) && $notHBCH) {
+        if (!isset($context['blockhelpers']["{$vars[0][0]}"]) && $notHBCH) {
             return;
         }
 
@@ -1722,7 +1722,7 @@ $libstr
         $ch = array_shift($vars);
         $inverted = $inverted ? 'true' : 'false';
 
-        static::addUsageCount($context, $notHBCH ? 'blockhelpers' : 'hbhelpers', $ch[0]);
+        static::addUsageCount($context, $notHBCH ? 'blockhelpers' : 'hbhelpers', "{$ch[0]}");
         $v = static::getVariableNames($vars, $context, true);
         return $context['ops']['seperator'] . static::getFuncName($context, $notHBCH ? 'bch' : 'hbch', ($inverted ? '^' : '#') . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, \$in, $inverted, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
