@@ -1843,7 +1843,7 @@ $libstr
         $fn = $raw ? 'raw' : $context['ops']['enc'];
         $ch = array_shift($vars);
         $v = static::getVariableNames($vars, $context, true);
-        static::addUsageCount($context, $notHH ? 'helpers' : 'hbhelpers', $ch[0]);
+        static::addUsageCount($context, $notHH ? 'helpers' : 'hbhelpers', "{$ch[0]}");
         return $context['ops']['seperator'] . static::getFuncName($context, $notHH ? 'ch' : 'hbch', "$ch[0] " . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, '$fn'" . ($notHH ? '' : ', \'$in\'') . "){$context['ops']['seperator']}";
     }
 

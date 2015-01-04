@@ -315,6 +315,20 @@ class regressionTest extends PHPUnit_Framework_TestCase
             ),
 
             Array(
+                'template' => '{{[helper]}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'helper' => function () {
+                            return 'DEF';
+                        }
+                    )
+                ),
+                'data' => Array(),
+                'expected' => 'DEF'
+            ),
+
+            Array(
                 'template' => '{{#[helper3]}}ABC{{/[helper3]}}',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
