@@ -282,6 +282,40 @@ class regressionTest extends PHPUnit_Framework_TestCase
             ),
 
             Array(
+                'id' => 124,
+                'template' => '{{list foo bar abc=(lt 10 3) def=(lt 3 10)}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'lt' => function ($a, $b) {
+                            return ($a > $b) ? "$a>$b" : '';
+                        },
+                        'list' => function () {
+                            $out = 'List:';
+                            $args = func_get_args();
+                            $opts = array_pop($args);
+
+print_r($args);
+                            foreach ($args as $v) {
+                                if ($v) {
+                                    $out .= ")$v , ";
+                                }
+                            }
+
+                            foreach ($opts['hash'] as $k => $v) {
+                                if ($v) {
+                                    $out .= "]$k=$v , ";
+                                }
+                            }
+                            return $out;
+                        }
+                    ),
+                ),
+                'data' => Array('foo' => 'OK', 'bar' => 'OK2', 'abc' => false, 'def' => 123),
+                'expected' => 'List:)OK! , )OK2 , ]abc=10>3 , ',
+            ),
+
+            Array(
                 'template' => 'ABC{{#block "YES!"}}DEF{{foo}}GHI{{else}}NO~{{/block}}JKL',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_BESTPERFORMANCE,
