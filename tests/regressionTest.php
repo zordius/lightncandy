@@ -288,7 +288,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                     'hbhelpers' => Array(
                         'lt' => function ($a, $b) {
-                            return ($a > $b) ? "$a>$b" : '';
+                            return ($a > $b) ? Array("$a>$b", 'raw') : '';
                         },
                         'list' => function () {
                             $out = 'List:';
@@ -306,11 +306,11 @@ class regressionTest extends PHPUnit_Framework_TestCase
                                     $out .= "]$k=$v , ";
                                 }
                             }
-                            return $out;
+                            return array($out, 'raw');
                         }
                     ),
                 ),
-                'data' => Array('foo' => 'OK', 'bar' => 'OK2', 'abc' => false, 'def' => 123),
+                'data' => Array('foo' => 'OK!', 'bar' => 'OK2', 'abc' => false, 'def' => 123),
                 'expected' => 'List:)OK! , )OK2 , ]abc=10>3 , ',
             ),
 

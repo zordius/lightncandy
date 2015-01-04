@@ -992,7 +992,7 @@ $libstr
 
             // Handle double quoted string
             if (is_object($var[0]) && (get_class($var[0]) === 'LightnCandyVarName')) {
-                $var[0] = "$var[0]";
+                $var[0] = "{$var[0]}";
             } else {
                 if (preg_match('/^"(.*)"$/', $var[0], $matched)) {
                     $t = addcslashes(stripslashes(preg_replace('/\\\\\\\\/', '\\', $matched[1])), "'");
@@ -1253,6 +1253,13 @@ $libstr
                     continue;
                 }
 
+                // continue to next match when =( exists without ending )
+                if (preg_match('/.+\([^\)]+$/', $t)) {
+                    $prev = $t;
+                    $expect = ')';
+                    continue;
+                }
+
                 $vars[] = $t;
             }
         } else {
@@ -1297,6 +1304,8 @@ $libstr
                 $var = array(preg_replace('/^("(.+)")|(\\[(.+)\\])$/', '$2$4', $var));
             } else if (is_numeric($var)) {
                 $var = array('"' . $var . '"');
+            } else if (preg_match('/^\(.+\)$/', $var)) {
+                $var = array($var);
             } else {
                 $var = static::fixVariable($var, $context);
             }
