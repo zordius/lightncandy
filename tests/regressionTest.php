@@ -333,6 +333,23 @@ print_r($args);
             ),
 
             Array(
+                'template' => '{{hash abc=[\'def=123\']}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_BESTPERFORMANCE,
+                    'hbhelpers' => Array(
+                        'hash' => function ($options) {
+                            $ret = '';
+                            foreach ($options['hash'] as $k => $v) {
+                                $ret .= "$k : $v,";
+                            }
+                            return $ret;
+                        }
+                    ),
+                ),
+                'expected' => 'abc : def=123,',
+            ),
+
+            Array(
                 'template' => 'ABC{{#block "YES!"}}DEF{{foo}}GHI{{else}}NO~{{/block}}JKL',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_BESTPERFORMANCE,
