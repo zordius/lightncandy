@@ -329,7 +329,8 @@ print_r($args);
                         }
                     ),
                 ),
-                'expected' => 'abc : def=123,',
+                'data' => Array('"def=123"' => 'La!'),
+                'expected' => 'abc : La!,',
             ),
 
             Array(
@@ -346,7 +347,8 @@ print_r($args);
                         }
                     ),
                 ),
-                'expected' => 'abc : def=123,',
+                'data' => Array("'def=123'" => 'La!'),
+                'expected' => 'abc : La!,',
             ),
 
             Array(
