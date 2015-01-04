@@ -4,6 +4,7 @@ HISTORY
 master current trunk
    * align with handlebars.js master
    * 5703851e49 fix {{foo bar=['abc=123']}} parsing bug.
+   * 7b4e36a1e3 fix {{foo bar=["abc=123"]}} parsing bug.
 
 v0.17 https://github.com/zordius/lightncandy/tree/v0.17
    * 7bcce4c1a7 support {{@last}} for {{#each}} on both object and array.

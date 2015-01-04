@@ -295,7 +295,6 @@ class regressionTest extends PHPUnit_Framework_TestCase
                             $args = func_get_args();
                             $opts = array_pop($args);
 
-print_r($args);
                             foreach ($args as $v) {
                                 if ($v) {
                                     $out .= ")$v , ";
