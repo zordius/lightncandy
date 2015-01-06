@@ -1801,7 +1801,7 @@ $libstr
      */
     protected static function compileBlockBegin(&$context, $vars) {
         $each = 'false';
-        $v = isset($vars[1]) ? static::getVariableName($vars[1], $context, true) : array(null, array());
+        $v = isset($vars[1]) ? static::getVariableNameOrSubExpression($vars[1], $context, true) : array(null, array());
         switch ($vars[0][0]) {
             case 'if':
                 $context['stack'][] = 'if';

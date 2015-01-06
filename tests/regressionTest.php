@@ -321,7 +321,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                     'hbhelpers' => Array(
                         'equal' => function ($a, $b) {
-                            return a === b;
+                            return $a === $b;
                         }
                     ),
                 ),
