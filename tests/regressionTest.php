@@ -263,6 +263,166 @@ class regressionTest extends PHPUnit_Framework_TestCase
             ),
 
             Array(
+                'id' => 114,
+                'template' => '{{^myeach .}}OK:{{.}},{{else}}NOT GOOD{{/myeach}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_BESTPERFORMANCE,
+                    'hbhelpers' => Array(
+                        'myeach' => function ($context, $options) {
+                            $ret = '';
+                            foreach ($context as $cx) {
+                                $ret .= $options['fn']($cx);
+                            }
+                            return $ret;
+                        }
+                    ),
+                ),
+                'data' => Array(1, 'foo', 3, 'bar'),
+                'expected' => 'NOT GOODNOT GOODNOT GOODNOT GOOD',
+            ),
+
+            Array(
+                'id' => 124,
+                'template' => '{{list foo bar abc=(lt 10 3) def=(lt 3 10)}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'lt' => function ($a, $b) {
+                            return ($a > $b) ? Array("$a>$b", 'raw') : '';
+                        },
+                        'list' => function () {
+                            $out = 'List:';
+                            $args = func_get_args();
+                            $opts = array_pop($args);
+
+                            foreach ($args as $v) {
+                                if ($v) {
+                                    $out .= ")$v , ";
+                                }
+                            }
+
+                            foreach ($opts['hash'] as $k => $v) {
+                                if ($v) {
+                                    $out .= "]$k=$v , ";
+                                }
+                            }
+                            return array($out, 'raw');
+                        }
+                    ),
+                ),
+                'data' => Array('foo' => 'OK!', 'bar' => 'OK2', 'abc' => false, 'def' => 123),
+                'expected' => 'List:)OK! , )OK2 , ]abc=10>3 , ',
+            ),
+
+            Array(
+                'id' => 124,
+                'template' => '{{#if (equal \'OK\' cde)}}YES!{{/if}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'equal' => function ($a, $b) {
+                            return $a === $b;
+                        }
+                    ),
+                ),
+                'data' => Array('cde' => 'OK'),
+                'expected' => 'YES!'
+            ),
+
+            Array(
+                'id' => 124,
+                'template' => '{{#if (equal true (equal \'OK\' cde))}}YES!{{/if}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'equal' => function ($a, $b) {
+                            return $a === $b;
+                        }
+                    ),
+                ),
+                'data' => Array('cde' => 'OK'),
+                'expected' => 'YES!'
+            ),
+
+            Array(
+                'template' => '{{[helper]}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'helper' => function () {
+                            return 'DEF';
+                        }
+                    )
+                ),
+                'data' => Array(),
+                'expected' => 'DEF'
+            ),
+
+            Array(
+                'template' => '{{#[helper3]}}ABC{{/[helper3]}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'helper3' => function () {
+                            return 'DEF';
+                        }
+                    )
+                ),
+                'data' => Array(),
+                'expected' => 'DEF'
+            ),
+
+            Array(
+                'template' => '{{#[helper3]}}ABC{{/[helper3]}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'blockhelpers' => Array(
+                        'helper3' => function () {
+                            return Array('a', 'b', 'c');
+                        }
+                    )
+                ),
+                'data' => Array(),
+                'expected' => 'ABC'
+            ),
+
+            Array(
+                'template' => '{{hash abc=["def=123"]}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_BESTPERFORMANCE,
+                    'hbhelpers' => Array(
+                        'hash' => function ($options) {
+                            $ret = '';
+                            foreach ($options['hash'] as $k => $v) {
+                                $ret .= "$k : $v,";
+                            }
+                            return $ret;
+                        }
+                    ),
+                ),
+                'data' => Array('"def=123"' => 'La!'),
+                'expected' => 'abc : La!,',
+            ),
+
+            Array(
+                'template' => '{{hash abc=[\'def=123\']}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_BESTPERFORMANCE,
+                    'hbhelpers' => Array(
+                        'hash' => function ($options) {
+                            $ret = '';
+                            foreach ($options['hash'] as $k => $v) {
+                                $ret .= "$k : $v,";
+                            }
+                            return $ret;
+                        }
+                    ),
+                ),
+                'data' => Array("'def=123'" => 'La!'),
+                'expected' => 'abc : La!,',
+            ),
+
+            Array(
                 'template' => 'ABC{{#block "YES!"}}DEF{{foo}}GHI{{else}}NO~{{/block}}JKL',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_BESTPERFORMANCE,
@@ -459,12 +619,22 @@ class regressionTest extends PHPUnit_Framework_TestCase
             ),
 
             Array(
-                'template' => '{{mydash "abc" "dev"}}',
+                'template' => '{{mydash \'abc\' "dev"}}',
                 'data' => Array('a' => 'a', 'b' => 'b', 'c' => Array('c' => 'c'), 'd' => 'd', 'e' => 'e'),
                 'options' => Array(
                     'hbhelpers' => Array('mydash'),
                 ),
                 'expected' => 'abc-dev',
+            ),
+
+            Array(
+                'template' => '{{mydash \'a b c\' "d e f"}}',
+                'data' => Array('a' => 'a', 'b' => 'b', 'c' => Array('c' => 'c'), 'd' => 'd', 'e' => 'e'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_ADVARNAME,
+                    'hbhelpers' => Array('mydash'),
+                ),
+                'expected' => 'a b c-d e f',
             ),
 
             Array(
