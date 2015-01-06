@@ -907,11 +907,7 @@ $libstr
         $vars = array(array(), array());
         $exps = array();
         foreach ($vn as $i => $v) {
-            if (isset($v[0]) && preg_match('/^\(.+\)$/', $v[0])) {
-                $V = static::compileSubExpression($v[0], $context);
-            } else {
-                $V = static::getVariableName($v, $context, $ishelper);
-            }
+            $V = static::getVariableNameOrSubExpression($v, $context, $ishelper);
             if (is_string($i)) {
                 $vars[1][] = "'$i'=>{$V[0]}";
             } else {
@@ -947,6 +943,22 @@ $libstr
         $context['ops']['seperator'] = $origSeperator;
 
         return array($ret ? $ret : '', $subExpression);
+    }
+
+    /**
+     * Internal method used by compile().
+     *
+     * @param array<array|string|integer> $var variable parsed path
+     * @param array<array|string|integer> $context current compile context
+     * @param boolean $ishelper true when compile for helper$
+     *
+     * @return array<string> variable names
+     */
+    protected static function getVariableNameOrSubExpression($var, &$context, $ishelper = false) {
+        if (isset($var[0]) && preg_match('/^\(.+\)$/', $var[0])) {
+            return static::compileSubExpression($var[0], $context);
+        }
+        return static::getVariableName($var, $context, $ishelper);
     }
 
     /**
