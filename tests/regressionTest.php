@@ -330,6 +330,21 @@ class regressionTest extends PHPUnit_Framework_TestCase
             ),
 
             Array(
+                'id' => 124,
+                'template' => '{{#if (equal true (equal \'OK\' cde))}}YES!{{/if}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'equal' => function ($a, $b) {
+                            return $a === $b;
+                        }
+                    ),
+                ),
+                'data' => Array('cde' => 'OK'),
+                'expected' => 'YES!'
+            ),
+
+            Array(
                 'template' => '{{[helper]}}',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
