@@ -18,15 +18,21 @@ Origin: https://github.com/zordius/lightncandy
  * @author     Zordius <zordius@yahoo-inc.com>
  */
 
+/**
+ * LightnCandy class to present a variable name
+ */
 class LightnCandyVarName {
     private $string;
 
-    function __construct($string) {
-       $this->string = $string;
+    public function __construct($string) {
+        $this->string = $string;
     }
 
-    function __toString() {
-       return $this->string;
+    /*
+     * @return string the magical toString() method
+     */
+    public function __toString() {
+        return $this->string;
     }
 }
 
@@ -2463,12 +2469,12 @@ class LCRun3 {
      * @param array<array|string|integer>|string|integer|null $vars variables for the helper
      * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
      * @param boolean $inverted the logic will be inverted
-     * @param Closure $cb callback function to render child context
+     * @param Closure|null $cb callback function to render child context
      * @param Closure|null $else callback function to render child context when {{else}}
      *
      * @return string The rendered string of the token
      */
-    public static function hbch($cx, $ch, $vars, $op, $inverted, $cb = false, $else = false) {
+    public static function hbch($cx, $ch, $vars, $op, $inverted, $cb = null, $else = null) {
         $isBlock = (is_object($cb) && ($cb instanceof Closure));
         $args = $vars[0];
         $options = array(
@@ -2566,7 +2572,7 @@ class LCRun3 {
      * @expect '2.6.5' when input array('blockhelpers' => array('a' => function ($cx,$in) {return array($cx,$in[0],5);})), 'a', array('6', 0), 2, false, function($cx, $i) {return implode('.', $i);}
      * @expect '' when input array('blockhelpers' => array('a' => function ($cx,$in) {})), 'a', array('6', 0), 2, false, function($cx, $i) {return implode('.', $i);}
      */
-    public static function bch($cx, $ch, $vars, $in, $inverted, $cb, $else = false) {
+    public static function bch($cx, $ch, $vars, $in, $inverted, $cb, $else = null) {
         $r = call_user_func($cx['blockhelpers'][$ch], $in, $vars[0], $vars[1]);
 
         // $invert the logic
