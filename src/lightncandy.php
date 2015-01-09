@@ -1198,6 +1198,13 @@ $libstr
      * @expect array(false, array(array('a'), 'q' => array('"b c"'))) when input array(0,0,0,0,0,0,'a q="b c"'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0))
      * @expect array(false, array(array('(foo bar)'))) when input array(0,0,0,0,0,0,'(foo bar)'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0))
      * @expect array(false, array(array('foo'), array("'=='"), array('bar'))) when input array(0,0,0,0,0,0,"foo '==' bar"), array('flags' => array('advar' => 1, 'namev' => 1))
+     * @expect array(false, array(array('( foo bar)'))) when input array(0,0,0,0,0,0,'( foo bar)'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0))
+@expect array(false, array(array('a'), array('" b c"'))) when input array(0,0,0,0,0,0,'a " b c"'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 0, 'noesc' => 0))
+@expect array(false, array(array('a'), 'q' => array('" b c"'))) when input array(0,0,0,0,0,0,'a q=" b c"'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0))
+     * @expect array(false, array(array('foo'), array('" =="'), array('bar'))) when input array(0,0,0,0,0,0,"foo \' ==\' bar"), array('flags' => array('advar' => 1, 'namev' => 1))
+@expect array(false, array(array('a'), array(' b c'))) when input array(0,0,0,0,0,0,'a [ b c]'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0))
+@expect array(false, array(array('a'), 'q' => array('" d e"'))) when input array(0,0,0,0,0,0,"a q=\' d e\'"), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0))
+     * @expect array(false, array('q' => array('( foo bar)'))) when input array(0,0,0,0,0,0,'q=( foo bar)'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0))
      */
     protected static function parseTokenArgs(&$token, &$context) {
         trim($token[self::POS_INNERTAG]);
@@ -1230,55 +1237,61 @@ $libstr
                 }
 
                 // continue to next match when begin with '(' without ending ')'
-                if (preg_match('/^\([^\)]+$/', $t)) {
+                if (preg_match('/^\([^\)]*$/', $t)) {
                     $prev = $t;
                     $expect = ')';
                     continue;
                 }
 
                 // continue to next match when begin with '"' without ending '"'
-                if (preg_match('/^"[^"]+$/', $t)) {
-                    $prev = $t;
-                    $expect = '"';
-                    continue;
-                }
-
-                // continue to next match when '="' exists without ending '"'
-                if (preg_match('/="[^"]+$/', $t)) {
+                if (preg_match('/^"[^"]*$/', $t)) {
                     $prev = $t;
                     $expect = '"';
                     continue;
                 }
 
                 // continue to next match when begin with \' without ending '
-                if (preg_match('/^\\\\\'[^\']+$/', $t)) {
+                if (preg_match('/^\\\\\'[^\']*$/', $t)) {
                     $prev = $t;
                     $expect = '\'';
                     continue;
                 }
 
+                // continue to next match when '="' exists without ending '"'
+                if (preg_match('/="[^"]*$/', $t)) {
+                    $prev = $t;
+                    $expect = '"';
+                    continue;
+                }
+
                 // continue to next match when '[' exists without ending ']'
-                if (preg_match('/\\[[^\\]]+$/', $t)) {
+                if (preg_match('/\\[[^\\]]*$/', $t)) {
                     $prev = $t;
                     $expect = ']';
                     continue;
                 }
 
                 // continue to next match when =\' exists without ending '
-                if (preg_match('/=\\\\\'[^\']+$/', $t)) {
+                if (preg_match('/=\\\\\'[^\']*$/', $t)) {
                     $prev = $t;
                     $expect = '\'';
                     continue;
                 }
 
                 // continue to next match when =( exists without ending )
-                if (preg_match('/.+\([^\)]+$/', $t)) {
+                if (preg_match('/.+\([^\)]*$/', $t)) {
                     $prev = $t;
                     $expect = ')';
                     continue;
                 }
 
                 $vars[] = $t;
+            }
+            // handle final $expect case
+            if ($expect) {
+                if (substr($prev, -1, 1) === $expect) {
+                    $vars[] = $prev;
+                }
             }
         } else {
             $vars = ($count > 0) ? $matchedall[2] : explode(' ', $token[self::POS_INNERTAG]);

@@ -197,7 +197,7 @@ class errorTest extends PHPUnit_Framework_TestCase
              Array(
                  'template' => '{{testA[}}',
                  'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
-                 'expected' => 'Wrong variable naming as \'testA[\' in {{testA[}} !',
+                 'expected' => 'Wrong variable naming in {{testA[}}',
              ),
              Array(
                  'template' => '{{[testB}}',
