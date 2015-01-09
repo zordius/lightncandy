@@ -345,6 +345,81 @@ class regressionTest extends PHPUnit_Framework_TestCase
             ),
 
             Array(
+                'id' => 125,
+                'template' => '{{#if (equal true ( equal \'OK\' cde))}}YES!{{/if}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'equal' => function ($a, $b) {
+                            return $a === $b;
+                        }
+                    ),
+                ),
+                'data' => Array('cde' => 'OK'),
+                'expected' => 'YES!'
+            ),
+
+            Array(
+                'id' => 125,
+                'template' => '{{#if (equal true (equal \' OK\' cde))}}YES!{{/if}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'equal' => function ($a, $b) {
+                            return $a === $b;
+                        }
+                    ),
+                ),
+                'data' => Array('cde' => ' OK'),
+                'expected' => 'YES!'
+            ),
+
+            Array(
+                'id' => 125,
+                'template' => '{{#if (equal true (equal \' ==\' cde))}}YES!{{/if}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'equal' => function ($a, $b) {
+                            return $a === $b;
+                        }
+                    ),
+                ),
+                'data' => Array('cde' => ' =='),
+                'expected' => 'YES!'
+            ),
+
+            Array(
+                'id' => 125,
+                'template' => '{{#if (equal true (equal " ==" cde))}}YES!{{/if}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'equal' => function ($a, $b) {
+                            return $a === $b;
+                        }
+                    ),
+                ),
+                'data' => Array('cde' => ' =='),
+                'expected' => 'YES!'
+            ),
+
+            Array(
+                'id' => 125,
+                'template' => '{{[ abc]}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'equal' => function ($a, $b) {
+                            return $a === $b;
+                        }
+                    ),
+                ),
+                'data' => Array(' abc' => 'YES!'),
+                'expected' => 'YES!'
+            ),
+
+            Array(
                 'template' => '{{[helper]}}',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
