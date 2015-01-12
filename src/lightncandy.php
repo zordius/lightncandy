@@ -1258,7 +1258,7 @@ $libstr
                 }
 
                 // continue to next match when '="' exists without ending '"'
-                if (preg_match('/="[^"]*$/', $t)) {
+                if (preg_match('/^[^"]*="[^"]*$/', $t)) {
                     $prev = $t;
                     $expect = '"';
                     continue;
@@ -1272,7 +1272,7 @@ $libstr
                 }
 
                 // continue to next match when =\' exists without ending '
-                if (preg_match('/=\\\\\'[^\']*$/', $t)) {
+                if (preg_match('/^[^\']*=\\\\\'[^\']*$/', $t)) {
                     $prev = $t;
                     $expect = '\'';
                     continue;

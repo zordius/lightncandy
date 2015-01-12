@@ -420,6 +420,29 @@ class regressionTest extends PHPUnit_Framework_TestCase
             ),
 
             Array(
+                'id' => 125,
+                'template' => '{{list [ abc] " xyz" \' def\' "==" \'==\' "OK"}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'list' => function ($a, $b) {
+                            $out = 'List:';
+                            $args = func_get_args();
+                            $opts = array_pop($args);
+                            foreach ($args as $v) {
+                                if ($v) {
+                                    $out .= ")$v , ";
+                                }
+                            }
+                            return $out;
+                        }
+                    ),
+                ),
+                'data' => Array(' abc' => 'YES!'),
+                'expected' => 'List:)YES! , ) xyz , ) def , )== , )== , )OK , '
+            ),
+
+            Array(
                 'template' => '{{[helper]}}',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
