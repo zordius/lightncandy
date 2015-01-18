@@ -9,7 +9,7 @@ master current trunk
    * 4bda1c6f41 fix subexpression+builtin block helper (EX: {{#if (foo bar)}}) parsing bug.
    * 6fdba10fc6 fix {{foo ( bar) or " car" or ' cat' or [ cage]}} pasing bug.
 
-v0.17 https://github.com/zordius/lightncandy/tree/v0.17
+v0.18 https://github.com/zordius/lightncandy/tree/v0.18
    * 7bcce4c1a7 support {{@last}} for {{#each}} on both object and array.
    * b0c44c3b40 remove ending \n in lightncandy.php
    * e130875d5a support single quoted string input: {{foo 'bar'}}.
