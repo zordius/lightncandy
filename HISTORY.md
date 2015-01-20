@@ -8,6 +8,8 @@ master current trunk
    * c710c8349b fix {{foo bar=(helper a b c)}} parsing bug.
    * 4bda1c6f41 fix subexpression+builtin block helper (EX: {{#if (foo bar)}}) parsing bug.
    * 6fdba10fc6 fix {{foo ( bar) or " car" or ' cat' or [ cage]}} pasing bug.
+   * 0cd5f2d5e2 fix indent issue when custom helper inside a partial.
+   * 296ea89267 support dynamic partial {{> (foo)}}.
 
 v0.18 https://github.com/zordius/lightncandy/tree/v0.18
    * 7bcce4c1a7 support {{@last}} for {{#each}} on both object and array.

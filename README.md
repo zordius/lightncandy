@@ -207,6 +207,8 @@ By default, partial uses the same context with original template. If you want to
 {{>partial_name ..}} // use {{..}} as new input context, FLAG_RUNTIMEPARTIAL required
 ```
 
+You can use dynamic partial name by passing a custom helper as subexpression syntax, for example: `{{> (foo)}}` . the return value of custom helper `foo` will be the partial name. When you using dynamic partial, LightnCandy will compile all partial inside the `partials` option into template. (**TODO: add an example to show how to provide partials across templates to reduce size**)
+
 Custom Helper
 -------------
 
