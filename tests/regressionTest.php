@@ -443,9 +443,14 @@ class regressionTest extends PHPUnit_Framework_TestCase
             ),
 
             Array(
-                'template' => '{{> (foo) bar}}',
+                'template' => '{{> (pname foo) bar}}',
                 'data' => Array('bar' => 'OK! SUBEXP+PARTIAL!', 'foo' => Array('test/test3')),
                 'options' => Array(
+                    'helpers' => Array(
+                        'pname' => function($arg) {
+                            return $arg[0];
+                         }
+                    ),
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_RUNTIMEPARTIAL,
                     'partials' => Array('test/test3' => '{{.}}'),
                 ),

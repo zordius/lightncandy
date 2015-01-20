@@ -92,6 +92,7 @@ class LightnCandy {
     // RegExps
     const VARNAME_SEARCH = '/(\\[[^\\]]+\\]|[^\\[\\]\\.]+)/';
     const EXTENDED_COMMENT_SEARCH = '/{{!--.*?--}}/s';
+    const IS_SUBEXP_SEARCH = '/^\(.+\)$/';
 
     // Positions of matched token
     const POS_LOTHER = 1;
@@ -506,7 +507,7 @@ $libstr
             return static::compilePartial($name, $context, $cnt);
         }
 
-        if (preg_match('/^\(.+\)$/', $name)) {
+        if (preg_match(static::IS_SUBEXP_SEARCH, $name)) {
             if ($context['flags']['runpart']) {
                 $context['usedFeature']['dynpartial']++;
                 return;
@@ -991,7 +992,7 @@ $libstr
      * @return array<string> variable names
      */
     protected static function getVariableNameOrSubExpression($var, &$context, $ishelper = false) {
-        if (isset($var[0]) && preg_match('/^\(.+\)$/', $var[0])) {
+        if (isset($var[0]) && preg_match(static::IS_SUBEXP_SEARCH, $var[0])) {
             return static::compileSubExpression($var[0], $context);
         }
         return static::getVariableName($var, $context, $ishelper);
@@ -1706,7 +1707,7 @@ $libstr
         switch ($token[self::POS_OP]) {
             case '>':
                 // mustache spec: ignore missing partial
-                if (!isset($context['usedPartial'][$vars[0][0]])) {
+                if (($context['usedFeature']['dynpartial'] === 0) && !isset($context['usedPartial'][$vars[0][0]])) {
                     return $context['ops']['seperator'];
                 }
                 $p = array_shift($vars);
@@ -1716,8 +1717,13 @@ $libstr
                 $v = static::getVariableNames($vars, $context, true);
                 $tag = ">$p[0] " .implode(' ', $v[1]);
                 if ($context['flags']['runpart']) {
+                    if (preg_match(static::IS_SUBEXP_SEARCH, $p[0])) {
+                        $p = static::compileSubExpression($p[0], $context)[0];
+                    } else {
+                        $p = "'$p[0]'";
+                    }
                     $sp = $context['tokens']['partialind'] ? ", '{$context['tokens']['partialind']}'" : '';
-                    return $context['ops']['seperator'] . static::getFuncName($context, 'p', $tag) . "\$cx, '$p[0]', $v[0]$sp){$context['ops']['seperator']}";
+                    return $context['ops']['seperator'] . static::getFuncName($context, 'p', $tag) . "\$cx, $p, $v[0]$sp){$context['ops']['seperator']}";
                 } else {
                     if ($named || $v[0] !== 'array(array($in),array())') {
                         $context['error'][] = "Do not support {{{$tag}}}, you should do compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag";
