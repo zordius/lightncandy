@@ -135,6 +135,10 @@ class LightnCandy {
 
         // Do PHP code generation.
         static::setupToken($context);
+
+        // Handle dynamic partials
+        static::handleDynamicPartial($context);
+
         $code = static::compileTemplate($context, static::escapeTemplate($template));
 
         // return false when fatal error
@@ -144,6 +148,19 @@ class LightnCandy {
 
         // Or, return full PHP render codes as string
         return static::composePHPRender($context, $code);
+    }
+
+    /*
+     * Include all partials when using dynamic partials
+     */
+    protected static function handleDynamicPartial(&$context) {
+        if ($context['usedFeature']['dynpartial'] == 0) {
+            return;
+        }
+
+        foreach ($context['partials'] as $name => $code) {
+            static::readPartial($name, $context);
+        }
     }
 
     /*
