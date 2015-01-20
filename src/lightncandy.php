@@ -490,7 +490,10 @@ $libstr
         }
 
         if (preg_match('/^\(.+\)$/', $name)) {
-            if (!$context['flags']['runpart']) {
+            if ($context['flags']['runpart']) {
+                $context['usedFeature']['dynpartial']++;
+                return;
+            } else {
                 $context['error'][] = "You use dynamic partial name as '$name', this only works with option FLAG_RUNTIMEPARTIAL enabled";
                 return;
             }
