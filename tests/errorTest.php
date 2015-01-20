@@ -389,6 +389,14 @@ class errorTest extends PHPUnit_Framework_TestCase
                  ),
                  'expected' => "Custom helper 'foo' not found!",
              ),
+            Array(
+                'template' => '{{> (foo) bar}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'basedir' => '.',
+                ),
+                'expected' => "You use dynamic partial name as '(foo)', this only works with option FLAG_RUNTIMEPARTIAL enabled"
+            ),
         );
 
         return array_map(function($i) {

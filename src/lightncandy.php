@@ -386,6 +386,7 @@ $libstr
                 'dot' => 0,
                 'comment' => 0,
                 'partial' => 0,
+                'dynpartial' => 0,
                 'helper' => 0,
                 'bhelper' => 0,
                 'hbhelper' => 0,
@@ -486,6 +487,13 @@ $libstr
 
         if ($cnt !== null) {
             return static::compilePartial($name, $context, $cnt);
+        }
+
+        if (preg_match('/^\(.+\)$/', $name)) {
+            if (!$context['flags']['runpart']) {
+                $context['error'][] = "You use dynamic partial name as '$name', this only works with option FLAG_RUNTIMEPARTIAL enabled";
+                return;
+            }
         }
 
         if (!$context['flags']['skippartial']) {
