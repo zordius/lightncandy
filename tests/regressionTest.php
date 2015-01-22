@@ -443,6 +443,17 @@ class regressionTest extends PHPUnit_Framework_TestCase
             ),
 
             Array(
+                'id' => 127,
+                'template' => '{{#each array}}#{{#if true}}{{name}}-{{../name}}-{{../../name}}-{{../../../name}}{{/if}}##{{#myif true}}{{name}}={{../name}}={{../../name}}={{../../../name}}{{/myif}}###{{#mywith true}}{{name}}~{{../name}}~{{../../name}}~{{../../../name}}{{/mywith}}{{/each}}',
+                'data' => Array('name' => 'john', 'array' => [1,2,3]),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array('myif', 'mywith'),
+                ),
+                'expected' => '#--john-##==john=###~~john~#--john-##==john=###~~john~#--john-##==john=###~~john~',
+            ),
+
+            Array(
                 'id' => 128,
                 'template' => 'foo: {{foo}} , parent foo: {{../foo}}',
                 'data' => Array('foo' => 'OK'),
