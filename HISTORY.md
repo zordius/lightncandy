@@ -10,6 +10,8 @@ master current trunk
    * 6fdba10fc6 fix {{foo ( bar) or " car" or ' cat' or [ cage]}} pasing bug.
    * 0cd5f2d5e2 fix indent issue when custom helper inside a partial.
    * 296ea89267 support dynamic partial {{> (foo)}}.
+   * f491d04bd5 fix {{../foo}} look up inside root scope issue.
+   * 38fba8a5a5 fix scope issue for hbhelpers.
 
 v0.18 https://github.com/zordius/lightncandy/tree/v0.18
    * 7bcce4c1a7 support {{@last}} for {{#each}} on both object and array.
