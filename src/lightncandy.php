@@ -2550,12 +2550,13 @@ class LCRun3 {
                     ob_start();
                 }
                 if ($context === '_NO_INPUT_HERE_') {
+                    $cx['scopes'][] = $op;
                     $ret = $cb($cx, $op);
                 } else {
                     $cx['scopes'][] = $op;
                     $ret = $cb($cx, $context);
-                    array_pop($cx['scopes']);
                 }
+                array_pop($cx['scopes']);
                 return $cx['flags']['echo'] ? ob_get_clean() : $ret;
             };
         }
