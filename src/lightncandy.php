@@ -76,7 +76,6 @@ class LightnCandy {
     const FLAG_MUSTACHESP = 131072;
     const FLAG_MUSTACHELOOKUP = 262144;
     const FLAG_MUSTACHEPAIN = 2097152;
-    const FLAG_MUSTACHESEC = 33554432;
 
     // Template rendering time debug flags
     const FLAG_RENDER_DEBUG = 524288;
@@ -84,7 +83,7 @@ class LightnCandy {
     // alias flags
     const FLAG_BESTPERFORMANCE = 16384; // FLAG_ECHO
     const FLAG_JS = 24; // FLAG_JSTRUE + FLAG_JSOBJECT
-    const FLAG_MUSTACHE = 40239104; // FLAG_ERROR_SKIPPARTIAL + FLAG_MUSTACHESP + FLAG_MUSTACHELOOKUP + FLAG_MUSTACHEPAIN + FLAG_MUSTACHESEC
+    const FLAG_MUSTACHE = 6684672; // FLAG_ERROR_SKIPPARTIAL + FLAG_MUSTACHESP + FLAG_MUSTACHELOOKUP + FLAG_MUSTACHEPAIN
     const FLAG_HANDLEBARS = 27402208; // FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME + FLAG_SPACECTL + FLAG_NAMEDARG + FLAG_SPVARS + FLAG_SLASH + FLAG_ELSE + FLAG_MUSTACHESP + FLAG_MUSTACHEPAIN
     const FLAG_HANDLEBARSJS = 27402232; // FLAG_JS + FLAG_HANDLEBARS
     const FLAG_INSTANCE = 98304; // FLAG_PROPERTY + FLAG_METHOD
@@ -291,7 +290,6 @@ class LightnCandy {
         $flagProp = static::getBoolStr($context['flags']['prop']);
         $flagMethod = static::getBoolStr($context['flags']['method']);
         $flagMustlok = static::getBoolStr($context['flags']['mustlok']);
-        $flagMustsec = static::getBoolStr($context['flags']['mustsec']);
         $flagEcho = static::getBoolStr($context['flags']['echo']);
 
         $libstr = static::exportLCRun($context);
@@ -311,7 +309,6 @@ class LightnCandy {
             'prop' => $flagProp,
             'method' => $flagMethod,
             'mustlok' => $flagMustlok,
-            'mustsec' => $flagMustsec,
             'echo' => $flagEcho,
             'debug' => \$debugopt,
         ),
@@ -367,7 +364,6 @@ $libstr
                 'mustsp' => $flags & self::FLAG_MUSTACHESP,
                 'mustlok' => $flags & self::FLAG_MUSTACHELOOKUP,
                 'mustpi' => $flags & self::FLAG_MUSTACHEPAIN,
-                'mustsec' => $flags & self::FLAG_MUSTACHESEC,
                 'debug' => $flags & self::FLAG_RENDER_DEBUG,
                 'prop' => $flags & self::FLAG_PROPERTY,
                 'method' => $flags & self::FLAG_METHOD,
@@ -2304,11 +2300,11 @@ class LCRun3 {
      * @expect '-a=' when input array('flags' => array('spvar' => 0)), array('a'), array('a'), false, function ($c, $i) {return "-$i=";}
      * @expect '-a=-b=' when input array('flags' => array('spvar' => 0)), array('a','b'), array('a','b'), false, function ($c, $i) {return "-$i=";}
      * @expect '' when input array('flags' => array('spvar' => 0)), 'abc', 'abc', true, function ($c, $i) {return "-$i=";}
-     * @expect '-b=' when input array('flags' => array('spvar' => 0, 'mustsec' => 0)), array('a' => 'b'), array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
+     * @expect '-b=' when input array('flags' => array('spvar' => 0)), array('a' => 'b'), array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
      * @expect '1' when input array('flags' => array('spvar' => 0)), 'b', 'b', false, function ($c, $i) {return count($i);}
      * @expect '1' when input array('flags' => array('spvar' => 0)), 1, 1, false, function ($c, $i) {return print_r($i, true);}
      * @expect '0' when input array('flags' => array('spvar' => 0)), 0, 0, false, function ($c, $i) {return print_r($i, true);}
-     * @expect '{"b":"c"}' when input array('flags' => array('spvar' => 0, 'mustsec' => 0)), array('b' => 'c'), array('b' => 'c'), false, function ($c, $i) {return json_encode($i);}
+     * @expect '{"b":"c"}' when input array('flags' => array('spvar' => 0)), array('b' => 'c'), array('b' => 'c'), false, function ($c, $i) {return json_encode($i);}
      * @expect 'inv' when input array('flags' => array('spvar' => 0)), array(), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
      * @expect 'inv' when input array('flags' => array('spvar' => 0)), array(), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
      * @expect 'inv' when input array('flags' => array('spvar' => 0)), false, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
@@ -2398,7 +2394,7 @@ class LCRun3 {
             return '';
         }
         if ($isAry) {
-            $cx['scopes'][] = $cx['flags']['mustsec'] ? $v : $in;
+            $cx['scopes'][] = $in;
             $ret = $cb($cx, $v);
             array_pop($cx['scopes']);
             return $ret;
