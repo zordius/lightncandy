@@ -2331,7 +2331,10 @@ class LCRun3 {
         $isObj = false;
 
         if ($isAry && $else !== null && count($v) === 0) {
-            return $else($cx, $in);
+            $cx['scopes'][] = $in;
+            $ret = $else($cx, $in);
+            array_pop($cx['scopes']);
+            return $ret;
         }
 
         // #var, detect input type is object or not
@@ -2395,13 +2398,9 @@ class LCRun3 {
             return '';
         }
         if ($isAry) {
-            if ($cx['flags']['mustsec']) {
-                $cx['scopes'][] = $v;
-            }
+            $cx['scopes'][] = $cx['flags']['mustsec'] ? $v : $in;
             $ret = $cb($cx, $v);
-            if ($cx['flags']['mustsec']) {
-                array_pop($cx['scopes']);
-            }
+            array_pop($cx['scopes']);
             return $ret;
         }
 
@@ -2414,7 +2413,10 @@ class LCRun3 {
         }
 
         if ($else !== null) {
-            return $else($cx, $in);
+            $cx['scopes'][] = $in;
+            $ret = $else($cx, $in);
+            array_pop($cx['scopes']);
+            return $ret;
         }
 
         return '';
