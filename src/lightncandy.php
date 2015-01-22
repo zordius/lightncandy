@@ -320,7 +320,7 @@ class LightnCandy {
         'blockhelpers' => $bhelpers,
         'hbhelpers' => $hbhelpers,
         'partials' => array({$context['partialCode']}),
-        'scopes' => array(\$in),
+        'scopes' => array(),
         'sp_vars' => array('root' => \$in),
 $libstr
     );
@@ -2092,10 +2092,14 @@ class LCRun3 {
                 return $v;
             }
             $count--;
-            if ($count >= 0) {
-                $base = $cx['scopes'][$count];
-            } else {
+            switch ($count) {
+            case -1:
+                $base = $cx['sp_vars']['root'];
+                break;
+            case -2;
                 return null;
+            default:
+                $base = $cx['scopes'][$count];
             }
         }
     }
@@ -2573,7 +2577,6 @@ class LCRun3 {
         // prepare $options['data']
         if ($cx['flags']['spvar']) {
             $options['data'] = $cx['sp_vars'];
-            $options['data']['root'] = $cx['scopes'][0];
         }
 
         $args[] = $options;

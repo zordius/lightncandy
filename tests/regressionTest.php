@@ -443,6 +443,16 @@ class regressionTest extends PHPUnit_Framework_TestCase
             ),
 
             Array(
+                'id' => 128,
+                'template' => 'foo: {{foo}} , parent foo: {{../foo}}',
+                'data' => Array('foo' => 'OK'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                ),
+                'expected' => 'foo: OK , parent foo: ',
+            ),
+
+            Array(
                 'template' => '{{> (pname foo) bar}}',
                 'data' => Array('bar' => 'OK! SUBEXP+PARTIAL!', 'foo' => Array('test/test3')),
                 'options' => Array(
