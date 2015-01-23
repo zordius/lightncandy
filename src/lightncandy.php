@@ -132,7 +132,7 @@ class LightnCandy {
         return static::composePHPRender($context, $code);
     }
 
-    /*
+    /**
      * Include all partials when using dynamic partials
      */
     protected static function handleDynamicPartial(&$context) {
@@ -145,7 +145,7 @@ class LightnCandy {
         }
     }
 
-    /*
+    /**
      * Escape template
      *
      * @param string $template handlebars template string
