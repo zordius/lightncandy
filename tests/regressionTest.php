@@ -297,6 +297,21 @@ class regressionTest extends PHPUnit_Framework_TestCase
             ),
 
             Array(
+                'id' => 114,
+                'template' => '{{^myeach .}}OK:{{.}},{{else}}NOT GOOD{{/myeach}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_BESTPERFORMANCE,
+                    'blockhelpers' => Array(
+                        'myeach' => function ($input) {
+                            return;
+                        }
+                    ),
+                ),
+                'data' => Array(1, 'foo', 3, 'bar'),
+                'expected' => 'OK:,',
+            ),
+
+            Array(
                 'id' => 124,
                 'template' => '{{list foo bar abc=(lt 10 3) def=(lt 3 10)}}',
                 'options' => Array(
