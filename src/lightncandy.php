@@ -1117,7 +1117,7 @@ $libstr
 
         // handle double quoted string
         if (preg_match('/^"(.*)"$/', $v, $matched)) {
-            return array(0, "'" . preg_replace('/([^\\\\])\\\\"/', '$1"', preg_replace('/^\\\\"/', '"', $matched[1])) . "'");
+            return array(0, "'" . preg_replace('/([^\\\\])\\\\\\\\"/', '$1"', preg_replace('/^\\\\\\\\"/', '"', $matched[1])) . "'");
         }
 
         // handle single quoted string
