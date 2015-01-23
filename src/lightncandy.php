@@ -2086,7 +2086,7 @@ class LCRun3 {
      * @expect true when input array(), array(0)
      */
     public static function ifvar($cx, $v) {
-        return !is_null($v) && ($v !== false) && ($v !== 0) && ($v !== '') && (is_array($v) ? (count($v) > 0) : true);
+        return !is_null($v) && ($v !== false) && ($v !== 0) && ($v !== 0.0) && ($v !== '') && (is_array($v) ? (count($v) > 0) : true);
     }
 
     /**
