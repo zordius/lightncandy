@@ -1283,12 +1283,6 @@ $libstr
 
                 $vars[] = $t;
             }
-            // handle final $expect case
-            if ($expect) {
-                if (substr($prev, -1, 1) === $expect) {
-                    $vars[] = $prev;
-                }
-            }
         } else {
             $vars = ($count > 0) ? $matchedall[2] : explode(' ', $token[self::POS_INNERTAG]);
         }
