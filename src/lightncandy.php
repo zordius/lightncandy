@@ -1134,30 +1134,33 @@ $libstr
      * @return array<integer,string> Return variable name array
      *
      * @expect array('this') when input 'this', array('flags' => array('advar' => 0, 'this' => 0))
-     * @expect array(null) when input 'this', array('flags' => array('advar' => 0, 'this' => 1))
-     * @expect array(1, null) when input '../', array('flags' => array('advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0))
-     * @expect array(1, null) when input '../.', array('flags' => array('advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0))
-     * @expect array(1, null) when input '../this', array('flags' => array('advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0))
+     * @expect array() when input 'this', array('flags' => array('advar' => 0, 'this' => 1))
+     * @expect array(1) when input '../', array('flags' => array('advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0))
+     * @expect array(1) when input '../.', array('flags' => array('advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0))
+     * @expect array(1) when input '../this', array('flags' => array('advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0))
      * @expect array(1, 'a') when input '../a', array('flags' => array('advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0))
      * @expect array(2, 'a', 'b') when input '../../a.b', array('flags' => array('advar' => 0, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0))
      * @expect array(2, '[a]', 'b') when input '../../[a].b', array('flags' => array('advar' => 0, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0))
      * @expect array(2, 'a', 'b') when input '../../[a].b', array('flags' => array('advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0))
-     * @expect array('"a.b"') when input '"a.b"', array('flags' => array('advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0))
-     * @expect array(null, 'id') when input 'this.id', array('flags' => array('advar' => 1, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0))
+     * @expect array('id') when input 'this.id', array('flags' => array('advar' => 1, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0))
+     * @expect array(0, '"a.b"') when input '"a.b"', array('flags' => array('advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0))
+     * @expect array(0, '123') when input '123', array('flags' => array('advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0))
+     * @expect array(0, 'null') when input 'null', array('flags' => array('advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0))
      */
     protected static function fixVariable($v, &$context) {
+        // handle number
+        if (is_numeric($v)) {
+            // convert 0x00 or 0b00 numbers to decimal
+            return array(0, (string) 1 * $v);
+        }
+
+        // handle string and boolean and null
+        if (preg_match('/^("(.*)")|(^\\\\\'(.*)\\\\\')|true|false|null$/', $v)) {
+            return array(0, $v);
+        }
+
         $ret = array();
         $levels = 0;
-
-        // handle double quoted string
-        if (preg_match('/^"(.*)"$/', $v, $matched)) {
-            return array($v);
-        }
-
-        // handle single quoted string
-        if (preg_match('/^\\\\\'(.*)\\\\\'$/', $v, $matched)) {
-            return array("\"{$matched[1]}\"");
-        }
 
         // handle ..
         if ($v === '..') {
@@ -1191,8 +1194,8 @@ $libstr
         foreach ($matchedall[1] as $m) {
             if ($context['flags']['advar'] && substr($m, 0, 1) === '[') {
                 $ret[] = new LightnCandyVarName(substr($m, 1, -1));
-            } else {
-                $ret[] = (($context['flags']['this'] && ($m === 'this')) || ($m === '.')) ? null : $m;
+            } elseif ((!$context['flags']['this'] || ($m !== 'this')) && ($m !== '.')) {
+                $ret[] = $m;
             }
         }
 
