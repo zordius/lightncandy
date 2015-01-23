@@ -12,6 +12,9 @@ master current trunk
    * 296ea89267 support dynamic partial {{> (foo)}}.
    * f491d04bd5 fix {{../foo}} look up inside root scope issue.
    * 38fba8a5a5 fix scope issue for hbhelpers.
+   * a24a0473e2 change internal variable structure and fix for {{number}}.
+   * 7ae8289b7e fix escape in double quoted string bug.
+   * 90adb5531b fix {{#if 0.0}} logic to behave as false.
 
 v0.18 https://github.com/zordius/lightncandy/tree/v0.18
    * 7bcce4c1a7 support {{@last}} for {{#each}} on both object and array.
