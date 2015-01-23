@@ -1160,7 +1160,7 @@ $libstr
         foreach ($matchedall[1] as $m) {
             if ($context['flags']['advar'] && substr($m, 0, 1) === '[') {
                 $ret[] = substr($m, 1, -1);
-            } elseif ((!$context['flags']['this'] || ($m !== 'this')) && ($m !== '.')) {
+            } else if ((!$context['flags']['this'] || ($m !== 'this')) && ($m !== '.')) {
                 $ret[] = $m;
             }
         }
@@ -1677,7 +1677,7 @@ $libstr
                 if (!isset($vars[0])) {
                     $vars[0] = array();
                 }
-                $v = static::getVariableNames($vars, $context, true);
+                $v = static::getVariableNames($vars, $context);
                 $tag = ">$p[0] " .implode(' ', $v[1]);
                 if ($context['flags']['runpart']) {
                     if (preg_match(static::IS_SUBEXP_SEARCH, $p[0])) {
@@ -1753,7 +1753,7 @@ $libstr
         $inverted = $inverted ? 'true' : 'false';
 
         static::addUsageCount($context, $notHBCH ? 'blockhelpers' : 'hbhelpers', "{$ch[0]}");
-        $v = static::getVariableNames($vars, $context, true);
+        $v = static::getVariableNames($vars, $context);
         return $context['ops']['seperator'] . static::getFuncName($context, $notHBCH ? 'bch' : 'hbch', ($inverted ? '^' : '#') . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, \$in, $inverted, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
@@ -1819,7 +1819,7 @@ $libstr
      */
     protected static function compileBlockBegin(&$context, $vars) {
         $each = 'false';
-        $v = isset($vars[1]) ? static::getVariableNameOrSubExpression($vars[1], $context, true) : array(null, array());
+        $v = isset($vars[1]) ? static::getVariableNameOrSubExpression($vars[1], $context) : array(null, array());
         switch ($vars[0][0]) {
             case 'if':
                 $context['stack'][] = 'if';
@@ -1872,7 +1872,7 @@ $libstr
 
         $fn = $raw ? 'raw' : $context['ops']['enc'];
         $ch = array_shift($vars);
-        $v = static::getVariableNames($vars, $context, true);
+        $v = static::getVariableNames($vars, $context);
         static::addUsageCount($context, $notHH ? 'helpers' : 'hbhelpers', "{$ch[0]}");
         return $context['ops']['seperator'] . static::getFuncName($context, $notHH ? 'ch' : 'hbch', "$ch[0] " . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, '$fn'" . ($notHH ? '' : ', \'$in\'') . "){$context['ops']['seperator']}";
     }
