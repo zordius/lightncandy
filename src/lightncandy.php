@@ -1681,7 +1681,7 @@ $libstr
                 $tag = ">$p[0] " .implode(' ', $v[1]);
                 if ($context['flags']['runpart']) {
                     if (preg_match(static::IS_SUBEXP_SEARCH, $p[0])) {
-                        $p = array_shift(static::compileSubExpression($p[0], $context));
+                        list($p) = static::compileSubExpression($p[0], $context);
                     } else {
                         $p = "'$p[0]'";
                     }

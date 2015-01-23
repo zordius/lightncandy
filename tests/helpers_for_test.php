@@ -63,9 +63,12 @@ class twoDimensionIterator implements Iterator {
 
 // Custom helpers
 function helper1($arg) {
+    $arg = is_array($arg) ? 'Array' : $arg;
     return "-$arg-";
 }                                                                                                                                          
 function alink($u, $t) {
+    $u = is_array($u) ? 'Array' : $u;
+    $t = is_array($t) ? 'Array' : $t;
     return "<a href=\"$u\">$t</a>";
 }
 
