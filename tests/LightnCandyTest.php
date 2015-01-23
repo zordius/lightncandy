@@ -7,6 +7,22 @@ require_once('src/lightncandy.php');
 class LightnCandyTest extends PHPUnit_Framework_TestCase
 {
     /**
+     * @covers LightnCandy::escapeTemplate
+     */
+    public function testOn_escapeTemplate() {
+        $method = new ReflectionMethod('LightnCandy', 'escapeTemplate');
+        $method->setAccessible(true);
+        $this->assertEquals('abc', $method->invoke(null,
+            'abc'
+        ));
+        $this->assertEquals('a\\bc', $method->invoke(null,
+            'a\bc'
+        ));
+        $this->assertEquals('a\\\'bc', $method->invoke(null,
+            'a\'bc'
+        ));
+    }
+    /**
      * @covers LightnCandy::buildHelperTable
      */
     public function testOn_buildHelperTable() {
