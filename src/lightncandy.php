@@ -2057,13 +2057,13 @@ class LCRun3 {
             }
             $count--;
             switch ($count) {
-            case -1:
-                $base = $cx['sp_vars']['root'];
-                break;
-            case -2;
-                return null;
-            default:
-                $base = $cx['scopes'][$count];
+                case -1:
+                    $base = $cx['sp_vars']['root'];
+                    break;
+                case -2;
+                    return null;
+                default:
+                    $base = $cx['scopes'][$count];
             }
         }
     }
