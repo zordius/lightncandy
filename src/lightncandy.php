@@ -1898,6 +1898,7 @@ $libstr
                     case 'each':
                     case '#':
                         return "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}";
+                    default:
                 }
             }
             $context['error'][] = '{{else}} only valid in if, unless, each, and #section context';
