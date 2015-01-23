@@ -316,13 +316,13 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
     public function testOn_parseTokenArgs() {
         $method = new ReflectionMethod('LightnCandy', 'parseTokenArgs');
         $method->setAccessible(true);
-        $this->assertEquals(array(false, array(array(null))), $method->invoke(null,
+        $this->assertEquals(array(false, array(array())), $method->invoke(null,
             array(0,0,0,0,0,0,''), array('flags' => array('advar' => 0, 'this' => 1, 'namev' => 0, 'noesc' => 0))
         ));
-        $this->assertEquals(array(true, array(array(null))), $method->invoke(null,
+        $this->assertEquals(array(true, array(array())), $method->invoke(null,
             array(0,0,0,'{{{',0,0,''), array('flags' => array('advar' => 0, 'this' => 1, 'namev' => 0, 'noesc' => 0))
         ));
-        $this->assertEquals(array(true, array(array(null))), $method->invoke(null,
+        $this->assertEquals(array(true, array(array())), $method->invoke(null,
             array(0,0,0,0,0,0,''), array('flags' => array('advar' => 0, 'this' => 1, 'namev' => 0, 'noesc' => 1))
         ));
         $this->assertEquals(array(false, array(array('a'))), $method->invoke(null,
@@ -334,7 +334,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(array(false, array(array('a'), array('"b'), array('c"'))), $method->invoke(null,
             array(0,0,0,0,0,0,'a "b c"'), array('flags' => array('advar' => 0, 'this' => 1, 'namev' => 0, 'noesc' => 0))
         ));
-        $this->assertEquals(array(false, array(array('a'), array('"b c"'))), $method->invoke(null,
+        $this->assertEquals(array(false, array(array('a'), array(0, '"b c"'))), $method->invoke(null,
             array(0,0,0,0,0,0,'a "b c"'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 0, 'noesc' => 0))
         ));
         $this->assertEquals(array(false, array(array('a'), array('[b'), array('c]'))), $method->invoke(null,
@@ -361,7 +361,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(array(false, array(array('a'), 'q' => array('b'), array('c'))), $method->invoke(null,
             array(0,0,0,0,0,0,'a [q]=b c'), array('flags' => array('advar' => 0, 'this' => 1, 'namev' => 1, 'noesc' => 0))
         ));
-        $this->assertEquals(array(false, array(array('a'), 'q' => array('"b c"'))), $method->invoke(null,
+        $this->assertEquals(array(false, array(array('a'), 'q' => array(0, '"b c"'))), $method->invoke(null,
             array(0,0,0,0,0,0,'a q="b c"'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0))
         ));
         $this->assertEquals(array(false, array(array('(foo bar)'))), $method->invoke(null,
@@ -373,19 +373,19 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(array(false, array(array('( foo bar)'))), $method->invoke(null,
             array(0,0,0,0,0,0,'( foo bar)'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0))
         ));
-        $this->assertEquals(array(false, array(array('a'), array('" b c"'))), $method->invoke(null,
+        $this->assertEquals(array(false, array(array('a'), array(0, '" b c"'))), $method->invoke(null,
             array(0,0,0,0,0,0,'a " b c"'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 0, 'noesc' => 0))
         ));
-        $this->assertEquals(array(false, array(array('a'), 'q' => array('" b c"'))), $method->invoke(null,
+        $this->assertEquals(array(false, array(array('a'), 'q' => array(0, '" b c"'))), $method->invoke(null,
             array(0,0,0,0,0,0,'a q=" b c"'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0))
         ));
-        $this->assertEquals(array(false, array(array('foo'), array('" =="'), array('bar'))), $method->invoke(null,
+        $this->assertEquals(array(false, array(array('foo'), array(0, "\' ==\'"), array('bar'))), $method->invoke(null,
             array(0,0,0,0,0,0,"foo \' ==\' bar"), array('flags' => array('advar' => 1, 'namev' => 1))
         ));
         $this->assertEquals(array(false, array(array('a'), array(' b c'))), $method->invoke(null,
             array(0,0,0,0,0,0,'a [ b c]'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0))
         ));
-        $this->assertEquals(array(false, array(array('a'), 'q' => array('" d e"'))), $method->invoke(null,
+        $this->assertEquals(array(false, array(array('a'), 'q' => array(0, "\' d e\'"))), $method->invoke(null,
             array(0,0,0,0,0,0,"a q=\' d e\'"), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0))
         ));
         $this->assertEquals(array(false, array('q' => array('( foo bar)'))), $method->invoke(null,
