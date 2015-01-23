@@ -1414,7 +1414,7 @@ $libstr
                 return ++$context['usedFeature']['delimiter'];
 
             case '^':
-                if ($vars[0][0]) {
+                if (isset($vars[0][0])) {
                     $context['stack'][] = $token[self::POS_INNERTAG];
                     $context['level']++;
                     return ++$context['usedFeature']['isec'];
@@ -1437,14 +1437,20 @@ $libstr
                 $context['stack'][] = $token[self::POS_INNERTAG];
                 $context['level']++;
 
-                // detect handlebars custom helpers.
-                if (isset($context['hbhelpers'][$vars[0][0]])) {
-                    return ++$context['usedFeature']['hbhelper'];
+                if (!isset($vars[0][0])) {
+                    return;
                 }
 
-                // detect block custom helpers.
-                if (isset($context['blockhelpers'][$vars[0][0]])) {
-                    return ++$context['usedFeature']['bhelper'];
+                if (is_string($vars[0][0])) {
+                    // detect handlebars custom helpers.
+                    if (isset($context['hbhelpers'][$vars[0][0]])) {
+                        return ++$context['usedFeature']['hbhelper'];
+                    }
+
+                    // detect block custom helpers.
+                    if (isset($context['blockhelpers'][$vars[0][0]])) {
+                        return ++$context['usedFeature']['bhelper'];
+                    }
                 }
 
                 switch ($vars[0][0]) {
@@ -1636,12 +1642,13 @@ $libstr
             return $ret;
         }
 
-        if ($ret = static::compileCustomHelper($context, $vars, $raw)) {
-            return $ret;
-        }
-
-        if ($ret = static::compileElse($context, $vars)) {
-            return $ret;
+        if (isset($vars[0][0])) {
+            if ($ret = static::compileCustomHelper($context, $vars, $raw)) {
+                return $ret;
+            }
+            if ($ret = static::compileElse($context, $vars)) {
+                return $ret;
+            }
         }
 
         static::noNamedArguments($token, $context, $named, ', maybe you missing the custom helper?');
@@ -1688,7 +1695,7 @@ $libstr
                 }
             case '^':
                 // {{^}} means {{else}}
-                if (!$vars[0][0]) {
+                if (!isset($vars[0][0])) {
                     $vars[0][0] = 'else';
                     $token[self::POS_OP] = '';
                     return;
