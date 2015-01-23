@@ -1740,6 +1740,9 @@ $libstr
      * @return string|null Return compiled code segment for the token
      */
     protected static function compileBlockCustomHelper(&$context, $vars, $inverted = false) {
+        if (!isset($vars[0][0])) {
+            return;
+        }
         $notHBCH = !isset($context['hbhelpers'][$vars[0][0]]);
 
         if (!isset($context['blockhelpers'][$vars[0][0]]) && $notHBCH) {
@@ -1820,7 +1823,7 @@ $libstr
     protected static function compileBlockBegin(&$context, $vars) {
         $each = 'false';
         $v = isset($vars[1]) ? static::getVariableNameOrSubExpression($vars[1], $context) : array(null, array());
-        switch ($vars[0][0]) {
+        switch (isset($vars[0][0]) ? $vars[0][0] : null) {
             case 'if':
                 $context['stack'][] = 'if';
                 return $context['usedFeature']['parent']
@@ -2210,6 +2213,8 @@ class LCRun3 {
                     }
                     return join(',', $ret);
                 }
+            } else {
+                return 'Array';
             }
         }
 
