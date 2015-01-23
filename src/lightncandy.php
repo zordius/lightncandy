@@ -379,7 +379,6 @@ $libstr
                 'this' => 0,
                 'parent' => 0,
                 'with' => 0,
-                'dot' => 0,
                 'comment' => 0,
                 'partial' => 0,
                 'dynpartial' => 0,
@@ -1504,20 +1503,18 @@ $libstr
             $context['usedFeature'][$raw ? 'raw' : 'enc']++;
         }
 
-        // validate else and this.
-        switch ($vars[0][0]) {
-            case 'else':
-                if ($context['flags']['else']) {
-                    return $context['usedFeature']['else']++;
-                }
-                break;
+        if (!isset($vars[0][0])) {
+            if ($context['level'] == 0) {
+                $context['usedFeature']['rootthis']++;
+            }
+            return $context['usedFeature']['this']++;
+        }
 
-            case 'this':
-            case '.':
-                if ($context['level'] == 0) {
-                    $context['usedFeature']['rootthis']++;
-                }
-                return $context['usedFeature'][($vars[0] == '.') ? 'dot' : 'this']++;
+        // validate else and this.
+        if ($vars[0][0] === 'else') {
+            if ($context['flags']['else']) {
+                return $context['usedFeature']['else']++;
+            }
         }
 
         // detect handlebars custom helpers.
