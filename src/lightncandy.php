@@ -19,24 +19,6 @@ Origin: https://github.com/zordius/lightncandy
  */
 
 /**
- * LightnCandy class to present a variable name
- */
-class LightnCandyVarName {
-    private $string;
-
-    public function __construct($string) {
-        $this->string = $string;
-    }
-
-    /*
-     * @return string the magical toString() method
-     */
-    public function __toString() {
-        return $this->string;
-    }
-}
-
-/**
  * LightnCandy static core class.
  */
 class LightnCandy {
@@ -928,7 +910,6 @@ $libstr
      *
      * @param array<array> $vn variable name array.
      * @param array<string,array|string|integer> $context current compile context
-     * @param boolean $ishelper true when compile for helper
      *
      * @return array<string|array> variable names
      *
@@ -936,11 +917,11 @@ $libstr
      * @expect array('array(array($in,$in),array())', array('this', 'this')) when input array(null, null), array('flags'=>array('spvar'=>true))
      * @expect array('array(array(),array(\'a\'=>$in))', array('this')) when input array('a' => null), array('flags'=>array('spvar'=>true))
      */
-    protected static function getVariableNames($vn, &$context, $ishelper = false) {
+    protected static function getVariableNames($vn, &$context) {
         $vars = array(array(), array());
         $exps = array();
         foreach ($vn as $i => $v) {
-            $V = static::getVariableNameOrSubExpression($v, $context, $ishelper);
+            $V = static::getVariableNameOrSubExpression($v, $context);
             if (is_string($i)) {
                 $vars[1][] = "'$i'=>{$V[0]}";
             } else {
@@ -983,15 +964,14 @@ $libstr
      *
      * @param array<array|string|integer> $var variable parsed path
      * @param array<array|string|integer> $context current compile context
-     * @param boolean $ishelper true when compile for helper$
      *
      * @return array<string> variable names
      */
-    protected static function getVariableNameOrSubExpression($var, &$context, $ishelper = false) {
+    protected static function getVariableNameOrSubExpression($var, &$context) {
         if (isset($var[0]) && preg_match(static::IS_SUBEXP_SEARCH, $var[0])) {
             return static::compileSubExpression($var[0], $context);
         }
-        return static::getVariableName($var, $context, $ishelper);
+        return static::getVariableName($var, $context);
     }
 
     /**
@@ -999,50 +979,34 @@ $libstr
      *
      * @param array<array|string|integer> $var variable parsed path
      * @param array<array|string|integer> $context current compile context
-     * @param boolean $ishelper true when compile for helper$
      *
      * @return array<string> variable names
      *
      * @expect array('$in', 'this') when input array(null), array('flags'=>array('spvar'=>true,'debug'=>0))
-     * @expect array('true', 'true') when input array('true'), array('flags'=>array('spvar'=>true,'debug'=>0)), true
-     * @expect array('false', 'false') when input array('false'), array('flags'=>array('spvar'=>true,'debug'=>0)), true
-     * @expect array(2, '2') when input array('2'), array('flags'=>array('spvar'=>true,'debug'=>0)), true
+     * @expect array('((isset($in[\'true\']) && is_array($in)) ? $in[\'true\'] : null)', '[true]') when input array('true'), array('flags'=>array('spvar'=>true,'debug'=>0))
+     * @expect array('((isset($in[\'false\']) && is_array($in)) ? $in[\'false\'] : null)', '[false]') when input array('false'), array('flags'=>array('spvar'=>true,'debug'=>0))
+     * @expect array('true', 'true') when input array(0, 'true'), array('flags'=>array('spvar'=>true,'debug'=>0))
+     * @expect array('false', 'false') when input array(0, 'false'), array('flags'=>array('spvar'=>true,'debug'=>0))
+     * @expect array('((isset($in[\'2\']) && is_array($in)) ? $in[\'2\'] : null)', '[2]') when input array('2'), array('flags'=>array('spvar'=>true,'debug'=>0))
+     * @expect array('2', '2') when input array(0, '2'), array('flags'=>array('spvar'=>true,'debug'=>0))
      * @expect array('((isset($in[\'@index\']) && is_array($in)) ? $in[\'@index\'] : null)', '[@index]') when input array('@index'), array('flags'=>array('spvar'=>false,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0))
      * @expect array("((isset(\$cx['sp_vars']['index']) && is_array(\$cx['sp_vars'])) ? \$cx['sp_vars']['index'] : null)", '@[index]') when input array('@index'), array('flags'=>array('spvar'=>true,'debug'=>0))
      * @expect array("((isset(\$cx['sp_vars']['key']) && is_array(\$cx['sp_vars'])) ? \$cx['sp_vars']['key'] : null)", '@[key]') when input array('@key'), array('flags'=>array('spvar'=>true,'debug'=>0))
      * @expect array("((isset(\$cx['sp_vars']['first']) && is_array(\$cx['sp_vars'])) ? \$cx['sp_vars']['first'] : null)", '@[first]') when input array('@first'), array('flags'=>array('spvar'=>true,'debug'=>0))
      * @expect array("((isset(\$cx['sp_vars']['last']) && is_array(\$cx['sp_vars'])) ? \$cx['sp_vars']['last'] : null)", '@[last]') when input array('@last'), array('flags'=>array('spvar'=>true,'debug'=>0))
-     * @expect array('\'a\'', '"a"') when input array('"a"'), array('flags'=>array('spvar'=>true,'debug'=>0))
+     * @expect array('((isset($in[\'"a"\']) && is_array($in)) ? $in[\'"a"\'] : null)', '["a"]') when input array('"a"'), array('flags'=>array('spvar'=>true,'debug'=>0))
+     * @expect array('"a"', '"a"') when input array(0, '"a"'), array('flags'=>array('spvar'=>true,'debug'=>0))
      * @expect array('((isset($in[\'a\']) && is_array($in)) ? $in[\'a\'] : null)', '[a]') when input array('a'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0))
      * @expect array('((isset($cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\']) && is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)', '../[a]') when input array(1,'a'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0))
      * @expect array('((isset($cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\']) && is_array($cx[\'scopes\'][count($cx[\'scopes\'])-3])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)', '../../../[a]') when input array(3,'a'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0))
      * @expect array('((isset($in[\'id\']) && is_array($in)) ? $in[\'id\'] : null)', 'this.[id]') when input array(null, 'id'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0))
      * @expect array('LCRun3::v($cx, $in, array(\'id\'))', 'this.[id]') when input array(null, 'id'), array('flags'=>array('prop'=>true,'spvar'=>true,'debug'=>0,'method'=>0,'mustlok'=>0,'standalone'=>0))
      */
-    protected static function getVariableName($var, &$context, $ishelper = false) {
+    protected static function getVariableName($var, &$context) {
         if (isset($var[0])) {
             // Handle language constants or number , only for helpers
-            if ($ishelper) {
-                if ((count($var) == 1) && is_numeric($var[0])) {
-                    // convert 0x00 or 0b00 numbers to decimal
-                    return array((string) 1 * $var[0], $var[0]);
-                }
-                switch ($var[0]) {
-                    case 'true':
-                        return array('true', 'true');
-                    case 'false':
-                        return array('false', 'false');
-                }
-            }
-
-            // Handle double quoted string
-            if (is_object($var[0]) && (get_class($var[0]) === 'LightnCandyVarName')) {
-                $var[0] = "{$var[0]}";
-            } else {
-                if (preg_match('/^"(.*)"$/', $var[0], $matched)) {
-                    $t = addcslashes(stripslashes(preg_replace('/\\\\\\\\/', '\\', $matched[1])), "'");
-                    return array("'{$t}'", "\"{$t}\"");
-                }
+            if ($var[0] === 0) {
+                return array($var[1], $var[1]);
             }
         }
 
@@ -1154,8 +1118,17 @@ $libstr
             return array(0, (string) 1 * $v);
         }
 
-        // handle string and boolean and null
-        if (preg_match('/^("(.*)")|(^\\\\\'(.*)\\\\\')|true|false|null$/', $v)) {
+        // handle double quoted string
+        if (preg_match('/^"(.*)"$/', $v, $matched)) {
+            return array(0, "'" . preg_replace('/([^\\\\])\\\\"/', '$1"', preg_replace('/^\\\\"/', '"', $matched[1])) . "'");
+        }
+
+        // handle single quoted string
+        if (preg_match('/^\\\\\'(.*)\\\\\'$/', $v, $matched)) {
+            return array(0, "'$matched[1]'");
+        }
+        // handle boolean and null
+        if (preg_match('/^true|false|null$/', $v)) {
             return array(0, $v);
         }
 
@@ -1187,13 +1160,9 @@ $libstr
             preg_match_all('/([^\\.\\/]+)/', $v, $matchedall);
         }
 
-        if (($v === '.') || ($v === '')) {
-            $matchedall = array(array('.'), array('.'));
-        }
-
         foreach ($matchedall[1] as $m) {
             if ($context['flags']['advar'] && substr($m, 0, 1) === '[') {
-                $ret[] = new LightnCandyVarName(substr($m, 1, -1));
+                $ret[] = substr($m, 1, -1);
             } elseif ((!$context['flags']['this'] || ($m !== 'this')) && ($m !== '.')) {
                 $ret[] = $m;
             }
@@ -1363,8 +1332,6 @@ $libstr
 
             if (($idx === 0) && ($token[self::POS_OP] === '>')) {
                 $var = array(preg_replace('/^("(.+)")|(\\[(.+)\\])$/', '$2$4', $var));
-            } else if (is_numeric($var)) {
-                $var = array('"' . $var . '"');
             } else if (preg_match('/^\(.+\)$/', $var)) {
                 $var = array($var);
             } else {

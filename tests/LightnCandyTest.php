@@ -193,14 +193,23 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(array('$in', 'this'), $method->invoke(null,
             array(null), array('flags'=>array('spvar'=>true,'debug'=>0))
         ));
+        $this->assertEquals(array('((isset($in[\'true\']) && is_array($in)) ? $in[\'true\'] : null)', '[true]'), $method->invoke(null,
+            array('true'), array('flags'=>array('spvar'=>true,'debug'=>0))
+        ));
+        $this->assertEquals(array('((isset($in[\'false\']) && is_array($in)) ? $in[\'false\'] : null)', '[false]'), $method->invoke(null,
+            array('false'), array('flags'=>array('spvar'=>true,'debug'=>0))
+        ));
         $this->assertEquals(array('true', 'true'), $method->invoke(null,
-            array('true'), array('flags'=>array('spvar'=>true,'debug'=>0)), true
+            array(0, 'true'), array('flags'=>array('spvar'=>true,'debug'=>0))
         ));
         $this->assertEquals(array('false', 'false'), $method->invoke(null,
-            array('false'), array('flags'=>array('spvar'=>true,'debug'=>0)), true
+            array(0, 'false'), array('flags'=>array('spvar'=>true,'debug'=>0))
         ));
-        $this->assertEquals(array(2, '2'), $method->invoke(null,
-            array('2'), array('flags'=>array('spvar'=>true,'debug'=>0)), true
+        $this->assertEquals(array('((isset($in[\'2\']) && is_array($in)) ? $in[\'2\'] : null)', '[2]'), $method->invoke(null,
+            array('2'), array('flags'=>array('spvar'=>true,'debug'=>0))
+        ));
+        $this->assertEquals(array('2', '2'), $method->invoke(null,
+            array(0, '2'), array('flags'=>array('spvar'=>true,'debug'=>0))
         ));
         $this->assertEquals(array('((isset($in[\'@index\']) && is_array($in)) ? $in[\'@index\'] : null)', '[@index]'), $method->invoke(null,
             array('@index'), array('flags'=>array('spvar'=>false,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0))
@@ -217,8 +226,11 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(array("((isset(\$cx['sp_vars']['last']) && is_array(\$cx['sp_vars'])) ? \$cx['sp_vars']['last'] : null)", '@[last]'), $method->invoke(null,
             array('@last'), array('flags'=>array('spvar'=>true,'debug'=>0))
         ));
-        $this->assertEquals(array('\'a\'', '"a"'), $method->invoke(null,
+        $this->assertEquals(array('((isset($in[\'"a"\']) && is_array($in)) ? $in[\'"a"\'] : null)', '["a"]'), $method->invoke(null,
             array('"a"'), array('flags'=>array('spvar'=>true,'debug'=>0))
+        ));
+        $this->assertEquals(array('"a"', '"a"'), $method->invoke(null,
+            array(0, '"a"'), array('flags'=>array('spvar'=>true,'debug'=>0))
         ));
         $this->assertEquals(array('((isset($in[\'a\']) && is_array($in)) ? $in[\'a\'] : null)', '[a]'), $method->invoke(null,
             array('a'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0))
