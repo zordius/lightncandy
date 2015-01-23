@@ -1437,12 +1437,12 @@ $libstr
                 $context['level']++;
 
                 // detect handlebars custom helpers.
-                if (isset($context['hbhelpers']["{$vars[0][0]}"])) {
+                if (isset($context['hbhelpers'][$vars[0][0]])) {
                     return ++$context['usedFeature']['hbhelper'];
                 }
 
                 // detect block custom helpers.
-                if (isset($context['blockhelpers']["{$vars[0][0]}"])) {
+                if (isset($context['blockhelpers'][$vars[0][0]])) {
                     return ++$context['usedFeature']['bhelper'];
                 }
 
@@ -1519,12 +1519,12 @@ $libstr
         }
 
         // detect handlebars custom helpers.
-        if (isset($context['hbhelpers']["{$vars[0][0]}"])) {
+        if (isset($context['hbhelpers'][$vars[0][0]])) {
             return $context['usedFeature']['hbhelper']++;
         }
 
         // detect custom helpers.
-        if (isset($context['helpers']["{$vars[0][0]}"])) {
+        if (isset($context['helpers'][$vars[0][0]])) {
             return $context['usedFeature']['helper']++;
         }
     }
@@ -1734,9 +1734,9 @@ $libstr
      * @return string|null Return compiled code segment for the token
      */
     protected static function compileBlockCustomHelper(&$context, $vars, $inverted = false) {
-        $notHBCH = !isset($context['hbhelpers']["{$vars[0][0]}"]);
+        $notHBCH = !isset($context['hbhelpers'][$vars[0][0]]);
 
-        if (!isset($context['blockhelpers']["{$vars[0][0]}"]) && $notHBCH) {
+        if (!isset($context['blockhelpers'][$vars[0][0]]) && $notHBCH) {
             return;
         }
 
@@ -1746,7 +1746,7 @@ $libstr
         $ch = array_shift($vars);
         $inverted = $inverted ? 'true' : 'false';
 
-        static::addUsageCount($context, $notHBCH ? 'blockhelpers' : 'hbhelpers', "{$ch[0]}");
+        static::addUsageCount($context, $notHBCH ? 'blockhelpers' : 'hbhelpers', $ch[0]);
         $v = static::getVariableNames($vars, $context);
         return $context['ops']['seperator'] . static::getFuncName($context, $notHBCH ? 'bch' : 'hbch', ($inverted ? '^' : '#') . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, \$in, $inverted, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
@@ -1856,8 +1856,8 @@ $libstr
      * @return string|null Return compiled code segment for the token when the token is custom helper
      */
     protected static function compileCustomHelper(&$context, &$vars, $raw, $err = false) {
-        $notHH = !isset($context['hbhelpers']["{$vars[0][0]}"]);
-        if (!isset($context['helpers']["{$vars[0][0]}"]) && $notHH) {
+        $notHH = !isset($context['hbhelpers'][$vars[0][0]]);
+        if (!isset($context['helpers'][$vars[0][0]]) && $notHH) {
             if ($err) {
                 $context['error'][] = "Custom helper '{$vars[0][0]}' not found!";
             }
@@ -1867,7 +1867,7 @@ $libstr
         $fn = $raw ? 'raw' : $context['ops']['enc'];
         $ch = array_shift($vars);
         $v = static::getVariableNames($vars, $context);
-        static::addUsageCount($context, $notHH ? 'helpers' : 'hbhelpers', "{$ch[0]}");
+        static::addUsageCount($context, $notHH ? 'helpers' : 'hbhelpers', $ch[0]);
         return $context['ops']['seperator'] . static::getFuncName($context, $notHH ? 'ch' : 'hbch', "$ch[0] " . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, '$fn'" . ($notHH ? '' : ', \'$in\'') . "){$context['ops']['seperator']}";
     }
 
