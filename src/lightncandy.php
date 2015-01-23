@@ -1003,11 +1003,8 @@ $libstr
      * @expect array('LCRun3::v($cx, $in, array(\'id\'))', 'this.[id]') when input array(null, 'id'), array('flags'=>array('prop'=>true,'spvar'=>true,'debug'=>0,'method'=>0,'mustlok'=>0,'standalone'=>0))
      */
     protected static function getVariableName($var, &$context) {
-        if (isset($var[0])) {
-            // Handle language constants or number , only for helpers
-            if ($var[0] === 0) {
-                return array($var[1], $var[1]);
-            }
+        if (isset($var[0]) && ($var[0] === 0)) {
+            return array($var[1], preg_replace('/\'(.*)\'/', '$1', $var[1]));
         }
 
         $levels = 0;
