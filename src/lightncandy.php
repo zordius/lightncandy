@@ -153,7 +153,7 @@ class LightnCandy {
      * @return string Escaped template
      *
      * @expect 'abc' when input 'abc'
-     * @expect 'a\\bc' when input 'a\bc'
+     * @expect 'a\\\\bc' when input 'a\bc'
      * @expect 'a\\\'bc' when input 'a\'bc'
      */
     protected static function escapeTemplate($template) {
