@@ -1016,7 +1016,9 @@ $libstr
             if (!is_string($var[0]) && is_int($var[0])) {
                 $levels = array_shift($var);
             }
+        }
 
+        if (isset($var[0])) {
             // handle @root, @index, @key, @last, etc
             if ($context['flags']['spvar']) {
                 if (substr($var[0], 0, 1) === '@') {
@@ -1025,14 +1027,14 @@ $libstr
                     $var[0] = substr($var[0], 1);
                 }
             }
+        }
 
-            // change base when trace to parent
-            if ($levels > 0) {
-                if ($spvar) {
-                    $base .= str_repeat("['_parent']", $levels);
-                } else {
-                    $base = "\$cx['scopes'][count(\$cx['scopes'])-$levels]";
-                }
+        // change base when trace to parent
+        if ($levels > 0) {
+            if ($spvar) {
+                $base .= str_repeat("['_parent']", $levels);
+            } else {
+                $base = "\$cx['scopes'][count(\$cx['scopes'])-$levels]";
             }
         }
 
