@@ -21,7 +21,7 @@ Features
    * Runs 4~10 times faster than <a href="https://github.com/dingram/mustache-php">mustache-php</a>.
    * Runs 10~30 times faster than <a href="https://github.com/XaminProject/handlebars.php">handlebars.php</a>.
    * Detail performance test reports can be found <a href="https://github.com/zordius/HandlebarsTest">here</a>, go http://zordius.github.io/HandlebarsTest/ to see charts.
-* **SMALL!** single PHP file, only 114K!
+* **SMALL!** single PHP file, only 115K!
 * **ROBUST!**
    * 100% support <a href="https://github.com/mustache/spec">mustache spec v1.1.2</a> (without lambda module)
    * Supports almost all <a href="https://github.com/kasperisager/handlebars-spec">handlebars.js spec</a>
@@ -652,6 +652,7 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{../var}}` : parent template scope. (require `FLAG_PARENT`)
 * `{{>file}}` : partial; include another template inside a template.
 * `{{>file foo}}` : partial with new context (require `FLAG_RUNTIMEPARTIAL`)
+* `{{>(helper) foo}}` : include dynamic partial by name provided from a helper (require `FLAG_RUNTIMEPARTIAL`)
 * `{{@index}}` : references to current index in a `{{#each}}` loop on an array. (require `FLAG_SPVARS`)
 * `{{@key}}` : references to current key in a `{{#each}}` loop on an object. (require `FLAG_SPVARS`)
 * `{{@root}}` : references to root context. (require `FLAG_SPVARS`)
