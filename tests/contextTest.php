@@ -43,6 +43,31 @@ class contextTest extends PHPUnit_Framework_TestCase
              Array(
                  'template' => 'abc',
              ),
+
+             Array(
+                 'template' => 'abc{{def',
+             ),
+
+             Array(
+                 'template' => 'abc{{def}}',
+                 'expected' => Array(
+                     'enc' => 1
+                 ),
+             ),
+
+             Array(
+                 'template' => 'abc{{{def}}}',
+                 'expected' => Array(
+                     'raw' => 1
+                 ),
+             ),
+
+             Array(
+                 'template' => 'abc{{&def}}',
+                 'expected' => Array(
+                     'raw' => 1
+                 ),
+             ),
         );
 
         return array_map(function($i) use ($default) {
