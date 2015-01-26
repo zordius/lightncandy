@@ -68,6 +68,23 @@ class contextTest extends PHPUnit_Framework_TestCase
                      'raw' => 1
                  ),
              ),
+
+             Array(
+                 'template' => 'abc{{this}}',
+                 'expected' => Array(
+                     'enc' => 1
+                 ),
+             ),
+
+             Array(
+                 'template' => 'abc{{this}}',
+                 'options' => Array('flags' => LightnCandy::FLAG_THIS),
+                 'expected' => Array(
+                     'enc' => 1,
+                     'this' => 1,
+                     'rootthis' => 1,
+                 ),
+             ),
         );
 
         return array_map(function($i) use ($default) {
