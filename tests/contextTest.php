@@ -85,6 +85,55 @@ class contextTest extends PHPUnit_Framework_TestCase
                      'rootthis' => 1,
                  ),
              ),
+
+             Array(
+                 'template' => '{{#if abc}}OK!{{/if}}',
+                 'expected' => Array(
+                     'if' => 1
+                 ),
+             ),
+
+             Array(
+                 'template' => '{{#unless abc}}OK!{{/unless}}',
+                 'expected' => Array(
+                     'unless' => 1
+                 ),
+             ),
+
+             Array(
+                 'template' => '{{#with abc}}OK!{{/with}}',
+                 'expected' => Array(
+                     'with' => 1
+                 ),
+             ),
+
+             Array(
+                 'template' => '{{#abc}}OK!{{/abc}}',
+                 'expected' => Array(
+                     'sec' => 1
+                 ),
+             ),
+
+             Array(
+                 'template' => '{{^abc}}OK!{{/abc}}',
+                 'expected' => Array(
+                     'isec' => 1
+                 ),
+             ),
+
+             Array(
+                 'template' => '{{#each abc}}OK!{{/each}}',
+                 'expected' => Array(
+                     'each' => 1
+                 ),
+             ),
+
+             Array(
+                 'template' => '{{! test}}OK!{{! done}}',
+                 'expected' => Array(
+                     'comment' => 2
+                 ),
+             ),
         );
 
         return array_map(function($i) use ($default) {
