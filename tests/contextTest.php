@@ -149,14 +149,14 @@ class contextTest extends PHPUnit_Framework_TestCase
                      'parent' => 1,
                      'raw' => 1,
                  ),
-             )
-,
+             ),
+
              Array(
                  'template' => '{{&../../../OK}} {{../OK}}',
                  'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                     'hbhelpers' => Array(
-                        'myeach' => function ($context) {
+                        'mytest' => function ($context) {
                             return $context;
                         }
                     )
@@ -166,7 +166,24 @@ class contextTest extends PHPUnit_Framework_TestCase
                      'enc' => 1,
                      'raw' => 1,
                  ),
-             )
+             ),
+
+             Array(
+                 'template' => '{{mytest ../../../OK}} {{../OK}}',
+                 'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'mytest' => function ($context) {
+                            return $context;
+                        }
+                    )
+                ),
+                 'expected' => Array(
+                     'parent' => 2,
+                     'enc' => 2,
+                     'hbhelper' => 1,
+                 ),
+             ),
         );
 
         return array_map(function($i) use ($default) {
