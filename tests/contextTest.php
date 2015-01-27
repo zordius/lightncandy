@@ -134,6 +134,39 @@ class contextTest extends PHPUnit_Framework_TestCase
                      'comment' => 2
                  ),
              ),
+
+             Array(
+                 'template' => '{{../OK}}',
+                 'expected' => Array(
+                     'parent' => 1,
+                     'enc' => 1,
+                 ),
+             ),
+
+             Array(
+                 'template' => '{{&../../OK}}',
+                 'expected' => Array(
+                     'parent' => 1,
+                     'raw' => 1,
+                 ),
+             )
+,
+             Array(
+                 'template' => '{{&../../../OK}} {{../OK}}',
+                 'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'myeach' => function ($context) {
+                            return $context;
+                        }
+                    )
+                ),
+                 'expected' => Array(
+                     'parent' => 2,
+                     'enc' => 1,
+                     'raw' => 1,
+                 ),
+             )
         );
 
         return array_map(function($i) use ($default) {

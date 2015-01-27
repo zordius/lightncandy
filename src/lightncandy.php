@@ -123,6 +123,9 @@ class LightnCandy {
 
         $code = static::compileTemplate($context, static::escapeTemplate($template));
 
+        // refine usedFeatures
+        $context['usedFeature']['parent'] /= 2;
+
         // return false when fatal error
         if (static::handleError($context)) {
             return false;
