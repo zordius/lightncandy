@@ -322,6 +322,16 @@ return Array('Not&Same output \' " Ya!', 'enc');
 return Array('Not&Same output \' " Ya!', 'encq');
 ```
 
+In most case, a custom helper should always return a string. If you design a custom helper to be executed inside a subexpression, you can return an object or an array by this way:
+
+```php
+// return an object
+return Array($anObject, 'asis');
+
+// return Array(1, 3, 5)
+return Array(Array(1, 3, 5), 'any_string_but_not_raw_nor_enc_nor_encq');
+```
+
 Block Custom Helper
 -------------------
 
