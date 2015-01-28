@@ -328,8 +328,11 @@ In most case, a custom helper should always return a string. If you design a cus
 // return an object
 return Array($anObject, 'asis');
 
+// in another way
+return Array($anObject, 'raw');
+
 // return Array(1, 3, 5)
-return Array(Array(1, 3, 5), 'any_string_but_not_raw_nor_enc_nor_encq');
+return Array(Array(1, 3, 5), 'any_string_but_not_enc_nor_encq');
 ```
 
 Block Custom Helper
