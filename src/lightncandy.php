@@ -1296,7 +1296,7 @@ $libstr
         $i = 0;
         foreach ($vars as $idx => $var) {
             // Skip advanced processing for subexpressions
-            if (preg_match('/^\(.+\)$/', $var)) {
+            if (preg_match('/^\(.+\)$/s', $var)) {
                 $ret[$i] = array($var);
                 $i++;
                 continue;
