@@ -73,7 +73,7 @@ class LightnCandy {
     // RegExps
     const VARNAME_SEARCH = '/(\\[[^\\]]+\\]|[^\\[\\]\\.]+)/';
     const EXTENDED_COMMENT_SEARCH = '/{{!--.*?--}}/s';
-    const IS_SUBEXP_SEARCH = '/^\(.+\)$/';
+    const IS_SUBEXP_SEARCH = '/^\(.+\)$/s';
 
     // Positions of matched token
     const POS_LOTHER = 1;
@@ -1296,7 +1296,7 @@ $libstr
         $i = 0;
         foreach ($vars as $idx => $var) {
             // Skip advanced processing for subexpressions
-            if (preg_match('/^\(.+\)$/s', $var)) {
+            if (preg_match(static::IS_SUBEXP_SEARCH, $var)) {
                 $ret[$i] = array($var);
                 $i++;
                 continue;
