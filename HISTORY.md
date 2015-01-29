@@ -16,6 +16,7 @@ master current trunk
    * 7ae8289b7e fix escape in double quoted string bug.
    * 90adb5531b fix {{#if 0.0}} logic to behave as false.
    * 004a6ddffe fix {{../foo}} used times miscounting bug.
+   * 9d55f12c5a fix subexpression parsing bug when line change inside it.
 
 v0.18 https://github.com/zordius/lightncandy/tree/v0.18
    * 7bcce4c1a7 support {{@last}} for {{#each}} on both object and array.
