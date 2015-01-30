@@ -3,6 +3,8 @@ HISTORY
 
 master current trunk
    * align with handlebars.js master
+
+v0.19 https://github.com/zordius/lightncandy/tree/v0.19
    * 5703851e49 fix {{foo bar=['abc=123']}} parsing bug.
    * 7b4e36a1e3 fix {{foo bar=["abc=123"]}} parsing bug.
    * c710c8349b fix {{foo bar=(helper a b c)}} parsing bug.
@@ -15,7 +17,7 @@ master current trunk
    * a24a0473e2 change internal variable structure and fix for {{number}}.
    * 7ae8289b7e fix escape in double quoted string bug.
    * 90adb5531b fix {{#if 0.0}} logic to behave as false.
-   * 004a6ddffe fix {{../foo}} used times miscounting bug.
+   * 004a6ddffe fix {{../foo}} double usage count bug.
    * 9d55f12c5a fix subexpression parsing bug when line change inside it.
 
 v0.18 https://github.com/zordius/lightncandy/tree/v0.18
