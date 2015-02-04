@@ -546,7 +546,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
 
             Array(
                 'id' => 134,
-                'template' => "{{#each .}}{{#if true}}{{list (keys ../../name)}}{{/if}}{{/each}}",
+                'template' => "{{#if 1}}{{list (keys ../names)}}{{/if}}",
                 'data' => Array('foo' => 'bar', 'test' => 'ok'),
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
