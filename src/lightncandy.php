@@ -939,16 +939,17 @@ $libstr
      *
      * @param string $subExpression subExpression to compile
      * @param array<string,array|string|integer> $context current compile context
+     * @param boolean $keepCount keep original usage count
      *
      * @return array<string> code representing passed expression
      */
-    protected static function compileSubExpression($subExpression, &$context) {
+    protected static function compileSubExpression($subExpression, &$context, $keepCount = false) {
         // mock up a token for this expression
         $token = array_fill(self::POS_LOTHER, self::POS_ROTHER, '');
 
         // strip outer ( ) from subexpression
         $token[self::POS_INNERTAG] = substr($subExpression, 1, -1);
-
+        $oldCount = $context['usedFeature'];
         list(, $vars) = static::parseTokenArgs($token, $context);
 
         // no separator is needed, this code will be used as a function argument
@@ -957,6 +958,10 @@ $libstr
         // override $raw, subexpressions are never escaped
         $ret = static::compileCustomHelper($context, $vars, true, true);
         $context['ops']['seperator'] = $origSeperator;
+
+        if ($keepCount) {
+            $context['usedFeature'] = $oldCount;
+        }
 
         return array($ret ? $ret : '', $subExpression);
     }
@@ -971,7 +976,7 @@ $libstr
      */
     protected static function getVariableNameOrSubExpression($var, &$context) {
         if (isset($var[0]) && preg_match(static::IS_SUBEXP_SEARCH, $var[0])) {
-            return static::compileSubExpression($var[0], $context);
+            return static::compileSubExpression($var[0], $context, true);
         }
         return static::getVariableName($var, $context);
     }
