@@ -184,6 +184,24 @@ class contextTest extends PHPUnit_Framework_TestCase
                      'hbhelper' => 1,
                  ),
              ),
+             Array(
+                 'id' => '134',
+                 'template' => '{{#if 1}}{{keys (keys ../names)}}{{/if}}',
+                 'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'keys' => function ($context) {
+                            return $context;
+                        }
+                    )
+                ),
+                 'expected' => Array(
+                     'parent' => 1,
+                     'enc' => 1,
+                     'if' => 1,
+                     'hbhelper' => 2,
+                 ),
+             ),
         );
 
         return array_map(function($i) use ($default) {
