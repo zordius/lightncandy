@@ -1872,7 +1872,9 @@ $libstr
         $notHH = !isset($context['hbhelpers'][$vars[0][0]]);
         if (!isset($context['helpers'][$vars[0][0]]) && $notHH) {
             if ($err) {
-                $context['error'][] = "Custom helper '{$vars[0][0]}' not found!";
+                if (!$context['flags']['exhlp']) {
+                    $context['error'][] = "Can not find custom helper function defination {$vars[0][0]}() !";
+                }
             }
             return;
         }

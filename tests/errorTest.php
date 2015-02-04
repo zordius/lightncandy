@@ -395,7 +395,10 @@ class errorTest extends PHPUnit_Framework_TestCase
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                     'basedir' => '.',
                 ),
-                'expected' => "You use dynamic partial name as '(foo)', this only works with option FLAG_RUNTIMEPARTIAL enabled"
+                'expected' => Array(
+                    "Can not find custom helper function defination foo() !",
+                    "You use dynamic partial name as '(foo)', this only works with option FLAG_RUNTIMEPARTIAL enabled",
+                )
             ),
         );
 
