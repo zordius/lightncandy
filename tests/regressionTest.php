@@ -536,6 +536,21 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                     'helpers' => Array(
+                        'list' => function($arg) {
+                            return join(',', $arg[0]);
+                         }
+                    ),
+                ),
+                'expected' => 'foo,bar,test',
+            ),
+
+            Array(
+                'id' => 134,
+                'template' => "{{#each .}}{{#if true}}{{list (keys ../../name)}}{{/if}}{{/each}}",
+                'data' => Array('foo' => 'bar', 'test' => 'ok'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'helpers' => Array(
                         'keys' => function($arg) {
                             return Array(array_keys($arg[0]), 'asis');
                          },
@@ -544,7 +559,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                          }
                     ),
                 ),
-                'expected' => 'foo,bar,test',
+                'expected' => 'foo,test',
             ),
 
             Array(
