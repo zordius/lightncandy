@@ -387,7 +387,7 @@ class errorTest extends PHPUnit_Framework_TestCase
                      'flags' => LightnCandy::FLAG_ADVARNAME,
                      'helpers' => Array('test_join'),
                  ),
-                 'expected' => "Custom helper 'foo' not found!",
+                 'expected' => "Can not find custom helper function defination foo() !",
              ),
             Array(
                 'template' => '{{> (foo) bar}}',
