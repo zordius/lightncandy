@@ -1297,6 +1297,7 @@ $libstr
         foreach ($vars as $idx => $var) {
             // Skip advanced processing for subexpressions
             if (preg_match(static::IS_SUBEXP_SEARCH, $var)) {
+                static::compileSubExpression($var, $context);
                 $ret[$i] = array($var);
                 $i++;
                 continue;
