@@ -3,6 +3,8 @@ HISTORY
 
 master current trunk
    * align with handlebars.js master
+   * 3d9a557af9 fix {{foo (bar ../abc)}} compile bug.
+   * 7dc16ac255 refine custom helper error detection logic.
 
 v0.19 https://github.com/zordius/lightncandy/tree/v0.19
    * 5703851e49 fix {{foo bar=['abc=123']}} parsing bug.
