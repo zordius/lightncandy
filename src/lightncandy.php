@@ -1857,7 +1857,7 @@ $libstr
                 }
         }
 
-        $v = static::getVariableName($vars[0], $context);
+        $v = static::getVariableNameOrSubExpression($vars[0], $context);
         $context['stack'][] = $v[1];
         $context['stack'][] = '#';
         return $context['ops']['seperator'] . static::getFuncName($context, 'sec', (($each == 'true') ? 'each ' : '') . $v[1]) . "\$cx, {$v[0]}, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
