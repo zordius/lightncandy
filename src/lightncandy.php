@@ -2572,12 +2572,6 @@ class LCRun3 {
             $e = "LCRun3: call custom helper '$ch' error: " . $E->getMessage();
         }
 
-        if ($r === false) {
-            if ($e === null) {
-                $e = "LCRun3: call custom helper '$ch' error";
-            }
-        }
-
         if($e !== null) {
             if ($cx['flags']['debug'] & self::DEBUG_ERROR_LOG) {
                 error_log($e);
