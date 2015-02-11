@@ -578,6 +578,21 @@ class regressionTest extends PHPUnit_Framework_TestCase
             ),
 
             Array(
+                'id' => 140,
+                'template' => "{{[a.good.helper] .}}",
+                'data' => Array('ha', 'hey', 'ho'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'helpers' => Array(
+                        'a.good.helper' => function($arg) {
+                            return join(',', $arg[0]);
+                         }
+                    ),
+                ),
+                'expected' => 'ha,hey,ho',
+            ),
+
+            Array(
                 'template' => '{{> (pname foo) bar}}',
                 'data' => Array('bar' => 'OK! SUBEXP+PARTIAL!', 'foo' => Array('test/test3')),
                 'options' => Array(
