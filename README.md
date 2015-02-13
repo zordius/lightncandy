@@ -606,7 +606,7 @@ Please make sure the passed in `renderex` is valid PHP, LightnCandy will not che
 Unsupported Feature (so far)
 ----------------------------
 
-* [NEVER] `{{foo/bar}}` style variable name, it is deprecated in official handlebars.js document.
+* [NEVER] `{{foo/bar}}` style variable name, it is deprecated in official handlebars.js document, please use this style: `{{foo.bar}}`.
 * [maybe] mustache lambda : runtime time compile based on input value is far from lightncandy nature, not in the plan now.
 
 Suggested Handlebars Template Practices
