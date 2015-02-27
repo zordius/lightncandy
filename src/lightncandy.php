@@ -2514,7 +2514,8 @@ class LCRun3 {
         $args = $vars[0];
         $options = array(
             'name' => $ch,
-            'hash' => $vars[1]
+            'hash' => $vars[1],
+            'old_ctx' => $isBlock ? $op : end( $cx['scopes'] ),
         );
 
         // $invert the logic
