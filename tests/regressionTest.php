@@ -593,6 +593,36 @@ class regressionTest extends PHPUnit_Framework_TestCase
             ),
 
             Array(
+                'id' => 141,
+                'template' => "{{#with foo}}{{#getThis bar}}{{/getThis}}{{/with}}",
+                'data' => Array('foo' => Array('bar' => 'Good!')),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'getThis' => function($input, $options) {
+                            return $input . '-' . $options['_this']['bar'];
+                         }
+                    ),
+                ),
+                'expected' => 'Good!-Good!',
+            ),
+
+            Array(
+                'id' => 141,
+                'template' => "{{#with foo}}{{getThis bar}}{{/with}}",
+                'data' => Array('foo' => Array('bar' => 'Good!')),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'getThis' => function($input, $options) {
+                            return $input . '-' . $options['_this']['bar'];
+                         }
+                    ),
+                ),
+                'expected' => 'Good!-Good!',
+            ),
+
+            Array(
                 'template' => '{{> (pname foo) bar}}',
                 'data' => Array('bar' => 'OK! SUBEXP+PARTIAL!', 'foo' => Array('test/test3')),
                 'options' => Array(
