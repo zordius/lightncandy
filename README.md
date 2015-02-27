@@ -518,6 +518,30 @@ Handlebars.registerHelper('sample', function(arg1, arg2, options) {
 });
 ```
 
+**Data variables and context**
+
+You can get special data variables from `$options['data']`. Using `$options['_this']` to receive current context.
+
+```php
+$php = LightnCandy::compile($template, Array(
+    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+    'hbhelpers' => Array(
+        'getRoot' => function ($options) {
+            print_($options['_this']); // dump current context
+            return $options['data']['root']; // same as {{@root}}
+        }
+    )
+));
+```
+
+* Handlebars.js
+```javascript
+Handlebars.registerHelper('getRoot', function(options) {
+    console.log(this); // dump current context
+    return options.data.root; // same as {{@root}}
+});
+```
+
 **Escaping**
 
 When a Handlebars.js style custom helper be used as block tags, LightnCandy will not escape the result. When it is a single {{...}} tag, LightnCandy will escape the result. To change the escape behavior, you can return extended information by Array(), please read <a href="#custom-helper-escaping">Custom Helper Escaping</a> for more.
