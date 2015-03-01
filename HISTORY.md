@@ -177,6 +177,7 @@ v0.8 https://github.com/zordius/lightncandy/tree/v0.8
    * 1e38e47 better logic on var name checking. now support `{{0}}` in the loop, but it is not handlebars.js standard
 
 v0.7 https://github.com/zordius/lightncandy/tree/v0.7
+   * align with handlebarsjs 1.0.11
    * add HISTORY.md
    * 777304c change compile format to include in val, isec, ifvar
    * 55de127 support `{{../}}` in `{{#each}}`
