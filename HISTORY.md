@@ -9,6 +9,7 @@ master current trunk
    * d1f1b93130 support context access inside a hbhelper by `$options['_this']`.
 
 v0.19 https://github.com/zordius/lightncandy/tree/v0.19
+   * align with handlebars.js 3.0.0
    * 5703851e49 fix {{foo bar=['abc=123']}} parsing bug.
    * 7b4e36a1e3 fix {{foo bar=["abc=123"]}} parsing bug.
    * c710c8349b fix {{foo bar=(helper a b c)}} parsing bug.
@@ -25,7 +26,8 @@ v0.19 https://github.com/zordius/lightncandy/tree/v0.19
    * 9d55f12c5a fix subexpression parsing bug when line change inside it.
 
 v0.18 https://github.com/zordius/lightncandy/tree/v0.18
-   * 7bcce4c1a7 support {{@last}} for {{#each}} on both object and array.
+   * align with handlebars.js 2.0.0
+   * 7bcce4c1a7 support `{{@last}}` for `{{#each}}` on both object and array.
    * b0c44c3b40 remove ending \n in lightncandy.php
    * e130875d5a support single quoted string input: {{foo 'bar'}}.
    * c603aa39d8 support `renderex` to extend anything in render function.
@@ -35,11 +37,12 @@ v0.18 https://github.com/zordius/lightncandy/tree/v0.18
    * c4da1f576c supports {{^myHelper}}.
 
 v0.17 https://github.com/zordius/lightncandy/tree/v0.17
+   * align with handlebars.js 2.0.0
    * 3b48a0acf7 fix parsing bug when FLAG_NOESCAPE enabled
    * 5c774b1b08 fix hbhelpers response error with options['fn'] when FLAG_BESTPERFORMANCE enabled
    * c60fe70bdb fix hbhelpers response error with options['inverse'] when FLAG_BESTPERFORMANCE enabled
    * e19b3e3426 provide options['root'] and options['_parent'] to hbhelpers
-   * d8a288e83b refine variable parsing logic to support {{@../index}}, {{@../key}}, etc.
+   * d8a288e83b refine variable parsing logic to support `{{@../index}}`, `{{@../key}}`, etc.
 
 v0.16 https://github.com/zordius/lightncandy/tree/v0.16
    * align with handlebars.js 2.0.0
@@ -56,8 +59,8 @@ v0.16 https://github.com/zordius/lightncandy/tree/v0.16
 
 v0.15 https://github.com/zordius/lightncandy/tree/v0.15
    * align with handlebars.js 2.0.0
-   * 4c750806e8 fix for \ in template
-   * 12ab6626d6 support escape. \{{foo}} will be rendered as is. ( handlebars spec , require FLAG_SLASH )
+   * 4c750806e8 fix for `\` in template
+   * 12ab6626d6 support escape. `\{{foo}}` will be rendered as is. ( handlebars spec , require FLAG_SLASH )
    * 876bd44d9c escape &#x60; to &amp;#x60; ( require FLAG_JSQUOTE )
    * f1f388ed79 support {{^}} as {{else}} ( require FLAG_ELSE )
    * d5e17204b6 support {{#each}} == {{#each .}} now.
@@ -103,7 +106,7 @@ v0.13 https://github.com/zordius/lightncandy/tree/v0.13
 
 v0.12 https://github.com/zordius/lightncandy/tree/v0.12
    * align with handlebars.js 2.0.0-alpha.2
-   * 64db34cf65 support {{@first}} and {{@last}}
+   * 64db34cf65 support `{{@first}}` and `{{@last}}`
    * bfa1fbef97 add new flag FLAG_SPVARS
    * 10a4623dc1 remove json schema support
    * 240d9fa290 only export used LCRun2 functions when compile() with FLAG_STANDALONE now
