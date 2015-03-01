@@ -42,7 +42,7 @@ v0.17 https://github.com/zordius/lightncandy/tree/v0.17
    * 5c774b1b08 fix hbhelpers response error with options['fn'] when FLAG_BESTPERFORMANCE enabled
    * c60fe70bdb fix hbhelpers response error with options['inverse'] when FLAG_BESTPERFORMANCE enabled
    * e19b3e3426 provide options['root'] and options['_parent'] to hbhelpers
-   * d8a288e83b refine variable parsing logic to support `{{@../index}}`, `{{@../key}}`, etc
+   * d8a288e83b refine variable parsing logic to support `{{@../index}}`, `{{@../key}}`, etc.
 
 v0.16 https://github.com/zordius/lightncandy/tree/v0.16
    * align with handlebars.js 2.0.0
