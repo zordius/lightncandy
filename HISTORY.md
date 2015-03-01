@@ -124,8 +124,8 @@ v0.11 https://github.com/zordius/lightncandy/tree/v0.11
    * fbf116c3e2 fix for tailing ; after helper functions
    * f47a2d5014 fix for wrong param when new Exception
    * 94e71ebcbd add isset() check for input value
-   * a826b8a1ab support `{{else}} in `{{#each}} now
-   * 25dac11bb7 support `{{!-- comments --}} now (this extension allow }} apperas in the comments)
+   * a826b8a1ab support `{{else}}` in `{{#each}}` now
+   * 25dac11bb7 support `{{!-- comments --}}` now (this handlebars.js extension allow `}}` apperas in the comments)
    * e142b6e116 support `{{@root}}` or `{{@root.foo.bar}}` now
    * 58c8d84aa2 custom helper can return extra flag to change html encoded behavior now
 
@@ -135,9 +135,9 @@ v0.10 https://github.com/zordius/lightncandy/tree/v0.10
    * e3de01081c some minor fix for json schema
    * 1feec458c7 new variable handling logic, save variable name parsing time when render() . rendering performance improved 10~30%!
    * 3fa897c98c rename LCRun to LCRun2 for interface changed, old none standalone templates will error with newer version
-   * 43a6d33717 fix for `{{../}} php warning message
+   * 43a6d33717 fix for `{{../}}` php warning message
    * 9189ebc1e4 now auto push documents from Travis CI
-   * e077d0b631 support named arguments for custom helpers `{{helper name=value}}
+   * e077d0b631 support named arguments for custom helpers `{{helper name=value}}`
    * 2331b6fe55 support block custom helpers
    * 4fedaa25f7 support number value as named arguments
    * 6a91ab93d2 fix for default options and php warnings
@@ -149,9 +149,9 @@ v0.9 https://github.com/zordius/lightncandy/tree/v0.9
    * e59f931ea7 add FLAG_JSQUOTE support
    * 92b3cf58af report more than 1 error when compile()
    * 93cc121bcf test for wrong variable name format in test/error.php
-   * 41c1b431b4 support advanced variable naming `{{foo.[bar].10}} now
+   * 41c1b431b4 support advanced variable naming `{{foo.[bar].10}}` now
    * 15ce1a00a8 add FLAG_EXTHELPER option
-   * f51337bde2 support space control `{{~sometag}} or `{{sometag~}}
+   * f51337bde2 support space control `{{~sometag}}` or `{{sometag~}}`
    * fe3d67802e add FLAG_SPACECTL option
    * 920fbb3039 support custom helper
    * 07ae71a1bf migrate into Travis CI
@@ -164,30 +164,30 @@ v0.9 https://github.com/zordius/lightncandy/tree/v0.9
 v0.8 https://github.com/zordius/lightncandy/tree/v0.8
    * align with handlebars.js 1.0.12
    * aaec049 fix partial in partial not works bug
-   * 52706cc fix for `{{#var}} and `{{^var}} , now when var === 0 means true
+   * 52706cc fix for `{{#var}}` and `{{^var}}` , now when var === 0 means true
    * 4f7f816 support `{{@key}}` and `{{@index}}` in `{{#each var}}`
-   * 63aef2a prevent array_diff_key() PHP warning when `{{#each}} on none array value
-   * 10f3d73 add more is_array() check when `{{#each}} and `{{#var}}
-   * 367247b fix `{{#if}} and `{{#unless}} when value is an empty array
+   * 63aef2a prevent array_diff_key() PHP warning when `{{#each}}` on none array value
+   * 10f3d73 add more is_array() check when `{{#each}}` and `{{#var}}`
+   * 367247b fix `{{#if}}` and `{{#unless}}` when value is an empty array
    * c76c0bb returns null if var is not exist in a template [contributed by dtelyukh@github.com]
    * d18bb6d add FLAG_ECHO support
-   * aec2b2b fix `{{#if}} and `{{#unless}} when value is an empty string
+   * aec2b2b fix `{{#if}}` and `{{#unless}}` when value is an empty string
    * 8924604 fix variable output when false in an array
    * e82c324 fix for ifv and ifvar logic difference
-   * 1e38e47 better logic on var name checking. now support `{{0}} in the loop, but it is not handlebars.js standard
+   * 1e38e47 better logic on var name checking. now support `{{0}}` in the loop, but it is not handlebars.js standard
 
 v0.7 https://github.com/zordius/lightncandy/tree/v0.7
    * add HISTORY.md
    * 777304c change compile format to include in val, isec, ifvar
-   * 55de127 support `{{../}} in `{{#each}}
+   * 55de127 support `{{../}}` in `{{#each}}`
    * 57e90af fix parent levels detection bug
-   * 96bb4d7 fix bugs for `{{#.}} and `{{#this}}
+   * 96bb4d7 fix bugs for `{{#.}}` and `{{#this}}`
    * f4217d1 add ifv and unl 2 new methods for LCRun
-   * 3f1014c fix `{{#this}} and `{{#.}} bug when used with `{{../var}}
-   * cbf0b28 fix `{{#if}} logic error when using `{{../}}
-   * 2b20ef8 fix `{{#with}} + `{{../}} bug
+   * 3f1014c fix `{{#this}}` and `{{#.}}` bug when used with `{{../var}}`
+   * cbf0b28 fix `{{#if}}` logic error when using `{{../}}`
+   * 2b20ef8 fix `{{#with}}` + `{{../}}` bug
    * 540cd44 now support FLAG_STANDALONE
-   * 67ac5ff support `{{>partial}}
+   * 67ac5ff support `{{>partial}}`
    * 98c7bb1 detect unclosed token now
 
 v0.6 https://github.com/zordius/lightncandy/tree/v0.6
@@ -197,8 +197,8 @@ v0.6 https://github.com/zordius/lightncandy/tree/v0.6
    * fdc753b fix #each and section logic for 018-hb-withwith-006
    * e6cc95a add FLAG_PARENT, detect template error when scan()
    * 1980691 make new LCRun::val() method to normal path.val logic
-   * 110d24f `{{#if path.var}} bug fixed
-   * d6ae2e6 fix `{{#with path.val}} when input value is null
+   * 110d24f `{{#if path.var}}` bug fixed
+   * d6ae2e6 fix `{{#with path.val}}` when input value is null
    * 71cf074 fix for 020-hb-doteach testcase
 
 v0.5 https://github.com/zordius/lightncandy/tree/v0.5
