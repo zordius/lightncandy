@@ -3,6 +3,9 @@ HISTORY
 
 master current trunk
    * align with handlebars.js master
+
+v0.20 https://github.com/zordius/lightncandy/tree/v0.20
+   * align with handlebars.js 3.0.0
    * 3d9a557af9 fix `{{foo (bar ../abc)}}` compile bug
    * 7dc16ac255 refine custom helper error detection logic
    * 72d32dc299 fix subexpression parsing bug inside `{{#each}}`
