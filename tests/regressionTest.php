@@ -623,6 +623,81 @@ class regressionTest extends PHPUnit_Framework_TestCase
             ),
 
             Array(
+                'id' => 143,
+                'template' => "{{testString foo bar=\" \"}}",
+                'data' => Array('foo' => 'good!'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'helpers' => Array(
+                        'testString' => function($args, $named) {
+                            return $args[0] . '-' . $named['bar'];
+                         }
+                    ),
+                ),
+                'expected' => 'good!- ',
+            ),
+
+            Array(
+                'id' => 143,
+                'template' => "{{testString foo bar=\"\"}}",
+                'data' => Array('foo' => 'good!'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'helpers' => Array(
+                        'testString' => function($args, $named) {
+                            return $args[0] . '-' . $named['bar'];
+                         }
+                    ),
+                ),
+                'expected' => 'good!-',
+            ),
+
+            Array(
+                'id' => 143,
+                'template' => "{{testString foo bar=' '}}",
+                'data' => Array('foo' => 'good!'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'helpers' => Array(
+                        'testString' => function($args, $named) {
+                            return $args[0] . '-' . $named['bar'];
+                         }
+                    ),
+                ),
+                'expected' => 'good!- ',
+            ),
+
+            Array(
+                'id' => 143,
+                'template' => "{{testString foo bar=''}}",
+                'data' => Array('foo' => 'good!'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'helpers' => Array(
+                        'testString' => function($args, $named) {
+                            return $args[0] . '-' . $named['bar'];
+                         }
+                    ),
+                ),
+                'expected' => 'good!-',
+            ),
+
+            Array(
+                'id' => 143,
+                'template' => "{{testString foo bar=\" \"}}",
+                'data' => Array('foo' => 'good!'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'testString' => function($arg1, $options) {
+                            return $arg1 . '-' . $options['hash']['bar'];
+                         }
+                    ),
+                ),
+                'expected' => 'good!- ',
+            ),
+
+            Array(
                 'template' => '{{> (pname foo) bar}}',
                 'data' => Array('bar' => 'OK! SUBEXP+PARTIAL!', 'foo' => Array('test/test3')),
                 'options' => Array(
