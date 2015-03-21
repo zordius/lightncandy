@@ -29,6 +29,7 @@ class LightnCandy {
 
     // Compile the template as standalone PHP code which can execute without including LightnCandy
     const FLAG_STANDALONE = 4;
+    const FLAG_BARE = 33554432;
     const FLAG_NOESCAPE = 67108864;
 
     // JavaScript compatibility
@@ -283,9 +284,11 @@ class LightnCandy {
         $bhelpers = static::exportHelper($context, 'blockhelpers');
         $hbhelpers = static::exportHelper($context, 'hbhelpers');
         $debug = LCRun3::DEBUG_ERROR_LOG;
+        $phpstart = $context['flags']['bare'] ? '' : '<?php ';
+        $phpend = $context['flags']['bare'] ? '' : "\n?>";
 
         // Return generated PHP code string.
-        return "<?php return function (\$in, \$debugopt = $debug) {
+        return "{$phpstart}return function (\$in, \$debugopt = $debug) {
     \$cx = array(
         'flags' => array(
             'jstrue' => $flagJStrue,
@@ -308,8 +311,7 @@ $libstr
     );
     {$context['renderex']}
     {$context['ops']['op_start']}'$code'{$context['ops']['op_end']}
-}
-?>";
+}$phpend";
     }
 
     /**
@@ -332,6 +334,7 @@ $libstr
                 'exception' => $flags & self::FLAG_ERROR_EXCEPTION,
                 'skippartial' => $flags & self::FLAG_ERROR_SKIPPARTIAL,
                 'standalone' => $flags & self::FLAG_STANDALONE,
+                'bare' => $flags & self::FLAG_BARE,
                 'noesc' => $flags & self::FLAG_NOESCAPE,
                 'jstrue' => $flags & self::FLAG_JSTRUE,
                 'jsobj' => $flags & self::FLAG_JSOBJECT,
