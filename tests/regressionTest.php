@@ -713,6 +713,16 @@ class regressionTest extends PHPUnit_Framework_TestCase
             ),
 
             Array(
+                'template' => '{{> testpartial newcontext mixed=foo}}',
+                'data' => Array('foo' => 'OK!', 'newcontext' => Array('bar' => 'test')),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_RUNTIMEPARTIAL,
+                    'partials' => Array('testpartial' => '{{bar}}-{{mixed}}'),
+                ),
+                'expected' => 'test-OK!'
+            ),
+
+            Array(
                 'template' => '{{[helper]}}',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,

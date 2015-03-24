@@ -205,6 +205,9 @@ By default, partial uses the same context with original template. If you want to
 {{>partial_name .}} // Same as {{>partial_name}}
 {{>partial_name foo}} // Change input context to foo, FLAG_RUNTIMEPARTIAL required
 {{>partial_name ..}} // use {{..}} as new input context, FLAG_RUNTIMEPARTIAL required
+
+{{>partial_name .. key=bar}} // use {{..}} as new input context, FLAG_RUNTIMEPARTIAL required
+                             // also merge key into new context.
 ```
 
 You can use dynamic partial name by passing a custom helper as subexpression syntax, for example: `{{> (foo)}}` . the return value of custom helper `foo` will be the partial name. When you using dynamic partial, LightnCandy will compile all partial inside the `partials` option into template. (**TODO: add an example to show how to provide partials across templates to reduce size**)
@@ -690,6 +693,7 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{../var}}` : parent template scope. (require `FLAG_PARENT`)
 * `{{>file}}` : partial; include another template inside a template.
 * `{{>file foo}}` : partial with new context (require `FLAG_RUNTIMEPARTIAL`)
+* `{{>file foo bar=another}}` : partial with new context which mixed with followed key value (require `FLAG_RUNTIMEPARTIAL`)
 * `{{>(helper) foo}}` : include dynamic partial by name provided from a helper (require `FLAG_RUNTIMEPARTIAL`)
 * `{{@index}}` : references to current index in a `{{#each}}` loop on an array. (require `FLAG_SPVARS`)
 * `{{@key}}` : references to current key in a `{{#each}}` loop on an object. (require `FLAG_SPVARS`)
