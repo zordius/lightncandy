@@ -712,3 +712,9 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{helper name1=var name2=var2}}` : Execute custom helper with named arguments (require `FLAG_NAMEDARG`)
 * `{{#helper ...}}...{{/helper}}` : Execute block custom helper
 * `{{helper (helper2 foo) bar}}` : Execute custom helpers as subexpression (require `FLAG_ADVARNAME`)
+
+Framework Integration
+---------------------
+
+- [Slim 3.0.x](https://github.com/endel/slim-lightncandy-view)
+- [Laravel 4](https://github.com/samwalshnz/lightncandy-l4)
