@@ -2442,7 +2442,14 @@ class LCRun3 {
      *
      */
     public static function p($cx, $p, $v, $sp = '') {
-        return call_user_func($cx['partials'][$p], $cx, is_array($v[0][0]) ? array_merge($v[0][0], $v[1]) : $v[0][0], $sp);
+        return call_user_func(
+            $cx['partials'][$p],
+            $cx,
+            is_array($v[0][0]) ?
+                array_merge($v[0][0], $v[1]) :
+                (!empty($v[1]) ? $v[1] : $v[0][0] ),
+            $sp
+        );
     }
 
     /**
