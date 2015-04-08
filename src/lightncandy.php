@@ -1705,6 +1705,7 @@ $libstr
                     }
                     return "{$context['ops']['seperator']}'" . static::compileTemplate($context, preg_replace('/^/m', $context['tokens']['partialind'], $context['usedPartial'][$p[0]]), $p[0]) . "'{$context['ops']['seperator']}";
                 }
+                break;
             case '^':
                 // {{^}} means {{else}}
                 if (!isset($vars[0][0])) {
@@ -1715,7 +1716,7 @@ $libstr
 
                 // Try to compile as custom helper {{^myHelper}}
                 $r = static::compileBlockCustomHelper($context, $vars, true);
-                if ($r) {
+                if ($r !== null) {
                     return $r;
                 }
 
@@ -1733,7 +1734,7 @@ $libstr
             case '#':
                 // Try to compile as custom helper {{#myHelper}}
                 $r = static::compileBlockCustomHelper($context, $vars);
-                if ($r) {
+                if ($r !== null) {
                     return $r;
                 }
                 static::noNamedArguments($token, $context, $named, ', maybe you missing the block custom helper?');
@@ -2077,7 +2078,7 @@ class LCRun3 {
                 case -1:
                     $base = $cx['sp_vars']['root'];
                     break;
-                case -2;
+                case -2:
                     return null;
                 default:
                     $base = $cx['scopes'][$count];
@@ -2646,4 +2647,3 @@ class LCRun3 {
     }
 }
 
-?>
