@@ -3,11 +3,11 @@ LightnCandy
 
 An extremely fast PHP implementation of handlebars ( http://handlebarsjs.com/ ) and mustache ( http://mustache.github.io/ ).
 
-Travis CI status: [![Unit testing](https://travis-ci.org/zordius/lightncandy.png?branch=master)](https://travis-ci.org/zordius/lightncandy) [![Regression testing](https://travis-ci.org/zordius/HandlebarsTest.png?branch=master)](https://travis-ci.org/zordius/HandlebarsTest)
+Travis CI status: [![Unit testing](https://travis-ci.org/zordius/lightncandy.svg?branch=master)](https://travis-ci.org/zordius/lightncandy) [![Regression testing](https://travis-ci.org/zordius/HandlebarsTest.svg?branch=master)](https://travis-ci.org/zordius/HandlebarsTest)
 
-Scrutinizer CI status: [![Code Coverage](https://scrutinizer-ci.com/g/zordius/lightncandy/badges/coverage.png?s=57aaeed149696b16380a79615df2ff83a1c25afa)](https://scrutinizer-ci.com/g/zordius/lightncandy/)
+Scrutinizer CI status: [![Code Coverage](https://img.shields.io/scrutinizer/coverage/g/zordius/lightncandy.svg)](https://scrutinizer-ci.com/g/zordius/lightncandy/)
 
-Package on packagist: [![Latest Stable Version](https://poser.pugx.org/zordius/lightncandy/v/stable.svg)](https://packagist.org/packages/zordius/lightncandy) [![License](https://poser.pugx.org/zordius/lightncandy/license.svg)](https://packagist.org/packages/zordius/lightncandy) [![HHVM Status](http://hhvm.h4cc.de/badge/zordius/lightncandy.png)](http://hhvm.h4cc.de/package/zordius/lightncandy)
+Package on packagist: [![Latest Stable Version](https://poser.pugx.org/zordius/lightncandy/v/stable.svg)](https://packagist.org/packages/zordius/lightncandy) [![License](https://poser.pugx.org/zordius/lightncandy/license.svg)](https://github.com/zordius/lightncandy/blob/master/LICENSE.txt) [![Total Downloads](https://poser.pugx.org/zordius/lightncandy/downloads.svg)](https://packagist.org/packages/zordius/lightncandy) [![HHVM Status](http://hhvm.h4cc.de/badge/zordius/lightncandy.svg)](http://hhvm.h4cc.de/package/zordius/lightncandy)
 
 Features
 --------
@@ -21,7 +21,7 @@ Features
    * Runs 4~10 times faster than <a href="https://github.com/dingram/mustache-php">mustache-php</a>.
    * Runs 10~30 times faster than <a href="https://github.com/XaminProject/handlebars.php">handlebars.php</a>.
    * Detail performance test reports can be found <a href="https://github.com/zordius/HandlebarsTest">here</a>, go http://zordius.github.io/HandlebarsTest/ to see charts.
-* **SMALL!** single PHP file, only 107K!
+* **SMALL!** single PHP file, only 111K!
 * **ROBUST!**
    * 100% support <a href="https://github.com/mustache/spec">mustache spec v1.1.2</a> (without lambda module)
    * Supports almost all <a href="https://github.com/kasperisager/handlebars-spec">handlebars.js spec</a>
@@ -565,6 +565,30 @@ Here are the list of LCRun3 debug options for render function:
 * `DEBUG_TAGS_ANSI` : turn the return value of render function into normalized mustache tags with ANSI color
 * `DEBUG_TAGS_HTML` : turn the return value of render function into normalized mustache tags with HTML comments
 
+Customize Render Function
+-------------------------
+
+If you want to do extra tasks inside render function or add more comment, you may use `renderex` when `compile()` . For example, this sample embed the compile time comment into the template:
+
+```php
+$php = LightnCandy::compile($template, Array(
+    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+    'renderex' => '// Compiled at ' . date('Y-m-d h:i:s')
+));
+```
+
+Your render function will be:
+
+```php
+function ($in) {$
+    $cx = array(...);
+    // compiled at 1999-12-31 00:00:00
+    return .....
+}
+```
+
+Please make sure the passed in `renderex` is valid PHP, LightnCandy will not check it.
+
 Unsupported Feature (so far)
 ----------------------------
 
@@ -621,7 +645,7 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{/each}}` : end loop
 * `{{#if var}}` : run if logic with original scope (null, false, empty Array and '' will skip this block)
 * `{{/if}}` : end if
-* `{{else}}` : run else logic, should between `{{#if var}}` and `{{/if}}` ; or between `{{#unless var}}` and `{{/unless}}`; or between `{{#foo}}` and `{{/foo}}`; or between `{{#each var}}` and `{{/each}}`; or between `{{#with var}}` and `{{/with}}`. (require `FLAG_ELSE`)
+* `{{else}}` or `{{^}}` : run else logic, should between `{{#if var}}` and `{{/if}}` ; or between `{{#unless var}}` and `{{/unless}}`; or between `{{#foo}}` and `{{/foo}}`; or between `{{#each var}}` and `{{/each}}`; or between `{{#with var}}` and `{{/with}}`. (require `FLAG_ELSE`)
 * `{{#unless var}}` : run unless logic with original scope (null, false, empty Array and '' will render this block)
 * `{{#with var}}` : change context scope. If the var is false, skip included section. (require `FLAG_WITH`)
 * `{{../var}}` : parent template scope. (require `FLAG_PARENT`)
@@ -640,7 +664,7 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{any_valid_tag~}}` : Space control, remove all next spacing (includes CR/LF, tab, space; stop on any none spacing character) (require `FLAG_SPACECTL`)
 * `{{{helper var}}}` : Execute custom helper then render the result
 * `{{helper var}}` : Execute custom helper then render the HTML escaped result
-* `{{helper "str"}}` : Execute custom helper with string arguments (require `FLAG_ADVARNAME`)
+* `{{helper "str"}}` or `{{helper 'str'}}` : Execute custom helper with string arguments (require `FLAG_ADVARNAME`)
 * `{{helper name1=var name2=var2}}` : Execute custom helper with named arguments (require `FLAG_NAMEDARG`)
 * `{{#helper ...}}...{{/helper}}` : Execute block custom helper
 * `{{helper (helper2 foo) bar}}` : Execute custom helpers as subexpression (require `FLAG_ADVARNAME`)

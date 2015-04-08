@@ -3,12 +3,27 @@ HISTORY
 
 master current trunk
    * align with handlebars.js master
+   * 5703851e49 fix {{foo bar=['abc=123']}} parsing bug.
+   * 7b4e36a1e3 fix {{foo bar=["abc=123"]}} parsing bug.
+   * c710c8349b fix {{foo bar=(helper a b c)}} parsing bug.
+   * 4bda1c6f41 fix subexpression+builtin block helper (EX: {{#if (foo bar)}}) parsing bug.
+
+v0.17 https://github.com/zordius/lightncandy/tree/v0.17
+   * 7bcce4c1a7 support {{@last}} for {{#each}} on both object and array.
+   * b0c44c3b40 remove ending \n in lightncandy.php
+   * e130875d5a support single quoted string input: {{foo 'bar'}}.
+   * c603aa39d8 support `renderex` to extend anything in render function.
+   * f063e5302c now render function debug constants works well in standalone mode.
+   * 53f6a6816d fix parsing bug when there is a `=` inside single quoted string.
+   * 2f16c0c393 now really autoload when installed with composer.
+   * c4da1f576c supports {{^myHelper}}.
+
+v0.17 https://github.com/zordius/lightncandy/tree/v0.17
    * 3b48a0acf7 fix parsing bug when FLAG_NOESCAPE enabled
    * 5c774b1b08 fix hbhelpers response error with options['fn'] when FLAG_BESTPERFORMANCE enabled
    * c60fe70bdb fix hbhelpers response error with options['inverse'] when FLAG_BESTPERFORMANCE enabled
    * e19b3e3426 provide options['root'] and options['_parent'] to hbhelpers
    * d8a288e83b refine variable parsing logic to support {{@../index}}, {{@../key}}, etc.
-   * 7bcce4c1a7 suport {{@last}} for {{#each}} on both object and array.
 
 v0.16 https://github.com/zordius/lightncandy/tree/v0.16
    * align with handlebars.js 2.0.0
