@@ -829,12 +829,12 @@ $libstr
      */
     public static function prepare($php, $tmpDir = null) {
         if (!ini_get('allow_url_include') || !ini_get('allow_url_fopen')) {
-            if (!$tmpDir || !is_dir($tmpDir)) {
+            if (!is_string($tmpDir) || !is_dir($tmpDir)) {
                 $tmpDir = sys_get_temp_dir();
             }
         }
 
-        if ($tmpDir) {
+        if (is_dir($tmpDir)) {
             $fn = tempnam($tmpDir, 'lci_');
             if (!$fn) {
                 error_log("Can not generate tmp file under $tmpDir!!\n");
