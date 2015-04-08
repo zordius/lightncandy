@@ -5,6 +5,7 @@ master current trunk
    * align with handlebars.js master
    * 9f24268d57 support FLAG_BARE to remove PHP start/end tags
    * 60d5a46c55 handle object/propery merge when deal with partial
+   * d0130bf7e5 support undefined `{{helper undefined}}`
 
 v0.20 https://github.com/zordius/lightncandy/tree/v0.20
    * align with handlebars.js 3.0.0
