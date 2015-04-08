@@ -197,7 +197,7 @@ class errorTest extends PHPUnit_Framework_TestCase
              Array(
                  'template' => '{{testA[}}',
                  'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
-                 'expected' => 'Wrong variable naming as \'testA[\' in {{testA[}} !',
+                 'expected' => 'Wrong variable naming in {{testA[}}',
              ),
              Array(
                  'template' => '{{[testB}}',
@@ -387,8 +387,19 @@ class errorTest extends PHPUnit_Framework_TestCase
                      'flags' => LightnCandy::FLAG_ADVARNAME,
                      'helpers' => Array('test_join'),
                  ),
-                 'expected' => "Custom helper 'foo' not found!",
+                 'expected' => "Can not find custom helper function defination foo() !",
              ),
+            Array(
+                'template' => '{{> (foo) bar}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'basedir' => '.',
+                ),
+                'expected' => Array(
+                    "Can not find custom helper function defination foo() !",
+                    "You use dynamic partial name as '(foo)', this only works with option FLAG_RUNTIMEPARTIAL enabled",
+                )
+            ),
         );
 
         return array_map(function($i) {

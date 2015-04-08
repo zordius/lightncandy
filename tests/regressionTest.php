@@ -282,6 +282,36 @@ class regressionTest extends PHPUnit_Framework_TestCase
             ),
 
             Array(
+                'id' => 114,
+                'template' => '{{^myeach .}}OK:{{.}},{{else}}NOT GOOD{{/myeach}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_BESTPERFORMANCE,
+                    'blockhelpers' => Array(
+                        'myeach' => function ($input) {
+                            return $input;
+                        }
+                    ),
+                ),
+                'data' => Array(1, 'foo', 3, 'bar'),
+                'expected' => 'NOT GOOD',
+            ),
+
+            Array(
+                'id' => 114,
+                'template' => '{{^myeach .}}OK:{{.}},{{else}}NOT GOOD{{/myeach}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_BESTPERFORMANCE,
+                    'blockhelpers' => Array(
+                        'myeach' => function ($input) {
+                            return;
+                        }
+                    ),
+                ),
+                'data' => Array(1, 'foo', 3, 'bar'),
+                'expected' => 'OK:,',
+            ),
+
+            Array(
                 'id' => 124,
                 'template' => '{{list foo bar abc=(lt 10 3) def=(lt 3 10)}}',
                 'options' => Array(
@@ -342,6 +372,390 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 ),
                 'data' => Array('cde' => 'OK'),
                 'expected' => 'YES!'
+            ),
+
+            Array(
+                'id' => 125,
+                'template' => '{{#if (equal true ( equal \'OK\' cde))}}YES!{{/if}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'equal' => function ($a, $b) {
+                            return $a === $b;
+                        }
+                    ),
+                ),
+                'data' => Array('cde' => 'OK'),
+                'expected' => 'YES!'
+            ),
+
+            Array(
+                'id' => 125,
+                'template' => '{{#if (equal true (equal \' OK\' cde))}}YES!{{/if}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'equal' => function ($a, $b) {
+                            return $a === $b;
+                        }
+                    ),
+                ),
+                'data' => Array('cde' => ' OK'),
+                'expected' => 'YES!'
+            ),
+
+            Array(
+                'id' => 125,
+                'template' => '{{#if (equal true (equal \' ==\' cde))}}YES!{{/if}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'equal' => function ($a, $b) {
+                            return $a === $b;
+                        }
+                    ),
+                ),
+                'data' => Array('cde' => ' =='),
+                'expected' => 'YES!'
+            ),
+
+            Array(
+                'id' => 125,
+                'template' => '{{#if (equal true (equal " ==" cde))}}YES!{{/if}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'equal' => function ($a, $b) {
+                            return $a === $b;
+                        }
+                    ),
+                ),
+                'data' => Array('cde' => ' =='),
+                'expected' => 'YES!'
+            ),
+
+            Array(
+                'id' => 125,
+                'template' => '{{[ abc]}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'equal' => function ($a, $b) {
+                            return $a === $b;
+                        }
+                    ),
+                ),
+                'data' => Array(' abc' => 'YES!'),
+                'expected' => 'YES!'
+            ),
+
+            Array(
+                'id' => 125,
+                'template' => '{{list [ abc] " xyz" \' def\' "==" \'==\' "OK"}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'list' => function ($a, $b) {
+                            $out = 'List:';
+                            $args = func_get_args();
+                            $opts = array_pop($args);
+                            foreach ($args as $v) {
+                                if ($v) {
+                                    $out .= ")$v , ";
+                                }
+                            }
+                            return $out;
+                        }
+                    ),
+                ),
+                'data' => Array(' abc' => 'YES!'),
+                'expected' => 'List:)YES! , ) xyz , ) def , )== , )== , )OK , '
+            ),
+
+            Array(
+                'id' => 127,
+                'template' => '{{#each array}}#{{#if true}}{{name}}-{{../name}}-{{../../name}}-{{../../../name}}{{/if}}##{{#myif true}}{{name}}={{../name}}={{../../name}}={{../../../name}}{{/myif}}###{{#mywith true}}{{name}}~{{../name}}~{{../../name}}~{{../../../name}}{{/mywith}}{{/each}}',
+                'data' => Array('name' => 'john', 'array' => Array(1,2,3)),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array('myif', 'mywith'),
+                ),
+                'expected' => '#--john-##==john=###~~john~#--john-##==john=###~~john~#--john-##==john=###~~john~',
+            ),
+
+            Array(
+                'id' => 128,
+                'template' => 'foo: {{foo}} , parent foo: {{../foo}}',
+                'data' => Array('foo' => 'OK'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                ),
+                'expected' => 'foo: OK , parent foo: ',
+            ),
+
+            Array(
+                'id' => 132,
+                'template' => '{{list (keys .)}}',
+                'data' => Array('foo' => 'bar', 'test' => 'ok'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'helpers' => Array(
+                        'keys' => function($arg) {
+                            return Array(array_keys($arg[0]), 'asis');
+                         },
+                        'list' => function($arg) {
+                            return join(',', $arg[0]);
+                         }
+                    ),
+                ),
+                'expected' => 'foo,test',
+            ),
+
+            Array(
+                'id' => 133,
+                'template' => "{{list (keys\n .\n ) \n}}",
+                'data' => Array('foo' => 'bar', 'test' => 'ok'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'helpers' => Array(
+                        'keys' => function($arg) {
+                            return Array(array_keys($arg[0]), 'asis');
+                         },
+                        'list' => function($arg) {
+                            return join(',', $arg[0]);
+                         }
+                    ),
+                ),
+                'expected' => 'foo,test',
+            ),
+
+            Array(
+                'id' => 133,
+                'template' => "{{list\n .\n \n \n}}",
+                'data' => Array('foo', 'bar', 'test'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'helpers' => Array(
+                        'list' => function($arg) {
+                            return join(',', $arg[0]);
+                         }
+                    ),
+                ),
+                'expected' => 'foo,bar,test',
+            ),
+
+            Array(
+                'id' => 134,
+                'template' => "{{#if 1}}{{list (keys ../names)}}{{/if}}",
+                'data' => Array('names' => Array('foo' => 'bar', 'test' => 'ok')),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'helpers' => Array(
+                        'keys' => function($arg) {
+                            return Array(array_keys($arg[0]), 'asis');
+                         },
+                        'list' => function($arg) {
+                            return join(',', $arg[0]);
+                         }
+                    ),
+                ),
+                'expected' => 'foo,test',
+            ),
+
+            Array(
+                'id' => 138,
+                'template' => "{{#each (keys .)}}={{.}}{{/each}}",
+                'data' => Array('foo' => 'bar', 'test' => 'ok', 'Haha'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'helpers' => Array(
+                        'keys' => function($arg) {
+                            return Array(array_keys($arg[0]), 'asis');
+                         }
+                    ),
+                ),
+                'expected' => '=foo=test=0',
+            ),
+
+            Array(
+                'id' => 140,
+                'template' => "{{[a.good.helper] .}}",
+                'data' => Array('ha', 'hey', 'ho'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'helpers' => Array(
+                        'a.good.helper' => function($arg) {
+                            return join(',', $arg[0]);
+                         }
+                    ),
+                ),
+                'expected' => 'ha,hey,ho',
+            ),
+
+            Array(
+                'id' => 141,
+                'template' => "{{#with foo}}{{#getThis bar}}{{/getThis}}{{/with}}",
+                'data' => Array('foo' => Array('bar' => 'Good!')),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'getThis' => function($input, $options) {
+                            return $input . '-' . $options['_this']['bar'];
+                         }
+                    ),
+                ),
+                'expected' => 'Good!-Good!',
+            ),
+
+            Array(
+                'id' => 141,
+                'template' => "{{#with foo}}{{getThis bar}}{{/with}}",
+                'data' => Array('foo' => Array('bar' => 'Good!')),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'getThis' => function($input, $options) {
+                            return $input . '-' . $options['_this']['bar'];
+                         }
+                    ),
+                ),
+                'expected' => 'Good!-Good!',
+            ),
+
+            Array(
+                'id' => 143,
+                'template' => "{{testString foo bar=\" \"}}",
+                'data' => Array('foo' => 'good!'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'helpers' => Array(
+                        'testString' => function($args, $named) {
+                            return $args[0] . '-' . $named['bar'];
+                         }
+                    ),
+                ),
+                'expected' => 'good!- ',
+            ),
+
+            Array(
+                'id' => 143,
+                'template' => "{{testString foo bar=\"\"}}",
+                'data' => Array('foo' => 'good!'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'helpers' => Array(
+                        'testString' => function($args, $named) {
+                            return $args[0] . '-' . $named['bar'];
+                         }
+                    ),
+                ),
+                'expected' => 'good!-',
+            ),
+
+            Array(
+                'id' => 143,
+                'template' => "{{testString foo bar=' '}}",
+                'data' => Array('foo' => 'good!'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'helpers' => Array(
+                        'testString' => function($args, $named) {
+                            return $args[0] . '-' . $named['bar'];
+                         }
+                    ),
+                ),
+                'expected' => 'good!- ',
+            ),
+
+            Array(
+                'id' => 143,
+                'template' => "{{testString foo bar=''}}",
+                'data' => Array('foo' => 'good!'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'helpers' => Array(
+                        'testString' => function($args, $named) {
+                            return $args[0] . '-' . $named['bar'];
+                         }
+                    ),
+                ),
+                'expected' => 'good!-',
+            ),
+
+            Array(
+                'id' => 143,
+                'template' => "{{testString foo bar=\" \"}}",
+                'data' => Array('foo' => 'good!'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'testString' => function($arg1, $options) {
+                            return $arg1 . '-' . $options['hash']['bar'];
+                         }
+                    ),
+                ),
+                'expected' => 'good!- ',
+            ),
+
+            Array(
+                'id' => 147,
+                'template' => '{{> test/test3 foo="bar"}}',
+                'data' => Array('test' => 'OK!', 'foo' => 'error'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_RUNTIMEPARTIAL,
+                    'partials' => Array('test/test3' => '{{test}}, {{foo}}'),
+                ),
+                'expected' => 'OK!, bar'
+            ),
+
+            Array(
+                'id' => 147,
+                'template' => '{{> test/test3 foo="bar"}}',
+                'data' => new foo(),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_INSTANCE,
+                    'partials' => Array('test/test3' => '{{bar}}, {{foo}}'),
+                ),
+                'expected' => 'OK!, bar'
+            ),
+
+            Array(
+                'template' => '{{testNull null undefined 1}}',
+                'data' => 'test',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'testNull' => function($arg1, $arg2) {
+                            return (($arg1 === null) && ($arg2 === null)) ? 'YES!' : 'no';
+                         }
+                    )
+                ),
+                'expected' => 'YES!'
+            ),
+
+            Array(
+                'template' => '{{> (pname foo) bar}}',
+                'data' => Array('bar' => 'OK! SUBEXP+PARTIAL!', 'foo' => Array('test/test3')),
+                'options' => Array(
+                    'helpers' => Array(
+                        'pname' => function($arg) {
+                            return $arg[0];
+                         }
+                    ),
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_RUNTIMEPARTIAL,
+                    'partials' => Array('test/test3' => '{{.}}'),
+                ),
+                'expected' => 'OK! SUBEXP+PARTIAL!'
+            ),
+
+            Array(
+                'template' => '{{> testpartial newcontext mixed=foo}}',
+                'data' => Array('foo' => 'OK!', 'newcontext' => Array('bar' => 'test')),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_RUNTIMEPARTIAL,
+                    'partials' => Array('testpartial' => '{{bar}}-{{mixed}}'),
+                ),
+                'expected' => 'test-OK!'
             ),
 
             Array(
