@@ -1770,9 +1770,9 @@ $libstr
         $ch = array_shift($vars);
         $inverted = $inverted ? 'true' : 'false';
 
-        static::addUsageCount($context, $notHBCH ? 'blockhelpers' : 'hbhelpers', "{$ch[0]}");
+        static::addUsageCount($context, $notHBCH ? 'blockhelpers' : 'hbhelpers', $ch[0]);
         $v = static::getVariableNames($vars, $context, true);
-        return $context['ops']['seperator'] . static::getFuncName($context, $notHBCH ? 'bch' : 'hbch', '#' . implode(' ', $v[1])) . "\$cx, '$ch[0]', $exportedtag, {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
+        return $context['ops']['seperator'] . static::getFuncName($context, $notHBCH ? 'bch' : 'hbch', ($inverted ? '^' : '#') . implode(' ', $v[1])) . "\$cx, '$ch[0]', $exportedtag, {$v[0]}, \$in, $inverted, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
     /**
@@ -1895,7 +1895,7 @@ $libstr
         $ch = array_shift($vars);
         $v = static::getVariableNames($vars, $context, true);
         static::addUsageCount($context, $notHH ? 'helpers' : 'hbhelpers', $ch[0]);
-        return $context['ops']['seperator'] . static::getFuncName($context, $notHH ? 'ch' : 'hbch', "$ch[0] " . implode(' ', $v[1])) . "\$cx, '$ch[0]', $exportedtag, {$v[0]}, '$fn'" . ($notHH ? '' : ', \'$in\'') . "){$context['ops']['seperator']}";
+        return $context['ops']['seperator'] . static::getFuncName($context, $notHH ? 'ch' : 'hbch', "$ch[0] " . implode(' ', $v[1])) . "\$cx, '$ch[0]', $exportedtag, {$v[0]}, '$fn'" . ($notHH ? '' : ', $in') . "){$context['ops']['seperator']}";
     }
 
     /**
@@ -2528,7 +2528,7 @@ class LCRun3 {
      *
      * @return string The rendered string of the token
      */
-    public static function hbch($cx, $ch, $tag, $vars, $op, $cb = false, $inv = false) {
+    public static function hbch($cx, $ch, $tag, $vars, $op, $inverted, $cb = null, $else = null) {
         $isBlock = (is_object($cb) && ($cb instanceof Closure));
         $args = $vars[0];
         $options = array(
@@ -2538,7 +2538,7 @@ class LCRun3 {
         );
 
         // $invert the logic
-        if ($inverted) {
+        if ($inv) {
             $tmp = $else;
             $else = $cb;
             $cb = $tmp;
@@ -2622,7 +2622,7 @@ class LCRun3 {
      * @expect '2.6.5' when input array('blockhelpers' => array('a' => function ($cx,$in) {return array($cx,$in[0],5);})), 'a', array(), array('6', 0), 2, function($cx, $i) {return implode('.', $i);}
      * @expect '' when input array('blockhelpers' => array('a' => function ($cx,$in) {})), 'a', array(), array('6', 0), 2, function($cx, $i) {return implode('.', $i);}
      */
-    public static function bch($cx, $ch, $tag, $vars, $in, $cb) {
+   public static function bch($cx, $ch, $tag, $vars, $in, $inverted, $cb, $else = null) {
         $r = call_user_func($cx['blockhelpers'][$ch], $in, $vars[0], $vars[1]);
 
         // $invert the logic
