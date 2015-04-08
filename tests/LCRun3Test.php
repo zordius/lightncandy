@@ -237,7 +237,7 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
             array('flags' => array('spvar' => 0)), 'abc', 'abc', true, function ($c, $i) {return "-$i=";}
         ));
         $this->assertEquals('-b=', $method->invoke(null,
-            array('flags' => array('spvar' => 0, 'mustsec' => 0)), array('a' => 'b'), array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
+            array('flags' => array('spvar' => 0)), array('a' => 'b'), array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
         ));
         $this->assertEquals('1', $method->invoke(null,
             array('flags' => array('spvar' => 0)), 'b', 'b', false, function ($c, $i) {return count($i);}
@@ -249,7 +249,7 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
             array('flags' => array('spvar' => 0)), 0, 0, false, function ($c, $i) {return print_r($i, true);}
         ));
         $this->assertEquals('{"b":"c"}', $method->invoke(null,
-            array('flags' => array('spvar' => 0, 'mustsec' => 0)), array('b' => 'c'), array('b' => 'c'), false, function ($c, $i) {return json_encode($i);}
+            array('flags' => array('spvar' => 0)), array('b' => 'c'), array('b' => 'c'), false, function ($c, $i) {return json_encode($i);}
         ));
         $this->assertEquals('inv', $method->invoke(null,
             array('flags' => array('spvar' => 0)), array(), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
@@ -282,10 +282,10 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
             array('flags' => array('spvar' => 0)), new stdClass, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
         ));
         $this->assertEquals('268', $method->invoke(null,
-            array('flags' => array('spvar' => 1)), array(1,3,4), 0, false, function ($c, $i) {return $i * 2;}
+            array('flags' => array('spvar' => 1), 'sp_vars'=>array('root' => 0)), array(1,3,4), 0, false, function ($c, $i) {return $i * 2;}
         ));
         $this->assertEquals('038', $method->invoke(null,
-            array('flags' => array('spvar' => 1), 'sp_vars'=>array()), array(1,3,'a'=>4), 0, true, function ($c, $i) {return $i * $c['sp_vars']['index'];}
+            array('flags' => array('spvar' => 1), 'sp_vars'=>array('root' => 0)), array(1,3,'a'=>4), 0, true, function ($c, $i) {return $i * $c['sp_vars']['index'];}
         ));
     }
     /**

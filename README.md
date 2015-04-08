@@ -21,7 +21,7 @@ Features
    * Runs 4~10 times faster than <a href="https://github.com/dingram/mustache-php">mustache-php</a>.
    * Runs 10~30 times faster than <a href="https://github.com/XaminProject/handlebars.php">handlebars.php</a>.
    * Detail performance test reports can be found <a href="https://github.com/zordius/HandlebarsTest">here</a>, go http://zordius.github.io/HandlebarsTest/ to see charts.
-* **SMALL!** single PHP file, only 111K!
+* **SMALL!** single PHP file, only 115K!
 * **ROBUST!**
    * 100% support <a href="https://github.com/mustache/spec">mustache spec v1.1.2</a> (without lambda module)
    * Supports almost all <a href="https://github.com/kasperisager/handlebars-spec">handlebars.js spec</a>
@@ -133,8 +133,8 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * `FLAG_RUNTIMEPARTIAL` : compile partial as runtime function, This enables recursive partials or context change for partials.
 * `FLAG_SLASH` : Skip a delimiter when it behind `\` .
 * `FLAG_ELSE` : support `{{else}}` or `{{^}}` as handlebars specification. Otherwise, `{{else}}` will be resolved as normal variable , and {{^}} will cause template error.
-* `FLAG_PROPERTY` : support object instance attribute access.
-* `FLAG_METHOD` : support object instance method access.
+* `FLAG_PROPERTY` : support object instance attribute access. You MUST apply this if your data contains object. And, the rendering performance will be worse.
+* `FLAG_METHOD` : support object instance method access. You MUST apply this if your data contains object. And, the rendering performance will be worse.
 * `FLAG_INSTANCE` : same with `FLAG_PROPERTY` + `FLAG_METHOD`
 * `FLAG_SPACECTL` : support space control `{{~ }}` or `{{ ~}}` in template. Otherwise, `{{~ }}` or `{{ ~}}` will cause template error.
 * `FLAG_SPVARS` : support special variables include @root, @index, @key, @first, @last. Otherwise, compile these variable names with default parsing logic.
@@ -142,13 +142,13 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * `FLAG_HANDLEBARS` : support all handlebars extensions (which mustache do not supports) , same with `FLAG_THIS` + `FLAG_WITH` + `FLAG_PARENT` + `FLAG_JSQUOTE` + `FLAG_ADVARNAME` + `FLAG_NAMEDARG` + `FLAG_SLASH` + `FLAG_ELSE` + `FLAG_MUSTACHESP` + `FLAG_MUSTACHEPAIN`.
 * `FLAG_HANDLEBARSJS` : align with handlebars.js behaviors, same with `FLAG_JS` + `FLAG_HANDLEBARS`.
 * `FLAG_MUSTACHESP` : align line change and spacing behaviors with mustache specification.
-* `FLAG_MUSTACHELOOKUP` : align recursive lookup up behaviors with mustache specification.
+* `FLAG_MUSTACHELOOKUP` : align recursive lookup up behaviors with mustache specification. And, the rendering performance will be worse.
 * `FLAG_MUSTACHEPAIN` : align partial indent behavior with mustache specification.
-* `FLAG_MUSTACHESEC` : align section `{{#foo}}` context behavior with mustache specification.
-* `FLAG_MUSTACHE` : support all mustache specification, same with `FLAG_ERROR_SKIPPARTIAL` + `FLAG_MUSTACHESP` + `FLAG_MUSTACHELOOKUP` + `FLAG_MUSTACHEPAIN` + `FLAG_MUSTACHESEC`.
+* `FLAG_MUSTACHE` : support all mustache specification, same with `FLAG_ERROR_SKIPPARTIAL` + `FLAG_MUSTACHESP` + `FLAG_MUSTACHELOOKUP` + `FLAG_MUSTACHEPAIN`.
 * `FLAG_ECHO` : compile to `echo 'a', $b, 'c';` to improve performance. This will slow down rendering when the template and data are simple, but will improve 1% ~ 7% when the data is big and looping in the template.
 * `FLAG_BESTPERFORMANCE` : same with `FLAG_ECHO` now. This flag may be changed base on performance testing result in the future.
 * `FLAG_RENDER_DEBUG` : generate debug template to show error when rendering. With this flag, the performance of rendering may be slowed.
+* `FLAG_BARE`: generate PHP code without PHP tags `<?php` and `?>`
 
 Partial Support
 ---------------
@@ -205,7 +205,12 @@ By default, partial uses the same context with original template. If you want to
 {{>partial_name .}} // Same as {{>partial_name}}
 {{>partial_name foo}} // Change input context to foo, FLAG_RUNTIMEPARTIAL required
 {{>partial_name ..}} // use {{..}} as new input context, FLAG_RUNTIMEPARTIAL required
+
+{{>partial_name .. key=bar}} // use {{..}} as new input context, FLAG_RUNTIMEPARTIAL required
+                             // also merge key into new context.
 ```
+
+You can use dynamic partial name by passing a custom helper as subexpression syntax, for example: `{{> (foo)}}` . the return value of custom helper `foo` will be the partial name. When you using dynamic partial, LightnCandy will compile all partial inside the `partials` option into template. (**TODO: add an example to show how to provide partials across templates to reduce size**)
 
 Custom Helper
 -------------
@@ -321,6 +326,19 @@ return Array('Not&Same output \' " Ya!', 'enc');
 return Array('Not&Same output \' " Ya!', 'encq');
 ```
 
+In most case, a custom helper should always return a string. If you design a custom helper to be executed inside a subexpression, you can return an object or an array by this way:
+
+```php
+// return an object
+return Array($anObject, 'asis');
+
+// in another way
+return Array($anObject, 'raw');
+
+// return Array(1, 3, 5)
+return Array(Array(1, 3, 5), 'any_string_but_not_enc_nor_encq');
+```
+
 Block Custom Helper
 -------------------
 
@@ -400,7 +418,7 @@ The mission of a block custom helper is only focus on providing different contex
 Handlebars.js' Custom Helper
 ----------------------------
 
-You can implement helpers more like Handlebars.js way with `hbhelpers` option, all matched single custom helper and block custom helper will be handled. In Handlebars.js, a block custom helper can rendener child block by executing options->fn, and change context by send new context as first parameter. Here are some examples to explain the behavior of `hbhelpers` custom helper:
+You can implement helpers more like Handlebars.js way with `hbhelpers` option, all matched single custom helper and block custom helper will be handled. In Handlebars.js, a block custom helper can rendener child block by executing `options.fn`; or change context by send new context as first parameter. Here are some examples to explain the behavior of `hbhelpers` custom helper:
 
 **#mywith (context change)**
 * LightnCandy
@@ -504,6 +522,30 @@ Handlebars.registerHelper('sample', function(arg1, arg2, options) {
 });
 ```
 
+**Data variables and context**
+
+You can get special data variables from `$options['data']`. Using `$options['_this']` to receive current context.
+
+```php
+$php = LightnCandy::compile($template, Array(
+    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+    'hbhelpers' => Array(
+        'getRoot' => function ($options) {
+            print_($options['_this']); // dump current context
+            return $options['data']['root']; // same as {{@root}}
+        }
+    )
+));
+```
+
+* Handlebars.js
+```javascript
+Handlebars.registerHelper('getRoot', function(options) {
+    console.log(this); // dump current context
+    return options.data.root; // same as {{@root}}
+});
+```
+
 **Escaping**
 
 When a Handlebars.js style custom helper be used as block tags, LightnCandy will not escape the result. When it is a single {{...}} tag, LightnCandy will escape the result. To change the escape behavior, you can return extended information by Array(), please read <a href="#custom-helper-escaping">Custom Helper Escaping</a> for more.
@@ -592,7 +634,7 @@ Please make sure the passed in `renderex` is valid PHP, LightnCandy will not che
 Unsupported Feature (so far)
 ----------------------------
 
-* [NEVER] `{{foo/bar}}` style variable name, it is deprecated in official handlebars.js document.
+* [NEVER] `{{foo/bar}}` style variable name, it is deprecated in official handlebars.js document, please use this style: `{{foo.bar}}`.
 * [maybe] mustache lambda : runtime time compile based on input value is far from lightncandy nature, not in the plan now.
 
 Suggested Handlebars Template Practices
@@ -651,6 +693,8 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{../var}}` : parent template scope. (require `FLAG_PARENT`)
 * `{{>file}}` : partial; include another template inside a template.
 * `{{>file foo}}` : partial with new context (require `FLAG_RUNTIMEPARTIAL`)
+* `{{>file foo bar=another}}` : partial with new context which mixed with followed key value (require `FLAG_RUNTIMEPARTIAL`)
+* `{{>(helper) foo}}` : include dynamic partial by name provided from a helper (require `FLAG_RUNTIMEPARTIAL`)
 * `{{@index}}` : references to current index in a `{{#each}}` loop on an array. (require `FLAG_SPVARS`)
 * `{{@key}}` : references to current key in a `{{#each}}` loop on an object. (require `FLAG_SPVARS`)
 * `{{@root}}` : references to root context. (require `FLAG_SPVARS`)
@@ -665,6 +709,13 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{{helper var}}}` : Execute custom helper then render the result
 * `{{helper var}}` : Execute custom helper then render the HTML escaped result
 * `{{helper "str"}}` or `{{helper 'str'}}` : Execute custom helper with string arguments (require `FLAG_ADVARNAME`)
+* `{{helper 123 null true false undefined}}` : Pass number, true, false, null or undefined into helper
 * `{{helper name1=var name2=var2}}` : Execute custom helper with named arguments (require `FLAG_NAMEDARG`)
 * `{{#helper ...}}...{{/helper}}` : Execute block custom helper
 * `{{helper (helper2 foo) bar}}` : Execute custom helpers as subexpression (require `FLAG_ADVARNAME`)
+
+Framework Integration
+---------------------
+
+- [Slim 3.0.x](https://github.com/endel/slim-lightncandy-view)
+- [Laravel 4](https://github.com/samwalshnz/lightncandy-l4)

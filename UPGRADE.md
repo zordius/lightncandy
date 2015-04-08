@@ -5,6 +5,10 @@ Upgrade Notice
 
 * Recompile your none standalone templates when you upgrade LightnCandy.
 
+CURRENT MASTER
+--------------
+* Option FLAG_MUSTACHESEC removed, no need to use this flag anymore.
+
 Version v0.13
 -------------
 * The interface of custom helpers was changed from v0.13 . if you use this feature you may need to modify your custom helper functions.
