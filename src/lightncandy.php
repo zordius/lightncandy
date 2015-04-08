@@ -2538,7 +2538,7 @@ class LCRun3 {
         );
 
         // $invert the logic
-        if ($inv) {
+        if ($inverted) {
             $tmp = $else;
             $else = $cb;
             $cb = $tmp;
