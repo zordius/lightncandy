@@ -1136,9 +1136,10 @@ $libstr
         if (preg_match('/^\\\\\'(.*)\\\\\'$/', $v, $matched)) {
             return array(0, "'$matched[1]'");
         }
-        // handle boolean and null
-        if (preg_match('/^true|false|null$/', $v)) {
-            return array(0, $v);
+
+        // handle boolean, null and undefined
+        if (preg_match('/^(true|false|null|undefined)$/', $v)) {
+            return array(0, ($v === 'undefined') ? 'null' : $v);
         }
 
         $ret = array();

@@ -720,6 +720,20 @@ class regressionTest extends PHPUnit_Framework_TestCase
             ),
 
             Array(
+                'template' => '{{testNull null undefined 1}}',
+                'data' => 'test',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'testNull' => function($arg1, $arg2) {
+                            return (($arg1 === null) && ($arg2 === null)) ? 'YES!' : 'no';
+                         }
+                    )
+                ),
+                'expected' => 'YES!'
+            ),
+
+            Array(
                 'template' => '{{> (pname foo) bar}}',
                 'data' => Array('bar' => 'OK! SUBEXP+PARTIAL!', 'foo' => Array('test/test3')),
                 'options' => Array(
