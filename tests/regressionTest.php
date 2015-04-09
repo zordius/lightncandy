@@ -1113,6 +1113,9 @@ VAREND
                         'he' => 'helper1',
                         'h2' => 'myClass::helper2',
                         'link' => function ($arg) {
+                            if (is_array($arg)) {
+                                $arg = 'Array';
+                            }
                             return "<a href=\"{$arg}\">click here</a>";
                         },
                         'alink',
