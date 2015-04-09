@@ -7,7 +7,7 @@ class myClass {
     }
 
     function helper2($arg) {
-        return "=$arg=";
+        return is_array($arg) ? '=Array=' : "=$arg=";
     }
 
     function __call($method, $args) {
