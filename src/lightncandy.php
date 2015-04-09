@@ -2420,8 +2420,8 @@ class LCRun3 {
      *
      * @expect '' when input array(), false, false, function () {return 'A';}
      * @expect '' when input array(), null, null, function () {return 'A';}
-     * @expect '-Array=' when input array(), array('a'=>'b'), array('a' => 'b'), function ($c, $i) {return "-$i=";}
-     * @expect '-b=' when input array(), 'b', array('a' => 'b'), function ($c, $i) {return "-$i=";}
+     * @expect '{"a":"b"}' when input array(), array('a'=>'b'), array('a'=>'c'), function ($c, $i) {return json_encode($i);}
+     * @expect '-b=' when input array(), 'b', array('a'=>'b'), function ($c, $i) {return "-$i=";}
      */
     public static function wi($cx, $v, $in, $cb, $else = null) {
         if (($v === false) || ($v === null)) {

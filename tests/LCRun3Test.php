@@ -299,11 +299,11 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
         $this->assertEquals('', $method->invoke(null,
             array(), null, null, function () {return 'A';}
         ));
-        $this->assertEquals('-Array=', $method->invoke(null,
-            array(), array('a'=>'b'), array('a' => 'b'), function ($c, $i) {return "-$i=";}
+        $this->assertEquals('{"a":"b"}', $method->invoke(null,
+            array(), array('a'=>'b'), array('a'=>'c'), function ($c, $i) {return json_encode($i);}
         ));
         $this->assertEquals('-b=', $method->invoke(null,
-            array(), 'b', array('a' => 'b'), function ($c, $i) {return "-$i=";}
+            array(), 'b', array('a'=>'b'), function ($c, $i) {return "-$i=";}
         ));
     }
     /**
