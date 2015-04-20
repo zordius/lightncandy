@@ -3,4 +3,4 @@
 	url = https://github.com/mustache/spec.git
 [submodule "specs/handlebars"]
 	path = specs/handlebars
-	url = https://github.com/kasperisager/handlebars-spec.git
+	url = https://github.com/jbboehr/handlebars-spec.git
