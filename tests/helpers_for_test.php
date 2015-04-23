@@ -3,7 +3,7 @@
 // Class for customized LCRun
 class MyLCRunClass extends LCRun3 {
     public static function raw($cx, $v) {
-        return '[DEBUG:raw()=>' . var_export($v, true);
+        return '[[DEBUG:raw()=>' . var_export($v, true) . ']]';
     }
 }
 
