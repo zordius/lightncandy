@@ -629,8 +629,8 @@ function ($in) {$
 }
 ```
 
-Customize Render Runtime Class
-------------------------------
+Customize Rendering Runtime Class
+---------------------------------
 
 If you want to extend `LCRun3` class and replace default rendering runtime library, you may use `lcrun` when `compile()` . For example, this sample will generate render function based on your extended `MyLCRunClass`:
 
