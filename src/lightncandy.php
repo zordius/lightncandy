@@ -307,6 +307,7 @@ class LightnCandy {
         'partials' => array({$context['partialCode']}),
         'scopes' => array(),
         'sp_vars' => array('root' => \$in),
+        'lcrun' => '{$context['lcrun']}',
 $libstr
     );
     {$context['renderex']}
@@ -405,6 +406,7 @@ $libstr
             'blockhelpers' => array(),
             'hbhelpers' => array(),
             'renderex' => isset($options['renderex']) ? $options['renderex'] : '',
+            'lcrun' => isset($options['lcrun']) ? $options['lcrun'] : 'LCRun3',
         );
 
         $context['ops'] = $context['flags']['echo'] ? array(
@@ -672,7 +674,7 @@ $libstr
             return '';
         }
 
-        $class = new ReflectionClass('LCRun3');
+        $class = new ReflectionClass($context['lcrun']);
         $fname = $class->getFileName();
         $lines = file_get_contents($fname);
         $file = new SplFileObject($fname);
@@ -725,7 +727,7 @@ $libstr
             return 'array()';
         }
 
-        $class = new ReflectionClass('LCRun3');
+        $class = new ReflectionClass($context['lcrun']);
         $constants = $class->getConstants();
         $ret = " array(\n";
         foreach($constants as $name => $value) {
@@ -859,10 +861,10 @@ $libstr
      *
      * @return string compiled Function name
      *
-     * @expect 'LCRun3::test(' when input array('flags' => array('standalone' => 0, 'debug' => 0)), 'test', ''
-     * @expect 'LCRun3::test2(' when input array('flags' => array('standalone' => 0, 'debug' => 0)), 'test2', ''
-     * @expect "\$cx['funcs']['test3'](" when input array('flags' => array('standalone' => 1, 'debug' => 0)), 'test3', ''
-     * @expect 'LCRun3::debug(\'abc\', \'test\', ' when input array('flags' => array('standalone' => 0, 'debug' => 1)), 'test', 'abc'
+     * @expect 'LCRun3::test(' when input array('flags' => array('standalone' => 0, 'debug' => 0), 'lcrun' => 'LCRun3'), 'test', ''
+     * @expect 'LCRun3::test2(' when input array('flags' => array('standalone' => 0, 'debug' => 0), 'lcrun' => 'LCRun3'), 'test2', ''
+     * @expect "\$cx['funcs']['test3'](" when input array('flags' => array('standalone' => 1, 'debug' => 0), 'lcrun' => 'LCRun3'), 'test3', ''
+     * @expect 'LCRun3::debug(\'abc\', \'test\', ' when input array('flags' => array('standalone' => 0, 'debug' => 1), 'lcrun' => 'LCRun3'), 'test', 'abc'
      */
     protected static function getFuncName(&$context, $name, $tag) {
         static::addUsageCount($context, 'lcrun', $name);
@@ -875,7 +877,7 @@ $libstr
             $dbg = '';
         }
 
-        return $context['flags']['standalone'] ? "\$cx['funcs']['$name']($dbg" : "LCRun3::$name($dbg";
+        return $context['flags']['standalone'] ? "\$cx['funcs']['$name']($dbg" : "{$context['lcrun']}::$name($dbg";
     }
 
     /**
@@ -1010,7 +1012,7 @@ $libstr
      * @expect array('((isset($cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\']) && is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)', '../[a]') when input array(1,'a'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0))
      * @expect array('((isset($cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\']) && is_array($cx[\'scopes\'][count($cx[\'scopes\'])-3])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)', '../../../[a]') when input array(3,'a'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0))
      * @expect array('((isset($in[\'id\']) && is_array($in)) ? $in[\'id\'] : null)', 'this.[id]') when input array(null, 'id'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0))
-     * @expect array('LCRun3::v($cx, $in, array(\'id\'))', 'this.[id]') when input array(null, 'id'), array('flags'=>array('prop'=>true,'spvar'=>true,'debug'=>0,'method'=>0,'mustlok'=>0,'standalone'=>0))
+     * @expect array('LCRun3::v($cx, $in, array(\'id\'))', 'this.[id]') when input array(null, 'id'), array('flags'=>array('prop'=>true,'spvar'=>true,'debug'=>0,'method'=>0,'mustlok'=>0,'standalone'=>0), 'lcrun' => 'LCRun3')
      */
     protected static function getVariableName($var, &$context) {
         if (isset($var[0]) && ($var[0] === 0)) {
@@ -1979,12 +1981,12 @@ class LCRun3 {
      * @param string $f runtime function name
      * @param array<string,array|string|integer> $cx render time context
      *
-     * @expect '{{123}}' when input '123', 'miss', array('flags' => array('debug' => LCRun3::DEBUG_TAGS)), ''
-     * @expect '<!--MISSED((-->{{#123}}<!--))--><!--SKIPPED--><!--MISSED((-->{{/123}}<!--))-->' when input '123', 'wi', array('flags' => array('debug' => LCRun3::DEBUG_TAGS_HTML)), false, false, function () {return 'A';}
+     * @expect '{{123}}' when input '123', 'miss', array('flags' => array('debug' => LCRun3::DEBUG_TAGS), 'lcrun' => 'LCRun3'), ''
+     * @expect '<!--MISSED((-->{{#123}}<!--))--><!--SKIPPED--><!--MISSED((-->{{/123}}<!--))-->' when input '123', 'wi', array('flags' => array('debug' => LCRun3::DEBUG_TAGS_HTML), 'lcrun' => 'LCRun3'), false, false, function () {return 'A';}
      */
     public static function debug($v, $f, $cx) {
         $params = array_slice(func_get_args(), 2);
-        $r = call_user_func_array((isset($cx['funcs'][$f]) ? $cx['funcs'][$f] : "LCRun3::$f"), $params);
+        $r = call_user_func_array((isset($cx['funcs'][$f]) ? $cx['funcs'][$f] : "{$cx['lcrun']}::$f"), $params);
 
         if ($cx['flags']['debug'] & self::DEBUG_TAGS) {
             $ansi = $cx['flags']['debug'] & (self::DEBUG_TAGS_ANSI - self::DEBUG_TAGS);

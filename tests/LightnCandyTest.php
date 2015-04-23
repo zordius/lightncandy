@@ -140,16 +140,16 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $method = new ReflectionMethod('LightnCandy', 'getFuncName');
         $method->setAccessible(true);
         $this->assertEquals('LCRun3::test(', $method->invoke(null,
-            array('flags' => array('standalone' => 0, 'debug' => 0)), 'test', ''
+            array('flags' => array('standalone' => 0, 'debug' => 0), 'lcrun' => 'LCRun3'), 'test', ''
         ));
         $this->assertEquals('LCRun3::test2(', $method->invoke(null,
-            array('flags' => array('standalone' => 0, 'debug' => 0)), 'test2', ''
+            array('flags' => array('standalone' => 0, 'debug' => 0), 'lcrun' => 'LCRun3'), 'test2', ''
         ));
         $this->assertEquals("\$cx['funcs']['test3'](", $method->invoke(null,
-            array('flags' => array('standalone' => 1, 'debug' => 0)), 'test3', ''
+            array('flags' => array('standalone' => 1, 'debug' => 0), 'lcrun' => 'LCRun3'), 'test3', ''
         ));
         $this->assertEquals('LCRun3::debug(\'abc\', \'test\', ', $method->invoke(null,
-            array('flags' => array('standalone' => 0, 'debug' => 1)), 'test', 'abc'
+            array('flags' => array('standalone' => 0, 'debug' => 1), 'lcrun' => 'LCRun3'), 'test', 'abc'
         ));
     }
     /**
@@ -261,7 +261,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
             array(null, 'id'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0))
         ));
         $this->assertEquals(array('LCRun3::v($cx, $in, array(\'id\'))', 'this.[id]'), $method->invoke(null,
-            array(null, 'id'), array('flags'=>array('prop'=>true,'spvar'=>true,'debug'=>0,'method'=>0,'mustlok'=>0,'standalone'=>0))
+            array(null, 'id'), array('flags'=>array('prop'=>true,'spvar'=>true,'debug'=>0,'method'=>0,'mustlok'=>0,'standalone'=>0), 'lcrun' => 'LCRun3')
         ));
     }
     /**
