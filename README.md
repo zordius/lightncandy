@@ -632,9 +632,17 @@ function ($in) {$
 Customize Render Runtime Class
 ------------------------------
 
-If you want to extend `LCRun3` class and replace default runtime helper functions, you may use `lcrun` when `compile()` . For example, this sample will generate render function based on your extended `MyLCRunClass`:
+If you want to extend `LCRun3` class and replace default rendering runtime library, you may use `lcrun` when `compile()` . For example, this sample will generate render function based on your extended `MyLCRunClass`:
 
 ```php
+// Customized rendering runtime library to debug {{{foo}}}
+class MyLCRunClass extends LCRun3 {
+    public static function raw($cx, $v) {
+        return '[[DEBUG:raw()=>' . var_export($v, true) . ']]';
+    }
+}
+
+// Use MyLCRunClass as rendering runtime library
 $php = LightnCandy::compile($template, Array(
     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
     'lcrun' => 'MyLCRunClass'
