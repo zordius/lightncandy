@@ -12,10 +12,10 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
     public function testOn_debug() {
         $method = new ReflectionMethod('LCRun3', 'debug');
         $this->assertEquals('{{123}}', $method->invoke(null,
-            '123', 'miss', array('flags' => array('debug' => LCRun3::DEBUG_TAGS)), ''
+            '123', 'miss', array('flags' => array('debug' => LCRun3::DEBUG_TAGS), 'lcrun' => 'LCRun3'), ''
         ));
         $this->assertEquals('<!--MISSED((-->{{#123}}<!--))--><!--SKIPPED--><!--MISSED((-->{{/123}}<!--))-->', $method->invoke(null,
-            '123', 'wi', array('flags' => array('debug' => LCRun3::DEBUG_TAGS_HTML)), false, false, function () {return 'A';}
+            '123', 'wi', array('flags' => array('debug' => LCRun3::DEBUG_TAGS_HTML), 'lcrun' => 'LCRun3'), false, false, function () {return 'A';}
         ));
     }
     /**

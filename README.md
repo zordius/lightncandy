@@ -629,7 +629,19 @@ function ($in) {$
 }
 ```
 
-Please make sure the passed in `renderex` is valid PHP, LightnCandy will not check it.
+Customize Render Runtime Class
+------------------------------
+
+If you want to extend `LCRun3` class and replace default runtime helper functions, you may use `lcrun` when `compile()` . For example, this sample will generate render function based on your extended `MyLCRunClass`:
+
+```php
+$php = LightnCandy::compile($template, Array(
+    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+    'lcrun' => 'MyLCRunClass'
+));
+```
+
+Please make sure `MyLCRunClass` exists when compile() or rendering based on your `FLAG_STANDALONE` .
 
 Unsupported Feature (so far)
 ----------------------------
