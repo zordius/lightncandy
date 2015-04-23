@@ -629,6 +629,8 @@ function ($in) {$
 }
 ```
 
+Please make sure the passed in `renderex` is valid PHP, LightnCandy will not check it.
+
 Customize Rendering Runtime Class
 ---------------------------------
 
