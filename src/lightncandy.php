@@ -824,12 +824,13 @@ $libstr
      *
      * @param string      $php PHP code
      * @param string|null $tmpDir Optional, change temp directory for php include file saved by prepare() when cannot include PHP code with data:// format.
+     * @param boolean     $delete Optional, delete temp php file when set to tru. Default is true, set it to false for debug propose
      *
      * @return Closure|false result of include()
      *
      * @deprecated
      */
-    public static function prepare($php, $tmpDir = null) {
+    public static function prepare($php, $tmpDir = null, $delete = true) {
         if (!ini_get('allow_url_include') || !ini_get('allow_url_fopen')) {
             if (!is_string($tmpDir) || !is_dir($tmpDir)) {
                 $tmpDir = sys_get_temp_dir();
@@ -846,9 +847,14 @@ $libstr
                 error_log("Can not include saved temp php code from $fn, you should add $tmpDir into open_basedir!!\n");
                 return false;
             }
-            $val = include($fn);
-            unlink($fn);
-            return $val;
+
+            $phpfunc = include($fn);
+
+            if ($delete) {
+                unlink($fn);
+            }
+
+            return $phpfunc;
         }
 
         return include('data://text/plain,' . urlencode($php));
