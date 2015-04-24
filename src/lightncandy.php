@@ -846,7 +846,9 @@ $libstr
                 error_log("Can not include saved temp php code from $fn, you should add $tmpDir into open_basedir!!\n");
                 return false;
             }
-            return include($fn);
+            $val = include($fn);
+            unlink($fn);
+            return $val;
         }
 
         return include('data://text/plain,' . urlencode($php));
