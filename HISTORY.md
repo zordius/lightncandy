@@ -7,6 +7,8 @@ master current trunk
    * 60d5a46c55 handle object/propery merge when deal with partial
    * d0130bf7e5 support undefined `{{helper undefined}}`
    * 8d228606f7 support `lcrun` to use customized render library when compile()
+   * d0bad115f0 remove tmp PHP file when prepare() now
+   * d84bbb4519 support keeping tmp PHP file when prepare()
 
 v0.20 https://github.com/zordius/lightncandy/tree/v0.20
    * align with handlebars.js 3.0.0
