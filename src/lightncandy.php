@@ -1331,7 +1331,7 @@ $libstr
                     $var = $m[5];
                 }
             }
-            if ($context['flags']['advar']) {
+            if ($context['flags']['advar'] && !preg_match('/^"(.+)"$/', $var)) {
                     // foo]  Rule 1: no starting [ or [ not start from head
                 if (preg_match('/^[^\\[\\.]+[\\]\\[]/', $var)
                     // [bar  Rule 2: no ending ] or ] not in the end
