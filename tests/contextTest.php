@@ -37,6 +37,7 @@ class contextTest extends PHPUnit_Framework_TestCase
             'bhelper' => 0,
             'hbhelper' => 0,
             'delimiter' => 0,
+            'subexp' => 0,
         );
 
         $compileCases = Array(
@@ -200,6 +201,7 @@ class contextTest extends PHPUnit_Framework_TestCase
                      'enc' => 1,
                      'if' => 1,
                      'hbhelper' => 1,
+                     'subexp' => 1,
                  ),
              ),
         );

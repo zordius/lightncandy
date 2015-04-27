@@ -128,6 +128,7 @@ class LightnCandy {
 
         // refine usedFeatures
         $context['usedFeature']['parent'] /= 2;
+        $context['usedFeature']['subexp'] /= 2;
 
         // return false when fatal error
         if (static::handleError($context)) {
@@ -396,6 +397,7 @@ $libstr
                 'bhelper' => 0,
                 'hbhelper' => 0,
                 'delimiter' => 0,
+                'subexp' => 0,
             ),
             'usedCount' => array(
                 'var' => array(),
@@ -977,6 +979,8 @@ $libstr
 
         if ($keepCount) {
             $context['usedFeature'] = $oldCount;
+        } else {
+            $context['usedFeature']['subexp']++;
         }
 
         return array($ret ? $ret : '', $subExpression);
