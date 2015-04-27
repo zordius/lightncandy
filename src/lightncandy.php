@@ -1546,14 +1546,19 @@ $libstr
             $context['usedFeature'][$raw ? 'raw' : 'enc']++;
         }
 
-        if (!isset($vars[0][0])) {
-            if ($context['level'] == 0) {
-                $context['usedFeature']['rootthis']++;
+        foreach ($vars as $var) {
+            if (!isset($var[0])) {
+                if ($context['level'] == 0) {
+                    $context['usedFeature']['rootthis']++;
+                }
+                $context['usedFeature']['this']++;
             }
-            return $context['usedFeature']['this']++;
         }
 
-        // validate else and this.
+        if (!isset($vars[0][0])) {
+            return;
+        }
+
         if ($vars[0][0] === 'else') {
             if ($context['flags']['else']) {
                 return $context['usedFeature']['else']++;
