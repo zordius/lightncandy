@@ -11,6 +11,7 @@ master current trunk
    * d84bbb4519 support keeping tmp PHP file when prepare()
    * ee833ae2f8 fix syntax validator bug on `{{helper "foo[]"}}`
    * 30b891ab28 fix syntax validator bug on `{{helper 'foo[]'}}`
+   * 1867f1cc37 now count subexpression usage correctly
 
 v0.20 https://github.com/zordius/lightncandy/tree/v0.20
    * align with handlebars.js 3.0.0
