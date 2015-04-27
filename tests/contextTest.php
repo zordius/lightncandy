@@ -200,7 +200,7 @@ class contextTest extends PHPUnit_Framework_TestCase
                      'parent' => 1,
                      'enc' => 1,
                      'if' => 1,
-                     'hbhelper' => 1,
+                     'hbhelper' => 2,
                      'subexp' => 1,
                  ),
              ),

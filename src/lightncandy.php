@@ -977,6 +977,15 @@ $libstr
             $context['usedFeature'] = $oldCount;
         } else {
             $context['usedFeature']['subexp']++;
+            // detect handlebars custom helpers.
+            if (isset($context['hbhelpers'][$vars[0][0]])) {
+                $context['usedFeature']['hbhelper']++;
+            } else {
+                // detect custom helpers.
+                if (isset($context['helpers'][$vars[0][0]])) {
+                    $context['usedFeature']['helper']++;
+                }
+            }
         }
 
         return array($ret ? $ret : '', $subExpression);
@@ -1893,7 +1902,7 @@ $libstr
      *
      * @return string|null Return compiled code segment for the token when the token is custom helper
      */
-    protected static function compileCustomHelper(&$context, &$vars, $raw, $err = false) {
+    protected static function compileCustomHelper(&$context, $vars, $raw, $err = false) {
         $notHH = !isset($context['hbhelpers'][$vars[0][0]]);
         if (!isset($context['helpers'][$vars[0][0]]) && $notHH) {
             if ($err) {
