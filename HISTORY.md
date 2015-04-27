@@ -10,6 +10,7 @@ master current trunk
    * d0bad115f0 remove tmp PHP file when prepare() now
    * d84bbb4519 support keeping tmp PHP file when prepare()
    * ee833ae2f8 fix syntax validator bug on `{{helper "foo[]"}}`
+   * 30b891ab28 fix syntax validator bug on `{{helper 'foo[]'}}`
 
 v0.20 https://github.com/zordius/lightncandy/tree/v0.20
    * align with handlebars.js 3.0.0
