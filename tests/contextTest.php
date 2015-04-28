@@ -243,6 +243,26 @@ class contextTest extends PHPUnit_Framework_TestCase
              ),
 
              Array(
+                 'template' => '{{mytest (mytest (mytest ..)) .}}',
+                 'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'hbhelpers' => Array(
+                        'mytest' => function ($context) {
+                            return $context;
+                        }
+                    )
+                ),
+                 'expected' => Array(
+                     'parent' => 1,
+                     'rootthis' => 1,
+                     'this' => 1,
+                     'enc' => 1,
+                     'hbhelper' => 3,
+                     'subexp' => 2,
+                 ),
+             ),
+
+             Array(
                  'id' => '134',
                  'template' => '{{#if 1}}{{keys (keys ../names)}}{{/if}}',
                  'options' => Array(
