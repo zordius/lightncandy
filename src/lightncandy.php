@@ -1247,6 +1247,11 @@ $libstr
             return array(false, array());
         }
 
+        // Skip validation on comments
+        if ($token[self::POS_OP] === '!') {
+            return array(false, array());
+        }
+
         $vars = array();
         $count = preg_match_all('/(\s*)([^\s]+)/', $token[self::POS_INNERTAG], $matchedall);
 
