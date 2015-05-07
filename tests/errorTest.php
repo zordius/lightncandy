@@ -389,6 +389,14 @@ class errorTest extends PHPUnit_Framework_TestCase
                  ),
                  'expected' => "Can not find custom helper function defination foo() !",
              ),
+             Array(
+                 'template' => '{{1 + 2}}',
+                 'options' => Array(
+                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                     'helpers' => Array('test_join'),
+                 ),
+                 'expected' => "Wrong variable naming as '+' in {{1 + 2}} ! You should wrap ! \" # % & ' * + , ; < = > { | } ~ into [ ]",
+             ),
             Array(
                 'template' => '{{> (foo) bar}}',
                 'options' => Array(

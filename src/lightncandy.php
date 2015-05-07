@@ -106,7 +106,7 @@ class LightnCandy {
         }
 
         // Strip extended comments
-        $template = preg_replace(static::EXTENDED_COMMENT_SEARCH, '{{!*}}', $template);
+        $template = preg_replace(static::EXTENDED_COMMENT_SEARCH, '{{! }}', $template);
 
         // Do first time scan to find out used feature, detect template error.
         static::setupToken($context);
@@ -1345,7 +1345,7 @@ $libstr
             }
 
             $esc = $context['scan'] ? '' : '\\\\';
-            if ($context['flags']['advar'] && !preg_match("/^(\"|$esc')(.+)(\"|$esc')$/", $var)) {
+            if ($context['flags']['advar'] && !preg_match("/^(\"|$esc')(.*)(\"|$esc')$/", $var)) {
                     // foo]  Rule 1: no starting [ or [ not start from head
                 if (preg_match('/^[^\\[\\.]+[\\]\\[]/', $var)
                     // [bar  Rule 2: no ending ] or ] not in the end
@@ -1356,6 +1356,15 @@ $libstr
                     || preg_match('/\\.[^\\]\\[\\.]+\\[/', preg_replace('/^(..\\/)+/', '', preg_replace('/\\[[^\\]]+\\]/', '[XXX]', $var)))
                 ) {
                     $context['error'][] = "Wrong variable naming as '$var' in " . static::tokenString($token) . ' !';
+                } else {
+                    if (!$context['scan']) {
+                        $name =  preg_replace('/(\\[.+?\\])/', '', $var);
+                        // Scan for invalid charactors which not be protected by [ ]
+                        // now make ( and ) pass, later fix
+                        if (preg_match('/[!"#%\'*+,;<=>{|}~]/', $name)) {
+                            $context['error'][] = "Wrong variable naming as '$var' in " . static::tokenString($token) . ' ! You should wrap ! " # % & \' * + , ; < = > { | } ~ into [ ]';
+                        }
+                    }
                 }
             }
 
