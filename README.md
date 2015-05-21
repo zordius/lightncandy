@@ -741,3 +741,5 @@ Framework Integration
 
 - [Slim 3.0.x](https://github.com/endel/slim-lightncandy-view)
 - [Laravel 4](https://github.com/samwalshnz/lightncandy-l4)
+- [Laravel 5](https://github.com/markusjwetzel/laravel-handlebars)
+- [yii2](https://github.com/kfreiman/yii2-lightncandy)
