@@ -531,7 +531,7 @@ $php = LightnCandy::compile($template, Array(
     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
     'hbhelpers' => Array(
         'getRoot' => function ($options) {
-            print_($options['_this']); // dump current context
+            print_r($options['_this']); // dump current context
             return $options['data']['root']; // same as {{@root}}
         }
     )
