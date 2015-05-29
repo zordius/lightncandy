@@ -771,6 +771,37 @@ class regressionTest extends PHPUnit_Framework_TestCase
             ),
 
             Array(
+                'id' => 157,
+                'template' => '{{{dump text=(dump 123)}}}',
+                'data' => null,
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'helpers' => Array(
+                        'dump' => function ($args, $named) {
+                            return 'arg:' . print_r($args, true) . ', named:' . print_r($named, true);
+                        }
+                    )
+                ),
+                'expected' => <<<VAREND
+arg:Array
+(
+)
+, named:Array
+(
+    [text] => arg:Array
+(
+    [0] => 123
+)
+, named:Array
+(
+)
+
+)
+
+VAREND
+            ),
+
+            Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
                 'options' => Array(
