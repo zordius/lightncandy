@@ -772,12 +772,12 @@ class regressionTest extends PHPUnit_Framework_TestCase
 
             Array(
                 'id' => 157,
-                'template' => '{{{dump text=(dump 123)}}}',
+                'template' => '{{{du_mp text=(du_mp "123")}}}',
                 'data' => null,
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                     'helpers' => Array(
-                        'dump' => function ($args, $named) {
+                        'du_mp' => function ($args, $named) {
                             return 'arg:' . print_r($args, true) . ', named:' . print_r($named, true);
                         }
                     )
