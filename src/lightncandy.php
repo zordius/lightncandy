@@ -1346,6 +1346,13 @@ $libstr
                     }
                     $idx = $m[3] ? $m[3] : $m[4];
                     $var = $m[5];
+                    // Compile subexpressions for named arguments
+                    if (preg_match(static::IS_SUBEXP_SEARCH, $var)) {
+                        static::compileSubExpression($var, $context, !$context['scan']);
+                        $ret[$idx] = array($var);
+                        $i++;
+                        continue;
+                    }
                 }
             }
 
@@ -1363,7 +1370,7 @@ $libstr
                     $context['error'][] = "Wrong variable naming as '$var' in " . static::tokenString($token) . ' !';
                 } else {
                     if (!$context['scan']) {
-                        $name =  preg_replace('/(\\[.+?\\])/', '', $var);
+                        $name = preg_replace('/(\\[.+?\\])/', '', $var);
                         // Scan for invalid charactors which not be protected by [ ]
                         // now make ( and ) pass, later fix
                         if (preg_match('/[!"#%\'*+,;<=>{|}~]/', $name)) {
