@@ -3,6 +3,7 @@ HISTORY
 
 master current trunk
    * align with handlebars.js master
+   * 1d1e8829cb fix `{{foo bar=(tee_taa "hoo")}}` parsing issue
 
 v0.21 https://github.com/zordius/lightncandy/tree/v0.21
    * align with handlebars.js 3.0.3
