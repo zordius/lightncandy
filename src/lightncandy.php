@@ -1350,7 +1350,6 @@ $libstr
                     if (preg_match(static::IS_SUBEXP_SEARCH, $var)) {
                         static::compileSubExpression($var, $context, !$context['scan']);
                         $ret[$idx] = array($var);
-                        $i++;
                         continue;
                     }
                 }
