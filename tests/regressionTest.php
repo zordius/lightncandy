@@ -802,6 +802,29 @@ VAREND
             ),
 
             Array(
+                'id' => 157,
+                'template' => '{{>test_js_partial}}',
+                'data' => null,
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_RUNTIMEPARTIAL,
+                    'partials' => Array(
+                        'test_js_partial' => <<<VAREND
+Test GA....
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){console.log('works!')};})();
+</script>
+VAREND
+                    )
+                ),
+                'expected' => <<<VAREND
+Test GA....
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){console.log('works!')};})();
+</script>
+VAREND
+            ),
+
+            Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
                 'options' => Array(
