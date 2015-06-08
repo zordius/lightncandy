@@ -555,12 +555,12 @@ $libstr
         $context['tokens']['ahead'] = $originalAhead;
 
         if ($context['flags']['runpart']) {
-            $code = static::compileTemplate($context, $context['usedPartial'][$name], $name);
+            $code = static::compileTemplate($context, str_replace('function', self::$TMP_JS_FUNCTION_STR, $context['usedPartial'][$name]), $name);
             if ($context['flags']['mustpi']) {
                 $sp = ', $sp';
                 $code = preg_replace('/^/m', "'{$context['ops']['seperator']}\$sp{$context['ops']['seperator']}'", $code);
                 // callbacks inside partial should be aware of $sp
-                $code = preg_replace('/\bfunction\s*\((.*?)\)\s*{/', 'function(\\1)use($sp){', $code);
+                $code = str_replace(self::$TMP_JS_FUNCTION_STR, 'function', preg_replace('/\bfunction\s*\((.*?)\)\s*{/', 'function(\\1)use($sp){', $code));
             } else {
                 $sp = '';
             }
