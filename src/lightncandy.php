@@ -2363,7 +2363,7 @@ class LCRun3 {
         $last = null;
         $isObj = false;
 
-        if ($isAry && $else !== null && count($v) === 0) {
+        if (($isAry || $isTrav) && $else !== null && count($v) === 0) {
             $cx['scopes'][] = $in;
             $ret = $else($cx, $in);
             array_pop($cx['scopes']);
