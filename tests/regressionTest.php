@@ -825,6 +825,16 @@ VAREND
             ),
 
             Array(
+                'id' => 159,
+                'template' => '{{#.}}true{{else}}false{{/.}}',
+                'data' => new ArrayObject(),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                ),
+                'expected' => "false",
+            ),
+
+            Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
                 'options' => Array(
