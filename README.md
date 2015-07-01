@@ -502,7 +502,7 @@ Handlebars.registerHelper('myif', function(conditional, options) {
 });
 ```
 
-You can use `isset($options['fn'])` to detect your custom helper is be executed as a block or not; you can also use `isset($options['inverse'])` to detect the existence of `{{else}}`.
+You can use `isset($options['fn'])` to detect your custom helper is a block or not; you can also use `isset($options['inverse'])` to detect the existence of `{{else}}`.
 
 **Hashed arguments**
 * LightnCandy
