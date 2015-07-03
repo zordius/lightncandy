@@ -599,7 +599,7 @@ echo $renderer(Array('name' => 'John'), LCRun3::DEBUG_TAGS_HTML);
 
 The ANSI output will be: 
 
-<a href="tests/example_debug.php"><img src="example_debug.png"/></a>
+<a href="tests/example_debug.php"><img src="https://github.com/zordius/lightncandy/raw/master/example_debug.png"/></a>
 
 Here are the list of LCRun3 debug options for render function:
 
