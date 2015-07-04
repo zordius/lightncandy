@@ -285,7 +285,7 @@ class LightnCandy {
         $hbhelpers = static::exportHelper($context, 'hbhelpers');
         $debug = LCRun3::DEBUG_ERROR_LOG;
         $phpstart = $context['flags']['bare'] ? '' : '<?php ';
-        $phpend = $context['flags']['bare'] ? '' : "\n?>";
+        $phpend = $context['flags']['bare'] ? ';' : "\n?>";
 
         // Return generated PHP code string.
         return "{$phpstart}return function (\$in, \$debugopt = $debug) {
