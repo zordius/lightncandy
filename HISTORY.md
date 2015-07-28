@@ -1,7 +1,7 @@
 HISTORY
 =======
 
-master current trunk
+v0.22 https://github.com/zordius/lightncandy/tree/v0.22
    * align with handlebars.js master
    * 1d1e8829cb fix `{{foo bar=(tee_taa "hoo")}}` parsing issue
    * 9bd994ee94 fix JavaScript function in runtime partial be changed bug
