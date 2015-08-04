@@ -184,13 +184,8 @@ class LightnCandy {
 
         if (($left === '{{') && ($right === '}}')) {
             if ($context['flags']['rawblock']) {
-                if ($context['rawblock']) {
-                    $left = '\\{{4,4}';
-                    $right = '\\}{4,4}';
-                } else {
-                    $left = '\\{{2,4}';
-                    $right = '\\}{2,4}';
-                }
+                $left = '\\{{2,4}';
+                $right = '\\}{2,4}';
             } else {
                 $left = '\\{{2,3}';
                 $right = '\\}{2,3}';
@@ -1262,6 +1257,29 @@ $libstr
             return array(false, array());
         }
 
+        // Handle raw block
+        if ($token[self::POS_BEGINTAG] === '{{{{') {
+            if ($token[self::POS_ENDTAG] !== '}}}}') {
+                $context['error'][] = 'Bad token ' . static::tokenString($token) . ' ! Do you mean {{{{' . static::tokenString($token, 4) . '}}}} ?';
+            }
+            if ($context['rawblock']) {
+                if ($token[self::POS_OP] !== '/') {
+                    $context['error'][] = "Wrong raw block end with " . static::tokenString($token) . ' ! Replace "' . $token[self::POS_OP] . '" with "/" will fix this issue.';
+                }
+                static::setupToken($context);
+                $context['rawblock'] = false;
+            } else {
+                if ($token[self::POS_OP]) {
+                    $context['error'][] = "Wrong raw block begin with " . static::tokenString($token) . ' ! Remove "' . $token[self::POS_OP] . '" to fix this issue.';
+                }
+                static::setupToken($context, '{{{{', '}}}}');
+                $token[self::POS_OP] = '#';
+                $context['rawblock'] = $token[self::POS_INNERTAG];
+            }
+            $token[self::POS_BEGINTAG] = '{{';
+            $token[self::POS_ENDTAG] = '}}';
+        }
+
         // Skip validation on comments
         if ($token[self::POS_OP] === '!') {
             return array(false, array());
@@ -1410,7 +1428,7 @@ $libstr
             }
         }
 
-        return array(($token[self::POS_BEGINTAG] === '{{{') || ($token[self::POS_OP] === '&') || $context['flags']['noesc'], $ret);
+        return array(($token[self::POS_BEGINTAG] === '{{{') || ($token[self::POS_OP] === '&') || $context['flags']['noesc'] || $context['rawblock'], $ret);
     }
 
     /**

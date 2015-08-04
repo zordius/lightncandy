@@ -837,7 +837,7 @@ VAREND
             Array(
                 'id' => 169,
                 'template' => '{{{{a}}}}true{{else}}false{{{{/a}}}}',
-                'data' => null,
+                'data' => Array('a' => true),
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                 ),
