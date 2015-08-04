@@ -408,6 +408,36 @@ class errorTest extends PHPUnit_Framework_TestCase
                     "You use dynamic partial name as '(foo)', this only works with option FLAG_RUNTIMEPARTIAL enabled",
                 )
             ),
+            Array(
+                'template' => '{{{{#foo}}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                ),
+                'expected' => Array(
+                    'Bad token {{{{#foo}}} ! Do you mean {{{{#foo}}}} ?',
+                    'Wrong raw block begin with {{{{#foo}}} ! Remove "#" to fix this issue.',
+                    'Unclosed token {{{#foo}}} !!',
+                )
+            ),
+            Array(
+                'template' => '{{{{foo}}}} {{ {{{{/bar}}}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                ),
+                'expected' => Array(
+                    'Unexpect token {{/bar}} ! Previous token {{#[foo]}} is not closed',
+                )
+            ),
+            Array(
+                'template' => '{{{{foo}}}} {{ {{{{#foo}}}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                ),
+                'expected' => Array(
+                    'Wrong raw block end with {{{{#foo}}}} ! Replace "#" with "/" will fix this issue.',
+                    'Unclosed token {{{#foo}}} !!',
+                )
+            ),
         );
 
         return array_map(function($i) {
