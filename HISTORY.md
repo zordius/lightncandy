@@ -3,6 +3,7 @@ HISTORY
 
 current master
    * align with handlebars.js 3.0.3
+   * b194f37430 support ``{{{{rawblock}}}} ... {{{{/rawblock}}}}` when FLAG_RAWBLOCK enabled
 
 v0.22 https://github.com/zordius/lightncandy/tree/v0.22
    * align with handlebars.js 3.0.3

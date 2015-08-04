@@ -738,6 +738,7 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{helper name1=var name2=var2}}` : Execute custom helper with named arguments (require `FLAG_NAMEDARG`)
 * `{{#helper ...}}...{{/helper}}` : Execute block custom helper
 * `{{helper (helper2 foo) bar}}` : Execute custom helpers as subexpression (require `FLAG_ADVARNAME`)
+* `{{{{raw_block}}} {{will_not_parsed}} {{{{/raw_block}}}}` : Raw block (require FLAG_RAWBLOCK`)
 
 Framework Integration
 ---------------------
