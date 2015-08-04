@@ -38,6 +38,7 @@ class contextTest extends PHPUnit_Framework_TestCase
             'hbhelper' => 0,
             'delimiter' => 0,
             'subexp' => 0,
+            'rawblock' => 0,
         );
 
         $compileCases = Array(

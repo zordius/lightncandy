@@ -183,8 +183,18 @@ class LightnCandy {
         $context['tokens']['right'] = $right;
 
         if (($left === '{{') && ($right === '}}')) {
-            $left = '\\{{2,3}';
-            $right = '\\}{2,3}';
+            if ($context['flags']['rawblock']) {
+                if ($context['rawblock']) {
+                    $left = '\\{{4,4}';
+                    $right = '\\}{4,4}';
+                } else {
+                    $left = '\\{{2,4}';
+                    $right = '\\}{2,4}';
+                }
+            } else {
+                $left = '\\{{2,3}';
+                $right = '\\}{2,3}';
+            }
         } else {
             $left = preg_quote($left);
             $right = preg_quote($right);
@@ -397,6 +407,7 @@ $libstr
                 'hbhelper' => 0,
                 'delimiter' => 0,
                 'subexp' => 0,
+                'rawblock' => 0,
             ),
             'usedCount' => array(
                 'var' => array(),
@@ -411,6 +422,7 @@ $libstr
             'hbhelpers' => array(),
             'renderex' => isset($options['renderex']) ? $options['renderex'] : '',
             'lcrun' => isset($options['lcrun']) ? $options['lcrun'] : 'LCRun3',
+            'rawblock' => false,
         );
 
         $context['ops'] = $context['flags']['echo'] ? array(
