@@ -47,6 +47,7 @@ class LightnCandy {
     const FLAG_SPVARS = 4096;
     const FLAG_SLASH = 8388608;
     const FLAG_ELSE = 16777216;
+    const FLAG_RAWBLOCK = 134217728;
 
     // PHP behavior flags
     const FLAG_EXTHELPER = 8192;
@@ -357,6 +358,7 @@ $libstr
                 'prop' => $flags & self::FLAG_PROPERTY,
                 'method' => $flags & self::FLAG_METHOD,
                 'runpart' => $flags & self::FLAG_RUNTIMEPARTIAL,
+                'rawblock' => $flags & self::FLAG_RAWBLOCK,
             ),
             'level' => 0,
             'scan' => true,
