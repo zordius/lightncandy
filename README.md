@@ -748,7 +748,7 @@ Framework Integration
 - [Laravel 5](https://github.com/ProAI/laravel-handlebars)
 - [yii2](https://github.com/kfreiman/yii2-lightncandy)
 
-tools
+Tools
 -----
 
 - CLI: https://github.com/PXLbros/LightnCandy-CLI
