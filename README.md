@@ -619,12 +619,12 @@ If you want to do extra process before the partial be compiled, you may use `pre
 $php = LightnCandy::compile($template, Array(
     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
     'prepartial' => function ($partial, $name) {
-        return "<!-- partial start: $name -->$partial<!-- partial end: $name";
+        return "<!-- partial start: $name -->$partial<!-- partial end: $name -->";
     }
 ));
 ```
 
-You may also extend `LightnCandy` by override the `prePartial()` static method to preprocess all partials.
+You may also extend `LightnCandy` by override the `prePartial()` static method to turn your preprocess into a built-in feature.
 
 Customize Render Function
 -------------------------
