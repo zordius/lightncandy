@@ -615,7 +615,7 @@ Preprocess Partials
 
 If you want to do extra process before the partial be compiled, you may use `prepartial` when `compile()`. For example, this sample adds HTML comments to identify the partial by the name:
 
-``php
+```php
 $php = LightnCandy::compile($template, Array(
     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
     'prepartial' => function ($partial, $name) {
