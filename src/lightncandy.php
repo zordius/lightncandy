@@ -527,6 +527,9 @@ $libstr
      * @param array<string,array|string|integer> $context Current context of compiler progress.
      *
      * @return string|null $content processed partial template
+     *
+     * @expect 'hey' when input 'hey', 'haha', Array('prepartial' => false)
+     * @expect 'haha-hoho' when input 'hoho', 'haha', Array('prepartial' => function ($tmpl, $name) {return "$name-$tmpl";})
      */
     protected static function prePartial($tmpl, &$name, &$context) {
         return $context['prepartial'] ? $context['prepartial']($tmpl, $name, $context) : $tmpl;
