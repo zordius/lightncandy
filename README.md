@@ -610,6 +610,22 @@ Here are the list of LCRun3 debug options for render function:
 * `DEBUG_TAGS_ANSI` : turn the return value of render function into normalized mustache tags with ANSI color
 * `DEBUG_TAGS_HTML` : turn the return value of render function into normalized mustache tags with HTML comments
 
+Preprocess Partials
+-------------------
+
+If you want to do extra process before the partial be compiled, you may use `prepartial` when `compile()`. For example, this sample adds HTML comments to identify the partial by the name:
+
+``php
+$php = LightnCandy::compile($template, Array(
+    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+    'prepartial' => function ($partial, $name) {
+        return "<!-- partial start: $name -->$partial<!-- partial end: $name";
+    }
+));
+```
+
+You may also extend `LightnCandy` by override the `prePartial()` static method to preprocess all partials.
+
 Customize Render Function
 -------------------------
 
