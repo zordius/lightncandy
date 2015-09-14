@@ -416,6 +416,7 @@ $libstr
             'blockhelpers' => array(),
             'hbhelpers' => array(),
             'renderex' => isset($options['renderex']) ? $options['renderex'] : '',
+            'prepartial' => (isset($options['prepartial']) && is_callable($options['prepartial'])) ? $options['prepartial'] : false,
             'lcrun' => isset($options['lcrun']) ? $options['lcrun'] : 'LCRun3',
             'rawblock' => false,
         );
@@ -519,6 +520,19 @@ $libstr
     }
 
     /**
+     * preprocess partial template before it be stored into context
+     *
+     * @param string $tmpl partial template
+     * @param string $name partial name
+     * @param array<string,array|string|integer> $context Current context of compiler progress.
+     *
+     * @return string|null $content processed partial template
+     */
+    protected static function prePartial($tmpl, &$name, &$context) {
+        return $context['prepartial'] ? $context['prepartial']($tmpl, $name, $context) : $tmpl;
+    }
+
+    /**
      * locate partial file, return the file name
      *
      * @param string $name partial name
@@ -528,14 +542,14 @@ $libstr
      */
     protected static function resolvePartial(&$name, &$context) {
         if (isset($context['partials'][$name])) {
-            return $context['partials'][$name];
+            return static::prePartial($context['partials'][$name], $name, $context);
         }
 
         foreach ($context['basedir'] as $dir) {
             foreach ($context['fileext'] as $ext) {
                 $fn = "$dir/$name$ext";
                 if (file_exists($fn)) {
-                    return file_get_contents($fn);
+                    return static::prePartial(file_get_contents($fn), $name, $context);
                 }
             }
         }
