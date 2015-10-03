@@ -242,7 +242,7 @@ echo $renderer(Array(
 ));
 ```
 
-When you using dynamic partial, LightnCandy will compile all partials inside the `partials` option into template. This makes the generated code larger, but this can make sure all partials are included for rendering.
+When you using dynamic partial, LightnCandy will compile all partials inside the `partials` option into template. This makes the generated code larger, but this can make sure all partials are included for rendering. (TODO: add an example to show how to provide partials across templates to reduce size)
 
 Custom Helper
 -------------
