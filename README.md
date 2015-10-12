@@ -787,6 +787,12 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{helper (helper2 foo) bar}}` : Execute custom helpers as subexpression (require `FLAG_ADVARNAME`)
 * `{{{{raw_block}}} {{will_not_parsed}} {{{{/raw_block}}}}` : Raw block (require FLAG_RAWBLOCK`)
 
+*TODO*
+
+* https://github.com/wycats/handlebars.js/issues/1114
+* https://github.com/wycats/handlebars.js/issues/1099
+* https://github.com/wycats/handlebars.js/issues/1092
+
 Framework Integration
 ---------------------
 
