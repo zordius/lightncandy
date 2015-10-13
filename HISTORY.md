@@ -7,6 +7,7 @@ current master
    * 927741a07c add `prePartial()` static method and `prepartial` compile option for extendibility
    * f9f41277d7 support private variable injection from handlebars custom block helpers
    * 850dcd7082 fix `{{!-- --}}` bug when it inside a partial
+   * edb486ac87 fix support for nested raw block
 
 v0.22 https://github.com/zordius/lightncandy/tree/v0.22
    * align with handlebars.js 3.0.3
