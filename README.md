@@ -581,6 +581,9 @@ Handlebars.registerHelper('getRoot', function(options) {
 ```
 
 **Private variables**
+
+You can inject private variables into inner block when you execute child block with second parameter. The example code showed similar behavior with `{{#each}}` which sets index for child block and can be accessed with `{{@index}}`.
+
 * LightnCandy
 ```php
 $php = LightnCandy::compile($template, Array(
@@ -616,8 +619,6 @@ Handlebars.registerHelper('list', function(context, options) {
   return out;
 });
 ```
-
-You can inject private variables into inner block when you execute child block with second parameter. The example code showed similar behavior with `{{#each}}` which sets index for child block and can be accessed with `{{@index}}`.
 
 **Escaping**
 
