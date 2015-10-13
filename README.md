@@ -556,6 +556,30 @@ Handlebars.registerHelper('sample', function(arg1, arg2, options) {
 });
 ```
 
+**Data variables and context**
+
+You can get special data variables from `$options['data']`. Using `$options['_this']` to receive current context.
+
+```php
+$php = LightnCandy::compile($template, Array(
+    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+    'hbhelpers' => Array(
+        'getRoot' => function ($options) {
+            print_r($options['_this']); // dump current context
+            return $options['data']['root']; // same as {{@root}}
+        }
+    )
+));
+```
+
+* Handlebars.js
+```javascript
+Handlebars.registerHelper('getRoot', function(options) {
+    console.log(this); // dump current context
+    return options.data.root; // same as {{@root}}
+});
+```
+
 **Private variables**
 * LightnCandy
 ```php
@@ -593,29 +617,7 @@ Handlebars.registerHelper('list', function(context, options) {
 });
 ```
 
-**Data variables and context**
-
-You can get special data variables from `$options['data']`. Using `$options['_this']` to receive current context.
-
-```php
-$php = LightnCandy::compile($template, Array(
-    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-    'hbhelpers' => Array(
-        'getRoot' => function ($options) {
-            print_r($options['_this']); // dump current context
-            return $options['data']['root']; // same as {{@root}}
-        }
-    )
-));
-```
-
-* Handlebars.js
-```javascript
-Handlebars.registerHelper('getRoot', function(options) {
-    console.log(this); // dump current context
-    return options.data.root; // same as {{@root}}
-});
-```
+You can inject private variables into inner block when you execute child block with second parameter. The example code showed similar behavior with `{{#each}}` which sets index for child block and can be accessed with `{{@index}}`.
 
 **Escaping**
 
