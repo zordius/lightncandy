@@ -107,8 +107,7 @@ class LightnCandy {
             return false;
         }
 
-        // Strip extended comments
-        $template = preg_replace(static::EXTENDED_COMMENT_SEARCH, '{{! }}', $template);
+        $template = static::stripExtendedComments($template);
 
         // Do first time scan to find out used feature, detect template error.
         static::setupToken($context);
@@ -135,6 +134,13 @@ class LightnCandy {
 
         // Or, return full PHP render codes as string
         return static::composePHPRender($context, $code);
+    }
+
+    /**
+     * Strip extended comments {{!-- .... --}}
+     */
+    protected static function stripExtendedComments($template) {
+        return preg_replace(static::EXTENDED_COMMENT_SEARCH, '{{! }}', $template);
     }
 
     /**
