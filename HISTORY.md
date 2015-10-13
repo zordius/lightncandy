@@ -2,7 +2,7 @@ HISTORY
 =======
 
 current master
-   * align with handlebars.js 3.0.3
+   * align with handlebars.js 4.0.3
    * b194f37430 support `{{{{rawblock}}}} ... {{{{/rawblock}}}}` when FLAG_RAWBLOCK enabled
    * 927741a07c add `prePartial()` static method and `prepartial` compile option for extendibility
    * f9f41277d7 support private variable injection from handlebars custom block helpers
