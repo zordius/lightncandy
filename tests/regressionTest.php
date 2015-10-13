@@ -845,6 +845,19 @@ VAREND
             ),
 
             Array(
+                'id' => 171,
+                'template' => '{{#my_private_each .}}{{@index}}:{{.}},{{/my_private_each}}',
+                'data' => Array('a', 'b', 'c'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_ERROR_EXCEPTION,
+                    'hbhelpers' => Array(
+                        'my_private_each'
+                    )
+                ),
+                'expected' => '0:a,1:b,2:c,',
+            ),
+
+            Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
                 'options' => Array(

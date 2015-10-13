@@ -132,6 +132,16 @@ function mylogic ($input, $yes, $no, $options) {
     }
 }
 
+function my_private_each ($context, $options) {
+    $data = $options['data'];
+    $out = '';
+    foreach ($context as $idx => $cx) {
+        $data['index'] = $idx;
+        $out .= $options['fn']($cx, Array('data' => $data));
+    }
+    return $out;
+}
+
 function mydash ($a, $b) {
     return "$a-$b";
 }

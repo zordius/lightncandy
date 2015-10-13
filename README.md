@@ -556,6 +556,43 @@ Handlebars.registerHelper('sample', function(arg1, arg2, options) {
 });
 ```
 
+**Private variables**
+* LightnCandy
+```php
+$php = LightnCandy::compile($template, Array(
+    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+    'hbhelpers' => Array(
+        'list' => function ($context, $options) {
+            $out = '';
+            $data = $options['data'];
+
+            foreach ($context as $idx => $cx) {
+                $data['index'] = $idx;
+                $out .= $options['fn']($cx, Array('data' => $data));
+            }
+
+            return $out;
+        }
+    )
+));
+```
+
+* Handlebars.js
+```javascript
+Handlebars.registerHelper('list', function(context, options) {
+  var out = '';
+  var data = options.data ? Handlebars.createFrame(options.data) : undefined;
+
+  for (var i=0; i<context.length; i++) {
+    if (data) {
+      data.index = i;
+    }
+    out += options.fn(context[i], {data: data});
+  }
+  return out;
+});
+```
+
 **Data variables and context**
 
 You can get special data variables from `$options['data']`. Using `$options['_this']` to receive current context.

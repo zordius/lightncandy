@@ -2640,24 +2640,30 @@ class LCRun3 {
         }
 
         if ($isBlock) {
-            $options['fn'] = function ($context = '_NO_INPUT_HERE_') use ($cx, $op, $cb) {
+            $options['fn'] = function ($context = '_NO_INPUT_HERE_', $data = null) use ($cx, $op, $cb) {
                 if ($cx['flags']['echo']) {
                     ob_start();
                 }
+                $cx['scopes'][] = $op;
+                if ($data) {
+                    $tmp_data = $cx['sp_vars'];
+                    $cx['sp_vars'] = array_merge($cx['sp_vars'], $data['data']);
+                }
                 if ($context === '_NO_INPUT_HERE_') {
-                    $cx['scopes'][] = $op;
                     $ret = $cb($cx, $op);
                 } else {
-                    $cx['scopes'][] = $op;
                     $ret = $cb($cx, $context);
                 }
                 array_pop($cx['scopes']);
+                if ($data) {
+                    $cx['sp_vars'] = $tmp_data;
+                }
                 return $cx['flags']['echo'] ? ob_get_clean() : $ret;
             };
         }
 
         if ($else) {
-            $options['inverse'] = function ($context = '_NO_INPUT_HERE_') use ($cx, $op, $else) {
+            $options['inverse'] = function ($context = '_NO_INPUT_HERE_', $data = null) use ($cx, $op, $else) {
                 if ($cx['flags']['echo']) {
                     ob_start();
                 }
