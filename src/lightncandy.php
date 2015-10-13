@@ -1250,7 +1250,7 @@ $libstr
      * @param array<string> $token preg_match results
      * @param array<string,array|string|integer> $context current compile context
      *
-     * @return array<boolean|array> Return parsed result
+     * @return array<boolean|integer|array> Return parsed result
      *
      * @expect array(false, array(array())) when input array(0,0,0,0,0,0,''), array('flags' => array('advar' => 0, 'this' => 1, 'namev' => 0, 'noesc' => 0), 'scan' => false, 'rawblock' => false)
      * @expect array(true, array(array())) when input array(0,0,0,'{{{',0,0,''), array('flags' => array('advar' => 0, 'this' => 1, 'namev' => 0, 'noesc' => 0), 'scan' => false, 'rawblock' => false)
