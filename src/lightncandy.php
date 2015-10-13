@@ -138,6 +138,14 @@ class LightnCandy {
 
     /**
      * Strip extended comments {{!-- .... --}}
+     *
+     * @param string $template handlebars template string
+     *
+     * @return string Stripped template
+     *
+     * @expect 'abc' when input 'abc'
+     * @expect 'abc{{!}}cde' when input 'abc{{!}}cde'
+     * @expect 'abc{{! }}cde' when input 'abc{{!----}}cde'
      */
     protected static function stripExtendedComments($template) {
         return preg_replace(static::EXTENDED_COMMENT_SEARCH, '{{! }}', $template);

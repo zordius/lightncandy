@@ -7,6 +7,22 @@ require_once('src/lightncandy.php');
 class LightnCandyTest extends PHPUnit_Framework_TestCase
 {
     /**
+     * @covers LightnCandy::stripExtendedComments
+     */
+    public function testOn_stripExtendedComments() {
+        $method = new ReflectionMethod('LightnCandy', 'stripExtendedComments');
+        $method->setAccessible(true);
+        $this->assertEquals('abc', $method->invoke(null,
+            'abc'
+        ));
+        $this->assertEquals('abc{{!}}cde', $method->invoke(null,
+            'abc{{!}}cde'
+        ));
+        $this->assertEquals('abc{{! }}cde', $method->invoke(null,
+            'abc{{!----}}cde'
+        ));
+    }
+    /**
      * @covers LightnCandy::escapeTemplate
      */
     public function testOn_escapeTemplate() {
