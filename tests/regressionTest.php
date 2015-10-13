@@ -868,6 +868,19 @@ VAREND
             ),
 
             Array(
+                'id' => 175,
+                'template' => 'c{{>test}}d',
+                'data' => null,
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'partials' => Array(
+                        'test' => 'a{{!-- {{each}} haha {{/each}} --}}b',
+                    ),
+                ),
+                'expected' => 'acdb',
+            ),
+
+            Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
                 'options' => Array(
