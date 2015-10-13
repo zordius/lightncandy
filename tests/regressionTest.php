@@ -877,7 +877,7 @@ VAREND
                         'test' => 'a{{!-- {{each}} haha {{/each}} --}}b',
                     ),
                 ),
-                'expected' => 'acdb',
+                'expected' => 'cabd',
             ),
 
             Array(

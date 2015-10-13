@@ -573,7 +573,7 @@ $libstr
      * @param string $content partial content
      */
     protected static function compilePartial(&$name, &$context, $content) {
-        $context['usedPartial'][$name] = static::escapeTemplate($content);
+        $context['usedPartial'][$name] = static::escapeTemplate(static::stripExtendedComments($content));
 
         $originalAhead = $context['tokens']['ahead'];
         $tmpContext = $context;
