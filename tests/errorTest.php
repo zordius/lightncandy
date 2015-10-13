@@ -283,7 +283,7 @@ class errorTest extends PHPUnit_Framework_TestCase
             ),
             Array(
                 'template' => '<ul>{{#each item}}<li>{{name}}</li>',
-                'expected' => 'Unclosed token {{{#each item}}} !!',
+                'expected' => 'Unclosed token {{#each item}} !!',
             ),
             Array(
                 'template' => 'issue63: {{test_join}} Test! {{this}} {{/test_join}}',
@@ -336,11 +336,11 @@ class errorTest extends PHPUnit_Framework_TestCase
             Array(
                 'template' => '{{#with a}OK!{{/with}}',
                 'options' => Array('flags' => LightnCandy::FLAG_WITH),
-                'expected' => 'Unclosed token {{{#with a}OK!{{/with}}} !!',
+                'expected' => 'Unclosed token {{#with a}OK!{{/with}} !!',
             ),
             Array(
                 'template' => '{{#each a}OK!{{/each}}',
-                'expected' => 'Unclosed token {{{#each a}OK!{{/each}}} !!',
+                'expected' => 'Unclosed token {{#each a}OK!{{/each}} !!',
             ),
             Array(
                 'template' => '{{#with items}}OK!{{/with}}',
@@ -416,7 +416,7 @@ class errorTest extends PHPUnit_Framework_TestCase
                 'expected' => Array(
                     'Bad token {{{{#foo}}} ! Do you mean {{{{#foo}}}} ?',
                     'Wrong raw block begin with {{{{#foo}}} ! Remove "#" to fix this issue.',
-                    'Unclosed token {{{#foo}}} !!',
+                    'Unclosed token {{{{foo}}}} !!',
                 )
             ),
             Array(
@@ -425,7 +425,7 @@ class errorTest extends PHPUnit_Framework_TestCase
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                 ),
                 'expected' => Array(
-                    'Unexpect token {{/bar}} ! Previous token {{#[foo]}} is not closed',
+                    'Unclosed token {{{{foo}}}} !!',
                 )
             ),
             Array(
@@ -434,8 +434,7 @@ class errorTest extends PHPUnit_Framework_TestCase
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                 ),
                 'expected' => Array(
-                    'Wrong raw block end with {{{{#foo}}}} ! Replace "#" with "/" will fix this issue.',
-                    'Unclosed token {{{#foo}}} !!',
+                    'Unclosed token {{{{foo}}}} !!',
                 )
             ),
         );

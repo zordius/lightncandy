@@ -819,7 +819,7 @@ $libstr
     protected static function handleError(&$context) {
         if ($context['level'] > 0) {
             $token = array_pop($context['stack']);
-            $context['error'][] = "Unclosed token {{{#$token}}} !!";
+            $context['error'][] = 'Unclosed token ' . ($context['rawblock'] ? "{{{{{$token}}}}}" : "{{#{$token}}}") . ' !!';
         }
 
         static::$lastContext = $context;
@@ -1279,7 +1279,15 @@ $libstr
      * @expect array(false, array('q' => array('( foo bar)'))) when input array(0,0,0,0,0,0,'q=( foo bar)'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 0), 'scan' => false, 'usedFeature' => array(), 'ops' => array('seperator' => 0), 'rawblock' => false)
      */
     protected static function parseTokenArgs(&$token, &$context) {
-        trim($token[self::POS_INNERTAG]);
+        $inner = $token[self::POS_INNERTAG];
+        trim($inner);
+
+        // skip parse when inside raw block
+        if ($context['rawblock'] && !(($token[self::POS_BEGINTAG] === '{{{{') && ($token[self::POS_OP] === '/') && ($context['rawblock'] === $inner))) {
+            return array(-1, $token);
+        }
+
+        $token[self::POS_INNERTAG] = $inner;
 
         // Handle delimiter change
         if (preg_match('/^=\s*([^ ]+)\s+([^ ]+)\s*=$/', $token[self::POS_INNERTAG], $matched)) {
@@ -1294,9 +1302,6 @@ $libstr
                 $context['error'][] = 'Bad token ' . static::tokenString($token) . ' ! Do you mean {{{{' . static::tokenString($token, 4) . '}}}} ?';
             }
             if ($context['rawblock']) {
-                if ($token[self::POS_OP] !== '/') {
-                    $context['error'][] = "Wrong raw block end with " . static::tokenString($token) . ' ! Replace "' . $token[self::POS_OP] . '" with "/" will fix this issue.';
-                }
                 static::setupToken($context);
                 $context['rawblock'] = false;
             } else {
@@ -1604,6 +1609,10 @@ $libstr
     protected static function scanFeatures($token, &$context) {
         list($raw, $vars) = static::parseTokenArgs($token, $context);
 
+        if ($raw === -1) {
+            return;
+        }
+
         if (static::validateStartEnd($token, $context)) {
             return;
         }
@@ -1748,6 +1757,12 @@ $libstr
      */
     public static function compileToken(&$token, &$context) {
         list($raw, $vars) = static::parseTokenArgs($token, $context);
+
+        // Do not touch the tag, keep it as is.
+        if ($raw === -1) {
+            return ".'" . static::tokenString($token) . "'.";
+        }
+
         $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;
 
         // Handle spacing (standalone tags, partial indent)
