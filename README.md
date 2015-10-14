@@ -133,7 +133,7 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * `FLAG_RUNTIMEPARTIAL` : compile partial as runtime function, This enables recursive partials or context change for partials.
 * `FLAG_SLASH` : Skip a delimiter when it behind `\` .
 * `FLAG_ELSE` : support `{{else}}` or `{{^}}` as handlebars specification. Otherwise, `{{else}}` will be resolved as normal variable , and {{^}} will cause template error.
-* `FLAG_RAWBLOCK`: support `{{{{raw_block}}} any char or {{foo}} as none parsed raw string {{{{/raw_block}}}}`.
+* `FLAG_RAWBLOCK`: support `{{{{raw_block}}}} any char or {{foo}} as none parsed raw string {{{{/raw_block}}}}`.
 * `FLAG_PROPERTY` : support object instance attribute access. You MUST apply this if your data contains object. And, the rendering performance will be worse.
 * `FLAG_METHOD` : support object instance method access. You MUST apply this if your data contains object. And, the rendering performance will be worse.
 * `FLAG_INSTANCE` : same with `FLAG_PROPERTY` + `FLAG_METHOD`
@@ -825,7 +825,7 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{helper name1=var name2=var2}}` : Execute custom helper with named arguments (require `FLAG_NAMEDARG`)
 * `{{#helper ...}}...{{/helper}}` : Execute block custom helper
 * `{{helper (helper2 foo) bar}}` : Execute custom helpers as subexpression (require `FLAG_ADVARNAME`)
-* `{{{{raw_block}}} {{will_not_parsed}} {{{{/raw_block}}}}` : Raw block (require FLAG_RAWBLOCK`)
+* `{{{{raw_block}}}} {{will_not_parsed}} {{{{/raw_block}}}}` : Raw block (require FLAG_RAWBLOCK`)
 
 *TODO*
 
