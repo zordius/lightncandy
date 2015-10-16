@@ -134,7 +134,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $method = new ReflectionMethod('LightnCandy', 'handleError');
         $method->setAccessible(true);
         $this->assertEquals(true, $method->invoke(null,
-            array('level' => 1, 'stack' => array('X'), 'flags' => array('errorlog' => 0, 'exception' => 0), 'error' => array())
+            array('level' => 1, 'stack' => array('X'), 'flags' => array('errorlog' => 0, 'exception' => 0), 'error' => array(), 'rawblock' => 0)
         ));
         $this->assertEquals(false, $method->invoke(null,
             array('level' => 0, 'error' => array())
