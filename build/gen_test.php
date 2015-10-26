@@ -49,7 +49,7 @@ VAR
                 if ($matched[3][$idx]) {
                     echo "      {$matched[3][$idx]}\n";
                 }
-                echo "        \$this->assertEquals($expect, \$method->invoke(null,\n            {$matched[2][$idx]}\n        ));\n";
+                echo "        \$this->assertEquals($expect, \$method->invokeArgs(null,array(\n            {$matched[2][$idx]}\n)        ));\n";
             }
             echo "    }\n";
         }
