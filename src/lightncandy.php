@@ -1689,7 +1689,7 @@ $libstr
      * @return string|null Return compiled code segment for the token
      */
     public static function handleMustacheSpacing(&$token, $vars, &$context) {
-        if (!$context['flags']['mustsp'] && !$context['flags']['mustpi']) {
+        if (!$context['flags']['mustpi']) {
             return;
         }
 
@@ -1738,10 +1738,8 @@ $libstr
             if ($context['flags']['mustpi'] && ($token[self::POS_OP] === '>')) {
                 $context['tokens']['partialind'] = $ind;
             }
-            if ($context['flags']['mustsp']) {
-                $token[self::POS_LSPACE] = (isset($lmatch[2]) ? ($lmatch[1] . $lmatch[2]) : '');
-                $token[self::POS_RSPACE] = isset($rmatch[3]) ? $rmatch[3] : '';
-            }
+            $token[self::POS_LSPACE] = (isset($lmatch[2]) ? ($lmatch[1] . $lmatch[2]) : '');
+            $token[self::POS_RSPACE] = isset($rmatch[3]) ? $rmatch[3] : '';
         }
     }
 
