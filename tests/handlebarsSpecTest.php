@@ -20,17 +20,14 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
         }
 
         // 2. Not supported case: lambdas
-        if (
-               ($spec['it'] === "functions returning safestrings shouldn't be escaped") ||
-               ($spec['it'] === 'functions' && $spec['no'] === 33) ||
-               ($spec['it'] === 'functions' && $spec['no'] === 34) ||
-               ($spec['it'] === 'functions with context argument') ||
-               ($spec['it'] === 'pathed functions with context argument') ||
-               ($spec['it'] === 'depthed functions with context argument') ||
-               ($spec['it'] === 'block functions with context argument') ||
-               ($spec['it'] === 'depthed block functions with context argument') ||
-               ($spec['it'] === 'complex' && $spec['no'] === 4)
-           ) {
+        $lambdas = false;
+        array_walk_recursive($spec['data'], function ($v, $k) use (&$lambdas) {
+            if (($v === true) && ($k === '!code')) {
+                $lambdas = true;
+            }
+        });
+
+        if ($lambdas) {
             $this->markTestIncomplete('Not supported case: lambdas');
         }
 
@@ -60,18 +57,15 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                     $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , no PHP helper code provided for this case.");
                 }
 
-                // Wrong PHP helper interface in spec, skip.
-                preg_match('/function\s*\(.+?\)/', isset($func['javascript']) ? $func['javascript'] : '', $js_args);
-                preg_match('/function\s*\(.+?\)/', $func['php'], $php_args);
-                $jsn = isset($js_args[0]) ? substr_count($js_args[0], ',') : 0;
-                $phpn = isset($php_args[0]) ? substr_count($php_args[0], ',') : 0;
-                if ($jsn !== $phpn) {
-                    $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , PHP helper interface is wrong.");
-                }
-
                 $hname = "custom_helper_{$spec['no']}_$name";
                 $helpers[$name] = $hname;
-                eval(preg_replace('/function/', "function $hname", $func['php'], 1));
+                eval(
+                    preg_replace('/\\$options->(\\w+)/', '$options[\'$1\']',
+                        preg_replace('/\\$options->scope/', '$options[\'_this\']',
+                            preg_replace('/function/', "function $hname", $func['php'], 1)
+                        )
+                    )
+                );
             }
 
         }
