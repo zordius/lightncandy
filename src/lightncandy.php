@@ -1960,15 +1960,15 @@ $libstr
         switch (isset($vars[0][0]) ? $vars[0][0] : null) {
             case 'if':
                 $context['stack'][] = 'if';
-                $includeZero = isset($vars['includeZero'][1]) && $vars['includeZero'][1];
+                $includeZero = (isset($vars['includeZero'][1]) && $vars['includeZero'][1]) ? 'true' : 'false';
                 return $context['usedFeature']['parent']
-                    ? $context['ops']['seperator'] . static::getFuncName($context, 'ifv', 'if ' . $v[1]) . "\$cx, {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
-                    : "{$context['ops']['cnd_start']}(" . static::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]})){$context['ops']['cnd_then']}";
+                    ? $context['ops']['seperator'] . static::getFuncName($context, 'ifv', 'if ' . $v[1]) . "\$cx, {$v[0]}, {$includeZero}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
+                    : "{$context['ops']['cnd_start']}(" . static::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]}, {$includeZero})){$context['ops']['cnd_then']}";
             case 'unless':
                 $context['stack'][] = 'unless';
                 return $context['usedFeature']['parent']
-                    ? $context['ops']['seperator'] . static::getFuncName($context, 'unl', 'unless ' . $v[1]) . "\$cx, {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
-                    : "{$context['ops']['cnd_start']}(!" . static::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]})){$context['ops']['cnd_then']}";
+                    ? $context['ops']['seperator'] . static::getFuncName($context, 'unl', 'unless ' . $v[1]) . "\$cx, {$v[0]}, false, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
+                    : "{$context['ops']['cnd_start']}(!" . static::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]}, false)){$context['ops']['cnd_then']}";
             case 'each':
                 $each = 'true';
                 array_shift($vars);
@@ -2215,21 +2215,23 @@ class LCRun3 {
      *
      * @param array<string,array|string|integer> $cx render time context
      * @param array<array|string|integer>|string|integer|null $v value to be tested
+     * @param boolean $zero include zero as true
      *
      * @return boolean Return true when the value is not null nor false.
      *
-     * @expect false when input array(), null
-     * @expect false when input array(), 0
-     * @expect false when input array(), false
-     * @expect true when input array(), true
-     * @expect true when input array(), 1
-     * @expect false when input array(), ''
-     * @expect false when input array(), array()
-     * @expect true when input array(), array('')
-     * @expect true when input array(), array(0)
+     * @expect false when input array(), null, false
+     * @expect false when input array(), 0, false
+     * @expect true when input array(), 0, true
+     * @expect false when input array(), false, false
+     * @expect true when input array(), true, false
+     * @expect true when input array(), 1, false
+     * @expect false when input array(), '', false
+     * @expect false when input array(), array(), false
+     * @expect true when input array(), array(''), false
+     * @expect true when input array(), array(0), false
      */
-    public static function ifvar($cx, $v) {
-        return !is_null($v) && ($v !== false) && ($v !== 0) && ($v !== 0.0) && ($v !== '') && (is_array($v) ? (count($v) > 0) : true);
+    public static function ifvar($cx, $v, $zero) {
+        return !is_null($v) && ($v !== false) && ($zero || ($v !== 0) && ($v !== 0.0)) && ($v !== '') && (is_array($v) ? (count($v) > 0) : true);
     }
 
     /**
@@ -2237,20 +2239,21 @@ class LCRun3 {
      *
      * @param array<string,array|string|integer> $cx render time context
      * @param array<array|string|integer>|string|integer|null $v value to be tested
+     * @param boolean $zero include zero as true
      * @param array<array|string|integer> $in input data with current scope
      * @param Closure|null $truecb callback function when test result is true
      * @param Closure|null $falsecb callback function when test result is false
      *
      * @return string The rendered string of the section
      *
-     * @expect '' when input array('scopes' => array()), null, array(), null
-     * @expect '' when input array('scopes' => array()), null, array(), function () {return 'Y';}
-     * @expect 'Y' when input array('scopes' => array()), 1, array(), function () {return 'Y';}
-     * @expect 'N' when input array('scopes' => array()), null, array(), function () {return 'Y';}, function () {return 'N';}
+     * @expect '' when input array('scopes' => array()), null, false, array(), null
+     * @expect '' when input array('scopes' => array()), null, false, array(), function () {return 'Y';}
+     * @expect 'Y' when input array('scopes' => array()), 1, false, array(), function () {return 'Y';}
+     * @expect 'N' when input array('scopes' => array()), null, false, array(), function () {return 'Y';}, function () {return 'N';}
      */
-    public static function ifv($cx, $v, $in, $truecb, $falsecb = null) {
+    public static function ifv($cx, $v, $zero, $in, $truecb, $falsecb = null) {
         $ret = '';
-        if (self::ifvar($cx, $v)) {
+        if (self::ifvar($cx, $v, $zero)) {
             if ($truecb) {
                 $cx['scopes'][] = $in;
                 $ret = $truecb($cx, $in);
@@ -2271,20 +2274,21 @@ class LCRun3 {
      *
      * @param array<string,array|string|integer> $cx render time context
      * @param array<array|string|integer>|string|integer|null $var value be tested
+     * @param boolean $zero include zero as true
      * @param array<array|string|integer>|string|integer|null $in input data with current scope
      * @param Closure $truecb callback function when test result is true
      * @param Closure|null $falsecb callback function when test result is false
      *
      * @return string Return rendered string when the value is not null nor false.
      *
-     * @expect '' when input array('scopes' => array()), null, array(), null
-     * @expect 'Y' when input array('scopes' => array()), null, array(), function () {return 'Y';}
-     * @expect '' when input array('scopes' => array()), 1, array(), function () {return 'Y';}
-     * @expect 'Y' when input array('scopes' => array()), null, array(), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'N' when input array('scopes' => array()), true, array(), function () {return 'Y';}, function () {return 'N';}
+     * @expect '' when input array('scopes' => array()), null, false, array(), null
+     * @expect 'Y' when input array('scopes' => array()), null, false, array(), function () {return 'Y';}
+     * @expect '' when input array('scopes' => array()), 1, false, array(), function () {return 'Y';}
+     * @expect 'Y' when input array('scopes' => array()), null, false, array(), function () {return 'Y';}, function () {return 'N';}
+     * @expect 'N' when input array('scopes' => array()), true, false, array(), function () {return 'Y';}, function () {return 'N';}
      */
-    public static function unl($cx, $var, $in, $truecb, $falsecb = null) {
-        return self::ifv($cx, $var, $in, $falsecb, $truecb);
+    public static function unl($cx, $var, $zero, $in, $truecb, $falsecb = null) {
+        return self::ifv($cx, $var, $zero, $in, $falsecb, $truecb);
     }
 
     /**

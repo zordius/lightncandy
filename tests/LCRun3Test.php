@@ -42,31 +42,34 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
     public function testOn_ifvar() {
         $method = new ReflectionMethod('LCRun3', 'ifvar');
         $this->assertEquals(false, $method->invokeArgs(null,array(
-            array(), null
+            array(), null, false
 )        ));
         $this->assertEquals(false, $method->invokeArgs(null,array(
-            array(), 0
+            array(), 0, false
+)        ));
+        $this->assertEquals(true, $method->invokeArgs(null,array(
+            array(), 0, true
 )        ));
         $this->assertEquals(false, $method->invokeArgs(null,array(
-            array(), false
+            array(), false, false
 )        ));
         $this->assertEquals(true, $method->invokeArgs(null,array(
-            array(), true
+            array(), true, false
 )        ));
         $this->assertEquals(true, $method->invokeArgs(null,array(
-            array(), 1
+            array(), 1, false
 )        ));
         $this->assertEquals(false, $method->invokeArgs(null,array(
-            array(), ''
+            array(), '', false
 )        ));
         $this->assertEquals(false, $method->invokeArgs(null,array(
-            array(), array()
+            array(), array(), false
 )        ));
         $this->assertEquals(true, $method->invokeArgs(null,array(
-            array(), array('')
+            array(), array(''), false
 )        ));
         $this->assertEquals(true, $method->invokeArgs(null,array(
-            array(), array(0)
+            array(), array(0), false
 )        ));
     }
     /**
@@ -75,16 +78,16 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
     public function testOn_ifv() {
         $method = new ReflectionMethod('LCRun3', 'ifv');
         $this->assertEquals('', $method->invokeArgs(null,array(
-            array('scopes' => array()), null, array(), null
+            array('scopes' => array()), null, false, array(), null
 )        ));
         $this->assertEquals('', $method->invokeArgs(null,array(
-            array('scopes' => array()), null, array(), function () {return 'Y';}
+            array('scopes' => array()), null, false, array(), function () {return 'Y';}
 )        ));
         $this->assertEquals('Y', $method->invokeArgs(null,array(
-            array('scopes' => array()), 1, array(), function () {return 'Y';}
+            array('scopes' => array()), 1, false, array(), function () {return 'Y';}
 )        ));
         $this->assertEquals('N', $method->invokeArgs(null,array(
-            array('scopes' => array()), null, array(), function () {return 'Y';}, function () {return 'N';}
+            array('scopes' => array()), null, false, array(), function () {return 'Y';}, function () {return 'N';}
 )        ));
     }
     /**
@@ -93,19 +96,19 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
     public function testOn_unl() {
         $method = new ReflectionMethod('LCRun3', 'unl');
         $this->assertEquals('', $method->invokeArgs(null,array(
-            array('scopes' => array()), null, array(), null
+            array('scopes' => array()), null, false, array(), null
 )        ));
         $this->assertEquals('Y', $method->invokeArgs(null,array(
-            array('scopes' => array()), null, array(), function () {return 'Y';}
+            array('scopes' => array()), null, false, array(), function () {return 'Y';}
 )        ));
         $this->assertEquals('', $method->invokeArgs(null,array(
-            array('scopes' => array()), 1, array(), function () {return 'Y';}
+            array('scopes' => array()), 1, false, array(), function () {return 'Y';}
 )        ));
         $this->assertEquals('Y', $method->invokeArgs(null,array(
-            array('scopes' => array()), null, array(), function () {return 'Y';}, function () {return 'N';}
+            array('scopes' => array()), null, false, array(), function () {return 'Y';}, function () {return 'N';}
 )        ));
         $this->assertEquals('N', $method->invokeArgs(null,array(
-            array('scopes' => array()), true, array(), function () {return 'Y';}, function () {return 'N';}
+            array('scopes' => array()), true, false, array(), function () {return 'Y';}, function () {return 'N';}
 )        ));
     }
     /**
