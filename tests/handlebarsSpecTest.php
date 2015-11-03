@@ -65,6 +65,16 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                 // no compile error means passed
                 continue;
             }
+
+            $output = $renderer($spec['data']);
+
+            if ($spec['expected'] !== $output) {
+                print "#################### SPEC DUMP ####################\n";
+                print_r($spec);
+                echo "OUTPUT: $output";
+                die;
+            }
+
             $this->assertEquals($spec['expected'], $renderer($spec['data']), "[{$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']} PHP CODE: $php");
         }
     }
