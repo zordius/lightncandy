@@ -1666,7 +1666,7 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Show error message when named arguments appear without custom helper.
+     * Internal method used by compile(). Show error message when named arguments appear without helper.
      *
      * @param array<string> $token detected handlebars {{ }} token
      * @param array<string,array|string|integer> $context current compile context
@@ -1859,7 +1859,7 @@ $libstr
                     return $r;
                 }
                 // Compile to section {{#myVar}}
-                return static::compileBlockBegin($context, $vars);
+                return static::compileBlockBegin($context, $vars, $token);
         }
     }
 
@@ -1950,15 +1950,17 @@ $libstr
      *
      * @param array<string,array|string|integer> $context current compile context
      * @param array<array|string|integer> $vars parsed arguments list
+     * @param array<string> $token detected handlebars {{ }} token
      *
      * @return string Return compiled code segment for the token
      */
-    protected static function compileBlockBegin(&$context, $vars) {
+    protected static function compileBlockBegin(&$context, $vars, $token) {
         $each = 'false';
         $v = isset($vars[1]) ? static::getVariableNameOrSubExpression($vars[1], $context) : array(null, array());
         switch (isset($vars[0][0]) ? $vars[0][0] : null) {
             case 'if':
                 $context['stack'][] = 'if';
+                $includeZero = isset($vars['includeZero'][1]) && $vars['includeZero'][1];
                 return $context['usedFeature']['parent']
                     ? $context['ops']['seperator'] . static::getFuncName($context, 'ifv', 'if ' . $v[1]) . "\$cx, {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
                     : "{$context['ops']['cnd_start']}(" . static::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]})){$context['ops']['cnd_then']}";
@@ -1981,6 +1983,7 @@ $libstr
                 }
         }
 
+        $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;
         static::noNamedArguments($token, $context, $named, ', maybe you missing the block custom helper?');
         $v = static::getVariableNameOrSubExpression($vars[0], $context);
         $context['stack'][] = $v[1];
