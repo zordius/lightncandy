@@ -14,6 +14,43 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
         global $tmpdir;
 
         //// Skip bad specs
+        // 1. No expected or exception in spec
+        if (!isset($spec['expected']) && !isset($spec['exception'])) {
+            $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , no expected result in spec, skip.");
+        }
+
+        // 2. Not supported case: lambdas
+        if (
+               ($spec['it'] === "functions returning safestrings shouldn't be escaped") ||
+               ($spec['it'] === 'functions' && $spec['no'] === 33) ||
+               ($spec['it'] === 'functions' && $spec['no'] === 34) ||
+               ($spec['it'] === 'functions with context argument') ||
+               ($spec['it'] === 'pathed functions with context argument') ||
+               ($spec['it'] === 'depthed functions with context argument') ||
+               ($spec['it'] === 'block functions with context argument') ||
+               ($spec['it'] === 'depthed block functions with context argument') ||
+               ($spec['it'] === 'complex' && $spec['no'] === 4)
+           ) {
+            $this->markTestIncomplete('Not supported case: lambdas');
+        }
+
+        // 3. Not supported case: foo/bar path
+        if (
+               ($spec['it'] === 'this keyword nested inside path') ||
+               ($spec['it'] === 'this keyword nested inside helpers param') ||
+               ($spec['it'] === 'block with complex lookup using nested context') ||
+               ($spec['it'] === 'literal paths' && $spec['no'] === 48) ||
+               ($spec['it'] === 'literal paths' && $spec['no'] === 49)
+           ) {
+            $this->markTestIncomplete('Not supported case: foo/bar path');
+        }
+
+        // TODO: require fix
+        if (
+            0
+           ) {
+            $this->fail('TODO: require fix');
+        }
 
         // setup helpers
         $helpers = Array();
@@ -54,10 +91,16 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                     'partials' => isset($spec['partials']) ? $spec['partials'] : null,
                 ));
             } catch (Exception $e) {
-                if (($spec['description'] === 'Tokenizer') && preg_match('/tokenizes inverse .+ as "OPEN_INVERSE.+CLOSE"/', $spec['it'])) {
+                // Exception as expected, pass!
+                if (isset($spec['exception'])) {
                     continue;
                 }
+
+                // Failed this case
                 print_r(LightnCandy::getContext());
+                print "#################### SPEC DUMP ####################\n";
+                var_dump($spec);
+                die;
                 $this->fail('Exception:' . $e->getMessage());
             }
             $renderer = LightnCandy::prepare($php);
@@ -70,8 +113,9 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
 
             if ($spec['expected'] !== $output) {
                 print "#################### SPEC DUMP ####################\n";
-                print_r($spec);
-                echo "OUTPUT: $output";
+                var_dump($spec);
+                echo "OUTPUT:\n";
+                var_dump($output);
                 die;
             }
 
