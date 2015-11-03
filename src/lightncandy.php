@@ -1715,7 +1715,7 @@ $libstr
 
         // Do not need standalone detection for these tags
         if (!$token[self::POS_OP] || ($token[self::POS_OP] === '&')) {
-            if (!$context['flags']['else'] || (isset($vars[0][0]) && ($vars[0][0] !== 'else'))) {
+            if (!$context['flags']['else'] || !isset($vars[0][0]) || ($vars[0][0] !== 'else')) {
                 $st = false;
             }
         }
