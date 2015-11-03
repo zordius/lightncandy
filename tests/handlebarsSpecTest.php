@@ -80,7 +80,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
             $helpers['foo'] = function () {return 'ABC';};
         }
 
-        $flag = LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_EXTHELPER | LightnCandy::FLAG_ERROR_SKIPPARTIAL | LightnCandy::FLAG_EXTHELPER;
+        $flag = LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_EXTHELPER | LightnCandy::FLAG_ERROR_SKIPPARTIAL | LightnCandy::FLAG_MUSTACHELOOKUP;
 
         foreach (Array($flag, $flag | LightnCandy::FLAG_STANDALONE) as $f) {
             try {
@@ -116,6 +116,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                 var_dump($spec);
                 echo "OUTPUT:\n";
                 var_dump($output);
+                echo "\nCODE: $php";
                 die;
             }
 
