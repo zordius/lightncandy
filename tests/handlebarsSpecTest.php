@@ -3,6 +3,7 @@
 require_once('src/lightncandy.php');
 
 $tmpdir = sys_get_temp_dir();
+$hb_test_flag = LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_EXTHELPER | LightnCandy::FLAG_ERROR_SKIPPARTIAL | LightnCandy::FLAG_MUSTACHELOOKUP;
 
 class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
 {
@@ -12,6 +13,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
     public function testSpecs($spec)
     {
         global $tmpdir;
+        global $hb_test_flag;
 
         //// Skip bad specs
         // 1. No expected or exception in spec
@@ -34,7 +36,8 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
         // 3. Not supported case: foo/bar path
         if (
                ($spec['it'] === 'literal paths' && $spec['no'] === 58) ||
-               ($spec['it'] === 'literal paths' && $spec['no'] === 59)
+               ($spec['it'] === 'literal paths' && $spec['no'] === 59) ||
+               ($spec['it'] === 'this keyword nested inside path')
            ) {
             $this->markTestIncomplete('Not supported case: foo/bar path');
         }
@@ -56,13 +59,14 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
 
                 $hname = "custom_helper_{$spec['no']}_$name";
                 $helpers[$name] = $hname;
-                eval(
-                    preg_replace('/\\$options->(\\w+)/', '$options[\'$1\']',
+
+                $helper = preg_replace('/\\$options->(\\w+)/', '$options[\'$1\']',
                         preg_replace('/\\$options->scope/', '$options[\'_this\']',
                             preg_replace('/function/', "function $hname", $func['php'], 1)
                         )
-                    )
-                );
+                    );
+                echo "INIT HELPER: $helper\n";
+                eval($helper);
             }
 
         }
@@ -71,9 +75,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
             $helpers['foo'] = function () {return 'ABC';};
         }
 
-        $flag = LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_EXTHELPER | LightnCandy::FLAG_ERROR_SKIPPARTIAL | LightnCandy::FLAG_MUSTACHELOOKUP;
-
-        foreach (Array($flag, $flag | LightnCandy::FLAG_STANDALONE) as $f) {
+        foreach (Array($hb_test_flag, $hb_test_flag | LightnCandy::FLAG_STANDALONE) as $f) {
             try {
                 $php = LightnCandy::compile($spec['template'], Array(
                     'flags' => $f,
