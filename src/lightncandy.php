@@ -1448,6 +1448,8 @@ $libstr
 
             if (($idx === 0) && ($token[self::POS_OP] === '>')) {
                 $var = array(preg_replace('/^("(.+)")|(\\[(.+)\\])$/', '$2$4', $var));
+            } else if ((count($vars) === 1) && preg_match('/^(\\\\\'|")(.+)(\\\\\'|")$/', $var)) {
+                $var = array(preg_replace('/^("(.+)")|(\\\\\'(.+)\\\\\')$/', '$2$4', $var));
             } else {
                 $var = static::fixVariable($var, $context);
             }

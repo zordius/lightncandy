@@ -33,11 +33,8 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
 
         // 3. Not supported case: foo/bar path
         if (
-               ($spec['it'] === 'this keyword nested inside path') ||
-               ($spec['it'] === 'this keyword nested inside helpers param') ||
-               ($spec['it'] === 'block with complex lookup using nested context') ||
-               ($spec['it'] === 'literal paths' && $spec['no'] === 48) ||
-               ($spec['it'] === 'literal paths' && $spec['no'] === 49)
+               ($spec['it'] === 'literal paths' && $spec['no'] === 58) ||
+               ($spec['it'] === 'literal paths' && $spec['no'] === 59)
            ) {
             $this->markTestIncomplete('Not supported case: foo/bar path');
         }
