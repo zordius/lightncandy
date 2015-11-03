@@ -1858,7 +1858,6 @@ $libstr
                 if ($r !== null) {
                     return $r;
                 }
-                static::noNamedArguments($token, $context, $named, ', maybe you missing the block custom helper?');
                 // Compile to section {{#myVar}}
                 return static::compileBlockBegin($context, $vars);
         }
@@ -1982,6 +1981,7 @@ $libstr
                 }
         }
 
+        static::noNamedArguments($token, $context, $named, ', maybe you missing the block custom helper?');
         $v = static::getVariableNameOrSubExpression($vars[0], $context);
         $context['stack'][] = $v[1];
         $context['stack'][] = '#';
