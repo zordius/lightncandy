@@ -1688,7 +1688,7 @@ $libstr
      *
      * @return string|null Return compiled code segment for the token
      */
-    public static function handleMustacheSpacing(&$token, $vars, &$context) {
+    public static function handleSpacing(&$token, $vars, &$context) {
         if (!$context['flags']['mustpi']) {
             return;
         }
@@ -1762,7 +1762,7 @@ $libstr
         $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;
 
         // Handle spacing (standalone tags, partial indent)
-        static::handleMustacheSpacing($token, $vars, $context);
+        static::handleSpacing($token, $vars, $context);
 
         // Handle space control.
         if ($token[self::POS_LSPACECTL]) {
