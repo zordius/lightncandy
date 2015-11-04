@@ -64,36 +64,34 @@ print_r($spec);
                ($spec['it'] === 'each with block params') ||
 
                // internal helper: lookup
-               ($spec['description'] === '#lookup')
+               ($spec['description'] === '#lookup') ||
 
+               // handlebars.js API: createFrame()
+               ($spec['it'] === 'deep @foo triggers automatic top-level data') ||
+
+               // helper for raw block
+               ($spec['it'] === 'helper for raw block gets parameters')
            ) {
             $this->fail('TODO: require fix');
         }
 
         // setup helpers
         $helpers = Array();
-        if (isset($spec['helpers'])) {
-            foreach ($spec['helpers'] as $name => $func) {
-                if (!isset($func['php'])) {
-                    $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , no PHP helper code provided for this case.");
-                }
-
-                $hname = "custom_helper_{$spec['no']}_$name";
-                $helpers[$name] = $hname;
-
-                $helper = preg_replace('/\\$options->(\\w+)/', '$options[\'$1\']',
-                        preg_replace('/\\$options->scope/', '$options[\'_this\']',
-                            preg_replace('/function/', "function $hname", $func['php'], 1)
-                        )
-                    );
-                echo "INIT HELPER: $helper\n";
-                eval($helper);
+        foreach (array_merge(isset($spec['globalHelpers']) ? $spec['globalHelpers'] : array(), isset($spec['helpers']) ? $spec['helpers'] : array()) as $name => $func) {
+            if (!isset($func['php'])) {
+                $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , no PHP helper code provided for this case.");
             }
 
-        }
+            $hname = "custom_helper_{$spec['no']}_$name";
+            $helpers[$name] = $hname;
 
-        if (($spec['it'] === 'tokenizes hash arguments') || ($spec['it'] === 'tokenizes special @ identifiers')) {
-            $helpers['foo'] = function () {return 'ABC';};
+            $helper = preg_replace('/\\$options->(\\w+)/', '$options[\'$1\']',
+                    preg_replace('/\\$options->scope/', '$options[\'_this\']',
+                        preg_replace('/function/', "function $hname", $func['php'], 1)
+                    )
+                );
+            echo "INIT HELPER: $helper\n";
+            eval($helper);
         }
 
         foreach (Array($hb_test_flag, $hb_test_flag | LightnCandy::FLAG_STANDALONE) as $f) {
@@ -126,6 +124,7 @@ print_r($spec);
             $output = $renderer($spec['data']);
 
             if ($spec['expected'] !== $output) {
+                print_r(LightnCandy::getContext());
                 print "#################### SPEC DUMP ####################\n";
                 var_dump($spec);
                 echo "OUTPUT:\n";
