@@ -179,15 +179,6 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
             $this->markTestIncomplete('TODO: require fix');
         }
 
-        // PENDING: bad spec
-        if (
-               // Wait for https://github.com/jbboehr/handlebars-spec/issues/4
-               ($spec['it'] === 'helpers can take an optional hash with booleans') ||
-               ($spec['it'] === 'helpers take precedence over same-named context properties')
-           ) {
-            $this->markTestIncomplete('Bad spec: wait their fix');
-        }
-
         // setup helpers
         $helpers = Array();
         foreach (array_merge(isset($spec['globalHelpers']) ? $spec['globalHelpers'] : array(), isset($spec['helpers']) ? $spec['helpers'] : array()) as $name => $func) {
