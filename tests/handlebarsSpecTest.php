@@ -44,6 +44,11 @@ print_r($spec);
             $this->markTestIncomplete('Not supported case: foo/bar path');
         }
 
+        // 4. Not supported case: optional data
+        if (isset($spec['options']['data'])) {
+            $this->markTestIncomplete('Not supported case: optional data');
+        }
+
         // TODO: require fix
         if (
                ($spec['it'] === 'chained inverted sections') ||
@@ -56,7 +61,11 @@ print_r($spec);
                // block parameters, https://github.com/zordius/lightncandy/issues/170
                ($spec['it'] === 'with provides block parameter') ||
                ($spec['it'] === 'works when data is disabled') ||
-               ($spec['it'] === 'each with block params')
+               ($spec['it'] === 'each with block params') ||
+
+               // internal helper: lookup
+               ($spec['description'] === '#lookup')
+
            ) {
             $this->fail('TODO: require fix');
         }
