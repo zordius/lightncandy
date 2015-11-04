@@ -62,6 +62,7 @@ print_r($spec);
                ($spec['it'] === 'with provides block parameter') ||
                ($spec['it'] === 'works when data is disabled') ||
                ($spec['it'] === 'each with block params') ||
+               ($spec['description'] === 'block params') ||
 
                // internal helper: lookup
                ($spec['description'] === '#lookup') ||
@@ -77,7 +78,11 @@ print_r($spec);
                ($spec['it'] === 'should include full id if a hash is passed') ||
 
                // helper for raw block
-               ($spec['it'] === 'helper for raw block gets parameters')
+               ($spec['it'] === 'helper for raw block gets parameters') ||
+
+               // scoped variable lookup
+               ($spec['it'] === 'Scoped names take precedence over helpers') ||
+               ($spec['it'] === 'Scoped names take precedence over block helpers')
            ) {
             $this->fail('TODO: require fix');
         }
