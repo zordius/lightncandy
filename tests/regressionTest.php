@@ -1085,6 +1085,21 @@ VAREND
 
             Array(
                 'template' => '{{{"{{"}}}',
+                'data' => Array('{{' => ':D'),
+                'expected' => ':D',
+            ),
+
+            Array(
+                'template' => '{{{\'{{\'}}}',
+                'data' => Array('{{' => ':D'),
+                'expected' => ':D',
+            ),
+
+            Array(
+                'template' => '{{#with "{{"}}{{.}}{{/with}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_WITH,
+                ),
                 'data' => null,
                 'expected' => '{{',
             ),
@@ -1342,6 +1357,64 @@ VAREND
                 'data' => Array('foo' => new twoDimensionIterator(2, 3)),
                 'options' => Array('flags' => LightnCandy::FLAG_SPVARS),
                 'expected' => '0x0: 0,1x0: 0,0x1: 0,1x1: 1,0x2: 0,1x2: 2,',
+            ),
+
+            Array(
+                'template' => "   {{#foo}}\n {{name}}\n{{/foo}}\n  ",
+                'data' => Array('foo' => Array(Array('name' => 'A'),Array('name' => 'd'),Array('name' => 'E'))),
+                'options' => Array('flags' => LightnCandy::FLAG_MUSTACHE),
+                'expected' => " A\n d\n E\n  ",
+            ),
+
+            Array(
+                'template' => "{{bar}}\n   {{#foo}}\n {{name}}\n{{/foo}}\n  ",
+                'data' => Array('bar' => 'OK', 'foo' => Array(Array('name' => 'A'),Array('name' => 'd'),Array('name' => 'E'))),
+                'options' => Array('flags' => LightnCandy::FLAG_MUSTACHE),
+                'expected' => "OK\n A\n d\n E\n  ",
+            ),
+
+            Array(
+                'template' => "   {{#if foo}}\nYES\n{{else}}\nNO\n{{/if}}\n",
+                'data' => null,
+                'options' => Array('flags' => LightnCandy::FLAG_MUSTACHE | LightnCandy::FLAG_ELSE),
+                'expected' => "NO\n",
+            ),
+
+            Array(
+                'template' => "  {{#each foo}}\n{{@key}}: {{.}}\n{{/each}}\nDONE",
+                'data' => Array('foo' => Array('a' => 'A', 'b' => 'BOY!')),
+                'options' => Array('flags' => LightnCandy::FLAG_SPVARS | LightnCandy::FLAG_MUSTACHE),
+                'expected' => "a: A\nb: BOY!\nDONE",
+            ),
+
+            Array(
+                'template' => "{{>test1}}\n  {{>test1}}\nDONE\n",
+                'data' => null,
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_MUSTACHE,
+                    'partials' => Array('test1' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n"),
+                ),
+                'expected' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n  1:A\n   2:B\n    3:C\n   4:D\n  5:E\nDONE\n",
+            ),
+
+            Array(
+                'template' => "{{>test1}}\n  {{>test1}}\nDONE\n",
+                'data' => null,
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_MUSTACHE,
+                    'partials' => Array('test1' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n"),
+                ),
+                'expected' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n1:A\n 2:B\n  3:C\n 4:D\n5:E\nDONE\n",
+            ),
+
+            Array(
+                'template' => "{{>test1}}\n  {{>test1}}\nDONE\n",
+                'data' => null,
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_MUSTACHE | LightnCandy::FLAG_RUNTIMEPARTIAL,
+                    'partials' => Array('test1' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n"),
+                ),
+                'expected' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n1:A\n 2:B\n  3:C\n 4:D\n5:E\nDONE\n",
             ),
 
             Array(
