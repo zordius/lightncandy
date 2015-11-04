@@ -4,6 +4,7 @@ require_once('src/lightncandy.php');
 
 $tmpdir = sys_get_temp_dir();
 $hb_test_flag = LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_EXTHELPER | LightnCandy::FLAG_ERROR_SKIPPARTIAL | LightnCandy::FLAG_MUSTACHELOOKUP;
+$tested = 0;
 
 function recursive_unset(&$array, $unwanted_key) {
     if (isset($array[$unwanted_key])) {
@@ -25,9 +26,12 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
     {
         global $tmpdir;
         global $hb_test_flag;
+        global $tested;
 
         recursive_unset($spec, '!sparsearray');
 print_r($spec);
+
+        $tested++;
 
         //// Skip bad specs
         // 1. No expected or exception in spec
@@ -110,12 +114,29 @@ print_r($spec);
 
                // inline partials
                ($spec['description'] === 'inline partials') ||
+               ($spec['it'] === 'should support multiple levels of inline partials') ||
+               ($spec['it'] === 'GH-1089: should support failover content in multiple levels of inline partials') ||
+               ($spec['it'] === 'GH-1099: should support greater than 3 nested levels of inline partials') ||
 
                // partial indent
                ($spec['it'] === 'prevent nested indented partials') ||
 
                // compat mode
-               ($spec['description'] === 'compat mode')
+               ($spec['description'] === 'compat mode') ||
+
+               // string params mode
+               ($spec['description'] === 'string params mode') ||
+
+               // need confirm
+               ($spec['it'] === 'provides each nested helper invocation its own options hash') ||
+               ($spec['template'] === "{{blog (equal (equal true true) true fun='yes')}}") ||
+               ($spec['it'] === 'multiple subexpressions in a hash') ||
+               ($spec['it'] === 'multiple subexpressions in a hash with context') ||
+               ($spec['it'] === 'in string params mode,') ||
+               ($spec['it'] === "subexpressions can't just be property lookups") ||
+
+               // track ids
+               ($spec['file'] === 'specs/handlebars/spec/track-ids.json')
            ) {
             $this->fail('TODO: require fix');
         }
@@ -136,7 +157,7 @@ print_r($spec);
                 $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , no PHP helper code provided for this case.");
             }
 
-            $hname = "custom_helper_{$spec['no']}_$name";
+            $hname = "custom_helper_{$spec['no']}_{$tested}_$name";
             $helpers[$name] = $hname;
 
             $helper = preg_replace('/\\$options->(\\w+)/', '$options[\'$1\']',
