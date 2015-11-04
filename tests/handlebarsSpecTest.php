@@ -5,6 +5,17 @@ require_once('src/lightncandy.php');
 $tmpdir = sys_get_temp_dir();
 $hb_test_flag = LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_EXTHELPER | LightnCandy::FLAG_ERROR_SKIPPARTIAL | LightnCandy::FLAG_MUSTACHELOOKUP;
 
+function recursive_unset(&$array, $unwanted_key) {
+    if (isset($array[$unwanted_key])) {
+        unset($array[$unwanted_key]);
+    }
+    foreach ($array as &$value) {
+        if (is_array($value)) {
+            recursive_unset($value, $unwanted_key);
+        }
+    }
+}
+
 class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
 {
     /**
@@ -15,6 +26,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
         global $tmpdir;
         global $hb_test_flag;
 
+        recursive_unset($spec, '!sparsearray');
 print_r($spec);
 
         //// Skip bad specs
@@ -130,7 +142,7 @@ print_r($spec);
             $helper = preg_replace('/\\$options->(\\w+)/', '$options[\'$1\']',
                     preg_replace('/\\$options->scope/', '$options[\'_this\']',
                         preg_replace('/\\$block\\/\\*\\[\'(.+?)\'\\]\\*\\/->(.+?)\\(/', '$block[\'$2\'](',
-                            preg_replace('/new \\\\Handlebars\\\\SafeString\((.+?)\);/', 'array($1, "raw")',
+                            preg_replace('/new \\\\Handlebars\\\\SafeString\((.+?)\);/', 'array($1, "raw");',
                                 preg_replace('/function/', "function $hname", $func['php'], 1)
                             )
                         )

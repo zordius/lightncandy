@@ -2489,12 +2489,14 @@ class LCRun3 {
                     $last = count($keys) - 1;
                 }
             }
+
+            $isSparceArray = $isObj && (count(array_filter(array_keys($v), 'is_string')) == 0);
             foreach ($v as $index => $raw) {
                 if ($cx['flags']['spvar']) {
                     $cx['sp_vars']['first'] = ($i === 0);
                     $cx['sp_vars']['last'] = ($i == $last);
                     $cx['sp_vars']['key'] = $index;
-                    $cx['sp_vars']['index'] = $i;
+                    $cx['sp_vars']['index'] = $isSparceArray ? $index : $i;
                     $i++;
                 }
                 $ret[] = $cb($cx, $raw);
