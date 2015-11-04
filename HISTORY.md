@@ -1,8 +1,13 @@
 HISTORY
 =======
 
-current master
-   * I am working on new features to align with handlebars 4.0.4. Thanks for the new <a href="https://github.com/jbboehr/handlebars-spec">handlebars-spec</a>. You may go to the <a href="https://github.com/zordius/lightncandy/tree/v0.89-develop">v0.89-develop</a> branch to check the progress.
+v0.89-develop
+   * align with handlebars.js 4.0.4
+   * use newer handlebars spec: https://github.com/jbboehr/handlebars-spec
+   * 76eeef0a8d **BREAK CHANGE** remove FLAG_MUSTACHESP
+   * dcb9b4644f fix standalone detection on single `{{.}}` or `{{this}}`
+   * 2bbd50bd1f support `{{#if foo includeZero=true}}`
+   * b0b4e51427 support literal references
 
 v0.23 https://github.com/zordius/lightncandy/tree/v0.23
    * align with handlebars.js 3.0.3
