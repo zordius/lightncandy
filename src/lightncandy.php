@@ -1198,7 +1198,7 @@ $libstr
     protected static function fixVariable($v, &$context, $asis = false) {
         // handle number
         if (is_numeric($v)) {
-            return static::asisResult((string) 1 * $v, $asis);
+            return static::asisResult(strval(1 * $v), $asis);
         }
 
         // handle double quoted string
