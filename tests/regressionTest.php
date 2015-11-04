@@ -1401,20 +1401,30 @@ VAREND
                 'template' => "{{>test1}}\n  {{>test1}}\nDONE\n",
                 'data' => null,
                 'options' => Array(
-                    'flags' => LightnCandy::FLAG_MUSTACHE,
+                    'flags' => LightnCandy::FLAG_MUSTACHE | LightnCandy::FLAG_RUNTIMEPARTIAL,
                     'partials' => Array('test1' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n"),
                 ),
-                'expected' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n1:A\n 2:B\n  3:C\n 4:D\n5:E\nDONE\n",
+                'expected' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n  1:A\n   2:B\n    3:C\n   4:D\n  5:E\nDONE\n",
             ),
 
             Array(
                 'template' => "{{>test1}}\n  {{>test1}}\nDONE\n",
                 'data' => null,
                 'options' => Array(
-                    'flags' => LightnCandy::FLAG_MUSTACHE | LightnCandy::FLAG_RUNTIMEPARTIAL,
+                    'flags' => LightnCandy::FLAG_MUSTACHE | LightnCandy::FLAG_PREVENTINDENT,
                     'partials' => Array('test1' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n"),
                 ),
-                'expected' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n1:A\n 2:B\n  3:C\n 4:D\n5:E\nDONE\n",
+                'expected' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n\n  1:A\n 2:B\n  3:C\n 4:D\n5:E\n\nDONE\n",
+            ),
+
+            Array(
+                'template' => "{{>test1}}\n  {{>test1}}\nDONE\n",
+                'data' => null,
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_MUSTACHE | LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_PREVENTINDENT,
+                    'partials' => Array('test1' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n"),
+                ),
+                'expected' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n\n  1:A\n 2:B\n  3:C\n 4:D\n5:E\n\nDONE\n",
             ),
 
             Array(

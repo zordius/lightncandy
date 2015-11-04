@@ -25,12 +25,6 @@ class LightnCandy {
     // Compile time error handling flags
     const FLAG_ERROR_LOG = 1;
     const FLAG_ERROR_EXCEPTION = 2;
-    const FLAG_ERROR_SKIPPARTIAL = 4194304;
-
-    // Compile the template as standalone PHP code which can execute without including LightnCandy
-    const FLAG_STANDALONE = 4;
-    const FLAG_BARE = 33554432;
-    const FLAG_NOESCAPE = 67108864;
 
     // JavaScript compatibility
     const FLAG_JSTRUE = 8;
@@ -45,20 +39,24 @@ class LightnCandy {
     const FLAG_SPACECTL = 1024;
     const FLAG_NAMEDARG = 2048;
     const FLAG_SPVARS = 4096;
+    const FLAG_PREVENTINDENT = 131072;
     const FLAG_SLASH = 8388608;
     const FLAG_ELSE = 16777216;
     const FLAG_RAWBLOCK = 134217728;
 
     // PHP behavior flags
+    const FLAG_STANDALONE = 4;
     const FLAG_EXTHELPER = 8192;
     const FLAG_ECHO = 16384;
     const FLAG_PROPERTY = 32768;
     const FLAG_METHOD = 65536;
     const FLAG_RUNTIMEPARTIAL = 1048576;
+    const FLAG_BARE = 33554432;
+    const FLAG_NOESCAPE = 67108864;
 
     // Mustache compatibility
     const FLAG_MUSTACHELOOKUP = 262144;
-    const FLAG_MUSTACHEPAIN = 2097152;
+    const FLAG_ERROR_SKIPPARTIAL = 4194304;
 
     // Template rendering time debug flags
     const FLAG_RENDER_DEBUG = 524288;
@@ -66,9 +64,9 @@ class LightnCandy {
     // alias flags
     const FLAG_BESTPERFORMANCE = 16384; // FLAG_ECHO
     const FLAG_JS = 24; // FLAG_JSTRUE + FLAG_JSOBJECT
-    const FLAG_MUSTACHE = 6684672; // FLAG_ERROR_SKIPPARTIAL + FLAG_MUSTACHELOOKUP + FLAG_MUSTACHEPAIN
-    const FLAG_HANDLEBARS = 161619936; // FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME + FLAG_SPACECTL + FLAG_NAMEDARG + FLAG_SPVARS + FLAG_SLASH + FLAG_ELSE + FLAG_RAWBLOCK + FLAG_MUSTACHEPAIN
-    const FLAG_HANDLEBARSJS = 161619960; // FLAG_JS + FLAG_HANDLEBARS
+    const FLAG_MUSTACHE = 4456448; // FLAG_ERROR_SKIPPARTIAL + FLAG_MUSTACHELOOKUP
+    const FLAG_HANDLEBARS = 159391712; // FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME + FLAG_SPACECTL + FLAG_NAMEDARG + FLAG_SPVARS + FLAG_SLASH + FLAG_ELSE + FLAG_RAWBLOCK
+    const FLAG_HANDLEBARSJS = 159391736; // FLAG_JS + FLAG_HANDLEBARS
     const FLAG_INSTANCE = 98304; // FLAG_PROPERTY + FLAG_METHOD
 
     // RegExps
@@ -370,7 +368,7 @@ $libstr
                 'else' => $flags & self::FLAG_ELSE,
                 'exhlp' => $flags & self::FLAG_EXTHELPER,
                 'mustlok' => $flags & self::FLAG_MUSTACHELOOKUP,
-                'mustpi' => $flags & self::FLAG_MUSTACHEPAIN,
+                'noind' => $flags & self::FLAG_PREVENTINDENT,
                 'debug' => $flags & self::FLAG_RENDER_DEBUG,
                 'prop' => $flags & self::FLAG_PROPERTY,
                 'method' => $flags & self::FLAG_METHOD,
@@ -594,14 +592,15 @@ $libstr
 
         if ($context['flags']['runpart']) {
             $code = static::compileTemplate($context, str_replace('function', self::$TMP_JS_FUNCTION_STR, $context['usedPartial'][$name]), $name);
-            if ($context['flags']['mustpi']) {
+            if (!$context['flags']['noind']) {
                 $sp = ', $sp';
                 $code = preg_replace('/^/m', "'{$context['ops']['seperator']}\$sp{$context['ops']['seperator']}'", $code);
                 // callbacks inside partial should be aware of $sp
-                $code = str_replace(self::$TMP_JS_FUNCTION_STR, 'function', preg_replace('/\bfunction\s*\((.*?)\)\s*{/', 'function(\\1)use($sp){', $code));
+                $code = preg_replace('/\bfunction\s*\((.*?)\)\s*{/', 'function(\\1)use($sp){', $code);
             } else {
                 $sp = '';
             }
+            $code = str_replace(self::$TMP_JS_FUNCTION_STR, 'function', $code);
             $context['partialCode'] .= "'$name' => function (\$cx, \$in{$sp}) {{$context['ops']['op_start']}'$code'{$context['ops']['op_end']}},";
         }
     }
@@ -1702,7 +1701,7 @@ $libstr
      * @return string|null Return compiled code segment for the token
      */
     public static function handleSpacing(&$token, $vars, &$context) {
-        if (!$context['flags']['mustpi']) {
+        if ($context['flags']['noind']) {
             return;
         }
 
@@ -1748,7 +1747,7 @@ $libstr
             || ($lsp && ($context['tokens']['current'] == $context['tokens']['count']) && !$token[self::POS_ROTHER]) // final line
            )) {
             // handle partial
-            if ($context['flags']['mustpi'] && ($token[self::POS_OP] === '>')) {
+            if ((!$context['flags']['noind']) && ($token[self::POS_OP] === '>')) {
                 $context['tokens']['partialind'] = $ind;
             }
             $token[self::POS_LSPACE] = (isset($lmatch[2]) ? ($lmatch[1] . $lmatch[2]) : '');

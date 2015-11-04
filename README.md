@@ -140,11 +140,11 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * `FLAG_SPACECTL` : support space control `{{~ }}` or `{{ ~}}` in template. Otherwise, `{{~ }}` or `{{ ~}}` will cause template error.
 * `FLAG_SPVARS` : support special variables include @root, @index, @key, @first, @last. Otherwise, compile these variable names with default parsing logic.
 * `FLAG_JS` : simulate all JavaScript string conversion behavior, same with `FLAG_JSTRUE` + `FLAG_JSOBJECT`.
-* `FLAG_HANDLEBARS` : support all handlebars extensions (which mustache do not supports) , same with `FLAG_THIS` + `FLAG_WITH` + `FLAG_PARENT` + `FLAG_JSQUOTE` + `FLAG_ADVARNAME` + `FLAG_NAMEDARG` + `FLAG_SLASH` + `FLAG_ELSE` + `FLAG_RAWBLOCK` + `FLAG_MUSTACHEPAIN`.
+* `FLAG_HANDLEBARS` : support all handlebars extensions (which mustache do not supports) , same with `FLAG_THIS` + `FLAG_WITH` + `FLAG_PARENT` + `FLAG_JSQUOTE` + `FLAG_ADVARNAME` + `FLAG_NAMEDARG` + `FLAG_SLASH` + `FLAG_ELSE` + `FLAG_RAWBLOCK`.
 * `FLAG_HANDLEBARSJS` : align with handlebars.js behaviors, same with `FLAG_JS` + `FLAG_HANDLEBARS`.
 * `FLAG_MUSTACHELOOKUP` : align recursive lookup up behaviors with mustache specification. And, the rendering performance will be worse.
-* `FLAG_MUSTACHEPAIN` : align partial indent behavior with mustache specification.
-* `FLAG_MUSTACHE` : support all mustache specification, same with `FLAG_ERROR_SKIPPARTIAL` + `FLAG_MUSTACHELOOKUP` + `FLAG_MUSTACHEPAIN`.
+* `FLAG_PREVENTINDENT` : align partial indent behavior with mustache specification.
+* `FLAG_MUSTACHE` : support all mustache specification, same with `FLAG_ERROR_SKIPPARTIAL` + `FLAG_MUSTACHELOOKUP`.
 * `FLAG_ECHO` : compile to `echo 'a', $b, 'c';` to improve performance. This will slow down rendering when the template and data are simple, but will improve 1% ~ 7% when the data is big and looping in the template.
 * `FLAG_BESTPERFORMANCE` : same with `FLAG_ECHO` now. This flag may be changed base on performance testing result in the future.
 * `FLAG_RENDER_DEBUG` : generate debug template to show error when rendering. With this flag, the performance of rendering may be slowed.
@@ -768,7 +768,7 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * Exact same 'true' or 'false' output with handlebars.js (require `FLAG_JSTRUE`)
 * Exact same '[object Object]' output or join(',' array) output with handlebars.js (require `FLAG_JSOBJECT`)
 * Can place heading/tailing space, tab, CR/LF inside `{{ var }}` or `{{{ var }}}`
-* Indent behavior of the partial same with mustache spec (require `FLAG_MUSTACHEPAIN`)
+* Indent behavior of the partial same with mustache spec
 * Recursive variable lookup to parent context behavior same with mustache spec (require `FLAG_MUSTACHELOOKUP`)
 * `{{{value}}}` or `{{&value}}` : raw variable
    * true as 'true' (require `FLAG_JSTRUE`)
