@@ -69,10 +69,26 @@ print_r($spec);
                // handlebars.js API: createFrame()
                ($spec['it'] === 'deep @foo triggers automatic top-level data') ||
 
+               // helperMissing and blockHelperMissing
+               ($spec['it'] === 'if a context is not found, custom helperMissing is used') ||
+               ($spec['it'] === 'if a value is not found, custom helperMissing is used') ||
+               ($spec['it'] === 'should include in simple block calls') ||
+               ($spec['it'] === 'should include full id') ||
+               ($spec['it'] === 'should include full id if a hash is passed') ||
+
                // helper for raw block
                ($spec['it'] === 'helper for raw block gets parameters')
            ) {
             $this->fail('TODO: require fix');
+        }
+
+        // PENDING: bad spec
+        if (
+               // Wait for https://github.com/jbboehr/handlebars-spec/issues/4
+               ($spec['it'] === 'helpers can take an optional hash with booleans') ||
+               ($spec['it'] === 'helpers take precedence over same-named context properties')
+           ) {
+            $this->fail('Bad spec: wait their fix');
         }
 
         // setup helpers
