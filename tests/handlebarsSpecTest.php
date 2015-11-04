@@ -82,7 +82,28 @@ print_r($spec);
 
                // scoped variable lookup
                ($spec['it'] === 'Scoped names take precedence over helpers') ||
-               ($spec['it'] === 'Scoped names take precedence over block helpers')
+               ($spec['it'] === 'Scoped names take precedence over block helpers') ||
+
+               // partial no context
+               ($spec['it'] === 'partials with no context') ||
+
+               // partial in vm mode
+               ($spec['it'] === 'rendering function partial in vm mode') ||
+
+               // partial with string
+               ($spec['it'] === 'Partials with string') ||
+
+               // partial blocks
+               ($spec['description'] === 'partial blocks') ||
+
+               // inline partials
+               ($spec['description'] === 'inline partials') ||
+
+               // partial indent
+               ($spec['it'] === 'prevent nested indented partials') ||
+
+               // compat mode
+               ($spec['description'] === 'compat mode')
            ) {
             $this->fail('TODO: require fix');
         }
@@ -108,7 +129,11 @@ print_r($spec);
 
             $helper = preg_replace('/\\$options->(\\w+)/', '$options[\'$1\']',
                     preg_replace('/\\$options->scope/', '$options[\'_this\']',
-                        preg_replace('/function/', "function $hname", $func['php'], 1)
+                        preg_replace('/\\$block\\/\\*\\[\'(.+?)\'\\]\\*\\/->(.+?)\\(/', '$block[\'$2\'](',
+                            preg_replace('/new \\\\Handlebars\\\\SafeString\((.+?)\);/', 'array($1, "raw")',
+                                preg_replace('/function/', "function $hname", $func['php'], 1)
+                            )
+                        )
                     )
                 );
             echo "INIT HELPER: $helper\n";
@@ -117,11 +142,20 @@ print_r($spec);
 
         foreach (Array($hb_test_flag, $hb_test_flag | LightnCandy::FLAG_STANDALONE) as $f) {
             try {
+                $partials = isset($spec['globalPartials']) ? $spec['globalPartials'] : array();
+
+                // Do not use array_merge() here because it destories numeric key
+                if (isset($spec['partials'])) {
+                    foreach ($spec['partials'] as $k => $v) {
+                        $partials[$k] = $v;
+                    }
+                };
+
                 $php = LightnCandy::compile($spec['template'], Array(
                     'flags' => $f,
                     'hbhelpers' => $helpers,
                     'basedir' => $tmpdir,
-                    'partials' => isset($spec['partials']) ? $spec['partials'] : null,
+                    'partials' => $partials,
                 ));
             } catch (Exception $e) {
                 // Exception as expected, pass!
