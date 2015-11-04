@@ -15,6 +15,8 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
         global $tmpdir;
         global $hb_test_flag;
 
+print_r($spec);
+
         //// Skip bad specs
         // 1. No expected or exception in spec
         if (!isset($spec['expected']) && !isset($spec['exception'])) {
@@ -44,7 +46,17 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
 
         // TODO: require fix
         if (
-            0
+               ($spec['it'] === 'chained inverted sections') ||
+               ($spec['it'] === 'chained inverted sections with mismatch') ||
+               ($spec['it'] === 'block standalone else sections can be disabled') ||
+
+               // Decorators: https://github.com/wycats/handlebars.js/blob/master/docs/decorators-api.md
+               ($spec['description'] === 'decorators') ||
+
+               // block parameters, https://github.com/zordius/lightncandy/issues/170
+               ($spec['it'] === 'with provides block parameter') ||
+               ($spec['it'] === 'works when data is disabled') ||
+               ($spec['it'] === 'each with block params')
            ) {
             $this->fail('TODO: require fix');
         }
