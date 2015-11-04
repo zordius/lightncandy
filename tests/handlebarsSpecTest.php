@@ -158,6 +158,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                ($spec['it'] === 'partials with duplicate parameters') ||
                ($spec['template'] === '{{foo &}}') ||
                ($spec['it'] === 'each on implicit context') ||
+               ($spec['it'] === 'failing dynamic partials') ||
 
                // Error report: position
                ($spec['it'] === 'knows how to report the correct line number in errors') ||
