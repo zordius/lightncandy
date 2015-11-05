@@ -22,7 +22,7 @@ class MustacheSpecTest extends PHPUnit_Framework_TestCase
                 'basedir' => $tmpdir,
             ));
             $renderer = LightnCandy::prepare($php);
-            $this->assertEquals($spec['expected'], $renderer($spec['data']), "[{$spec['file']}.{$spec['name']}]#{$spec['no']}:{$spec['desc']} PHP CODE: $php");
+            $this->assertEquals($spec['expected'], $renderer($spec['data']), "SPEC:\n" . print_r($spec, true) . "\nPHP CODE: $php");
         }
     }
 
@@ -31,11 +31,6 @@ class MustacheSpecTest extends PHPUnit_Framework_TestCase
         $ret = Array();
 
         foreach (glob('specs/mustache/specs/*.json') as $file) {
-            // Skip lambda extension
-            if (preg_match('/lambdas\\.json$/', $file)) {
-                continue;
-            }
-
             $i=0;
             $json = json_decode(file_get_contents($file), true);
             $ret = array_merge($ret, array_map(function ($d) use ($file, &$i) {
