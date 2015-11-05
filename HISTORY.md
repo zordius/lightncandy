@@ -164,7 +164,7 @@ v0.11 https://github.com/zordius/lightncandy/tree/v0.11
    * f47a2d5014 fix for wrong param when new Exception
    * 94e71ebcbd add isset() check for input value
    * a826b8a1ab support `{{else}}` in `{{#each}}` now
-   * 25dac11bb7 support `{{!-- comments --}}` now (this handlebars.js extension allow `}}` apperas in the comments)
+   * 25dac11bb7 support `{{!-- comments --}}` now (this handlebars.js extension allow `}}` to be placed inside a comment)
    * e142b6e116 support `{{@root}}` or `{{@root.foo.bar}}` now
    * 58c8d84aa2 custom helper can return extra flag to change html encoded behavior now
 
