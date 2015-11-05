@@ -65,7 +65,7 @@ class LightnCandy {
     // alias flags
     const FLAG_BESTPERFORMANCE = 16384; // FLAG_ECHO
     const FLAG_JS = 24; // FLAG_JSTRUE + FLAG_JSOBJECT
-    const FLAG_MUSTACHE = 5505024; // FLAG_ERROR_SKIPPARTIAL + FLAG_MUSTACHELOOKUP + FLAG_RUNTIMEPARTIAL
+    const FLAG_MUSTACHE = 7602176; // FLAG_ERROR_SKIPPARTIAL + FLAG_MUSTACHELOOKUP + 7602176 + FLAG_RUNTIMEPARTIAL
     const FLAG_HANDLEBARS = 159391712; // FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME + FLAG_SPACECTL + FLAG_NAMEDARG + FLAG_SPVARS + FLAG_SLASH + FLAG_ELSE + FLAG_RAWBLOCK
     const FLAG_HANDLEBARSJS = 159391736; // FLAG_JS + FLAG_HANDLEBARS
     const FLAG_HANDLEBARSJS_FULL = 160800760; // FLAG_HANDLEBARSJS + FLAG_INSTANCE + FLAG_RUNTIMEPARTIAL + FLAG_MUSTACHELOOKUP
@@ -295,6 +295,7 @@ class LightnCandy {
         $flagProp = static::getBoolStr($context['flags']['prop']);
         $flagMethod = static::getBoolStr($context['flags']['method']);
         $flagMustlok = static::getBoolStr($context['flags']['mustlok']);
+        $flagMustlam = static::getBoolStr($context['flags']['mustlam']);
         $flagEcho = static::getBoolStr($context['flags']['echo']);
 
         $libstr = static::exportLCRun($context);
@@ -316,6 +317,7 @@ class LightnCandy {
             'prop' => $flagProp,
             'method' => $flagMethod,
             'mustlok' => $flagMustlok,
+            'mustlam' => $flagMustlam,
             'echo' => $flagEcho,
             'debug' => \$debugopt,
         ),
@@ -1122,8 +1124,7 @@ $libstr
             array_shift($var);
         }
 
-        // 1. To support recursive context lookup...
-        // 2. To support instance properties or methods...
+        // To support recursive context lookup, instance properties + methods and lambdas
         // the only way is using slower rendering time variable resolver.
         if ($context['flags']['prop'] || $context['flags']['method'] || $context['flags']['mustlok'] || $context['flags']['mustlam']) {
             return array(static::getFuncName($context, 'v', $exp) . "\$cx, $base, array(" . implode(',', array_map(function ($V) {
@@ -2171,7 +2172,7 @@ class LCRun3 {
     }
 
     /**
-     * LightnCandy runtime method for variable lookup. It is slower and only be used for instance property or method detection.
+     * LightnCandy runtime method for variable lookup. It is slower and only be used for instance property or method detection or lambdas.
      *
      * @param array<string,array|string|integer> $cx render time context
      * @param array<array|string|integer> $base current variable context
@@ -2210,6 +2211,9 @@ class LCRun3 {
                 return null;
             }
             if (isset($v)) {
+                if ($cx['flags']['mustlam'] && ($v instanceof Closure)) {
+                    $v = $v();
+                }
                 return $v;
             }
             $count--;
