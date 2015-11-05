@@ -13,7 +13,7 @@ class MustacheSpecTest extends PHPUnit_Framework_TestCase
     {
         global $tmpdir;
 
-        $flag = LightnCandy::FLAG_MUSTACHE | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_RUNTIMEPARTIAL;
+        $flag = LightnCandy::FLAG_MUSTACHE | LightnCandy::FLAG_ERROR_EXCEPTION;
 
         foreach (Array($flag, $flag | LightnCandy::FLAG_STANDALONE) as $f) {
             $php = LightnCandy::compile($spec['template'], Array(

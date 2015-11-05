@@ -145,7 +145,7 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * `FLAG_HANDLEBARSJS_FULL` : enable all supported handlebars.js behaviors but performance drop, same with `FLAG_HANDLEBARSJS` + `FLAG_INSTANCE` + `FLAG_RUNTIMEPARTIAL` + `FLAG_MUSTACHELOOKUP`.
 * `FLAG_MUSTACHELOOKUP` : align recursive lookup up behaviors with mustache specification. And, the rendering performance will be worse.
 * `FLAG_PREVENTINDENT` : align partial indent behavior with mustache specification.
-* `FLAG_MUSTACHE` : support all mustache specification but performance drop, same with `FLAG_ERROR_SKIPPARTIAL` + `FLAG_MUSTACHELOOKUP`.
+* `FLAG_MUSTACHE` : support all mustache specification but performance drop, same with `FLAG_ERROR_SKIPPARTIAL` + `FLAG_MUSTACHELOOKUP` + `FLAG_RUNTIMEPARTIAL`.
 * `FLAG_ECHO` : compile to `echo 'a', $b, 'c';` to improve performance. This will slow down rendering when the template and data are simple, but will improve 1% ~ 7% when the data is big and looping in the template.
 * `FLAG_BESTPERFORMANCE` : same with `FLAG_ECHO` now. This flag may be changed base on performance testing result in the future.
 * `FLAG_RENDER_DEBUG` : generate debug template to show error when rendering. With this flag, the performance of rendering may be slowed.
@@ -747,7 +747,6 @@ Unsupported Feature (so far)
 ----------------------------
 
 * [NEVER] `{{foo/bar}}` style variable name, it is deprecated in official handlebars.js document, please use this style: `{{foo.bar}}`.
-* [maybe] mustache lambda : runtime time compile based on input value is far from lightncandy nature, not in the plan now.
 
 Suggested Handlebars Template Practices
 ---------------------------------------
