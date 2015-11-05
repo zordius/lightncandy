@@ -33,7 +33,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
         $tested++;
 
         //// Skip bad specs
-        // 1. No expected or exception in spec
+        // 1. No expected nor exception in spec
         if (!isset($spec['expected']) && !isset($spec['exception'])) {
             $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , no expected result in spec, skip.");
         }

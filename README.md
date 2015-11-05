@@ -140,8 +140,8 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * `FLAG_SPACECTL` : support space control `{{~ }}` or `{{ ~}}` in template. Otherwise, `{{~ }}` or `{{ ~}}` will cause template error.
 * `FLAG_SPVARS` : support special variables include @root, @index, @key, @first, @last. Otherwise, compile these variable names with default parsing logic.
 * `FLAG_JS` : simulate all JavaScript string conversion behavior, same with `FLAG_JSTRUE` + `FLAG_JSOBJECT`.
-* `FLAG_HANDLEBARS` : support most handlebars extensions and also keep performance good (which mustache do not supports) , same with `FLAG_THIS` + `FLAG_WITH` + `FLAG_PARENT` + `FLAG_JSQUOTE` + `FLAG_ADVARNAME` + `FLAG_NAMEDARG` + `FLAG_SLASH` + `FLAG_ELSE` + `FLAG_RAWBLOCK`.
-* `FLAG_HANDLEBARSJS` : align with most handlebars.js + javascript behaviors and also keep performance good, same with `FLAG_JS` + `FLAG_HANDLEBARS`.
+* `FLAG_HANDLEBARS` : support most handlebars extensions and also keep performance good, same with `FLAG_THIS` + `FLAG_WITH` + `FLAG_PARENT` + `FLAG_JSQUOTE` + `FLAG_ADVARNAME` + `FLAG_NAMEDARG` + `FLAG_SLASH` + `FLAG_ELSE` + `FLAG_RAWBLOCK`.
+* `FLAG_HANDLEBARSJS` : support most handlebars.js + javascript behaviors and also keep performance good, same with `FLAG_JS` + `FLAG_HANDLEBARS`.
 * `FLAG_HANDLEBARSJS_FULL` : enable all supported handlebars.js behaviors but performance drop, same with `FLAG_HANDLEBARSJS` + `FLAG_INSTANCE` + `FLAG_RUNTIMEPARTIAL` + `FLAG_MUSTACHELOOKUP`.
 * `FLAG_MUSTACHELOOKUP` : align recursive lookup up behaviors with mustache specification. And, the rendering performance will be worse.
 * `FLAG_PREVENTINDENT` : align partial indent behavior with mustache specification.
