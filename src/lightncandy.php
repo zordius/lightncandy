@@ -65,7 +65,7 @@ class LightnCandy {
     // alias flags
     const FLAG_BESTPERFORMANCE = 16384; // FLAG_ECHO
     const FLAG_JS = 24; // FLAG_JSTRUE + FLAG_JSOBJECT
-    const FLAG_MUSTACHE = 7602176; // FLAG_ERROR_SKIPPARTIAL + FLAG_MUSTACHELOOKUP + 7602176 + FLAG_RUNTIMEPARTIAL
+    const FLAG_MUSTACHE = 7602200; // FLAG_ERROR_SKIPPARTIAL + FLAG_MUSTACHELOOKUP + FLAG_MUSTACHELAMBDA + FLAG_RUNTIMEPARTIAL + FLAG_JS
     const FLAG_HANDLEBARS = 159391712; // FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME + FLAG_SPACECTL + FLAG_NAMEDARG + FLAG_SPVARS + FLAG_SLASH + FLAG_ELSE + FLAG_RAWBLOCK
     const FLAG_HANDLEBARSJS = 159391736; // FLAG_JS + FLAG_HANDLEBARS
     const FLAG_HANDLEBARSJS_FULL = 160800760; // FLAG_HANDLEBARSJS + FLAG_INSTANCE + FLAG_RUNTIMEPARTIAL + FLAG_MUSTACHELOOKUP
@@ -2211,9 +2211,6 @@ class LCRun3 {
                 return null;
             }
             if (isset($v)) {
-                if ($cx['flags']['mustlam'] && ($v instanceof Closure)) {
-                    $v = $v();
-                }
                 return $v;
             }
             $count--;
@@ -2339,7 +2336,7 @@ class LCRun3 {
      *
      * @expect true when input array('flags' => array('jstrue' => 0)), true
      * @expect 'true' when input array('flags' => array('jstrue' => 1)), true
-     * @expect '' when input array('flags' => array('jstrue' => 0)), false
+     * @expect '' when input array('flags' => array('jstrue' => 0, 'mustlam' => 0)), false
      * @expect 'false' when input array('flags' => array('jstrue' => 1)), false
      * @expect 'false' when input array('flags' => array('jstrue' => 1)), false, true
      * @expect 'Array' when input array('flags' => array('jstrue' => 1, 'jsobj' => 0)), array('a', 'b')
@@ -2378,6 +2375,10 @@ class LCRun3 {
             } else {
                 return 'Array';
             }
+        }
+
+        if ($cx['flags']['mustlam'] && ($v instanceof Closure)) {
+            $v = $v();
         }
 
         return "$v";
