@@ -10,6 +10,7 @@ v0.89-develop
    * b0b4e51427 support literal references
    * **BREAK CHANGE** remove FLAG_MUSTACHEPAIN
    * new flag FLAG_PREVENTINDENT to stop auto indent on partial.
+   * new flag FLAG_HANDLEBARSJS_FULL to enable all handlebars features with performance drop
 
 v0.23 https://github.com/zordius/lightncandy/tree/v0.23
    * align with handlebars.js 3.0.3
