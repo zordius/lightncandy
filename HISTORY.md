@@ -12,6 +12,8 @@ v0.89-develop
    * 3667765ad1 new flag FLAG_PREVENTINDENT to stop auto indent on partial.
    * d9ef7d12b8 new flag FLAG_HANDLEBARSJS_FULL to enable all handlebars features with performance drop
    * 8629aaa843 **BREAK CHANGE** now FLAG_MUSTACHE also includes FLAG_RUNTIMEPARTIAL
+   * e0858b0e60 new flag FLAG_MUSTACHELAMBDA to support simple case of mustache lambda
+   * f614fc91ea **BREAK CHANGE** rename LCRun3 to LCRun4 for interface changed, old none standalone templates will error with newer version
 
 v0.23 https://github.com/zordius/lightncandy/tree/v0.23
    * align with handlebars.js 3.0.3
@@ -141,15 +143,15 @@ v0.13 https://github.com/zordius/lightncandy/tree/v0.13
    * 522591a0c6 fix issue #49 ( error with some helper user function PHP code syntax )
    * c4f7e1eaac support `{{foo.bar}} lookup on instance foo then property/method bar ( flagd FLAG_PROPERTY or FLAG_METHOD required )
    * 0f4c0daa4b stop simulate Javascript output for array when pass input to custom helpers
-   * 22d07e5f0f BIG CHANGE of custom helper interface
+   * 22d07e5f0f **BREAK CHANGE** BIG CHANGE of custom helper interface
 
 v0.12 https://github.com/zordius/lightncandy/tree/v0.12
    * align with handlebars.js 2.0.0-alpha.2
    * 64db34cf65 support `{{@first}}` and `{{@last}}`
    * bfa1fbef97 add new flag FLAG_SPVARS
-   * 10a4623dc1 remove json schema support
+   * 10a4623dc1 **BREAK CHANGE** remove json schema support
    * 240d9fa290 only export used LCRun2 functions when compile() with FLAG_STANDALONE now
-   * 3fa897c98c rename LCRun2 to LCRun3 for interface changed, old none standalone templates will error with newer version
+   * 3fa897c98c **BREAK CHANGE** rename LCRun2 to LCRun3 for interface changed, old none standalone templates will error with newer version
    * e0838c7418 now can output debug template map with ANSI color
    * 80dbeab63d fix php warning when compile with custom helper or block custom helper
    * 8ce6268b64 support Handlebars.js style custom helper
@@ -173,7 +175,7 @@ v0.10 https://github.com/zordius/lightncandy/tree/v0.10
    * 4c9f681080 file name changed: lightncandy.inc => lightncandy.php
    * e3de01081c some minor fix for json schema
    * 1feec458c7 new variable handling logic, save variable name parsing time when render() . rendering performance improved 10~30%!
-   * 3fa897c98c rename LCRun to LCRun2 for interface changed, old none standalone templates will error with newer version
+   * 3fa897c98c **BREAK CHANGE** rename LCRun to LCRun2 for interface changed, old none standalone templates will error with newer version
    * 43a6d33717 fix for `{{../}}` php warning message
    * 9189ebc1e4 now auto push documents from Travis CI
    * e077d0b631 support named arguments for custom helpers `{{helper name=value}}`
@@ -197,7 +199,7 @@ v0.9 https://github.com/zordius/lightncandy/tree/v0.9
    * ddd3335ff6 support "some string" argument
    * 20f6c888d7 html encode after custom helper executed
    * 10a2f45fdc add test generator
-   * ccd1d3ddc2 migrate to Scrutinizer , change file name LightnCandy.inc to LightnCandy.php
+   * ccd1d3ddc2 **BREAK CHANGE** migrate to Scrutinizer, change file name LightnCandy.inc to LightnCandy.php
    * 5ac8ad8d04 now is a Composer package
 
 v0.8 https://github.com/zordius/lightncandy/tree/v0.8
@@ -242,5 +244,5 @@ v0.6 https://github.com/zordius/lightncandy/tree/v0.6
    * 71cf074 fix for 020-hb-doteach testcase
 
 v0.5 https://github.com/zordius/lightncandy/tree/v0.5
+   * align with handlebarsjs 1.0.7
    * 955aadf fix #each bug when input is a hash
-   * final version for following handlebarsjs 1.0.7
