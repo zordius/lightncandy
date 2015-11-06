@@ -2345,19 +2345,19 @@ class LCRun4 {
      *
      * @return string The raw value of the specified variable
      *
-     * @expect true when input array('flags' => array('jstrue' => 0)), true
+     * @expect true when input array('flags' => array('jstrue' => 0, 'mustlam' => 0)), true
      * @expect 'true' when input array('flags' => array('jstrue' => 1)), true
      * @expect '' when input array('flags' => array('jstrue' => 0, 'mustlam' => 0)), false
      * @expect 'false' when input array('flags' => array('jstrue' => 1)), false
      * @expect 'false' when input array('flags' => array('jstrue' => 1)), false, true
      * @expect 'Array' when input array('flags' => array('jstrue' => 1, 'jsobj' => 0)), array('a', 'b')
-     * @expect 'a,b' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1)), array('a', 'b')
+     * @expect 'a,b' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'mustlam' => 0)), array('a', 'b')
      * @expect '[object Object]' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1)), array('a', 'c' => 'b')
      * @expect '[object Object]' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1)), array('c' => 'b')
-     * @expect 'a,true' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1)), array('a', true)
-     * @expect 'a,1' when input array('flags' => array('jstrue' => 0, 'jsobj' => 1)), array('a',true)
-     * @expect 'a,' when input array('flags' => array('jstrue' => 0, 'jsobj' => 1)), array('a',false)
-     * @expect 'a,false' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1)), array('a',false)
+     * @expect 'a,true' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'mustlam' => 0)), array('a', true)
+     * @expect 'a,1' when input array('flags' => array('jstrue' => 0, 'jsobj' => 1, 'mustlam' => 0)), array('a',true)
+     * @expect 'a,' when input array('flags' => array('jstrue' => 0, 'jsobj' => 1, 'mustlam' => 0)), array('a',false)
+     * @expect 'a,false' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'mustlam' => 0)), array('a',false)
      */
     public static function raw($cx, $v) {
         if ($v === true) {
