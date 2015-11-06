@@ -5,8 +5,11 @@ Upgrade Notice
 
 * Recompile your none standalone templates when you upgrade LightnCandy.
 
-CURRENT MASTER
---------------
+Version v0.89
+* Option FLAG_MUSTACHESP removed.
+* Option FLAG_MUSTACHEPAIN removed.
+* Option FLAG_MUSTACHE includes FLAG_RUNTIMEPARTIAL now.
+* Due to big change of rendering function: sec() and inv(), the rendering supporting class `LCRun3` is renamed to `LCRun4`. If you compile templates as none standalone PHP code by LightnCandy v0.23 or before, you should compile these templates again. Or, you may run into `Class 'LCRun3' not found` error when you execute these old rendering functions.
 
 Version v0.19
 -------------
@@ -20,8 +23,8 @@ Version v0.12
 -------------
 * LightnCandy::getJsonSchema() removed
 * jsonSchema generation feature removed
-* Due to big change of render() debugging, the rendering support class `LCRun2` is renamed to `LCRun3`. If you compile templates as none standalone PHP code by LightnCandy v0.11 or before, you should compile these templates again. Or, you may run into `Class 'LCRun2' not found` error when you execute these old rendering functions.
+* Due to big change of render() debugging, the rendering supporting class `LCRun2` is renamed to `LCRun3`. If you compile templates as none standalone PHP code by LightnCandy v0.11 or before, you should compile these templates again. Or, you may run into `Class 'LCRun2' not found` error when you execute these old rendering functions.
 
 Version v0.10
 ------------
-* Due to big change of variable name handling, the rendering support class `LCRun` is renamed to `LCRun2`. If you compile templates as none standalone PHP code by LightnCandy v0.9 or before, you should compile these templates again. Or, you may run into `Class 'LCRun' not found` error when you execute these old rendering functions.
+* Due to big change of variable name handling, the rendering supporting class `LCRun` is renamed to `LCRun2`. If you compile templates as none standalone PHP code by LightnCandy v0.9 or before, you should compile these templates again. Or, you may run into `Class 'LCRun' not found` error when you execute these old rendering functions.
