@@ -1354,9 +1354,13 @@ $libstr
                     // end an argument when end with expected charactor
                     if (substr($t, -1, 1) === $expect) {
                         if ($stack > 0) {
-                            $stack--;
-                            if ($stack) {
+                            preg_match('/(\\)+)$/', $t, $matchedq);
+                            $stack -= strlen($matchedq[0]);
+                            if ($stack > 0) {
                                 continue;
+                            }
+                            if ($stack < 0) {
+                                $context['error'][] = "Unexcepted ')' in " . static::tokenString($token) . '!';
                             }
                         }
                         $vars[] = $prev;
