@@ -2403,9 +2403,9 @@ class LCRun4 {
      *
      * @return string The htmlencoded value of the specified variable
      *
-     * @expect 'a' when input array(), 'a'
-     * @expect 'a&amp;b' when input array(), 'a&b'
-     * @expect 'a&#039;b' when input array(), 'a\'b'
+     * @expect 'a' when input array('flags' => array('mustlam' => 0)), 'a'
+     * @expect 'a&amp;b' when input array('flags' => array('mustlam' => 0)), 'a&b'
+     * @expect 'a&#039;b' when input array('flags' => array('mustlam' => 0)), 'a\'b'
      */
     public static function enc($cx, $var) {
         return htmlentities(self::raw($cx, $var), ENT_QUOTES, 'UTF-8');
@@ -2419,10 +2419,10 @@ class LCRun4 {
      *
      * @return string The htmlencoded value of the specified variable
      *
-     * @expect 'a' when input array(), 'a'
-     * @expect 'a&amp;b' when input array(), 'a&b'
-     * @expect 'a&#x27;b' when input array(), 'a\'b'
-     * @expect '&#x60;a&#x27;b' when input array(), '`a\'b'
+     * @expect 'a' when input array('flags' => array('mustlam' => 0)), 'a'
+     * @expect 'a&amp;b' when input array('flags' => array('mustlam' => 0)), 'a&b'
+     * @expect 'a&#x27;b' when input array('flags' => array('mustlam' => 0)), 'a\'b'
+     * @expect '&#x60;a&#x27;b' when input array('flags' => array('mustlam' => 0)), '`a\'b'
      */
     public static function encq($cx, $var) {
         return preg_replace('/`/', '&#x60;', preg_replace('/&#039;/', '&#x27;', htmlentities(self::raw($cx, $var), ENT_QUOTES, 'UTF-8')));
@@ -2440,30 +2440,30 @@ class LCRun4 {
      *
      * @return string The rendered string of the section
      *
-     * @expect '' when input array('flags' => array('spvar' => 0)), false, false, false, function () {return 'A';}
-     * @expect '' when input array('flags' => array('spvar' => 0)), null, null, false, function () {return 'A';}
-     * @expect 'A' when input array('flags' => array('spvar' => 0)), true, true, false, function () {return 'A';}
-     * @expect 'A' when input array('flags' => array('spvar' => 0)), 0, 0, false, function () {return 'A';}
-     * @expect '-a=' when input array('flags' => array('spvar' => 0)), array('a'), array('a'), false, function ($c, $i) {return "-$i=";}
-     * @expect '-a=-b=' when input array('flags' => array('spvar' => 0)), array('a','b'), array('a','b'), false, function ($c, $i) {return "-$i=";}
-     * @expect '' when input array('flags' => array('spvar' => 0)), 'abc', 'abc', true, function ($c, $i) {return "-$i=";}
-     * @expect '-b=' when input array('flags' => array('spvar' => 0)), array('a' => 'b'), array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
-     * @expect '1' when input array('flags' => array('spvar' => 0)), 'b', 'b', false, function ($c, $i) {return count($i);}
-     * @expect '1' when input array('flags' => array('spvar' => 0)), 1, 1, false, function ($c, $i) {return print_r($i, true);}
-     * @expect '0' when input array('flags' => array('spvar' => 0)), 0, 0, false, function ($c, $i) {return print_r($i, true);}
-     * @expect '{"b":"c"}' when input array('flags' => array('spvar' => 0)), array('b' => 'c'), array('b' => 'c'), false, function ($c, $i) {return json_encode($i);}
-     * @expect 'inv' when input array('flags' => array('spvar' => 0)), array(), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'inv' when input array('flags' => array('spvar' => 0)), array(), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'inv' when input array('flags' => array('spvar' => 0)), false, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'inv' when input array('flags' => array('spvar' => 0)), false, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'inv' when input array('flags' => array('spvar' => 0)), '', 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'cb' when input array('flags' => array('spvar' => 0)), '', 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'inv' when input array('flags' => array('spvar' => 0)), 0, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'cb' when input array('flags' => array('spvar' => 0)), 0, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'inv' when input array('flags' => array('spvar' => 0)), new stdClass, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'cb' when input array('flags' => array('spvar' => 0)), new stdClass, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect '268' when input array('flags' => array('spvar' => 1), 'sp_vars'=>array('root' => 0)), array(1,3,4), 0, false, function ($c, $i) {return $i * 2;}
-     * @expect '038' when input array('flags' => array('spvar' => 1), 'sp_vars'=>array('root' => 0)), array(1,3,'a'=>4), 0, true, function ($c, $i) {return $i * $c['sp_vars']['index'];}
+     * @expect '' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), false, false, false, function () {return 'A';}
+     * @expect '' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), null, null, false, function () {return 'A';}
+     * @expect 'A' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), true, true, false, function () {return 'A';}
+     * @expect 'A' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), 0, 0, false, function () {return 'A';}
+     * @expect '-a=' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), array('a'), array('a'), false, function ($c, $i) {return "-$i=";}
+     * @expect '-a=-b=' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), array('a','b'), array('a','b'), false, function ($c, $i) {return "-$i=";}
+     * @expect '' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), 'abc', 'abc', true, function ($c, $i) {return "-$i=";}
+     * @expect '-b=' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), array('a' => 'b'), array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
+     * @expect '1' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), 'b', 'b', false, function ($c, $i) {return count($i);}
+     * @expect '1' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), 1, 1, false, function ($c, $i) {return print_r($i, true);}
+     * @expect '0' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), 0, 0, false, function ($c, $i) {return print_r($i, true);}
+     * @expect '{"b":"c"}' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), array('b' => 'c'), array('b' => 'c'), false, function ($c, $i) {return json_encode($i);}
+     * @expect 'inv' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), array(), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'inv' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), array(), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'inv' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), false, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'inv' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), false, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'inv' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), '', 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'cb' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), '', 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'inv' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), 0, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'cb' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), 0, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'inv' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), new stdClass, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'cb' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), new stdClass, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect '268' when input array('flags' => array('spvar' => 1, 'mustlam' => 0), 'sp_vars'=>array('root' => 0)), array(1,3,4), 0, false, function ($c, $i) {return $i * 2;}
+     * @expect '038' when input array('flags' => array('spvar' => 1, 'mustlam' => 0), 'sp_vars'=>array('root' => 0)), array(1,3,'a'=>4), 0, true, function ($c, $i) {return $i * $c['sp_vars']['index'];}
      */
     public static function sec($cx, $v, $in, $each, $cb, $else = null) {
         $isAry = is_array($v) || ($v instanceof ArrayObject);

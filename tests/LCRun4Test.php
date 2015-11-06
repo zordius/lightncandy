@@ -141,7 +141,7 @@ class LCRun4Test extends PHPUnit_Framework_TestCase
     public function testOn_raw() {
         $method = new ReflectionMethod('LCRun4', 'raw');
         $this->assertEquals(true, $method->invokeArgs(null,array(
-            array('flags' => array('jstrue' => 0)), true
+            array('flags' => array('jstrue' => 0, 'mustlam' => 0)), true
 )        ));
         $this->assertEquals('true', $method->invokeArgs(null,array(
             array('flags' => array('jstrue' => 1)), true
@@ -159,7 +159,7 @@ class LCRun4Test extends PHPUnit_Framework_TestCase
             array('flags' => array('jstrue' => 1, 'jsobj' => 0)), array('a', 'b')
 )        ));
         $this->assertEquals('a,b', $method->invokeArgs(null,array(
-            array('flags' => array('jstrue' => 1, 'jsobj' => 1)), array('a', 'b')
+            array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'mustlam' => 0)), array('a', 'b')
 )        ));
         $this->assertEquals('[object Object]', $method->invokeArgs(null,array(
             array('flags' => array('jstrue' => 1, 'jsobj' => 1)), array('a', 'c' => 'b')
@@ -168,16 +168,16 @@ class LCRun4Test extends PHPUnit_Framework_TestCase
             array('flags' => array('jstrue' => 1, 'jsobj' => 1)), array('c' => 'b')
 )        ));
         $this->assertEquals('a,true', $method->invokeArgs(null,array(
-            array('flags' => array('jstrue' => 1, 'jsobj' => 1)), array('a', true)
+            array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'mustlam' => 0)), array('a', true)
 )        ));
         $this->assertEquals('a,1', $method->invokeArgs(null,array(
-            array('flags' => array('jstrue' => 0, 'jsobj' => 1)), array('a',true)
+            array('flags' => array('jstrue' => 0, 'jsobj' => 1, 'mustlam' => 0)), array('a',true)
 )        ));
         $this->assertEquals('a,', $method->invokeArgs(null,array(
-            array('flags' => array('jstrue' => 0, 'jsobj' => 1)), array('a',false)
+            array('flags' => array('jstrue' => 0, 'jsobj' => 1, 'mustlam' => 0)), array('a',false)
 )        ));
         $this->assertEquals('a,false', $method->invokeArgs(null,array(
-            array('flags' => array('jstrue' => 1, 'jsobj' => 1)), array('a',false)
+            array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'mustlam' => 0)), array('a',false)
 )        ));
     }
     /**
@@ -186,13 +186,13 @@ class LCRun4Test extends PHPUnit_Framework_TestCase
     public function testOn_enc() {
         $method = new ReflectionMethod('LCRun4', 'enc');
         $this->assertEquals('a', $method->invokeArgs(null,array(
-            array(), 'a'
+            array('flags' => array('mustlam' => 0)), 'a'
 )        ));
         $this->assertEquals('a&amp;b', $method->invokeArgs(null,array(
-            array(), 'a&b'
+            array('flags' => array('mustlam' => 0)), 'a&b'
 )        ));
         $this->assertEquals('a&#039;b', $method->invokeArgs(null,array(
-            array(), 'a\'b'
+            array('flags' => array('mustlam' => 0)), 'a\'b'
 )        ));
     }
     /**
@@ -201,16 +201,16 @@ class LCRun4Test extends PHPUnit_Framework_TestCase
     public function testOn_encq() {
         $method = new ReflectionMethod('LCRun4', 'encq');
         $this->assertEquals('a', $method->invokeArgs(null,array(
-            array(), 'a'
+            array('flags' => array('mustlam' => 0)), 'a'
 )        ));
         $this->assertEquals('a&amp;b', $method->invokeArgs(null,array(
-            array(), 'a&b'
+            array('flags' => array('mustlam' => 0)), 'a&b'
 )        ));
         $this->assertEquals('a&#x27;b', $method->invokeArgs(null,array(
-            array(), 'a\'b'
+            array('flags' => array('mustlam' => 0)), 'a\'b'
 )        ));
         $this->assertEquals('&#x60;a&#x27;b', $method->invokeArgs(null,array(
-            array(), '`a\'b'
+            array('flags' => array('mustlam' => 0)), '`a\'b'
 )        ));
     }
     /**
@@ -219,76 +219,76 @@ class LCRun4Test extends PHPUnit_Framework_TestCase
     public function testOn_sec() {
         $method = new ReflectionMethod('LCRun4', 'sec');
         $this->assertEquals('', $method->invokeArgs(null,array(
-            array('flags' => array('spvar' => 0)), false, false, false, function () {return 'A';}
+            array('flags' => array('spvar' => 0, 'mustlam' => 0)), false, false, false, function () {return 'A';}
 )        ));
         $this->assertEquals('', $method->invokeArgs(null,array(
-            array('flags' => array('spvar' => 0)), null, null, false, function () {return 'A';}
+            array('flags' => array('spvar' => 0, 'mustlam' => 0)), null, null, false, function () {return 'A';}
 )        ));
         $this->assertEquals('A', $method->invokeArgs(null,array(
-            array('flags' => array('spvar' => 0)), true, true, false, function () {return 'A';}
+            array('flags' => array('spvar' => 0, 'mustlam' => 0)), true, true, false, function () {return 'A';}
 )        ));
         $this->assertEquals('A', $method->invokeArgs(null,array(
-            array('flags' => array('spvar' => 0)), 0, 0, false, function () {return 'A';}
+            array('flags' => array('spvar' => 0, 'mustlam' => 0)), 0, 0, false, function () {return 'A';}
 )        ));
         $this->assertEquals('-a=', $method->invokeArgs(null,array(
-            array('flags' => array('spvar' => 0)), array('a'), array('a'), false, function ($c, $i) {return "-$i=";}
+            array('flags' => array('spvar' => 0, 'mustlam' => 0)), array('a'), array('a'), false, function ($c, $i) {return "-$i=";}
 )        ));
         $this->assertEquals('-a=-b=', $method->invokeArgs(null,array(
-            array('flags' => array('spvar' => 0)), array('a','b'), array('a','b'), false, function ($c, $i) {return "-$i=";}
+            array('flags' => array('spvar' => 0, 'mustlam' => 0)), array('a','b'), array('a','b'), false, function ($c, $i) {return "-$i=";}
 )        ));
         $this->assertEquals('', $method->invokeArgs(null,array(
-            array('flags' => array('spvar' => 0)), 'abc', 'abc', true, function ($c, $i) {return "-$i=";}
+            array('flags' => array('spvar' => 0, 'mustlam' => 0)), 'abc', 'abc', true, function ($c, $i) {return "-$i=";}
 )        ));
         $this->assertEquals('-b=', $method->invokeArgs(null,array(
-            array('flags' => array('spvar' => 0)), array('a' => 'b'), array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
+            array('flags' => array('spvar' => 0, 'mustlam' => 0)), array('a' => 'b'), array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
 )        ));
         $this->assertEquals('1', $method->invokeArgs(null,array(
-            array('flags' => array('spvar' => 0)), 'b', 'b', false, function ($c, $i) {return count($i);}
+            array('flags' => array('spvar' => 0, 'mustlam' => 0)), 'b', 'b', false, function ($c, $i) {return count($i);}
 )        ));
         $this->assertEquals('1', $method->invokeArgs(null,array(
-            array('flags' => array('spvar' => 0)), 1, 1, false, function ($c, $i) {return print_r($i, true);}
+            array('flags' => array('spvar' => 0, 'mustlam' => 0)), 1, 1, false, function ($c, $i) {return print_r($i, true);}
 )        ));
         $this->assertEquals('0', $method->invokeArgs(null,array(
-            array('flags' => array('spvar' => 0)), 0, 0, false, function ($c, $i) {return print_r($i, true);}
+            array('flags' => array('spvar' => 0, 'mustlam' => 0)), 0, 0, false, function ($c, $i) {return print_r($i, true);}
 )        ));
         $this->assertEquals('{"b":"c"}', $method->invokeArgs(null,array(
-            array('flags' => array('spvar' => 0)), array('b' => 'c'), array('b' => 'c'), false, function ($c, $i) {return json_encode($i);}
+            array('flags' => array('spvar' => 0, 'mustlam' => 0)), array('b' => 'c'), array('b' => 'c'), false, function ($c, $i) {return json_encode($i);}
 )        ));
         $this->assertEquals('inv', $method->invokeArgs(null,array(
-            array('flags' => array('spvar' => 0)), array(), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+            array('flags' => array('spvar' => 0, 'mustlam' => 0)), array(), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
 )        ));
         $this->assertEquals('inv', $method->invokeArgs(null,array(
-            array('flags' => array('spvar' => 0)), array(), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+            array('flags' => array('spvar' => 0, 'mustlam' => 0)), array(), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
 )        ));
         $this->assertEquals('inv', $method->invokeArgs(null,array(
-            array('flags' => array('spvar' => 0)), false, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+            array('flags' => array('spvar' => 0, 'mustlam' => 0)), false, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
 )        ));
         $this->assertEquals('inv', $method->invokeArgs(null,array(
-            array('flags' => array('spvar' => 0)), false, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+            array('flags' => array('spvar' => 0, 'mustlam' => 0)), false, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
 )        ));
         $this->assertEquals('inv', $method->invokeArgs(null,array(
-            array('flags' => array('spvar' => 0)), '', 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+            array('flags' => array('spvar' => 0, 'mustlam' => 0)), '', 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
 )        ));
         $this->assertEquals('cb', $method->invokeArgs(null,array(
-            array('flags' => array('spvar' => 0)), '', 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+            array('flags' => array('spvar' => 0, 'mustlam' => 0)), '', 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
 )        ));
         $this->assertEquals('inv', $method->invokeArgs(null,array(
-            array('flags' => array('spvar' => 0)), 0, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+            array('flags' => array('spvar' => 0, 'mustlam' => 0)), 0, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
 )        ));
         $this->assertEquals('cb', $method->invokeArgs(null,array(
-            array('flags' => array('spvar' => 0)), 0, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+            array('flags' => array('spvar' => 0, 'mustlam' => 0)), 0, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
 )        ));
         $this->assertEquals('inv', $method->invokeArgs(null,array(
-            array('flags' => array('spvar' => 0)), new stdClass, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+            array('flags' => array('spvar' => 0, 'mustlam' => 0)), new stdClass, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
 )        ));
         $this->assertEquals('cb', $method->invokeArgs(null,array(
-            array('flags' => array('spvar' => 0)), new stdClass, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+            array('flags' => array('spvar' => 0, 'mustlam' => 0)), new stdClass, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
 )        ));
         $this->assertEquals('268', $method->invokeArgs(null,array(
-            array('flags' => array('spvar' => 1), 'sp_vars'=>array('root' => 0)), array(1,3,4), 0, false, function ($c, $i) {return $i * 2;}
+            array('flags' => array('spvar' => 1, 'mustlam' => 0), 'sp_vars'=>array('root' => 0)), array(1,3,4), 0, false, function ($c, $i) {return $i * 2;}
 )        ));
         $this->assertEquals('038', $method->invokeArgs(null,array(
-            array('flags' => array('spvar' => 1), 'sp_vars'=>array('root' => 0)), array(1,3,'a'=>4), 0, true, function ($c, $i) {return $i * $c['sp_vars']['index'];}
+            array('flags' => array('spvar' => 1, 'mustlam' => 0), 'sp_vars'=>array('root' => 0)), array(1,3,'a'=>4), 0, true, function ($c, $i) {return $i * $c['sp_vars']['index'];}
 )        ));
     }
     /**
