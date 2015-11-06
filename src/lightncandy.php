@@ -1342,12 +1342,23 @@ $libstr
         if (($count > 0) && $context['flags']['advar']) {
             $prev = '';
             $expect = 0;
+            $stack = 0;
+
             foreach ($matchedall[2] as $index => $t) {
                 // continue from previous match when expect something
                 if ($expect) {
                     $prev .= "{$matchedall[1][$index]}$t";
+                    if ($stack && (substr($t, 0, 1) === '(')) {
+                        $stack++;
+                    }
                     // end an argument when end with expected charactor
                     if (substr($t, -1, 1) === $expect) {
+                        if ($stack) {
+                            $stack--;
+                            if ($stack) {
+                                continue;
+                            }
+                        }
                         $vars[] = $prev;
                         $prev = '';
                         $expect = 0;
@@ -1401,6 +1412,7 @@ $libstr
                 if (preg_match('/.+\([^\)]*$/', $t)) {
                     $prev = $t;
                     $expect = ')';
+                    $stack++;
                     continue;
                 }
 
