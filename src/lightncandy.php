@@ -1360,7 +1360,7 @@ $libstr
                                 continue;
                             }
                             if ($stack < 0) {
-                                $context['error'][] = "Unexcepted ')' in " . static::tokenString($token) . '!';
+                                $context['error'][] = "Unexcepted ')' in " . static::tokenString($token) . ' !!';
                             }
                         }
                         $vars[] = $prev;

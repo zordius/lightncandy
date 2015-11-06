@@ -429,6 +429,20 @@ class errorTest extends PHPUnit_Framework_TestCase
                 )
             ),
             Array(
+                'template' => '{{foo (foo (foo 1 2) 3))}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                     'hbhelpers' => Array(
+                         'foo' => function () {
+                             return;
+                         }
+                     )
+                ),
+                'expected' => Array(
+                    'Unexcepted \')\' in {{foo (foo (foo 1 2) 3))}} !!',
+                )
+            ),
+            Array(
                 'template' => '{{{{foo}}}} {{ {{{{#foo}}}}',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
