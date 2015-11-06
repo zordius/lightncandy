@@ -303,7 +303,7 @@ class LightnCandy {
         $helpers = static::exportHelper($context);
         $bhelpers = static::exportHelper($context, 'blockhelpers');
         $hbhelpers = static::exportHelper($context, 'hbhelpers');
-        $debug = LCRun3::DEBUG_ERROR_LOG;
+        $debug = LCRun4::DEBUG_ERROR_LOG;
         $phpstart = $context['flags']['bare'] ? '' : '<?php ';
         $phpend = $context['flags']['bare'] ? ';' : "\n?>";
 
@@ -432,7 +432,7 @@ $libstr
             'hbhelpers' => array(),
             'renderex' => isset($options['renderex']) ? $options['renderex'] : '',
             'prepartial' => (isset($options['prepartial']) && is_callable($options['prepartial'])) ? $options['prepartial'] : false,
-            'lcrun' => isset($options['lcrun']) ? $options['lcrun'] : 'LCRun3',
+            'lcrun' => isset($options['lcrun']) ? $options['lcrun'] : 'LCRun4',
             'rawblock' => false,
         );
 
@@ -478,8 +478,8 @@ $libstr
      * @expect array() when input array(), array()
      * @expect array('flags' => array('exhlp' => 1)) when input array('flags' => array('exhlp' => 1)), array('helpers' => array('abc'))
      * @expect array('error' => array('Can not find custom helper function defination abc() !'), 'flags' => array('exhlp' => 0)) when input array('error' => array(), 'flags' => array('exhlp' => 0)), array('helpers' => array('abc'))
-     * @expect array('flags' => array('exhlp' => 1), 'helpers' => array('LCRun3::raw' => 'LCRun3::raw')) when input array('flags' => array('exhlp' => 1), 'helpers' => array()), array('helpers' => array('LCRun3::raw'))
-     * @expect array('flags' => array('exhlp' => 1), 'helpers' => array('test' => 'LCRun3::raw')) when input array('flags' => array('exhlp' => 1), 'helpers' => array()), array('helpers' => array('test' => 'LCRun3::raw'))
+     * @expect array('flags' => array('exhlp' => 1), 'helpers' => array('LCRun4::raw' => 'LCRun4::raw')) when input array('flags' => array('exhlp' => 1), 'helpers' => array()), array('helpers' => array('LCRun4::raw'))
+     * @expect array('flags' => array('exhlp' => 1), 'helpers' => array('test' => 'LCRun4::raw')) when input array('flags' => array('exhlp' => 1), 'helpers' => array()), array('helpers' => array('test' => 'LCRun4::raw'))
      */
     protected static function buildHelperTable($context, $options, $tname = 'helpers') {
         if (isset($options[$tname]) && is_array($options[$tname])) {
@@ -913,10 +913,10 @@ $libstr
      *
      * @return string compiled Function name
      *
-     * @expect 'LCRun3::test(' when input array('flags' => array('standalone' => 0, 'debug' => 0), 'lcrun' => 'LCRun3'), 'test', ''
-     * @expect 'LCRun3::test2(' when input array('flags' => array('standalone' => 0, 'debug' => 0), 'lcrun' => 'LCRun3'), 'test2', ''
-     * @expect "\$cx['funcs']['test3'](" when input array('flags' => array('standalone' => 1, 'debug' => 0), 'lcrun' => 'LCRun3'), 'test3', ''
-     * @expect 'LCRun3::debug(\'abc\', \'test\', ' when input array('flags' => array('standalone' => 0, 'debug' => 1), 'lcrun' => 'LCRun3'), 'test', 'abc'
+     * @expect 'LCRun4::test(' when input array('flags' => array('standalone' => 0, 'debug' => 0), 'lcrun' => 'LCRun4'), 'test', ''
+     * @expect 'LCRun4::test2(' when input array('flags' => array('standalone' => 0, 'debug' => 0), 'lcrun' => 'LCRun4'), 'test2', ''
+     * @expect "\$cx['funcs']['test3'](" when input array('flags' => array('standalone' => 1, 'debug' => 0), 'lcrun' => 'LCRun4'), 'test3', ''
+     * @expect 'LCRun4::debug(\'abc\', \'test\', ' when input array('flags' => array('standalone' => 0, 'debug' => 1), 'lcrun' => 'LCRun4'), 'test', 'abc'
      */
     protected static function getFuncName(&$context, $name, $tag) {
         static::addUsageCount($context, 'lcrun', $name);
@@ -1075,7 +1075,7 @@ $libstr
      * @expect array('((isset($cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\']) && is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)', '../[a]') when input array(1,'a'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0))
      * @expect array('((isset($cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\']) && is_array($cx[\'scopes\'][count($cx[\'scopes\'])-3])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)', '../../../[a]') when input array(3,'a'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0))
      * @expect array('((isset($in[\'id\']) && is_array($in)) ? $in[\'id\'] : null)', 'this.[id]') when input array(null, 'id'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0))
-     * @expect array('LCRun3::v($cx, $in, array(\'id\'))', 'this.[id]') when input array(null, 'id'), array('flags'=>array('prop'=>true,'spvar'=>true,'debug'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0,'standalone'=>0), 'lcrun' => 'LCRun3')
+     * @expect array('LCRun4::v($cx, $in, array(\'id\'))', 'this.[id]') when input array(null, 'id'), array('flags'=>array('prop'=>true,'spvar'=>true,'debug'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0,'standalone'=>0), 'lcrun' => 'LCRun4')
      */
     protected static function getVariableName($var, &$context) {
         if (isset($var[0]) && ($var[0] === 0)) {
@@ -2104,7 +2104,7 @@ $libstr
 /**
  * LightnCandy static class for compiled template runtime methods.
  */
-class LCRun3 {
+class LCRun4 {
     const DEBUG_ERROR_LOG = 1;
     const DEBUG_ERROR_EXCEPTION = 2;
     const DEBUG_TAGS = 4;
@@ -2118,8 +2118,8 @@ class LCRun3 {
      * @param string $f runtime function name
      * @param array<string,array|string|integer> $cx render time context
      *
-     * @expect '{{123}}' when input '123', 'miss', array('flags' => array('debug' => LCRun3::DEBUG_TAGS), 'lcrun' => 'LCRun3'), ''
-     * @expect '<!--MISSED((-->{{#123}}<!--))--><!--SKIPPED--><!--MISSED((-->{{/123}}<!--))-->' when input '123', 'wi', array('flags' => array('debug' => LCRun3::DEBUG_TAGS_HTML), 'lcrun' => 'LCRun3'), false, false, function () {return 'A';}
+     * @expect '{{123}}' when input '123', 'miss', array('flags' => array('debug' => LCRun4::DEBUG_TAGS), 'lcrun' => 'LCRun4'), ''
+     * @expect '<!--MISSED((-->{{#123}}<!--))--><!--SKIPPED--><!--MISSED((-->{{/123}}<!--))-->' when input '123', 'wi', array('flags' => array('debug' => LCRun4::DEBUG_TAGS_HTML), 'lcrun' => 'LCRun4'), false, false, function () {return 'A';}
      */
     public static function debug($v, $f, $cx) {
         $params = array_slice(func_get_args(), 2);
@@ -2179,7 +2179,7 @@ class LCRun3 {
      * @param string $v expression
      */
     public static function miss($cx, $v) {
-        self::err($cx, "LCRun3: $v is not exist");
+        self::err($cx, "LCRun4: $v is not exist");
     }
 
     /**
@@ -2757,7 +2757,7 @@ class LCRun3 {
         try {
             $r = call_user_func_array($cx['hbhelpers'][$ch], $args);
         } catch (Exception $E) {
-            $e = "LCRun3: call custom helper '$ch' error: " . $E->getMessage();
+            $e = "LCRun4: call custom helper '$ch' error: " . $E->getMessage();
         }
 
         if($e !== null) {

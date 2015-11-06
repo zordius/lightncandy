@@ -53,11 +53,11 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(array('error' => array('Can not find custom helper function defination abc() !'), 'flags' => array('exhlp' => 0)), $method->invokeArgs(null,array(
             array('error' => array(), 'flags' => array('exhlp' => 0)), array('helpers' => array('abc'))
 )        ));
-        $this->assertEquals(array('flags' => array('exhlp' => 1), 'helpers' => array('LCRun3::raw' => 'LCRun3::raw')), $method->invokeArgs(null,array(
-            array('flags' => array('exhlp' => 1), 'helpers' => array()), array('helpers' => array('LCRun3::raw'))
+        $this->assertEquals(array('flags' => array('exhlp' => 1), 'helpers' => array('LCRun4::raw' => 'LCRun4::raw')), $method->invokeArgs(null,array(
+            array('flags' => array('exhlp' => 1), 'helpers' => array()), array('helpers' => array('LCRun4::raw'))
 )        ));
-        $this->assertEquals(array('flags' => array('exhlp' => 1), 'helpers' => array('test' => 'LCRun3::raw')), $method->invokeArgs(null,array(
-            array('flags' => array('exhlp' => 1), 'helpers' => array()), array('helpers' => array('test' => 'LCRun3::raw'))
+        $this->assertEquals(array('flags' => array('exhlp' => 1), 'helpers' => array('test' => 'LCRun4::raw')), $method->invokeArgs(null,array(
+            array('flags' => array('exhlp' => 1), 'helpers' => array()), array('helpers' => array('test' => 'LCRun4::raw'))
 )        ));
     }
     /**
@@ -168,17 +168,17 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
     public function testOn_getFuncName() {
         $method = new ReflectionMethod('LightnCandy', 'getFuncName');
         $method->setAccessible(true);
-        $this->assertEquals('LCRun3::test(', $method->invokeArgs(null,array(
-            array('flags' => array('standalone' => 0, 'debug' => 0), 'lcrun' => 'LCRun3'), 'test', ''
+        $this->assertEquals('LCRun4::test(', $method->invokeArgs(null,array(
+            array('flags' => array('standalone' => 0, 'debug' => 0), 'lcrun' => 'LCRun4'), 'test', ''
 )        ));
-        $this->assertEquals('LCRun3::test2(', $method->invokeArgs(null,array(
-            array('flags' => array('standalone' => 0, 'debug' => 0), 'lcrun' => 'LCRun3'), 'test2', ''
+        $this->assertEquals('LCRun4::test2(', $method->invokeArgs(null,array(
+            array('flags' => array('standalone' => 0, 'debug' => 0), 'lcrun' => 'LCRun4'), 'test2', ''
 )        ));
         $this->assertEquals("\$cx['funcs']['test3'](", $method->invokeArgs(null,array(
-            array('flags' => array('standalone' => 1, 'debug' => 0), 'lcrun' => 'LCRun3'), 'test3', ''
+            array('flags' => array('standalone' => 1, 'debug' => 0), 'lcrun' => 'LCRun4'), 'test3', ''
 )        ));
-        $this->assertEquals('LCRun3::debug(\'abc\', \'test\', ', $method->invokeArgs(null,array(
-            array('flags' => array('standalone' => 0, 'debug' => 1), 'lcrun' => 'LCRun3'), 'test', 'abc'
+        $this->assertEquals('LCRun4::debug(\'abc\', \'test\', ', $method->invokeArgs(null,array(
+            array('flags' => array('standalone' => 0, 'debug' => 1), 'lcrun' => 'LCRun4'), 'test', 'abc'
 )        ));
     }
     /**
@@ -289,8 +289,8 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(array('((isset($in[\'id\']) && is_array($in)) ? $in[\'id\'] : null)', 'this.[id]'), $method->invokeArgs(null,array(
             array(null, 'id'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0))
 )        ));
-        $this->assertEquals(array('LCRun3::v($cx, $in, array(\'id\'))', 'this.[id]'), $method->invokeArgs(null,array(
-            array(null, 'id'), array('flags'=>array('prop'=>true,'spvar'=>true,'debug'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0,'standalone'=>0), 'lcrun' => 'LCRun3')
+        $this->assertEquals(array('LCRun4::v($cx, $in, array(\'id\'))', 'this.[id]'), $method->invokeArgs(null,array(
+            array(null, 'id'), array('flags'=>array('prop'=>true,'spvar'=>true,'debug'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0,'standalone'=>0), 'lcrun' => 'LCRun4')
 )        ));
     }
     /**

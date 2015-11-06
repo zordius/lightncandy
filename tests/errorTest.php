@@ -56,7 +56,7 @@ class errorTest extends PHPUnit_Framework_TestCase
         $this->setExpectedException('Exception', $test['expected']);
         $php = LightnCandy::compile($test['template'], $test['options']);
         $renderer = LightnCandy::prepare($php);
-        $renderer(null, LCRun3::DEBUG_ERROR_EXCEPTION);
+        $renderer(null, LCRun4::DEBUG_ERROR_EXCEPTION);
     }
 
     /**
@@ -67,7 +67,7 @@ class errorTest extends PHPUnit_Framework_TestCase
         start_catch_error_log();
         $php = LightnCandy::compile($test['template'], $test['options']);
         $renderer = LightnCandy::prepare($php);
-        $renderer(null, LCRun3::DEBUG_ERROR_LOG);
+        $renderer(null, LCRun4::DEBUG_ERROR_LOG);
         $e = stop_catch_error_log();
         if ($e) {
             $this->assertEquals(Array($test['expected']), $e);
@@ -81,7 +81,7 @@ class errorTest extends PHPUnit_Framework_TestCase
         $errorCases = Array(
              Array(
                  'template' => '{{{foo}}}',
-                 'expected' => 'LCRun3: [foo] is not exist',
+                 'expected' => 'LCRun4: [foo] is not exist',
              ),
              Array(
                  'template' => '{{foo}}',
@@ -92,7 +92,7 @@ class errorTest extends PHPUnit_Framework_TestCase
                          }
                      ),
                  ),
-                 'expected' => 'LCRun3: call custom helper \'foo\' error: Division by zero',
+                 'expected' => 'LCRun4: call custom helper \'foo\' error: Division by zero',
              ),
         );
 

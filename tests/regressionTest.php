@@ -1144,7 +1144,7 @@ VAREND
             Array(
                 'template' => '{{foo}}',
                 'options' => Array('flags' => LightnCandy::FLAG_RENDER_DEBUG),
-                'debug' => LCRun3::DEBUG_TAGS_ANSI,
+                'debug' => LCRun4::DEBUG_TAGS_ANSI,
                 'data' => Array('foo' => 'OK'),
                 'expected' => pack('H*', '1b5b303b33326d7b7b5b666f6f5d7d7d1b5b306d'),
             ),
@@ -1152,7 +1152,7 @@ VAREND
             Array(
                 'template' => '{{foo}}',
                 'options' => Array('flags' => LightnCandy::FLAG_RENDER_DEBUG),
-                'debug' => LCRun3::DEBUG_TAGS_HTML,
+                'debug' => LCRun4::DEBUG_TAGS_HTML,
                 'data' => null,
                 'expected' => '<!--MISSED((-->{{[foo]}}<!--))-->',
             ),
@@ -1160,7 +1160,7 @@ VAREND
             Array(
                 'template' => '{{#foo}}OK{{/foo}}',
                 'options' => Array('flags' => LightnCandy::FLAG_RENDER_DEBUG),
-                'debug' => LCRun3::DEBUG_TAGS_HTML,
+                'debug' => LCRun4::DEBUG_TAGS_HTML,
                 'data' => null,
                 'expected' => '<!--MISSED((-->{{#[foo]}}<!--))--><!--SKIPPED--><!--MISSED((-->{{/[foo]}}<!--))-->',
             ),
@@ -1168,7 +1168,7 @@ VAREND
             Array(
                 'template' => '{{#foo}}OK{{/foo}}',
                 'options' => Array('flags' => LightnCandy::FLAG_RENDER_DEBUG),
-                'debug' => LCRun3::DEBUG_TAGS_ANSI,
+                'debug' => LCRun4::DEBUG_TAGS_ANSI,
                 'data' => null,
                 'expected' => pack('H*', '1b5b303b33316d7b7b235b666f6f5d7d7d1b5b306d1b5b303b33336d534b49505045441b5b306d1b5b303b33316d7b7b2f5b666f6f5d7d7d1b5b306d'),
             ),

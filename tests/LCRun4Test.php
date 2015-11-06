@@ -4,25 +4,25 @@
  */
 require_once('src/lightncandy.php');
 
-class LCRun3Test extends PHPUnit_Framework_TestCase
+class LCRun4Test extends PHPUnit_Framework_TestCase
 {
     /**
-     * @covers LCRun3::debug
+     * @covers LCRun4::debug
      */
     public function testOn_debug() {
-        $method = new ReflectionMethod('LCRun3', 'debug');
+        $method = new ReflectionMethod('LCRun4', 'debug');
         $this->assertEquals('{{123}}', $method->invokeArgs(null,array(
-            '123', 'miss', array('flags' => array('debug' => LCRun3::DEBUG_TAGS), 'lcrun' => 'LCRun3'), ''
+            '123', 'miss', array('flags' => array('debug' => LCRun4::DEBUG_TAGS), 'lcrun' => 'LCRun4'), ''
 )        ));
         $this->assertEquals('<!--MISSED((-->{{#123}}<!--))--><!--SKIPPED--><!--MISSED((-->{{/123}}<!--))-->', $method->invokeArgs(null,array(
-            '123', 'wi', array('flags' => array('debug' => LCRun3::DEBUG_TAGS_HTML), 'lcrun' => 'LCRun3'), false, false, function () {return 'A';}
+            '123', 'wi', array('flags' => array('debug' => LCRun4::DEBUG_TAGS_HTML), 'lcrun' => 'LCRun4'), false, false, function () {return 'A';}
 )        ));
     }
     /**
-     * @covers LCRun3::v
+     * @covers LCRun4::v
      */
     public function testOn_v() {
-        $method = new ReflectionMethod('LCRun3', 'v');
+        $method = new ReflectionMethod('LCRun4', 'v');
         $this->assertEquals(null, $method->invokeArgs(null,array(
             array('scopes' => array(), 'flags' => array('prop' => 0, 'method' => 0, 'mustlok' => 0)), 0, array('a', 'b')
 )        ));
@@ -37,10 +37,10 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LCRun3::ifvar
+     * @covers LCRun4::ifvar
      */
     public function testOn_ifvar() {
-        $method = new ReflectionMethod('LCRun3', 'ifvar');
+        $method = new ReflectionMethod('LCRun4', 'ifvar');
         $this->assertEquals(false, $method->invokeArgs(null,array(
             array(), null, false
 )        ));
@@ -73,10 +73,10 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LCRun3::ifv
+     * @covers LCRun4::ifv
      */
     public function testOn_ifv() {
-        $method = new ReflectionMethod('LCRun3', 'ifv');
+        $method = new ReflectionMethod('LCRun4', 'ifv');
         $this->assertEquals('', $method->invokeArgs(null,array(
             array('scopes' => array()), null, false, array(), null
 )        ));
@@ -91,10 +91,10 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LCRun3::unl
+     * @covers LCRun4::unl
      */
     public function testOn_unl() {
-        $method = new ReflectionMethod('LCRun3', 'unl');
+        $method = new ReflectionMethod('LCRun4', 'unl');
         $this->assertEquals('', $method->invokeArgs(null,array(
             array('scopes' => array()), null, false, array(), null
 )        ));
@@ -112,10 +112,10 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LCRun3::isec
+     * @covers LCRun4::isec
      */
     public function testOn_isec() {
-        $method = new ReflectionMethod('LCRun3', 'isec');
+        $method = new ReflectionMethod('LCRun4', 'isec');
         $this->assertEquals(true, $method->invokeArgs(null,array(
             array(), null
 )        ));
@@ -136,10 +136,10 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LCRun3::raw
+     * @covers LCRun4::raw
      */
     public function testOn_raw() {
-        $method = new ReflectionMethod('LCRun3', 'raw');
+        $method = new ReflectionMethod('LCRun4', 'raw');
         $this->assertEquals(true, $method->invokeArgs(null,array(
             array('flags' => array('jstrue' => 0)), true
 )        ));
@@ -181,10 +181,10 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LCRun3::enc
+     * @covers LCRun4::enc
      */
     public function testOn_enc() {
-        $method = new ReflectionMethod('LCRun3', 'enc');
+        $method = new ReflectionMethod('LCRun4', 'enc');
         $this->assertEquals('a', $method->invokeArgs(null,array(
             array(), 'a'
 )        ));
@@ -196,10 +196,10 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LCRun3::encq
+     * @covers LCRun4::encq
      */
     public function testOn_encq() {
-        $method = new ReflectionMethod('LCRun3', 'encq');
+        $method = new ReflectionMethod('LCRun4', 'encq');
         $this->assertEquals('a', $method->invokeArgs(null,array(
             array(), 'a'
 )        ));
@@ -214,10 +214,10 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LCRun3::sec
+     * @covers LCRun4::sec
      */
     public function testOn_sec() {
-        $method = new ReflectionMethod('LCRun3', 'sec');
+        $method = new ReflectionMethod('LCRun4', 'sec');
         $this->assertEquals('', $method->invokeArgs(null,array(
             array('flags' => array('spvar' => 0)), false, false, false, function () {return 'A';}
 )        ));
@@ -292,10 +292,10 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LCRun3::wi
+     * @covers LCRun4::wi
      */
     public function testOn_wi() {
-        $method = new ReflectionMethod('LCRun3', 'wi');
+        $method = new ReflectionMethod('LCRun4', 'wi');
         $this->assertEquals('', $method->invokeArgs(null,array(
             array(), false, false, function () {return 'A';}
 )        ));
@@ -310,10 +310,10 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LCRun3::ch
+     * @covers LCRun4::ch
      */
     public function testOn_ch() {
-        $method = new ReflectionMethod('LCRun3', 'ch');
+        $method = new ReflectionMethod('LCRun4', 'ch');
         $this->assertEquals('=-=', $method->invokeArgs(null,array(
             array('helpers' => array('a' => function ($i) {return "=$i[0]=";})), 'a', array(array('-'),array()), 'raw'
 )        ));
@@ -328,10 +328,10 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LCRun3::chret
+     * @covers LCRun4::chret
      */
     public function testOn_chret() {
-        $method = new ReflectionMethod('LCRun3', 'chret');
+        $method = new ReflectionMethod('LCRun4', 'chret');
         $this->assertEquals('=&=', $method->invokeArgs(null,array(
             '=&=', 'raw'
 )        ));
@@ -361,10 +361,10 @@ class LCRun3Test extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LCRun3::bch
+     * @covers LCRun4::bch
      */
     public function testOn_bch() {
-        $method = new ReflectionMethod('LCRun3', 'bch');
+        $method = new ReflectionMethod('LCRun4', 'bch');
         $this->assertEquals('4.2.3', $method->invokeArgs(null,array(
             array('blockhelpers' => array('a' => function ($cx) {return array($cx,2,3);})), 'a', array(0, 0), 4, false, function($cx, $i) {return implode('.', $i);}
 )        ));

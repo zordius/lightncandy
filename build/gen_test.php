@@ -12,7 +12,7 @@ foreach (Array(
 }
 
 genTestForClass('LightnCandy');
-genTestForClass('LCRun3');
+genTestForClass('LCRun4');
 
 function genTestForClass($classname) {
     ob_start();
