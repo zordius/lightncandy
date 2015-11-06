@@ -630,7 +630,7 @@ Template Debugging
 
 When template error happened, LightnCandy::compile() will return false. You may compile with `FLAG_ERROR_LOG` to see more error message, or compile with `FLAG_ERROR_EXCEPTION` to catch the exception.
 
-You may generate debug version of templates with `FLAG_RENDER_DEBUG` when compile() . The debug template contained more debug information and slower (TBD: performance result) , you may pass extra LCRun3 options into render function to know more rendering error (missing data). For example:
+You may generate debug version of templates with `FLAG_RENDER_DEBUG` when compile() . The debug template contained more debug information and slower (TBD: performance result) , you may pass extra LCRun4 options into render function to know more rendering error (missing data). For example:
 
 ```php
 $template = "Hello! {{name}} is {{gender}}.
@@ -659,22 +659,22 @@ $php = LightnCandy::compile($template, Array(
 $renderer = LightnCandy::prepare($php);
 
 // error_log() when missing data:
-//   LCRun3: [gender] is not exist
-//   LCRun3: ../[test] is not exist
-$renderer(Array('name' => 'John'), LCRun3::DEBUG_ERROR_LOG);
+//   LCRun4: [gender] is not exist
+//   LCRun4: ../[test] is not exist
+$renderer(Array('name' => 'John'), LCRun4::DEBUG_ERROR_LOG);
 
 // Output visual debug template with ANSI color:
-echo $renderer(Array('name' => 'John'), LCRun3::DEBUG_TAGS_ANSI);
+echo $renderer(Array('name' => 'John'), LCRun4::DEBUG_TAGS_ANSI);
 
 // Output debug template with HTML comments:
-echo $renderer(Array('name' => 'John'), LCRun3::DEBUG_TAGS_HTML);
+echo $renderer(Array('name' => 'John'), LCRun4::DEBUG_TAGS_HTML);
 ```
 
 The ANSI output will be: 
 
 <a href="tests/example_debug.php"><img src="https://github.com/zordius/lightncandy/raw/master/example_debug.png"/></a>
 
-Here are the list of LCRun3 debug options for render function:
+Here are the list of LCRun4 debug options for render function:
 
 * `DEBUG_ERROR_LOG` : error_log() when missing required data
 * `DEBUG_ERROR_EXCEPTION` : throw exception when missing required data
@@ -725,11 +725,11 @@ Please make sure the passed in `renderex` is valid PHP, LightnCandy will not che
 Customize Rendering Runtime Class
 ---------------------------------
 
-If you want to extend `LCRun3` class and replace default rendering runtime library, you may use `lcrun` when `compile()` . For example, this sample will generate render function based on your extended `MyLCRunClass`:
+If you want to extend `LCRun4` class and replace default rendering runtime library, you may use `lcrun` when `compile()` . For example, this sample will generate render function based on your extended `MyLCRunClass`:
 
 ```php
 // Customized rendering runtime library to debug {{{foo}}}
-class MyLCRunClass extends LCRun3 {
+class MyLCRunClass extends LCRun4 {
     public static function raw($cx, $v) {
         return '[[DEBUG:raw()=>' . var_export($v, true) . ']]';
     }

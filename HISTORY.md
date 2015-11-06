@@ -65,6 +65,7 @@ v0.19 https://github.com/zordius/lightncandy/tree/v0.19
    * 90adb5531b fix `{{#if 0.0}}` logic to behave as false
    * 004a6ddffe fix `{{../foo}}` double usage count bug
    * 9d55f12c5a fix subexpression parsing bug when line change inside it
+   * fe1cb4987a **BREAK CHANGE** remove FLAG_MUSTACHESEC
 
 v0.18 https://github.com/zordius/lightncandy/tree/v0.18
    * align with handlebars.js 2.0.0
