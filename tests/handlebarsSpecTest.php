@@ -3,7 +3,7 @@
 require_once('src/lightncandy.php');
 
 $tmpdir = sys_get_temp_dir();
-$hb_test_flag = LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_EXTHELPER | LightnCandy::FLAG_ERROR_SKIPPARTIAL | LightnCandy::FLAG_MUSTACHELOOKUP;
+$hb_test_flag = LightnCandy::FLAG_HANDLEBARSJS_FULL | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_EXTHELPER;
 $tested = 0;
 
 function recursive_unset(&$array, $unwanted_key) {
@@ -239,7 +239,13 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                 $this->fail('Should Fail:' . print_r($spec, true)); // . print_r(LightnCandy::getContext(), true));
             }
 
-            $this->assertEquals($spec['expected'], $renderer($spec['data']), "[{$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']} PHP CODE: $php");
+            try {
+                $result = $renderer($spec['data'], LCRun4::DEBUG_ERROR_EXCEPTION);
+            } catch (Exception $e) {
+                $this->fail("Rendering Error in {$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']} PHP CODE: $php");
+            }
+
+            $this->assertEquals($spec['expected'], $result, "[{$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']} PHP CODE: $php");
         }
     }
 
