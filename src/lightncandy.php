@@ -1018,6 +1018,11 @@ $libstr
         $context['ops']['seperator'] = '';
         // override $raw, subexpressions are never escaped
         $ret = static::compileCustomHelper($context, $vars, true, true);
+
+        if (!$ret && $context['flags']['lambda']) {
+            $ret = static::compileVariable($context, $vars, true);
+        }
+
         $context['ops']['seperator'] = $origSeperator;
 
         if ($keepCount) {
