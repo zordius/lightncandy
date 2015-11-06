@@ -2155,20 +2155,31 @@ class LCRun3 {
     }
 
     /**
+     * LightnCandy runtime method for error
+     *
+     * @param array<string,array|string|integer> $cx render time context
+     * @param string $err error message
+     *
+     * @throws Exception
+     */
+    public static function err($cx, $err) {
+        if ($cx['flags']['debug'] & self::DEBUG_ERROR_LOG) {
+            error_log($err);
+            return;
+        }
+        if ($cx['flags']['debug'] & self::DEBUG_ERROR_EXCEPTION) {
+            throw new Exception($err);
+        }
+    }
+
+    /**
      * LightnCandy runtime method for missing data error.
      *
      * @param array<string,array|string|integer> $cx render time context
      * @param string $v expression
      */
     public static function miss($cx, $v) {
-        $e = "LCRun3: $v is not exist";
-        if ($cx['flags']['debug'] & self::DEBUG_ERROR_LOG) {
-            error_log($e);
-            return;
-        }
-        if ($cx['flags']['debug'] & self::DEBUG_ERROR_EXCEPTION) {
-            throw new Exception($e);
-        }
+        self::err($cx, "LCRun3: $v is not exist");
     }
 
     /**
@@ -2476,6 +2487,10 @@ class LCRun3 {
             $isObj = !$loop;
         }
 
+        if ($cx['flags']['mustlam'] && ($v instanceof Closure)) {
+            self:err('Do not support Section Lambdas!');
+        }
+
         if (($loop && $isAry) || $isTrav) {
             if ($each && !$isTrav) {
                 // Detect input type is object or not when never done once
@@ -2746,12 +2761,7 @@ class LCRun3 {
         }
 
         if($e !== null) {
-            if ($cx['flags']['debug'] & self::DEBUG_ERROR_LOG) {
-                error_log($e);
-            }
-            if ($cx['flags']['debug'] & self::DEBUG_ERROR_EXCEPTION) {
-                throw new Exception($e);
-            }
+            self::err($cx, $e);
         }
 
         return self::chret($r, $isBlock ? 'raw' : $op);
