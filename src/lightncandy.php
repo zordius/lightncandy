@@ -1348,12 +1348,12 @@ $libstr
                 // continue from previous match when expect something
                 if ($expect) {
                     $prev .= "{$matchedall[1][$index]}$t";
-                    if ($stack && (substr($t, 0, 1) === '(')) {
+                    if (($stack > 0) && (substr($t, 0, 1) === '(')) {
                         $stack++;
                     }
                     // end an argument when end with expected charactor
                     if (substr($t, -1, 1) === $expect) {
-                        if ($stack) {
+                        if ($stack > 0) {
                             $stack--;
                             if ($stack) {
                                 continue;
@@ -1370,6 +1370,7 @@ $libstr
                 if (preg_match('/^\([^\)]*$/', $t)) {
                     $prev = $t;
                     $expect = ')';
+                    $stack=1;
                     continue;
                 }
 
@@ -1412,7 +1413,7 @@ $libstr
                 if (preg_match('/.+\([^\)]*$/', $t)) {
                     $prev = $t;
                     $expect = ')';
-                    $stack++;
+                    $stack=1;
                     continue;
                 }
 
