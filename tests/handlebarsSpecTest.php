@@ -38,19 +38,6 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
             $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , no expected result in spec, skip.");
         }
 
-        // 2. Not supported case: lambdas
-        $lambdas = false;
-        if (is_array($spec['data'])) {
-            array_walk_recursive($spec['data'], function ($v, $k) use (&$lambdas) {
-                if (($v === true) && ($k === '!code')) {
-                    $lambdas = true;
-                }
-            });
-            if ($lambdas) {
-                $this->markTestIncomplete('Not supported case: lambdas');
-            }
-        }
-
         // 3. Not supported case: foo/bar path
         if (
                ($spec['it'] === 'literal paths' && $spec['no'] === 58) ||

@@ -43,6 +43,7 @@ class LightnCandy {
     const FLAG_SLASH = 8388608;
     const FLAG_ELSE = 16777216;
     const FLAG_RAWBLOCK = 134217728;
+    const FLAG_HANDLEBARSLAMBDA = 268435456;
 
     // PHP behavior flags
     const FLAG_STANDALONE = 4;
@@ -65,11 +66,11 @@ class LightnCandy {
     // alias flags
     const FLAG_BESTPERFORMANCE = 16384; // FLAG_ECHO
     const FLAG_JS = 24; // FLAG_JSTRUE + FLAG_JSOBJECT
+    const FLAG_INSTANCE = 98304; // FLAG_PROPERTY + FLAG_METHOD
     const FLAG_MUSTACHE = 7602200; // FLAG_ERROR_SKIPPARTIAL + FLAG_MUSTACHELOOKUP + FLAG_MUSTACHELAMBDA + FLAG_RUNTIMEPARTIAL + FLAG_JS
     const FLAG_HANDLEBARS = 159391712; // FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME + FLAG_SPACECTL + FLAG_NAMEDARG + FLAG_SPVARS + FLAG_SLASH + FLAG_ELSE + FLAG_RAWBLOCK
     const FLAG_HANDLEBARSJS = 159391736; // FLAG_JS + FLAG_HANDLEBARS
-    const FLAG_HANDLEBARSJS_FULL = 160800760; // FLAG_HANDLEBARSJS + FLAG_INSTANCE + FLAG_RUNTIMEPARTIAL + FLAG_MUSTACHELOOKUP
-    const FLAG_INSTANCE = 98304; // FLAG_PROPERTY + FLAG_METHOD
+    const FLAG_HANDLEBARSJS_FULL = 429236216; // FLAG_HANDLEBARSJS + FLAG_INSTANCE + FLAG_RUNTIMEPARTIAL + FLAG_MUSTACHELOOKUP
 
     // RegExps
     const VARNAME_SEARCH = '/(\\[[^\\]]+\\]|[^\\[\\]\\.]+)/';
@@ -294,6 +295,7 @@ class LightnCandy {
         $flagSPVar = static::getBoolStr($context['flags']['spvar']);
         $flagProp = static::getBoolStr($context['flags']['prop']);
         $flagMethod = static::getBoolStr($context['flags']['method']);
+        $flagLambda = static::getBoolStr($context['flags']['lambda']);
         $flagMustlok = static::getBoolStr($context['flags']['mustlok']);
         $flagMustlam = static::getBoolStr($context['flags']['mustlam']);
         $flagEcho = static::getBoolStr($context['flags']['echo']);
@@ -316,6 +318,7 @@ class LightnCandy {
             'spvar' => $flagSPVar,
             'prop' => $flagProp,
             'method' => $flagMethod,
+            'lambda' => $flagLambda,
             'mustlok' => $flagMustlok,
             'mustlam' => $flagMustlam,
             'echo' => $flagEcho,
@@ -371,6 +374,7 @@ $libstr
                 'slash' => $flags & self::FLAG_SLASH,
                 'else' => $flags & self::FLAG_ELSE,
                 'exhlp' => $flags & self::FLAG_EXTHELPER,
+                'lambda' => $flags & self::FLAG_HANDLEBARSLAMBDA,
                 'mustlok' => $flags & self::FLAG_MUSTACHELOOKUP,
                 'mustlam' => $flags & self::FLAG_MUSTACHELAMBDA,
                 'noind' => $flags & self::FLAG_PREVENTINDENT,
@@ -1058,24 +1062,24 @@ $libstr
      * @return array<string> variable names
      *
      * @expect array('$in', 'this') when input array(null), array('flags'=>array('spvar'=>true,'debug'=>0))
-     * @expect array('((isset($in[\'true\']) && is_array($in)) ? $in[\'true\'] : null)', '[true]') when input array('true'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0))
-     * @expect array('((isset($in[\'false\']) && is_array($in)) ? $in[\'false\'] : null)', '[false]') when input array('false'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0))
+     * @expect array('((isset($in[\'true\']) && is_array($in)) ? $in[\'true\'] : null)', '[true]') when input array('true'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0))
+     * @expect array('((isset($in[\'false\']) && is_array($in)) ? $in[\'false\'] : null)', '[false]') when input array('false'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0))
      * @expect array('true', 'true') when input array(0, 'true'), array('flags'=>array('spvar'=>true,'debug'=>0))
      * @expect array('false', 'false') when input array(0, 'false'), array('flags'=>array('spvar'=>true,'debug'=>0))
-     * @expect array('((isset($in[\'2\']) && is_array($in)) ? $in[\'2\'] : null)', '[2]') when input array('2'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0))
+     * @expect array('((isset($in[\'2\']) && is_array($in)) ? $in[\'2\'] : null)', '[2]') when input array('2'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0))
      * @expect array('2', '2') when input array(0, '2'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0))
-     * @expect array('((isset($in[\'@index\']) && is_array($in)) ? $in[\'@index\'] : null)', '[@index]') when input array('@index'), array('flags'=>array('spvar'=>false,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0))
-     * @expect array("((isset(\$cx['sp_vars']['index']) && is_array(\$cx['sp_vars'])) ? \$cx['sp_vars']['index'] : null)", '@[index]') when input array('@index'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0))
-     * @expect array("((isset(\$cx['sp_vars']['key']) && is_array(\$cx['sp_vars'])) ? \$cx['sp_vars']['key'] : null)", '@[key]') when input array('@key'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0))
-     * @expect array("((isset(\$cx['sp_vars']['first']) && is_array(\$cx['sp_vars'])) ? \$cx['sp_vars']['first'] : null)", '@[first]') when input array('@first'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0))
-     * @expect array("((isset(\$cx['sp_vars']['last']) && is_array(\$cx['sp_vars'])) ? \$cx['sp_vars']['last'] : null)", '@[last]') when input array('@last'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0))
-     * @expect array('((isset($in[\'"a"\']) && is_array($in)) ? $in[\'"a"\'] : null)', '["a"]') when input array('"a"'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0))
+     * @expect array('((isset($in[\'@index\']) && is_array($in)) ? $in[\'@index\'] : null)', '[@index]') when input array('@index'), array('flags'=>array('spvar'=>false,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0))
+     * @expect array("((isset(\$cx['sp_vars']['index']) && is_array(\$cx['sp_vars'])) ? \$cx['sp_vars']['index'] : null)", '@[index]') when input array('@index'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0))
+     * @expect array("((isset(\$cx['sp_vars']['key']) && is_array(\$cx['sp_vars'])) ? \$cx['sp_vars']['key'] : null)", '@[key]') when input array('@key'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0))
+     * @expect array("((isset(\$cx['sp_vars']['first']) && is_array(\$cx['sp_vars'])) ? \$cx['sp_vars']['first'] : null)", '@[first]') when input array('@first'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0))
+     * @expect array("((isset(\$cx['sp_vars']['last']) && is_array(\$cx['sp_vars'])) ? \$cx['sp_vars']['last'] : null)", '@[last]') when input array('@last'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0))
+     * @expect array('((isset($in[\'"a"\']) && is_array($in)) ? $in[\'"a"\'] : null)', '["a"]') when input array('"a"'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0))
      * @expect array('"a"', '"a"') when input array(0, '"a"'), array('flags'=>array('spvar'=>true,'debug'=>0))
-     * @expect array('((isset($in[\'a\']) && is_array($in)) ? $in[\'a\'] : null)', '[a]') when input array('a'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0))
-     * @expect array('((isset($cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\']) && is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)', '../[a]') when input array(1,'a'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0))
-     * @expect array('((isset($cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\']) && is_array($cx[\'scopes\'][count($cx[\'scopes\'])-3])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)', '../../../[a]') when input array(3,'a'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0))
-     * @expect array('((isset($in[\'id\']) && is_array($in)) ? $in[\'id\'] : null)', 'this.[id]') when input array(null, 'id'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0))
-     * @expect array('LCRun4::v($cx, $in, array(\'id\'))', 'this.[id]') when input array(null, 'id'), array('flags'=>array('prop'=>true,'spvar'=>true,'debug'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0,'standalone'=>0), 'lcrun' => 'LCRun4')
+     * @expect array('((isset($in[\'a\']) && is_array($in)) ? $in[\'a\'] : null)', '[a]') when input array('a'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0))
+     * @expect array('((isset($cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\']) && is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)', '../[a]') when input array(1,'a'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0))
+     * @expect array('((isset($cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\']) && is_array($cx[\'scopes\'][count($cx[\'scopes\'])-3])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)', '../../../[a]') when input array(3,'a'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0))
+     * @expect array('((isset($in[\'id\']) && is_array($in)) ? $in[\'id\'] : null)', 'this.[id]') when input array(null, 'id'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0))
+     * @expect array('LCRun4::v($cx, $in, array(\'id\'))', 'this.[id]') when input array(null, 'id'), array('flags'=>array('prop'=>true,'spvar'=>true,'debug'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0,'standalone'=>0), 'lcrun' => 'LCRun4')
      */
     protected static function getVariableName($var, &$context) {
         if (isset($var[0]) && ($var[0] === 0)) {
@@ -1126,7 +1130,7 @@ $libstr
 
         // To support recursive context lookup, instance properties + methods and lambdas
         // the only way is using slower rendering time variable resolver.
-        if ($context['flags']['prop'] || $context['flags']['method'] || $context['flags']['mustlok'] || $context['flags']['mustlam']) {
+        if ($context['flags']['prop'] || $context['flags']['method'] || $context['flags']['mustlok'] || $context['flags']['mustlam'] || $context['flags']['lambda']) {
             return array(static::getFuncName($context, 'v', $exp) . "\$cx, $base, array(" . implode(',', array_map(function ($V) {
                 return "'$V'";
             }, $var)) . '))', $exp);
@@ -2362,19 +2366,19 @@ class LCRun4 {
      *
      * @return string The raw value of the specified variable
      *
-     * @expect true when input array('flags' => array('jstrue' => 0, 'mustlam' => 0)), true
+     * @expect true when input array('flags' => array('jstrue' => 0, 'mustlam' => 0, 'lambda' => 0)), true
      * @expect 'true' when input array('flags' => array('jstrue' => 1)), true
-     * @expect '' when input array('flags' => array('jstrue' => 0, 'mustlam' => 0)), false
+     * @expect '' when input array('flags' => array('jstrue' => 0, 'mustlam' => 0, 'lambda' => 0)), false
      * @expect 'false' when input array('flags' => array('jstrue' => 1)), false
      * @expect 'false' when input array('flags' => array('jstrue' => 1)), false, true
      * @expect 'Array' when input array('flags' => array('jstrue' => 1, 'jsobj' => 0)), array('a', 'b')
-     * @expect 'a,b' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'mustlam' => 0)), array('a', 'b')
+     * @expect 'a,b' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'mustlam' => 0, 'lambda' => 0)), array('a', 'b')
      * @expect '[object Object]' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1)), array('a', 'c' => 'b')
      * @expect '[object Object]' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1)), array('c' => 'b')
-     * @expect 'a,true' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'mustlam' => 0)), array('a', true)
-     * @expect 'a,1' when input array('flags' => array('jstrue' => 0, 'jsobj' => 1, 'mustlam' => 0)), array('a',true)
-     * @expect 'a,' when input array('flags' => array('jstrue' => 0, 'jsobj' => 1, 'mustlam' => 0)), array('a',false)
-     * @expect 'a,false' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'mustlam' => 0)), array('a',false)
+     * @expect 'a,true' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'mustlam' => 0, 'lambda' => 0)), array('a', true)
+     * @expect 'a,1' when input array('flags' => array('jstrue' => 0, 'jsobj' => 1, 'mustlam' => 0, 'lambda' => 0)), array('a',true)
+     * @expect 'a,' when input array('flags' => array('jstrue' => 0, 'jsobj' => 1, 'mustlam' => 0, 'lambda' => 0)), array('a',false)
+     * @expect 'a,false' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'mustlam' => 0, 'lambda' => 0)), array('a',false)
      */
     public static function raw($cx, $v) {
         if ($v === true) {
@@ -2405,8 +2409,10 @@ class LCRun4 {
             }
         }
 
-        if ($cx['flags']['mustlam'] && ($v instanceof Closure)) {
-            $v = $v();
+        if ($v instanceof Closure) {
+            if ($cx['flags']['mustlam'] || $cx['flags']['lambda']) {
+                $v = $v();
+            }
         }
 
         return "$v";
@@ -2420,9 +2426,9 @@ class LCRun4 {
      *
      * @return string The htmlencoded value of the specified variable
      *
-     * @expect 'a' when input array('flags' => array('mustlam' => 0)), 'a'
-     * @expect 'a&amp;b' when input array('flags' => array('mustlam' => 0)), 'a&b'
-     * @expect 'a&#039;b' when input array('flags' => array('mustlam' => 0)), 'a\'b'
+     * @expect 'a' when input array('flags' => array('mustlam' => 0, 'lambda' => 0)), 'a'
+     * @expect 'a&amp;b' when input array('flags' => array('mustlam' => 0, 'lambda' => 0)), 'a&b'
+     * @expect 'a&#039;b' when input array('flags' => array('mustlam' => 0, 'lambda' => 0)), 'a\'b'
      */
     public static function enc($cx, $var) {
         return htmlentities(self::raw($cx, $var), ENT_QUOTES, 'UTF-8');
@@ -2436,10 +2442,10 @@ class LCRun4 {
      *
      * @return string The htmlencoded value of the specified variable
      *
-     * @expect 'a' when input array('flags' => array('mustlam' => 0)), 'a'
-     * @expect 'a&amp;b' when input array('flags' => array('mustlam' => 0)), 'a&b'
-     * @expect 'a&#x27;b' when input array('flags' => array('mustlam' => 0)), 'a\'b'
-     * @expect '&#x60;a&#x27;b' when input array('flags' => array('mustlam' => 0)), '`a\'b'
+     * @expect 'a' when input array('flags' => array('mustlam' => 0, 'lambda' => 0)), 'a'
+     * @expect 'a&amp;b' when input array('flags' => array('mustlam' => 0, 'lambda' => 0)), 'a&b'
+     * @expect 'a&#x27;b' when input array('flags' => array('mustlam' => 0, 'lambda' => 0)), 'a\'b'
+     * @expect '&#x60;a&#x27;b' when input array('flags' => array('mustlam' => 0, 'lambda' => 0)), '`a\'b'
      */
     public static function encq($cx, $var) {
         return preg_replace('/`/', '&#x60;', preg_replace('/&#039;/', '&#x27;', htmlentities(self::raw($cx, $var), ENT_QUOTES, 'UTF-8')));
@@ -2457,30 +2463,30 @@ class LCRun4 {
      *
      * @return string The rendered string of the section
      *
-     * @expect '' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), false, false, false, function () {return 'A';}
-     * @expect '' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), null, null, false, function () {return 'A';}
-     * @expect 'A' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), true, true, false, function () {return 'A';}
-     * @expect 'A' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), 0, 0, false, function () {return 'A';}
-     * @expect '-a=' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), array('a'), array('a'), false, function ($c, $i) {return "-$i=";}
-     * @expect '-a=-b=' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), array('a','b'), array('a','b'), false, function ($c, $i) {return "-$i=";}
-     * @expect '' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), 'abc', 'abc', true, function ($c, $i) {return "-$i=";}
-     * @expect '-b=' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), array('a' => 'b'), array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
-     * @expect '1' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), 'b', 'b', false, function ($c, $i) {return count($i);}
-     * @expect '1' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), 1, 1, false, function ($c, $i) {return print_r($i, true);}
-     * @expect '0' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), 0, 0, false, function ($c, $i) {return print_r($i, true);}
-     * @expect '{"b":"c"}' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), array('b' => 'c'), array('b' => 'c'), false, function ($c, $i) {return json_encode($i);}
-     * @expect 'inv' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), array(), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'inv' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), array(), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'inv' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), false, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'inv' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), false, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'inv' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), '', 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'cb' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), '', 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'inv' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), 0, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'cb' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), 0, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'inv' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), new stdClass, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect 'cb' when input array('flags' => array('spvar' => 0, 'mustlam' => 0)), new stdClass, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
-     * @expect '268' when input array('flags' => array('spvar' => 1, 'mustlam' => 0), 'sp_vars'=>array('root' => 0)), array(1,3,4), 0, false, function ($c, $i) {return $i * 2;}
-     * @expect '038' when input array('flags' => array('spvar' => 1, 'mustlam' => 0), 'sp_vars'=>array('root' => 0)), array(1,3,'a'=>4), 0, true, function ($c, $i) {return $i * $c['sp_vars']['index'];}
+     * @expect '' when input array('flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), false, false, false, function () {return 'A';}
+     * @expect '' when input array('flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), null, null, false, function () {return 'A';}
+     * @expect 'A' when input array('flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), true, true, false, function () {return 'A';}
+     * @expect 'A' when input array('flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), 0, 0, false, function () {return 'A';}
+     * @expect '-a=' when input array('flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), array('a'), array('a'), false, function ($c, $i) {return "-$i=";}
+     * @expect '-a=-b=' when input array('flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), array('a','b'), array('a','b'), false, function ($c, $i) {return "-$i=";}
+     * @expect '' when input array('flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), 'abc', 'abc', true, function ($c, $i) {return "-$i=";}
+     * @expect '-b=' when input array('flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), array('a' => 'b'), array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
+     * @expect '1' when input array('flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), 'b', 'b', false, function ($c, $i) {return count($i);}
+     * @expect '1' when input array('flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), 1, 1, false, function ($c, $i) {return print_r($i, true);}
+     * @expect '0' when input array('flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), 0, 0, false, function ($c, $i) {return print_r($i, true);}
+     * @expect '{"b":"c"}' when input array('flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), array('b' => 'c'), array('b' => 'c'), false, function ($c, $i) {return json_encode($i);}
+     * @expect 'inv' when input array('flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), array(), 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'inv' when input array('flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), array(), 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'inv' when input array('flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), false, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'inv' when input array('flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), false, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'inv' when input array('flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), '', 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'cb' when input array('flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), '', 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'inv' when input array('flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), 0, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'cb' when input array('flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), 0, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'inv' when input array('flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), new stdClass, 0, true, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect 'cb' when input array('flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), new stdClass, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
+     * @expect '268' when input array('flags' => array('spvar' => 1, 'mustlam' => 0, 'lambda' => 0), 'sp_vars'=>array('root' => 0)), array(1,3,4), 0, false, function ($c, $i) {return $i * 2;}
+     * @expect '038' when input array('flags' => array('spvar' => 1, 'mustlam' => 0, 'lambda' => 0), 'sp_vars'=>array('root' => 0)), array(1,3,'a'=>4), 0, true, function ($c, $i) {return $i * $c['sp_vars']['index'];}
      */
     public static function sec($cx, $v, $in, $each, $cb, $else = null) {
         $isAry = is_array($v) || ($v instanceof ArrayObject);
