@@ -17,6 +17,24 @@ function recursive_unset(&$array, $unwanted_key) {
     }
 }
 
+function patch_safestring($code) {
+    $code = preg_replace('/new \\\\Handlebars\\\\SafeString\((.+?)\);/', 'array($1, "raw");', $code);
+    return preg_replace('/new SafeString\((.+?)\);/', 'array($1, "raw");', $code);
+}
+
+function recursive_lambda_fix(&$array) {
+    if (is_array($array) && isset($array['!code']) && isset($array['php'])) {
+        $code = patch_safestring($array['php']);
+        eval("\$v = $code;");
+        $array = $v;
+    }
+    foreach ($array as &$value) {
+        if (is_array($value)) {
+            recursive_lambda_fix($value);
+        }
+    }
+}
+
 class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
 {
     /**
@@ -29,6 +47,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
         global $tested;
 
         recursive_unset($spec, '!sparsearray');
+        recursive_lambda_fix($spec['data']);
 
         $tested++;
 
@@ -179,7 +198,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
             $helper = preg_replace('/\\$options->(\\w+)/', '$options[\'$1\']',
                     preg_replace('/\\$options->scope/', '$options[\'_this\']',
                         preg_replace('/\\$block\\/\\*\\[\'(.+?)\'\\]\\*\\/->(.+?)\\(/', '$block[\'$2\'](',
-                            preg_replace('/new \\\\Handlebars\\\\SafeString\((.+?)\);/', 'array($1, "raw");',
+                            patch_safestring(
                                 preg_replace('/function/', "function $hname", $func['php'], 1)
                             )
                         )
