@@ -17,6 +17,8 @@
         "phpunit/phpunit": "4.0.17"
     },
     "autoload": {
-        "classmap": ["src/lightncandy.php"]
+        "psr-4": {
+            "LightnCandy": "src"
+        }
     }
 }

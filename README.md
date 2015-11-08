@@ -21,7 +21,7 @@ Features
    * Runs 2~7 times faster than <a href="https://github.com/dingram/mustache-php">mustache-php</a>.
    * Runs 15~50 times faster than <a href="https://github.com/XaminProject/handlebars.php">handlebars.php</a>.
    * Detail performance test reports can be found <a href="https://github.com/zordius/HandlebarsTest">here</a>, go http://zordius.github.io/HandlebarsTest/ to see charts.
-* **SMALL!** single PHP file, only 128K!
+* **SMALL!** 2 files in 132K
 * **ROBUST!**
    * 100% support <a href="https://github.com/mustache/spec">mustache spec v1.1.2</a> (without lambda module)
    * Supports almost all <a href="https://github.com/jbboehr/handlebars-spec">handlebars.js spec</a>
@@ -46,14 +46,6 @@ Use Composer ( https://getcomposer.org/ ) to install LightnCandy:
 composer require zordius/lightncandy:dev-master
 ```
 
-Or, download LightnCandy from github:
-
-```
-curl -LO https://github.com/zordius/lightncandy/raw/master/src/lightncandy.php
-```
-
-LightnCandy requirement: PHP 5.3.0+ .
-
 **UPGRADE NOTICE**
 
 * Please check <a href="HISTORY.md">HISTORY.md</a> for versions history.
@@ -63,8 +55,8 @@ Usage
 -----
 ```php
 // THREE STEPS TO USE LIGHTNCANDY
-// Step 1. require the lib, compile template, and get the PHP code as string
-require('src/lightncandy.php');
+// Step 1. use LightnCandy
+use LightnCandy;
 
 $template = "Welcome {{name}} , You win \${{value}} dollars!!\n";
 $phpStr = LightnCandy::compile($template);  // compiled PHP code in $phpStr
@@ -631,7 +623,7 @@ Template Debugging
 
 When template error happened, LightnCandy::compile() will return false. You may compile with `FLAG_ERROR_LOG` to see more error message, or compile with `FLAG_ERROR_EXCEPTION` to catch the exception.
 
-You may generate debug version of templates with `FLAG_RENDER_DEBUG` when compile() . The debug template contained more debug information and slower (TBD: performance result) , you may pass extra LCRun4 options into render function to know more rendering error (missing data). For example:
+You may generate debug version of templates with `FLAG_RENDER_DEBUG` when compile() . The debug template contained more debug information and slower (TBD: performance result) , you may pass extra LightnCandy\Runtime options into render function to know more rendering error (missing data). For example:
 
 ```php
 $template = "Hello! {{name}} is {{gender}}.
@@ -660,22 +652,22 @@ $php = LightnCandy::compile($template, Array(
 $renderer = LightnCandy::prepare($php);
 
 // error_log() when missing data:
-//   LCRun4: [gender] is not exist
-//   LCRun4: ../[test] is not exist
-$renderer(Array('name' => 'John'), LCRun4::DEBUG_ERROR_LOG);
+//   LightnCandy\Runtime: [gender] is not exist
+//   LightnCandy\Runtime: ../[test] is not exist
+$renderer(Array('name' => 'John'), LightnCandy\Runtime::DEBUG_ERROR_LOG);
 
 // Output visual debug template with ANSI color:
-echo $renderer(Array('name' => 'John'), LCRun4::DEBUG_TAGS_ANSI);
+echo $renderer(Array('name' => 'John'), LightnCandy\Runtime::DEBUG_TAGS_ANSI);
 
 // Output debug template with HTML comments:
-echo $renderer(Array('name' => 'John'), LCRun4::DEBUG_TAGS_HTML);
+echo $renderer(Array('name' => 'John'), LightnCandy\Runtime::DEBUG_TAGS_HTML);
 ```
 
 The ANSI output will be: 
 
 <a href="tests/example_debug.php"><img src="https://github.com/zordius/lightncandy/raw/master/example_debug.png"/></a>
 
-Here are the list of LCRun4 debug options for render function:
+Here are the list of LightnCandy\Runtime debug options for render function:
 
 * `DEBUG_ERROR_LOG` : error_log() when missing required data
 * `DEBUG_ERROR_EXCEPTION` : throw exception when missing required data
@@ -726,11 +718,11 @@ Please make sure the passed in `renderex` is valid PHP, LightnCandy will not che
 Customize Rendering Runtime Class
 ---------------------------------
 
-If you want to extend `LCRun4` class and replace default rendering runtime library, you may use `lcrun` when `compile()` . For example, this sample will generate render function based on your extended `MyLCRunClass`:
+If you want to extend `LightnCandy\Runtime` class and replace default rendering runtime library, you may use `lcrun` when `compile()` . For example, this sample will generate render function based on your extended `MyLCRunClass`:
 
 ```php
 // Customized rendering runtime library to debug {{{foo}}}
-class MyLCRunClass extends LCRun4 {
+class MyLCRunClass extends LightnCandy\Runtime {
     public static function raw($cx, $v) {
         return '[[DEBUG:raw()=>' . var_export($v, true) . ']]';
     }

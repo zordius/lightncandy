@@ -110,6 +110,8 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                ($spec['it'] === 'should include in simple block calls') ||
                ($spec['it'] === 'should include full id') ||
                ($spec['it'] === 'should include full id if a hash is passed') ||
+               ($spec['it'] === 'lambdas resolved by blockHelperMissing are bound to the context') ||
+
 
                // helper for raw block
                ($spec['it'] === 'helper for raw block gets parameters') ||
