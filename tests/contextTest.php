@@ -1,6 +1,6 @@
 <?php
 
-require_once('src/lightncandy.php');
+use LightnCandy\LightnCandy;
 require_once('tests/helpers_for_test.php');
 
 class contextTest extends PHPUnit_Framework_TestCase

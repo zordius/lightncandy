@@ -1,7 +1,7 @@
 <?php
 
-// Class for customized LCRun
-class MyLCRunClass extends LCRun4 {
+// Class for customized Runtime
+class MyLCRunClass extends \LightnCandy\Runtime {
     public static function raw($cx, $v) {
         return '[[DEBUG:raw()=>' . var_export($v, true) . ']]';
     }

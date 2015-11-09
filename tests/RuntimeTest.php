@@ -8,7 +8,7 @@ use LightnCandy\Runtime;
 class RuntimeTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @covers Runtime::debug
+     * @covers LightnCandy\Runtime::debug
      */
     public function testOn_debug() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'debug');
@@ -20,7 +20,7 @@ class RuntimeTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers Runtime::v
+     * @covers LightnCandy\Runtime::v
      */
     public function testOn_v() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'v');
@@ -38,7 +38,7 @@ class RuntimeTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers Runtime::ifvar
+     * @covers LightnCandy\Runtime::ifvar
      */
     public function testOn_ifvar() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'ifvar');
@@ -74,7 +74,7 @@ class RuntimeTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers Runtime::ifv
+     * @covers LightnCandy\Runtime::ifv
      */
     public function testOn_ifv() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'ifv');
@@ -92,7 +92,7 @@ class RuntimeTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers Runtime::unl
+     * @covers LightnCandy\Runtime::unl
      */
     public function testOn_unl() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'unl');
@@ -113,7 +113,7 @@ class RuntimeTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers Runtime::isec
+     * @covers LightnCandy\Runtime::isec
      */
     public function testOn_isec() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'isec');
@@ -137,7 +137,7 @@ class RuntimeTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers Runtime::raw
+     * @covers LightnCandy\Runtime::raw
      */
     public function testOn_raw() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'raw');
@@ -182,7 +182,7 @@ class RuntimeTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers Runtime::enc
+     * @covers LightnCandy\Runtime::enc
      */
     public function testOn_enc() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'enc');
@@ -197,7 +197,7 @@ class RuntimeTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers Runtime::encq
+     * @covers LightnCandy\Runtime::encq
      */
     public function testOn_encq() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'encq');
@@ -215,7 +215,7 @@ class RuntimeTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers Runtime::sec
+     * @covers LightnCandy\Runtime::sec
      */
     public function testOn_sec() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'sec');
@@ -293,7 +293,7 @@ class RuntimeTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers Runtime::wi
+     * @covers LightnCandy\Runtime::wi
      */
     public function testOn_wi() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'wi');
@@ -311,7 +311,7 @@ class RuntimeTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers Runtime::ch
+     * @covers LightnCandy\Runtime::ch
      */
     public function testOn_ch() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'ch');
@@ -329,7 +329,7 @@ class RuntimeTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers Runtime::chret
+     * @covers LightnCandy\Runtime::chret
      */
     public function testOn_chret() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'chret');
@@ -362,7 +362,7 @@ class RuntimeTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers Runtime::bch
+     * @covers LightnCandy\Runtime::bch
      */
     public function testOn_bch() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'bch');

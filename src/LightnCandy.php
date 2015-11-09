@@ -19,7 +19,7 @@ Origin: https://github.com/zordius/lightncandy
  */
 
 namespace LightnCandy;
-use Runtime;
+use \LightnCandy\Runtime;
 
 /**
  * LightnCandy core static class.

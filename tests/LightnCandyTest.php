@@ -8,7 +8,7 @@ use LightnCandy\Runtime;
 class LightnCandyTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @covers LightnCandy::stripExtendedComments
+     * @covers LightnCandy\LightnCandy::stripExtendedComments
      */
     public function testOn_stripExtendedComments() {
         $method = new \ReflectionMethod('LightnCandy\LightnCandy', 'stripExtendedComments');
@@ -24,7 +24,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LightnCandy::escapeTemplate
+     * @covers LightnCandy\LightnCandy::escapeTemplate
      */
     public function testOn_escapeTemplate() {
         $method = new \ReflectionMethod('LightnCandy\LightnCandy', 'escapeTemplate');
@@ -40,7 +40,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LightnCandy::buildHelperTable
+     * @covers LightnCandy\LightnCandy::buildHelperTable
      */
     public function testOn_buildHelperTable() {
         $method = new \ReflectionMethod('LightnCandy\LightnCandy', 'buildHelperTable');
@@ -62,7 +62,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LightnCandy::prePartial
+     * @covers LightnCandy\LightnCandy::prePartial
      */
     public function testOn_prePartial() {
         $method = new \ReflectionMethod('LightnCandy\LightnCandy', 'prePartial');
@@ -75,7 +75,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LightnCandy::buildCXFileext
+     * @covers LightnCandy\LightnCandy::buildCXFileext
      */
     public function testOn_buildCXFileext() {
         $method = new \ReflectionMethod('LightnCandy\LightnCandy', 'buildCXFileext');
@@ -94,7 +94,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LightnCandy::buildCXBasedir
+     * @covers LightnCandy\LightnCandy::buildCXBasedir
      */
     public function testOn_buildCXBasedir() {
         $method = new \ReflectionMethod('LightnCandy\LightnCandy', 'buildCXBasedir');
@@ -116,7 +116,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LightnCandy::getPHPCode
+     * @covers LightnCandy\LightnCandy::getPHPCode
      */
     public function testOn_getPHPCode() {
         $method = new \ReflectionMethod('LightnCandy\LightnCandy', 'getPHPCode');
@@ -129,7 +129,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LightnCandy::handleError
+     * @covers LightnCandy\LightnCandy::handleError
      */
     public function testOn_handleError() {
         $method = new \ReflectionMethod('LightnCandy\LightnCandy', 'handleError');
@@ -145,7 +145,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LightnCandy::getBoolStr
+     * @covers LightnCandy\LightnCandy::getBoolStr
      */
     public function testOn_getBoolStr() {
         $method = new \ReflectionMethod('LightnCandy\LightnCandy', 'getBoolStr');
@@ -164,7 +164,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LightnCandy::getFuncName
+     * @covers LightnCandy\LightnCandy::getFuncName
      */
     public function testOn_getFuncName() {
         $method = new \ReflectionMethod('LightnCandy\LightnCandy', 'getFuncName');
@@ -183,7 +183,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LightnCandy::getArrayStr
+     * @covers LightnCandy\LightnCandy::getArrayStr
      */
     public function testOn_getArrayStr() {
         $method = new \ReflectionMethod('LightnCandy\LightnCandy', 'getArrayStr');
@@ -199,7 +199,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LightnCandy::getArrayCode
+     * @covers LightnCandy\LightnCandy::getArrayCode
      */
     public function testOn_getArrayCode() {
         $method = new \ReflectionMethod('LightnCandy\LightnCandy', 'getArrayCode');
@@ -215,7 +215,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LightnCandy::getVariableNames
+     * @covers LightnCandy\LightnCandy::getVariableNames
      */
     public function testOn_getVariableNames() {
         $method = new \ReflectionMethod('LightnCandy\LightnCandy', 'getVariableNames');
@@ -231,7 +231,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LightnCandy::getVariableName
+     * @covers LightnCandy\LightnCandy::getVariableName
      */
     public function testOn_getVariableName() {
         $method = new \ReflectionMethod('LightnCandy\LightnCandy', 'getVariableName');
@@ -295,7 +295,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LightnCandy::getExpression
+     * @covers LightnCandy\LightnCandy::getExpression
      */
     public function testOn_getExpression() {
         $method = new \ReflectionMethod('LightnCandy\LightnCandy', 'getExpression');
@@ -323,7 +323,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LightnCandy::fixVariable
+     * @covers LightnCandy\LightnCandy::fixVariable
      */
     public function testOn_fixVariable() {
         $method = new \ReflectionMethod('LightnCandy\LightnCandy', 'fixVariable');
@@ -369,7 +369,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LightnCandy::parseTokenArgs
+     * @covers LightnCandy\LightnCandy::parseTokenArgs
      */
     public function testOn_parseTokenArgs() {
         $method = new \ReflectionMethod('LightnCandy\LightnCandy', 'parseTokenArgs');
@@ -451,7 +451,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LightnCandy::tokenString
+     * @covers LightnCandy\LightnCandy::tokenString
      */
     public function testOn_tokenString() {
         $method = new \ReflectionMethod('LightnCandy\LightnCandy', 'tokenString');
@@ -464,7 +464,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LightnCandy::validateStartEnd
+     * @covers LightnCandy\LightnCandy::validateStartEnd
      */
     public function testOn_validateStartEnd() {
         $method = new \ReflectionMethod('LightnCandy\LightnCandy', 'validateStartEnd');
@@ -480,7 +480,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LightnCandy::validateOperations
+     * @covers LightnCandy\LightnCandy::validateOperations
      */
     public function testOn_validateOperations() {
         $method = new \ReflectionMethod('LightnCandy\LightnCandy', 'validateOperations');
@@ -526,7 +526,7 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LightnCandy::addUsageCount
+     * @covers LightnCandy\LightnCandy::addUsageCount
      */
     public function testOn_addUsageCount() {
         $method = new \ReflectionMethod('LightnCandy\LightnCandy', 'addUsageCount');

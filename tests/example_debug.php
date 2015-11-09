@@ -1,5 +1,6 @@
 <?php
-require('src/lightncandy.php');
+
+use LightnCandy\LightnCandy;
 
 $template = "Hello! {{name}} is {{gender}}.
 Test1: {{@root.name}}

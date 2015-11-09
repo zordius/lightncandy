@@ -1,6 +1,6 @@
 <?php
 
-require_once('src/lightncandy.php');
+use LightnCandy\LightnCandy;
 
 $tmpdir = sys_get_temp_dir();
 

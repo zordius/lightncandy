@@ -1,6 +1,6 @@
 <?php
 
-require('src/lightncandy.php');
+use LightnCandy\LightnCandy;
 
 $template = '{{> (partial_name_helper type)}}';
 
