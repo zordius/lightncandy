@@ -718,24 +718,24 @@ Please make sure the passed in `renderex` is valid PHP, LightnCandy will not che
 Customize Rendering Runtime Class
 ---------------------------------
 
-If you want to extend `LightnCandy\Runtime` class and replace default rendering runtime library, you may use `lcrun` when `compile()` . For example, this sample will generate render function based on your extended `MyLCRunClass`:
+If you want to extend `LightnCandy\Runtime` class and replace the default runtime library, you may use `runtime` when `compile()` . For example, this sample will generate render function based on your extended `MyRunTime`:
 
 ```php
-// Customized rendering runtime library to debug {{{foo}}}
-class MyLCRunClass extends LightnCandy\Runtime {
+// Customized runtime library to debug {{{foo}}}
+class MyRunTime extends LightnCandy\Runtime {
     public static function raw($cx, $v) {
         return '[[DEBUG:raw()=>' . var_export($v, true) . ']]';
     }
 }
 
-// Use MyLCRunClass as rendering runtime library
+// Use MyRunTime as runtime library
 $php = LightnCandy::compile($template, Array(
     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-    'lcrun' => 'MyLCRunClass'
+    'runtime' => 'MyRunTime'
 ));
 ```
 
-Please make sure `MyLCRunClass` exists when compile() or rendering based on your `FLAG_STANDALONE` .
+Please make sure `MyRunTime` exists when compile() or rendering based on your `FLAG_STANDALONE` .
 
 Unsupported Feature (so far)
 ----------------------------

@@ -19,6 +19,7 @@ Origin: https://github.com/zordius/lightncandy
  */
 
 namespace LightnCandy;
+use Runtime;
 
 /**
  * LightnCandy core static class.
@@ -333,7 +334,7 @@ class LightnCandy {
         'partials' => array({$context['partialCode']}),
         'scopes' => array(),
         'sp_vars' => array('root' => \$in),
-        'lcrun' => '{$context['lcrun']}',
+        'runtime' => '{$context['runtime']}',
 $libstr
     );
     {$context['renderex']}
@@ -430,7 +431,7 @@ $libstr
                 'helpers' => array(),
                 'blockhelpers' => array(),
                 'hbhelpers' => array(),
-                'lcrun' => array(),
+                'runtime' => array(),
             ),
             'partials' => (isset($options['partials']) && is_array($options['partials'])) ? $options['partials'] : array(),
             'helpers' => array(),
@@ -438,7 +439,7 @@ $libstr
             'hbhelpers' => array(),
             'renderex' => isset($options['renderex']) ? $options['renderex'] : '',
             'prepartial' => (isset($options['prepartial']) && is_callable($options['prepartial'])) ? $options['prepartial'] : false,
-            'lcrun' => isset($options['lcrun']) ? $options['lcrun'] : 'Runtime',
+            'runtime' => isset($options['runtime']) ? $options['runtime'] : 'Runtime',
             'rawblock' => false,
         );
 
@@ -484,8 +485,8 @@ $libstr
      * @expect array() when input array(), array()
      * @expect array('flags' => array('exhlp' => 1)) when input array('flags' => array('exhlp' => 1)), array('helpers' => array('abc'))
      * @expect array('error' => array('Can not find custom helper function defination abc() !'), 'flags' => array('exhlp' => 0)) when input array('error' => array(), 'flags' => array('exhlp' => 0)), array('helpers' => array('abc'))
-     * @expect array('flags' => array('exhlp' => 1), 'helpers' => array('Runtime::raw' => 'LCRun4::raw')) when input array('flags' => array('exhlp' => 1), 'helpers' => array()), array('helpers' => array('Runtime::raw'))
-     * @expect array('flags' => array('exhlp' => 1), 'helpers' => array('test' => 'Runtime::raw')) when input array('flags' => array('exhlp' => 1), 'helpers' => array()), array('helpers' => array('test' => 'LCRun4::raw'))
+     * @expect array('flags' => array('exhlp' => 1), 'helpers' => array('Runtime::raw' => 'Runtime::raw')) when input array('flags' => array('exhlp' => 1), 'helpers' => array()), array('helpers' => array('Runtime::raw'))
+     * @expect array('flags' => array('exhlp' => 1), 'helpers' => array('test' => 'Runtime::raw')) when input array('flags' => array('exhlp' => 1), 'helpers' => array()), array('helpers' => array('test' => 'Runtime::raw'))
      */
     protected static function buildHelperTable($context, $options, $tname = 'helpers') {
         if (isset($options[$tname]) && is_array($options[$tname])) {
@@ -724,7 +725,7 @@ $libstr
             return '';
         }
 
-        $class = new \ReflectionClass($context['lcrun']);
+        $class = new \ReflectionClass($context['runtime']);
         $fname = $class->getFileName();
         $lines = file_get_contents($fname);
         $file = new \SplFileObject($fname);
@@ -741,7 +742,7 @@ $libstr
         }
         unset($file);
 
-        $exports = array_keys($context['usedCount']['lcrun']);
+        $exports = array_keys($context['usedCount']['runtime']);
 
         while (true) {
             if (array_sum(array_map(function ($name) use (&$exports, $methods) {
@@ -777,7 +778,7 @@ $libstr
             return 'array()';
         }
 
-        $class = new \ReflectionClass($context['lcrun']);
+        $class = new \ReflectionClass($context['runtime']);
         $constants = $class->getConstants();
         $ret = " array(\n";
         foreach($constants as $name => $value) {
@@ -919,23 +920,23 @@ $libstr
      *
      * @return string compiled Function name
      *
-     * @expect 'Runtime::test(' when input array('flags' => array('standalone' => 0, 'debug' => 0), 'lcrun' => 'LCRun4'), 'test', ''
-     * @expect 'Runtime::test2(' when input array('flags' => array('standalone' => 0, 'debug' => 0), 'lcrun' => 'LCRun4'), 'test2', ''
-     * @expect "\$cx['funcs']['test3'](" when input array('flags' => array('standalone' => 1, 'debug' => 0), 'lcrun' => 'Runtime'), 'test3', ''
-     * @expect 'Runtime::debug(\'abc\', \'test\', ' when input array('flags' => array('standalone' => 0, 'debug' => 1), 'lcrun' => 'LCRun4'), 'test', 'abc'
+     * @expect 'Runtime::test(' when input array('flags' => array('standalone' => 0, 'debug' => 0), 'runtime' => 'Runtime'), 'test', ''
+     * @expect 'Runtime::test2(' when input array('flags' => array('standalone' => 0, 'debug' => 0), 'runtime' => 'Runtime'), 'test2', ''
+     * @expect "\$cx['funcs']['test3'](" when input array('flags' => array('standalone' => 1, 'debug' => 0), 'runtime' => 'Runtime'), 'test3', ''
+     * @expect 'Runtime::debug(\'abc\', \'test\', ' when input array('flags' => array('standalone' => 0, 'debug' => 1), 'runtime' => 'Runtime'), 'test', 'abc'
      */
     protected static function getFuncName(&$context, $name, $tag) {
-        static::addUsageCount($context, 'lcrun', $name);
+        static::addUsageCount($context, 'runtime', $name);
 
         if ($context['flags']['debug'] && ($name != 'miss')) {
             $dbg = "'$tag', '$name', ";
             $name = 'debug';
-            static::addUsageCount($context, 'lcrun', 'debug');
+            static::addUsageCount($context, 'runtime', 'debug');
         } else {
             $dbg = '';
         }
 
-        return $context['flags']['standalone'] ? "\$cx['funcs']['$name']($dbg" : "{$context['lcrun']}::$name($dbg";
+        return $context['flags']['standalone'] ? "\$cx['funcs']['$name']($dbg" : "{$context['runtime']}::$name($dbg";
     }
 
     /**
@@ -1086,7 +1087,7 @@ $libstr
      * @expect array('((isset($cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\']) && is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)', '../[a]') when input array(1,'a'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0))
      * @expect array('((isset($cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\']) && is_array($cx[\'scopes\'][count($cx[\'scopes\'])-3])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)', '../../../[a]') when input array(3,'a'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0))
      * @expect array('((isset($in[\'id\']) && is_array($in)) ? $in[\'id\'] : null)', 'this.[id]') when input array(null, 'id'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0))
-     * @expect array('Runtime::v($cx, $in, array(\'id\'))', 'this.[id]') when input array(null, 'id'), array('flags'=>array('prop'=>true,'spvar'=>true,'debug'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0,'standalone'=>0), 'lcrun' => 'LCRun4')
+     * @expect array('Runtime::v($cx, $in, array(\'id\'))', 'this.[id]') when input array(null, 'id'), array('flags'=>array('prop'=>true,'spvar'=>true,'debug'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0,'standalone'=>0), 'runtime' => 'Runtime')
      */
     protected static function getVariableName($var, &$context) {
         if (isset($var[0]) && ($var[0] === 0)) {

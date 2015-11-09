@@ -3,6 +3,7 @@
  backupGlobals="false"
  colors="true"
  convertNoticesToExceptions="false"
+ bootstrap="vendor/autoload.php"
 >
  <filter>
   <whitelist>
