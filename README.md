@@ -29,7 +29,7 @@ Features
 * **FLEXIBLE!**
    * Lot of <a href="#compile-options">options</a> to change features and behaviors.
 * Context generation
-   * Analyze used features from your template (use `LightnCandy::getContext()` to get it) .
+   * Analyze used features from your template (execute `LightnCandy::getContext()` to get it) .
 * Debug
    * <a href="#template-debugging">Generate debug version template</a>
       * Find out missing data when rendering template.
@@ -56,7 +56,7 @@ Usage
 ```php
 // THREE STEPS TO USE LIGHTNCANDY
 // Step 1. use LightnCandy
-use LightnCandy;
+use LightnCandy\LightnCandy;
 
 $template = "Welcome {{name}} , You win \${{value}} dollars!!\n";
 $phpStr = LightnCandy::compile($template);  // compiled PHP code in $phpStr
