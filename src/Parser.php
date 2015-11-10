@@ -156,7 +156,7 @@ class Parser extends Token {
      * @expect array(false, array(array('a'), 'q' => array(0, "' d e'"))) when input array(0,0,0,0,0,0,"a q=\' d e\'"), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'scan' => false, 'rawblock' => false)
      * @expect array(false, array('q' => array('( foo bar)'))) when input array(0,0,0,0,0,0,'q=( foo bar)'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 0, 'lambda' => 0), 'scan' => false, 'usedFeature' => array(), 'ops' => array('seperator' => 0), 'rawblock' => false)
      */
-    public static function parseTokenArgs(&$token, &$context) {
+    public static function parse(&$token, &$context) {
         $inner = $token[self::POS_INNERTAG];
         trim($inner);
 

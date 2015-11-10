@@ -726,7 +726,7 @@ $libstr
         // strip outer ( ) from subexpression
         $token[self::POS_INNERTAG] = substr($subExpression, 1, -1);
         $oldCount = $context['usedFeature'];
-        list(, $vars) = Parser::parseTokenArgs($token, $context);
+        list(, $vars) = Parser::parse($token, $context);
 
         // no separator is needed, this code will be used as a function argument
         $origSeperator = $context['ops']['seperator'];
@@ -1013,7 +1013,7 @@ $libstr
      * @param array<string,array|string|integer> $context current compile context
      */
     protected static function scanFeatures($token, &$context) {
-        list($raw, $vars) = Parser::parseTokenArgs($token, $context);
+        list($raw, $vars) = Parser::parse($token, $context);
 
         if ($raw === -1) {
             return;
@@ -1160,7 +1160,7 @@ $libstr
      * @return string Return compiled code segment for the token
      */
     public static function compileToken(&$token, &$context) {
-        list($raw, $vars) = Parser::parseTokenArgs($token, $context);
+        list($raw, $vars) = Parser::parse($token, $context);
 
         // Do not touch the tag, keep it as is.
         if ($raw === -1) {
