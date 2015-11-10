@@ -511,7 +511,7 @@ $libstr
     protected static function scanLCRunDependency($context, $code) {
         $child = array();
 
-        $code = preg_replace_callback('/self::(\w+?)\s*\(/', function ($matches) use ($context, &$child) {
+        $code = preg_replace_callback('/static::(\w+?)\s*\(/', function ($matches) use ($context, &$child) {
             if (!isset($child[$matches[1]])) {
                 $child[$matches[1]] = 0;
             }
@@ -521,7 +521,7 @@ $libstr
         }, $code);
 
         // replace the constants
-        $code = preg_replace('/self::([A-Z0-9_]+)/', "\$cx['constants']['$1']", $code);
+        $code = preg_replace('/static::([A-Z0-9_]+)/', "\$cx['constants']['$1']", $code);
         return array($code, $child);
     }
 

@@ -44,9 +44,9 @@ class Runtime {
         $params = array_slice(func_get_args(), 2);
         $r = call_user_func_array((isset($cx['funcs'][$f]) ? $cx['funcs'][$f] : "{$cx['runtime']}::$f"), $params);
 
-        if ($cx['flags']['debug'] & self::DEBUG_TAGS) {
-            $ansi = $cx['flags']['debug'] & (self::DEBUG_TAGS_ANSI - self::DEBUG_TAGS);
-            $html = $cx['flags']['debug'] & (self::DEBUG_TAGS_HTML - self::DEBUG_TAGS);
+        if ($cx['flags']['debug'] & static::DEBUG_TAGS) {
+            $ansi = $cx['flags']['debug'] & (static::DEBUG_TAGS_ANSI - static::DEBUG_TAGS);
+            $html = $cx['flags']['debug'] & (static::DEBUG_TAGS_HTML - static::DEBUG_TAGS);
             $cs = ($html ? (($r !== '') ? '<!!--OK((-->' : '<!--MISSED((-->') : '')
                   . ($ansi ? (($r !== '') ? "\033[0;32m" : "\033[0;31m") : '');
             $ce = ($html ? '<!--))-->' : '')
@@ -82,11 +82,11 @@ class Runtime {
      * @throws \Exception
      */
     public static function err($cx, $err) {
-        if ($cx['flags']['debug'] & self::DEBUG_ERROR_LOG) {
+        if ($cx['flags']['debug'] & static::DEBUG_ERROR_LOG) {
             error_log($err);
             return;
         }
-        if ($cx['flags']['debug'] & self::DEBUG_ERROR_EXCEPTION) {
+        if ($cx['flags']['debug'] & static::DEBUG_ERROR_EXCEPTION) {
             throw new \Exception($err);
         }
     }
@@ -98,7 +98,7 @@ class Runtime {
      * @param string $v expression
      */
     public static function miss($cx, $v) {
-        self::err($cx, "Runtime: $v is not exist");
+        static::err($cx, "Runtime: $v is not exist");
     }
 
     /**
@@ -199,7 +199,7 @@ class Runtime {
      */
     public static function ifv($cx, $v, $zero, $in, $truecb, $falsecb = null) {
         $ret = '';
-        if (self::ifvar($cx, $v, $zero)) {
+        if (static::ifvar($cx, $v, $zero)) {
             if ($truecb) {
                 $cx['scopes'][] = $in;
                 $ret = $truecb($cx, $in);
@@ -234,7 +234,7 @@ class Runtime {
      * @expect 'N' when input array('scopes' => array()), true, false, array(), function () {return 'Y';}, function () {return 'N';}
      */
     public static function unl($cx, $var, $zero, $in, $truecb, $falsecb = null) {
-        return self::ifv($cx, $var, $zero, $in, $falsecb, $truecb);
+        return static::ifv($cx, $var, $zero, $in, $falsecb, $truecb);
     }
 
     /**
@@ -298,7 +298,7 @@ class Runtime {
                 } else {
                     $ret = array();
                     foreach ($v as $k => $vv) {
-                        $ret[] = self::raw($cx, $vv);
+                        $ret[] = static::raw($cx, $vv);
                     }
                     return join(',', $ret);
                 }
@@ -329,7 +329,7 @@ class Runtime {
      * @expect 'a&#039;b' when input array('flags' => array('mustlam' => 0, 'lambda' => 0)), 'a\'b'
      */
     public static function enc($cx, $var) {
-        return htmlentities(self::raw($cx, $var), ENT_QUOTES, 'UTF-8');
+        return htmlentities(static::raw($cx, $var), ENT_QUOTES, 'UTF-8');
     }
 
     /**
@@ -346,7 +346,7 @@ class Runtime {
      * @expect '&#x60;a&#x27;b' when input array('flags' => array('mustlam' => 0, 'lambda' => 0)), '`a\'b'
      */
     public static function encq($cx, $var) {
-        return preg_replace('/`/', '&#x60;', preg_replace('/&#039;/', '&#x27;', htmlentities(self::raw($cx, $var), ENT_QUOTES, 'UTF-8')));
+        return preg_replace('/`/', '&#x60;', preg_replace('/&#039;/', '&#x27;', htmlentities(static::raw($cx, $var), ENT_QUOTES, 'UTF-8')));
     }
 
     /**
@@ -560,7 +560,7 @@ class Runtime {
      * @expect '=b=' when input array('helpers' => array('a' => function ($i,$j) {return "={$j['a']}=";})), 'a', array(array(),array('a' => 'b')), 'raw'
      */
     public static function ch($cx, $ch, $vars, $op) {
-        return self::chret(call_user_func_array($cx['helpers'][$ch], $vars), $op);
+        return static::chret(call_user_func_array($cx['helpers'][$ch], $vars), $op);
     }
 
     /**
@@ -682,10 +682,10 @@ class Runtime {
         }
 
         if($e !== null) {
-            self::err($cx, $e);
+            static::err($cx, $e);
         }
 
-        return self::chret($r, $isBlock ? 'raw' : $op);
+        return static::chret($r, $isBlock ? 'raw' : $op);
     }
 
     /**
