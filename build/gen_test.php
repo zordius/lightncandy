@@ -6,6 +6,7 @@ use LightnCandy\LightnCandy;
 
 genTestForClass('LightnCandy');
 genTestForClass('Runtime');
+genTestForClass('Context');
 
 function genTestForClass($classname) {
     ob_start();

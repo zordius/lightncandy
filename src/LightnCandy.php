@@ -19,62 +19,14 @@ Origin: https://github.com/zordius/lightncandy
  */
 
 namespace LightnCandy;
+use \LightnCandy\Flags;
 use \LightnCandy\Runtime;
+use \LightnCandy\Context;
 
 /**
  * LightnCandy core static class.
  */
-class LightnCandy {
-    // Compile time error handling flags
-    const FLAG_ERROR_LOG = 1;
-    const FLAG_ERROR_EXCEPTION = 2;
-
-    // JavaScript compatibility
-    const FLAG_JSTRUE = 8;
-    const FLAG_JSOBJECT = 16;
-
-    // Handlebars.js compatibility
-    const FLAG_THIS = 32;
-    const FLAG_WITH = 64;
-    const FLAG_PARENT = 128;
-    const FLAG_JSQUOTE = 256;
-    const FLAG_ADVARNAME = 512;
-    const FLAG_SPACECTL = 1024;
-    const FLAG_NAMEDARG = 2048;
-    const FLAG_SPVARS = 4096;
-    const FLAG_PREVENTINDENT = 131072;
-    const FLAG_SLASH = 8388608;
-    const FLAG_ELSE = 16777216;
-    const FLAG_RAWBLOCK = 134217728;
-    const FLAG_HANDLEBARSLAMBDA = 268435456;
-
-    // PHP behavior flags
-    const FLAG_STANDALONE = 4;
-    const FLAG_EXTHELPER = 8192;
-    const FLAG_ECHO = 16384;
-    const FLAG_PROPERTY = 32768;
-    const FLAG_METHOD = 65536;
-    const FLAG_RUNTIMEPARTIAL = 1048576;
-    const FLAG_BARE = 33554432;
-    const FLAG_NOESCAPE = 67108864;
-
-    // Mustache compatibility
-    const FLAG_MUSTACHELOOKUP = 262144;
-    const FLAG_ERROR_SKIPPARTIAL = 4194304;
-    const FLAG_MUSTACHELAMBDA = 2097152;
-
-    // Template rendering time debug flags
-    const FLAG_RENDER_DEBUG = 524288;
-
-    // alias flags
-    const FLAG_BESTPERFORMANCE = 16384; // FLAG_ECHO
-    const FLAG_JS = 24; // FLAG_JSTRUE + FLAG_JSOBJECT
-    const FLAG_INSTANCE = 98304; // FLAG_PROPERTY + FLAG_METHOD
-    const FLAG_MUSTACHE = 7602200; // FLAG_ERROR_SKIPPARTIAL + FLAG_MUSTACHELOOKUP + FLAG_MUSTACHELAMBDA + FLAG_RUNTIMEPARTIAL + FLAG_JS
-    const FLAG_HANDLEBARS = 159391712; // FLAG_THIS + FLAG_WITH + FLAG_PARENT + FLAG_JSQUOTE + FLAG_ADVARNAME + FLAG_SPACECTL + FLAG_NAMEDARG + FLAG_SPVARS + FLAG_SLASH + FLAG_ELSE + FLAG_RAWBLOCK
-    const FLAG_HANDLEBARSJS = 159391736; // FLAG_JS + FLAG_HANDLEBARS
-    const FLAG_HANDLEBARSJS_FULL = 429236216; // FLAG_HANDLEBARSJS + FLAG_INSTANCE + FLAG_RUNTIMEPARTIAL + FLAG_MUSTACHELOOKUP
-
+class LightnCandy extends Flags {
     // RegExps
     const VARNAME_SEARCH = '/(\\[[^\\]]+\\]|[^\\[\\]\\.]+)/';
     const EXTENDED_COMMENT_SEARCH = '/{{!--.*?--}}/s';
@@ -104,7 +56,7 @@ class LightnCandy {
      * @return string|false Compiled PHP code when successed. If error happened and compile failed, return false.
      */
     public static function compile($template, $options = array('flags' => self::FLAG_BESTPERFORMANCE)) {
-        $context = static::buildContext($options);
+        $context = Context::create($options);
 
         if (static::handleError($context)) {
             return false;
@@ -343,171 +295,6 @@ $libstr
     }
 
     /**
-     * Build context from options
-     *
-     * @param array<string,array|string|integer> $options input options
-     *
-     * @return array<string,array|string|integer> Context from options
-     */
-    protected static function buildContext($options) {
-        if (!is_array($options)) {
-            $options = array();
-        }
-
-        $flags = isset($options['flags']) ? $options['flags'] : self::FLAG_BESTPERFORMANCE;
-
-        $context = array(
-            'flags' => array(
-                'errorlog' => $flags & self::FLAG_ERROR_LOG,
-                'exception' => $flags & self::FLAG_ERROR_EXCEPTION,
-                'skippartial' => $flags & self::FLAG_ERROR_SKIPPARTIAL,
-                'standalone' => $flags & self::FLAG_STANDALONE,
-                'bare' => $flags & self::FLAG_BARE,
-                'noesc' => $flags & self::FLAG_NOESCAPE,
-                'jstrue' => $flags & self::FLAG_JSTRUE,
-                'jsobj' => $flags & self::FLAG_JSOBJECT,
-                'jsquote' => $flags & self::FLAG_JSQUOTE,
-                'this' => $flags & self::FLAG_THIS,
-                'with' => $flags & self::FLAG_WITH,
-                'parent' => $flags & self::FLAG_PARENT,
-                'echo' => $flags & self::FLAG_ECHO,
-                'advar' => $flags & self::FLAG_ADVARNAME,
-                'namev' => $flags & self::FLAG_NAMEDARG,
-                'spvar' => $flags & self::FLAG_SPVARS,
-                'slash' => $flags & self::FLAG_SLASH,
-                'else' => $flags & self::FLAG_ELSE,
-                'exhlp' => $flags & self::FLAG_EXTHELPER,
-                'lambda' => $flags & self::FLAG_HANDLEBARSLAMBDA,
-                'mustlok' => $flags & self::FLAG_MUSTACHELOOKUP,
-                'mustlam' => $flags & self::FLAG_MUSTACHELAMBDA,
-                'noind' => $flags & self::FLAG_PREVENTINDENT,
-                'debug' => $flags & self::FLAG_RENDER_DEBUG,
-                'prop' => $flags & self::FLAG_PROPERTY,
-                'method' => $flags & self::FLAG_METHOD,
-                'runpart' => $flags & self::FLAG_RUNTIMEPARTIAL,
-                'rawblock' => $flags & self::FLAG_RAWBLOCK,
-            ),
-            'level' => 0,
-            'scan' => true,
-            'stack' => array(),
-            'error' => array(),
-            'basedir' => static::buildCXBasedir($options),
-            'fileext' => static::buildCXFileext($options),
-            'tokens' => array(
-                'standalone' => true,
-                'ahead' => false,
-                'current' => 0,
-                'count' => 0,
-                'partialind' => '',
-            ),
-            'usedPartial' => array(),
-            'partialStack' => array(),
-            'partialCode' => '',
-            'usedFeature' => array(
-                'rootthis' => 0,
-                'enc' => 0,
-                'raw' => 0,
-                'sec' => 0,
-                'isec' => 0,
-                'if' => 0,
-                'else' => 0,
-                'unless' => 0,
-                'each' => 0,
-                'this' => 0,
-                'parent' => 0,
-                'with' => 0,
-                'comment' => 0,
-                'partial' => 0,
-                'dynpartial' => 0,
-                'helper' => 0,
-                'bhelper' => 0,
-                'hbhelper' => 0,
-                'delimiter' => 0,
-                'subexp' => 0,
-                'rawblock' => 0,
-            ),
-            'usedCount' => array(
-                'var' => array(),
-                'helpers' => array(),
-                'blockhelpers' => array(),
-                'hbhelpers' => array(),
-                'runtime' => array(),
-            ),
-            'partials' => (isset($options['partials']) && is_array($options['partials'])) ? $options['partials'] : array(),
-            'helpers' => array(),
-            'blockhelpers' => array(),
-            'hbhelpers' => array(),
-            'renderex' => isset($options['renderex']) ? $options['renderex'] : '',
-            'prepartial' => (isset($options['prepartial']) && is_callable($options['prepartial'])) ? $options['prepartial'] : false,
-            'runtime' => isset($options['runtime']) ? $options['runtime'] : '\\LightnCandy\\Runtime',
-            'rawblock' => false,
-        );
-
-        $context['ops'] = $context['flags']['echo'] ? array(
-            'seperator' => ',',
-            'f_start' => 'echo ',
-            'f_end' => ';',
-            'op_start' => 'ob_start();echo ',
-            'op_end' => ';return ob_get_clean();',
-            'cnd_start' => ';if ',
-            'cnd_then' => '{echo ',
-            'cnd_else' => ';}else{echo ',
-            'cnd_end' => ';}echo ',
-        ) : array(
-            'seperator' => '.',
-            'f_start' => 'return ',
-            'f_end' => ';',
-            'op_start' => 'return ',
-            'op_end' => ';',
-            'cnd_start' => '.(',
-            'cnd_then' => ' ? ',
-            'cnd_else' => ' : ',
-            'cnd_end' => ').',
-        );
-
-        $context['ops']['enc'] = $context['flags']['jsquote'] ? 'encq' : 'enc';
-        $context = static::buildHelperTable($context, $options);
-        $context = static::buildHelperTable($context, $options, 'blockhelpers');
-        $context = static::buildHelperTable($context, $options, 'hbhelpers');
-
-        return $context;
-    }
-
-    /**
-     * Build custom helper table
-     *
-     * @param array<string,array|string|integer> $context prepared context
-     * @param array<string,array|string|integer> $options input options
-     * @param string $tname helper table name
-     *
-     * @return array<string,array|string|integer> context with generated helper table
-     *
-     * @expect array() when input array(), array()
-     * @expect array('flags' => array('exhlp' => 1)) when input array('flags' => array('exhlp' => 1)), array('helpers' => array('abc'))
-     * @expect array('error' => array('Can not find custom helper function defination abc() !'), 'flags' => array('exhlp' => 0)) when input array('error' => array(), 'flags' => array('exhlp' => 0)), array('helpers' => array('abc'))
-     * @expect array('flags' => array('exhlp' => 1), 'helpers' => array('Runtime::raw' => 'Runtime::raw')) when input array('flags' => array('exhlp' => 1), 'helpers' => array()), array('helpers' => array('Runtime::raw'))
-     * @expect array('flags' => array('exhlp' => 1), 'helpers' => array('test' => 'Runtime::raw')) when input array('flags' => array('exhlp' => 1), 'helpers' => array()), array('helpers' => array('test' => 'Runtime::raw'))
-     */
-    protected static function buildHelperTable($context, $options, $tname = 'helpers') {
-        if (isset($options[$tname]) && is_array($options[$tname])) {
-            foreach ($options[$tname] as $name => $func) {
-                if (is_callable($func)) {
-                    $context[$tname][is_int($name) ? $func : $name] = $func;
-                } else {
-                    if (is_array($func)) {
-                        $context['error'][] = "I found an array in $tname with key as $name, please fix it.";
-                    } else {
-                        if (!$context['flags']['exhlp']) {
-                            $context['error'][] = "Can not find custom helper function defination $func() !";
-                        }
-                    }
-                }
-            }
-        }
-        return $context;
-    }
-
-    /**
      * Read partial file content as string and store in context
      *
      * @param string $name partial name
@@ -615,50 +402,6 @@ $libstr
             $code = str_replace(self::$TMP_JS_FUNCTION_STR, 'function', $code);
             $context['partialCode'] .= "'$name' => function (\$cx, \$in{$sp}) {{$context['ops']['op_start']}'$code'{$context['ops']['op_end']}},";
         }
-    }
-
-    /**
-     * Internal method used by compile(). Check options and handle fileext.
-     *
-     * @param array<string,array|string|integer> $options current compile option
-     *
-     * @return array<string> file extensions
-     *
-     * @expect array('.tmpl') when input array()
-     * @expect array('test') when input array('fileext' => 'test')
-     * @expect array('test1') when input array('fileext' => array('test1'))
-     * @expect array('test2', 'test3') when input array('fileext' => array('test2', 'test3'))
-     */
-    protected static function buildCXFileext($options) {
-        $exts = isset($options['fileext']) ? $options['fileext'] : '.tmpl';
-        return is_array($exts) ? $exts : array($exts);
-    }
-
-    /**
-     * Internal method used by compile(). Check options and handle basedir.
-     *
-     * @param array<string,array|string|integer> $options current compile option
-     *
-     * @return array<string> base directories
-     *
-     * @expect array() when input array()
-     * @expect array() when input array('basedir' => array())
-     * @expect array('src') when input array('basedir' => array('src'))
-     * @expect array('src') when input array('basedir' => array('src', 'dir_not_found'))
-     * @expect array('src', 'tests') when input array('basedir' => array('src', 'tests'))
-     */
-    protected static function buildCXBasedir($options) {
-        $dirs = isset($options['basedir']) ? $options['basedir'] : 0;
-        $dirs = is_array($dirs) ? $dirs : array($dirs);
-        $ret = array();
-
-        foreach ($dirs as $dir) {
-            if (is_string($dir) && is_dir($dir)) {
-                $ret[] = $dir;
-            }
-        }
-
-        return $ret;
     }
 
     /**

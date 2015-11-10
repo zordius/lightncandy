@@ -3,7 +3,7 @@
 use LightnCandy\LightnCandy;
 require_once('tests/helpers_for_test.php');
 
-class contextTest extends PHPUnit_Framework_TestCase
+class usageTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @dataProvider compileProvider

@@ -40,28 +40,6 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LightnCandy\LightnCandy::buildHelperTable
-     */
-    public function testOn_buildHelperTable() {
-        $method = new \ReflectionMethod('LightnCandy\LightnCandy', 'buildHelperTable');
-        $method->setAccessible(true);
-        $this->assertEquals(array(), $method->invokeArgs(null,array(
-            array(), array()
-)        ));
-        $this->assertEquals(array('flags' => array('exhlp' => 1)), $method->invokeArgs(null,array(
-            array('flags' => array('exhlp' => 1)), array('helpers' => array('abc'))
-)        ));
-        $this->assertEquals(array('error' => array('Can not find custom helper function defination abc() !'), 'flags' => array('exhlp' => 0)), $method->invokeArgs(null,array(
-            array('error' => array(), 'flags' => array('exhlp' => 0)), array('helpers' => array('abc'))
-)        ));
-        $this->assertEquals(array('flags' => array('exhlp' => 1), 'helpers' => array('Runtime::raw' => 'Runtime::raw')), $method->invokeArgs(null,array(
-            array('flags' => array('exhlp' => 1), 'helpers' => array()), array('helpers' => array('Runtime::raw'))
-)        ));
-        $this->assertEquals(array('flags' => array('exhlp' => 1), 'helpers' => array('test' => 'Runtime::raw')), $method->invokeArgs(null,array(
-            array('flags' => array('exhlp' => 1), 'helpers' => array()), array('helpers' => array('test' => 'Runtime::raw'))
-)        ));
-    }
-    /**
      * @covers LightnCandy\LightnCandy::prePartial
      */
     public function testOn_prePartial() {
@@ -72,47 +50,6 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
 )        ));
         $this->assertEquals('haha-hoho', $method->invokeArgs(null,array(
             'hoho', 'haha', Array('prepartial' => function ($tmpl, $name) {return "$name-$tmpl";})
-)        ));
-    }
-    /**
-     * @covers LightnCandy\LightnCandy::buildCXFileext
-     */
-    public function testOn_buildCXFileext() {
-        $method = new \ReflectionMethod('LightnCandy\LightnCandy', 'buildCXFileext');
-        $method->setAccessible(true);
-        $this->assertEquals(array('.tmpl'), $method->invokeArgs(null,array(
-            array()
-)        ));
-        $this->assertEquals(array('test'), $method->invokeArgs(null,array(
-            array('fileext' => 'test')
-)        ));
-        $this->assertEquals(array('test1'), $method->invokeArgs(null,array(
-            array('fileext' => array('test1'))
-)        ));
-        $this->assertEquals(array('test2', 'test3'), $method->invokeArgs(null,array(
-            array('fileext' => array('test2', 'test3'))
-)        ));
-    }
-    /**
-     * @covers LightnCandy\LightnCandy::buildCXBasedir
-     */
-    public function testOn_buildCXBasedir() {
-        $method = new \ReflectionMethod('LightnCandy\LightnCandy', 'buildCXBasedir');
-        $method->setAccessible(true);
-        $this->assertEquals(array(), $method->invokeArgs(null,array(
-            array()
-)        ));
-        $this->assertEquals(array(), $method->invokeArgs(null,array(
-            array('basedir' => array())
-)        ));
-        $this->assertEquals(array('src'), $method->invokeArgs(null,array(
-            array('basedir' => array('src'))
-)        ));
-        $this->assertEquals(array('src'), $method->invokeArgs(null,array(
-            array('basedir' => array('src', 'dir_not_found'))
-)        ));
-        $this->assertEquals(array('src', 'tests'), $method->invokeArgs(null,array(
-            array('basedir' => array('src', 'tests'))
 )        ));
     }
     /**
