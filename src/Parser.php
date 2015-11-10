@@ -304,7 +304,7 @@ class Parser extends Token {
                                 continue;
                             }
                             if ($stack < 0) {
-                                $context['error'][] = "Unexcepted ')' in $expression !!";
+                                $context['error'][] = "Unexcepted ')' in expression '$token' !!";
                             }
                         }
                         $vars[] = $prev;

@@ -440,7 +440,7 @@ class errorTest extends PHPUnit_Framework_TestCase
                      )
                 ),
                 'expected' => Array(
-                    'Unexcepted \')\' in {{foo (foo (foo 1 2) 3))}} !!',
+                    'Unexcepted \')\' in expression \'foo (foo (foo 1 2) 3))\' !!',
                 )
             ),
             Array(
