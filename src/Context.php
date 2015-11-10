@@ -150,9 +150,9 @@ class Context extends Flags {
         );
 
         $context['ops']['enc'] = $context['flags']['jsquote'] ? 'encq' : 'enc';
-        $context = static::updateHelperTable($context, $options);
-        $context = static::updateHelperTable($context, $options, 'blockhelpers');
-        $context = static::updateHelperTable($context, $options, 'hbhelpers');
+        static::updateHelperTable($context, $options);
+        static::updateHelperTable($context, $options, 'blockhelpers');
+        static::updateHelperTable($context, $options, 'hbhelpers');
 
         return $context;
     }
@@ -216,7 +216,7 @@ class Context extends Flags {
      * @expect array('flags' => array('exhlp' => 1), 'helpers' => array('Runtime::raw' => 'Runtime::raw')) when input array('flags' => array('exhlp' => 1), 'helpers' => array()), array('helpers' => array('Runtime::raw'))
      * @expect array('flags' => array('exhlp' => 1), 'helpers' => array('test' => 'Runtime::raw')) when input array('flags' => array('exhlp' => 1), 'helpers' => array()), array('helpers' => array('test' => 'Runtime::raw'))
      */
-    protected static function updateHelperTable($context, $options, $tname = 'helpers') {
+    protected static function updateHelperTable(&$context, $options, $tname = 'helpers') {
         if (isset($options[$tname]) && is_array($options[$tname])) {
             foreach ($options[$tname] as $name => $func) {
                 if (is_callable($func)) {
