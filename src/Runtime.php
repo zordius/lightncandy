@@ -79,7 +79,7 @@ class Runtime {
      * @param array<string,array|string|integer> $cx render time context
      * @param string $err error message
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public static function err($cx, $err) {
         if ($cx['flags']['debug'] & self::DEBUG_ERROR_LOG) {
@@ -87,7 +87,7 @@ class Runtime {
             return;
         }
         if ($cx['flags']['debug'] & self::DEBUG_ERROR_EXCEPTION) {
-            throw new Exception($err);
+            throw new \Exception($err);
         }
     }
 
