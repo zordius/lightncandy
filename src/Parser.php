@@ -123,7 +123,7 @@ class Parser extends Token {
     }
 
     /**
-     * Internal method used by scanFeatures() and compile(). Parse the token and return parsed result.
+     * Parse the token and return parsed result.
      *
      * @param array<string> $token preg_match results
      * @param array<string,array|string|integer> $context current compile context
@@ -199,96 +199,7 @@ class Parser extends Token {
             return array(false, array());
         }
 
-        $vars = array();
-        $count = preg_match_all('/(\s*)([^\s]+)/', $token[self::POS_INNERTAG], $matchedall);
-        // Parse arguments and deal with "..." or [...] or (...) or \'...\'
-        if (($count > 0) && $context['flags']['advar']) {
-            $prev = '';
-            $expect = 0;
-            $stack = 0;
-
-            foreach ($matchedall[2] as $index => $t) {
-                // continue from previous match when expect something
-                if ($expect) {
-                    $prev .= "{$matchedall[1][$index]}$t";
-                    if (($stack > 0) && (substr($t, 0, 1) === '(')) {
-                        $stack++;
-                    }
-                    // end an argument when end with expected charactor
-                    if (substr($t, -1, 1) === $expect) {
-                        if ($stack > 0) {
-                            preg_match('/(\\)+)$/', $t, $matchedq);
-                            $stack -= strlen($matchedq[0]);
-                            if ($stack > 0) {
-                                continue;
-                            }
-                            if ($stack < 0) {
-                                $context['error'][] = "Unexcepted ')' in " . self::toString($token) . ' !!';
-                            }
-                        }
-                        $vars[] = $prev;
-                        $prev = '';
-                        $expect = 0;
-                    }
-                    continue;
-                }
-
-                // continue to next match when begin with '(' without ending ')'
-                if (preg_match('/^\([^\)]*$/', $t)) {
-                    $prev = $t;
-                    $expect = ')';
-                    $stack=1;
-                    continue;
-                }
-
-                // continue to next match when begin with '"' without ending '"'
-                if (preg_match('/^"[^"]*$/', $t)) {
-                    $prev = $t;
-                    $expect = '"';
-                    continue;
-                }
-
-                // continue to next match when begin with \' without ending '
-                if (preg_match('/^\\\\\'[^\']*$/', $t)) {
-                    $prev = $t;
-                    $expect = '\'';
-                    continue;
-                }
-
-                // continue to next match when '="' exists without ending '"'
-                if (preg_match('/^[^"]*="[^"]*$/', $t)) {
-                    $prev = $t;
-                    $expect = '"';
-                    continue;
-                }
-
-                // continue to next match when '[' exists without ending ']'
-                if (preg_match('/^([^"\'].+)?\\[[^\\]]*$/', $t)) {
-                    $prev = $t;
-                    $expect = ']';
-                    continue;
-                }
-
-                // continue to next match when =\' exists without ending '
-                if (preg_match('/^[^\']*=\\\\\'[^\']*$/', $t)) {
-                    $prev = $t;
-                    $expect = '\'';
-                    continue;
-                }
-
-                // continue to next match when =( exists without ending )
-                if (preg_match('/.+\([^\)]*$/', $t)) {
-                    $prev = $t;
-                    $expect = ')';
-                    $stack=1;
-                    continue;
-                }
-
-                $vars[] = $t;
-            }
-        } else {
-            $vars = ($count > 0) ? $matchedall[2] : explode(' ', $token[self::POS_INNERTAG]);
-        }
+        $vars = self::scan($token[self::POS_INNERTAG], $context);
 
         // Check for advanced variable.
         $ret = array();
@@ -357,6 +268,108 @@ class Parser extends Token {
         }
 
         return array(($token[self::POS_BEGINTAG] === '{{{') || ($token[self::POS_OP] === '&') || $context['flags']['noesc'] || $context['rawblock'], $ret);
+    }
+
+    /**
+     * Parse the token and return parsed result.
+     *
+     * @param array<string> $token preg_match results
+     * @param array<string,array|string|integer> $context current compile context
+     *
+     * @return array<boolean|integer|array> Return parsed result
+     *
+     */
+    protected static function scan($token, &$context) {
+        $count = preg_match_all('/(\s*)([^\s]+)/', $token, $matchedall);
+        // Parse arguments and deal with "..." or [...] or (...) or \'...\'
+        if (($count > 0) && $context['flags']['advar']) {
+            $vars = array();
+            $prev = '';
+            $expect = 0;
+            $stack = 0;
+
+            foreach ($matchedall[2] as $index => $t) {
+                // continue from previous match when expect something
+                if ($expect) {
+                    $prev .= "{$matchedall[1][$index]}$t";
+                    if (($stack > 0) && (substr($t, 0, 1) === '(')) {
+                        $stack++;
+                    }
+                    // end an argument when end with expected charactor
+                    if (substr($t, -1, 1) === $expect) {
+                        if ($stack > 0) {
+                            preg_match('/(\\)+)$/', $t, $matchedq);
+                            $stack -= strlen($matchedq[0]);
+                            if ($stack > 0) {
+                                continue;
+                            }
+                            if ($stack < 0) {
+                                $context['error'][] = "Unexcepted ')' in $expression !!";
+                            }
+                        }
+                        $vars[] = $prev;
+                        $prev = '';
+                        $expect = 0;
+                    }
+                    continue;
+                }
+
+                // continue to next match when begin with '(' without ending ')'
+                if (preg_match('/^\([^\)]*$/', $t)) {
+                    $prev = $t;
+                    $expect = ')';
+                    $stack=1;
+                    continue;
+                }
+
+                // continue to next match when begin with '"' without ending '"'
+                if (preg_match('/^"[^"]*$/', $t)) {
+                    $prev = $t;
+                    $expect = '"';
+                    continue;
+                }
+
+                // continue to next match when begin with \' without ending '
+                if (preg_match('/^\\\\\'[^\']*$/', $t)) {
+                    $prev = $t;
+                    $expect = '\'';
+                    continue;
+                }
+
+                // continue to next match when '="' exists without ending '"'
+                if (preg_match('/^[^"]*="[^"]*$/', $t)) {
+                    $prev = $t;
+                    $expect = '"';
+                    continue;
+                }
+
+                // continue to next match when '[' exists without ending ']'
+                if (preg_match('/^([^"\'].+)?\\[[^\\]]*$/', $t)) {
+                    $prev = $t;
+                    $expect = ']';
+                    continue;
+                }
+
+                // continue to next match when =\' exists without ending '
+                if (preg_match('/^[^\']*=\\\\\'[^\']*$/', $t)) {
+                    $prev = $t;
+                    $expect = '\'';
+                    continue;
+                }
+
+                // continue to next match when =( exists without ending )
+                if (preg_match('/.+\([^\)]*$/', $t)) {
+                    $prev = $t;
+                    $expect = ')';
+                    $stack=1;
+                    continue;
+                }
+
+                $vars[] = $t;
+            }
+            return $vars;
+        }
+        return ($count > 0) ? $matchedall[2] : explode(' ', $token);
     }
 }
 
