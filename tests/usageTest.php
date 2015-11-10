@@ -205,6 +205,8 @@ class usageTest extends PHPUnit_Framework_TestCase
                  ),
              ),
 
+// FIXME: in future...
+/*
              Array(
                  'template' => '{{mytest (mytest ..)}}',
                  'options' => Array(
@@ -282,6 +284,7 @@ class usageTest extends PHPUnit_Framework_TestCase
                      'subexp' => 1,
                  ),
              ),
+*/
         );
 
         return array_map(function($i) use ($default) {
