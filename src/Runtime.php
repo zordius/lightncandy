@@ -387,8 +387,8 @@ class Runtime {
      * @expect '038' when input array('flags' => array('spvar' => 1, 'mustlam' => 0, 'lambda' => 0), 'sp_vars'=>array('root' => 0)), array(1,3,'a'=>4), 0, true, function ($c, $i) {return $i * $c['sp_vars']['index'];}
      */
     public static function sec($cx, $v, $in, $each, $cb, $else = null) {
-        $isAry = is_array($v) || ($v instanceof ArrayObject);
-        $isTrav = $v instanceof Traversable;
+        $isAry = is_array($v) || ($v instanceof \ArrayObject);
+        $isTrav = $v instanceof \Traversable;
         $loop = $each;
         $keys = null;
         $last = null;
