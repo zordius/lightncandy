@@ -26,7 +26,7 @@ use \LightnCandy\Token;
  */
 class Parser extends Token {
     /**
-     * Internal method used by fixVariable(). Return array presentation for a variable name
+     * Return array presentation for an expression
      *
      * @param string $name variable name.
      * @param boolean $asis keep the name as is or not
@@ -35,12 +35,12 @@ class Parser extends Token {
      * @return array<integer|string> Return variable name array
      *
      */
-    protected static function asisResult($name, $asis, $quote = false) {
+    protected static function getLiteral($name, $asis, $quote = false) {
         return $asis ? array($name) : array(0, $quote ? "'$name'" : $name);
     }
 
     /**
-     * Internal method used by compile(). Return array presentation for a variable name
+     * Return array presentation for an expression
      *
      * @param string $v variable name to be fixed.
      * @param array<string,array|string|integer> $context Current compile content.
@@ -62,25 +62,25 @@ class Parser extends Token {
      * @expect array(0, '123') when input '123', array('flags' => array('advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0))
      * @expect array(0, 'null') when input 'null', array('flags' => array('advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0))
      */
-    protected static function fixVariable($v, &$context, $asis = false) {
+    protected static function getExpression($v, &$context, $asis = false) {
         // handle number
         if (is_numeric($v)) {
-            return self::asisResult(strval(1 * $v), $asis);
+            return self::getLiteral(strval(1 * $v), $asis);
         }
 
         // handle double quoted string
         if (preg_match('/^"(.*)"$/', $v, $matched)) {
-            return self::asisResult(preg_replace('/([^\\\\])\\\\\\\\"/', '$1"', preg_replace('/^\\\\\\\\"/', '"', $matched[1])), $asis, true);
+            return self::getLiteral(preg_replace('/([^\\\\])\\\\\\\\"/', '$1"', preg_replace('/^\\\\\\\\"/', '"', $matched[1])), $asis, true);
         }
 
         // handle single quoted string
         if (preg_match('/^\\\\\'(.*)\\\\\'$/', $v, $matched)) {
-            return self::asisResult($matched[1], $asis, true);
+            return self::getLiteral($matched[1], $asis, true);
         }
 
         // handle boolean, null and undefined
         if (preg_match('/^(true|false|null|undefined)$/', $v)) {
-            return self::asisResult(($v === 'undefined') ? 'null' : $v, $asis);
+            return self::getLiteral(($v === 'undefined') ? 'null' : $v, $asis);
         }
 
         $ret = array();
@@ -345,7 +345,7 @@ class Parser extends Token {
             if (($idx === 0) && ($token[self::POS_OP] === '>')) {
                 $var = array(preg_replace('/^("(.+)")|(\\[(.+)\\])$/', '$2$4', $var));
             } else {
-                $var = self::fixVariable($var, $context, (count($vars) === 1) && ($idx === 0));
+                $var = self::getExpression($var, $context, (count($vars) === 1) && ($idx === 0));
             }
 
             if (is_string($idx)) {
