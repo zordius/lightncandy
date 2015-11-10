@@ -726,7 +726,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'data' => Array('hello' => 'world'),
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'lcrun' => 'MyLCRunClass',
+                    'runtime' => 'MyLCRunClass',
                 ),
                 'expected' => "[[DEBUG:raw()=>array (\n  'hello' => 'world',\n)]]",
             ),

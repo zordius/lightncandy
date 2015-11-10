@@ -1,6 +1,7 @@
 <?php
 
 use LightnCandy\LightnCandy;
+use LightnCandy\Runtime;
 
 $tmpdir = sys_get_temp_dir();
 $hb_test_flag = LightnCandy::FLAG_HANDLEBARSJS_FULL | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_EXTHELPER;
@@ -248,7 +249,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
             }
 
             try {
-                $result = $renderer($spec['data'], LCRun4::DEBUG_ERROR_EXCEPTION);
+                $result = $renderer($spec['data'], Runtime::DEBUG_ERROR_EXCEPTION);
             } catch (Exception $e) {
                 $this->fail("Rendering Error in {$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']} PHP CODE: $php");
             }

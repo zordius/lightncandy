@@ -37,12 +37,12 @@ class Runtime {
      * @param string $f runtime function name
      * @param array<string,array|string|integer> $cx render time context
      *
-     * @expect '{{123}}' when input '123', 'miss', array('flags' => array('debug' => Runtime::DEBUG_TAGS), 'lcrun' => 'Runtime'), ''
-     * @expect '<!--MISSED((-->{{#123}}<!--))--><!--SKIPPED--><!--MISSED((-->{{/123}}<!--))-->' when input '123', 'wi', array('flags' => array('debug' => Runtime::DEBUG_TAGS_HTML), 'lcrun' => 'Runtime'), false, false, function () {return 'A';}
+     * @expect '{{123}}' when input '123', 'miss', array('flags' => array('debug' => Runtime::DEBUG_TAGS), 'runtime' => 'LightnCandy\\Runtime'), ''
+     * @expect '<!--MISSED((-->{{#123}}<!--))--><!--SKIPPED--><!--MISSED((-->{{/123}}<!--))-->' when input '123', 'wi', array('flags' => array('debug' => Runtime::DEBUG_TAGS_HTML), 'runtime' => 'LightnCandy\\Runtime'), false, false, function () {return 'A';}
      */
     public static function debug($v, $f, $cx) {
         $params = array_slice(func_get_args(), 2);
-        $r = call_user_func_array((isset($cx['funcs'][$f]) ? $cx['funcs'][$f] : "{$cx['lcrun']}::$f"), $params);
+        $r = call_user_func_array((isset($cx['funcs'][$f]) ? $cx['funcs'][$f] : "{$cx['runtime']}::$f"), $params);
 
         if ($cx['flags']['debug'] & self::DEBUG_TAGS) {
             $ansi = $cx['flags']['debug'] & (self::DEBUG_TAGS_ANSI - self::DEBUG_TAGS);

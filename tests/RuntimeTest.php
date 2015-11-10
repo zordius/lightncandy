@@ -13,10 +13,10 @@ class RuntimeTest extends PHPUnit_Framework_TestCase
     public function testOn_debug() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'debug');
         $this->assertEquals('{{123}}', $method->invokeArgs(null,array(
-            '123', 'miss', array('flags' => array('debug' => Runtime::DEBUG_TAGS), 'lcrun' => 'Runtime'), ''
+            '123', 'miss', array('flags' => array('debug' => Runtime::DEBUG_TAGS), 'runtime' => 'LightnCandy\\Runtime'), ''
 )        ));
         $this->assertEquals('<!--MISSED((-->{{#123}}<!--))--><!--SKIPPED--><!--MISSED((-->{{/123}}<!--))-->', $method->invokeArgs(null,array(
-            '123', 'wi', array('flags' => array('debug' => Runtime::DEBUG_TAGS_HTML), 'lcrun' => 'Runtime'), false, false, function () {return 'A';}
+            '123', 'wi', array('flags' => array('debug' => Runtime::DEBUG_TAGS_HTML), 'runtime' => 'LightnCandy\\Runtime'), false, false, function () {return 'A';}
 )        ));
     }
     /**
