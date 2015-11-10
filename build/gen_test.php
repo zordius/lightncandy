@@ -7,6 +7,8 @@ use LightnCandy\LightnCandy;
 genTestForClass('LightnCandy');
 genTestForClass('Runtime');
 genTestForClass('Context');
+genTestForClass('Token');
+genTestForClass('Parser');
 
 function genTestForClass($classname) {
     ob_start();

@@ -22,9 +22,11 @@ namespace LightnCandy;
 use \LightnCandy\Flags;
 use \LightnCandy\Runtime;
 use \LightnCandy\Context;
+use \LightnCandy\Parser;
+use \LightnCandy\Token;
 
 /**
- * LightnCandy core static class.
+ * LightnCandy major static class
  */
 class LightnCandy extends Flags {
     // RegExps
@@ -65,7 +67,7 @@ class LightnCandy extends Flags {
         $template = static::stripExtendedComments($template);
 
         // Do first time scan to find out used feature, detect template error.
-        static::setupToken($context);
+        Parser::setDelimiter($context);
         static::verifyTemplate($context, $template);
 
         if (static::handleError($context)) {
@@ -75,7 +77,7 @@ class LightnCandy extends Flags {
         $context['scan'] = false;
 
         // Do PHP code generation.
-        static::setupToken($context);
+        Parser::setDelimiter($context);
 
         // Handle dynamic partials
         static::handleDynamicPartial($context);
@@ -132,39 +134,6 @@ class LightnCandy extends Flags {
      */
     protected static function escapeTemplate($template) {
         return addcslashes(addcslashes($template, '\\'), "'");
-    }
-
-    /**
-     * Setup token delimiter by default or provided string
-     *
-     * @param array<string,array|string|integer> $context Current context
-     * @param string $left left string of a token
-     * @param string $right right string of a token
-     */
-    protected static function setupToken(&$context, $left = '{{', $right = '}}') {
-        if (preg_match('/=/', "$left$right")) {
-            $context['error'][] = "Can not set delimiter contains '=' , you try to set delimiter as '$left' and '$right'.";
-            return;
-        }
-
-        $context['tokens']['startchar'] = substr($left, 0, 1);
-        $context['tokens']['left'] = $left;
-        $context['tokens']['right'] = $right;
-
-        if (($left === '{{') && ($right === '}}')) {
-            if ($context['flags']['rawblock']) {
-                $left = '\\{{2,4}';
-                $right = '\\}{2,4}';
-            } else {
-                $left = '\\{{2,3}';
-                $right = '\\}{2,3}';
-            }
-        } else {
-            $left = preg_quote($left);
-            $right = preg_quote($right);
-        }
-
-        $context['tokens']['search'] = "/^(.*?)(\\s*)($left)(~?)([\\^#\\/!&>]?)(.*?)(~?)($right)(\\s*)(.*)\$/s";
     }
 
     /**
@@ -381,7 +350,7 @@ $libstr
         $originalAhead = $context['tokens']['ahead'];
         $tmpContext = $context;
         $tmpContext['level'] = 0;
-        static::setupToken($tmpContext);
+        Parser::setDelimiter($tmpContext);
 
         static::verifyTemplate($tmpContext, $content);
         $originalToken = $context['tokens'];
@@ -757,7 +726,7 @@ $libstr
         // strip outer ( ) from subexpression
         $token[self::POS_INNERTAG] = substr($subExpression, 1, -1);
         $oldCount = $context['usedFeature'];
-        list(, $vars) = static::parseTokenArgs($token, $context);
+        list(, $vars) = Parser::parseTokenArgs($token, $context);
 
         // no separator is needed, this code will be used as a function argument
         $origSeperator = $context['ops']['seperator'];
@@ -918,355 +887,6 @@ $libstr
     }
 
     /**
-     * Internal method used by fixVariable(). Return array presentation for a variable name
-     *
-     * @param string $name variable name.
-     * @param boolean $asis keep the name as is or not
-     * @param boolean $quote add single quote or not
-     *
-     * @return array<integer|string> Return variable name array
-     *
-     */
-    protected static function asisResult($name, $asis, $quote = false) {
-        return $asis ? array($name) : array(0, $quote ? "'$name'" : $name);
-    }
-
-    /**
-     * Internal method used by compile(). Return array presentation for a variable name
-     *
-     * @param string $v variable name to be fixed.
-     * @param array<string,array|string|integer> $context Current compile content.
-     * @param boolean $asis keep the reference name
-     *
-     * @return array<integer,string> Return variable name array
-     *
-     * @expect array('this') when input 'this', array('flags' => array('advar' => 0, 'this' => 0))
-     * @expect array() when input 'this', array('flags' => array('advar' => 0, 'this' => 1))
-     * @expect array(1) when input '../', array('flags' => array('advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0), 'scan' => true)
-     * @expect array(1) when input '../.', array('flags' => array('advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0), 'scan' => true)
-     * @expect array(1) when input '../this', array('flags' => array('advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0), 'scan' => true)
-     * @expect array(1, 'a') when input '../a', array('flags' => array('advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0), 'scan' => true)
-     * @expect array(2, 'a', 'b') when input '../../a.b', array('flags' => array('advar' => 0, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0), 'scan' => true)
-     * @expect array(2, '[a]', 'b') when input '../../[a].b', array('flags' => array('advar' => 0, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0), 'scan' => true)
-     * @expect array(2, 'a', 'b') when input '../../[a].b', array('flags' => array('advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0), 'scan' => true)
-     * @expect array('id') when input 'this.id', array('flags' => array('advar' => 1, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0))
-     * @expect array(0, '\'a.b\'') when input '"a.b"', array('flags' => array('advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0))
-     * @expect array(0, '123') when input '123', array('flags' => array('advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0))
-     * @expect array(0, 'null') when input 'null', array('flags' => array('advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0))
-     */
-    protected static function fixVariable($v, &$context, $asis = false) {
-        // handle number
-        if (is_numeric($v)) {
-            return static::asisResult(strval(1 * $v), $asis);
-        }
-
-        // handle double quoted string
-        if (preg_match('/^"(.*)"$/', $v, $matched)) {
-            return static::asisResult(preg_replace('/([^\\\\])\\\\\\\\"/', '$1"', preg_replace('/^\\\\\\\\"/', '"', $matched[1])), $asis, true);
-        }
-
-        // handle single quoted string
-        if (preg_match('/^\\\\\'(.*)\\\\\'$/', $v, $matched)) {
-            return static::asisResult($matched[1], $asis, true);
-        }
-
-        // handle boolean, null and undefined
-        if (preg_match('/^(true|false|null|undefined)$/', $v)) {
-            return static::asisResult(($v === 'undefined') ? 'null' : $v, $asis);
-        }
-
-        $ret = array();
-        $levels = 0;
-
-        // handle ..
-        if ($v === '..') {
-            $v = '../';
-        }
-
-        // Trace to parent for ../ N times
-        $v = preg_replace_callback('/\\.\\.\\//', function() use (&$levels) {
-            $levels++;
-            return '';
-        }, trim($v));
-
-        if ($levels) {
-            $ret[] = $levels;
-            if (!$context['flags']['parent']) {
-                $context['error'][] = 'Do not support {{../var}}, you should do compile with LightnCandy::FLAG_PARENT flag';
-            }
-            $context['usedFeature']['parent'] += ($context['scan'] ? 1 : 0);
-        }
-
-        if ($context['flags']['advar'] && preg_match('/\\]/', $v)) {
-            preg_match_all(self::VARNAME_SEARCH, $v, $matchedall);
-        } else {
-            preg_match_all('/([^\\.\\/]+)/', $v, $matchedall);
-        }
-
-        foreach ($matchedall[1] as $m) {
-            if ($context['flags']['advar'] && substr($m, 0, 1) === '[') {
-                $ret[] = substr($m, 1, -1);
-            } else if ((!$context['flags']['this'] || ($m !== 'this')) && ($m !== '.')) {
-                $ret[] = $m;
-            }
-        }
-
-        return $ret;
-    }
-
-    /**
-     * Internal method used by scanFeatures() and compile(). Parse the token and return parsed result.
-     *
-     * @param array<string> $token preg_match results
-     * @param array<string,array|string|integer> $context current compile context
-     *
-     * @return array<boolean|integer|array> Return parsed result
-     *
-     * @expect array(false, array(array())) when input array(0,0,0,0,0,0,''), array('flags' => array('advar' => 0, 'this' => 1, 'namev' => 0, 'noesc' => 0), 'scan' => false, 'rawblock' => false)
-     * @expect array(true, array(array())) when input array(0,0,0,'{{{',0,0,''), array('flags' => array('advar' => 0, 'this' => 1, 'namev' => 0, 'noesc' => 0), 'scan' => false, 'rawblock' => false)
-     * @expect array(true, array(array())) when input array(0,0,0,0,0,0,''), array('flags' => array('advar' => 0, 'this' => 1, 'namev' => 0, 'noesc' => 1), 'scan' => false, 'rawblock' => false)
-     * @expect array(false, array(array('a'))) when input array(0,0,0,0,0,0,'a'), array('flags' => array('advar' => 0, 'this' => 1, 'namev' => 0, 'noesc' => 0), 'scan' => false, 'rawblock' => false)
-     * @expect array(false, array(array('a'), array('b'))) when input array(0,0,0,0,0,0,'a  b'), array('flags' => array('advar' => 0, 'this' => 1, 'namev' => 0, 'noesc' => 0), 'scan' => false, 'rawblock' => false)
-     * @expect array(false, array(array('a'), array('"b'), array('c"'))) when input array(0,0,0,0,0,0,'a "b c"'), array('flags' => array('advar' => 0, 'this' => 1, 'namev' => 0, 'noesc' => 0), 'scan' => false, 'rawblock' => false)
-     * @expect array(false, array(array('a'), array(0, '\'b c\''))) when input array(0,0,0,0,0,0,'a "b c"'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 0, 'noesc' => 0), 'scan' => false, 'rawblock' => false)
-     * @expect array(false, array(array('a'), array('[b'), array('c]'))) when input array(0,0,0,0,0,0,'a [b c]'), array('flags' => array('advar' => 0, 'this' => 1, 'namev' => 0, 'noesc' => 0), 'scan' => false, 'rawblock' => false)
-     * @expect array(false, array(array('a'), array('[b'), array('c]'))) when input array(0,0,0,0,0,0,'a [b c]'), array('flags' => array('advar' => 0, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'scan' => false, 'rawblock' => false)
-     * @expect array(false, array(array('a'), array('b c'))) when input array(0,0,0,0,0,0,'a [b c]'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 0, 'noesc' => 0), 'scan' => false, 'rawblock' => false)
-     * @expect array(false, array(array('a'), array('b c'))) when input array(0,0,0,0,0,0,'a [b c]'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'scan' => false, 'rawblock' => false)
-     * @expect array(false, array(array('a'), 'q' => array('b c'))) when input array(0,0,0,0,0,0,'a q=[b c]'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'scan' => false, 'rawblock' => false)
-     * @expect array(false, array(array('a'), array('q=[b c'))) when input array(0,0,0,0,0,0,'a [q=[b c]'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'scan' => false, 'rawblock' => false)
-     * @expect array(false, array(array('a'), 'q' => array('[b'), array('c]'))) when input array(0,0,0,0,0,0,'a q=[b c]'), array('flags' => array('advar' => 0, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'scan' => false, 'rawblock' => false)
-     * @expect array(false, array(array('a'), 'q' => array('b'), array('c'))) when input array(0,0,0,0,0,0,'a [q]=b c'), array('flags' => array('advar' => 0, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'scan' => false, 'rawblock' => false)
-     * @expect array(false, array(array('a'), 'q' => array(0, '\'b c\''))) when input array(0,0,0,0,0,0,'a q="b c"'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'scan' => false, 'rawblock' => false)
-     * @expect array(false, array(array('(foo bar)'))) when input array(0,0,0,0,0,0,'(foo bar)'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 1, 'lambda' => 0), 'ops' => array('seperator' => ''), 'usedFeature' => array('subexp' => 0), 'scan' => false, 'rawblock' => false)
-     * @expect array(false, array(array('foo'), array("'=='"), array('bar'))) when input array(0,0,0,0,0,0,"foo '==' bar"), array('flags' => array('advar' => 1, 'namev' => 1, 'noesc' => 0, 'this' => 0), 'scan' => false, 'rawblock' => false)
-     * @expect array(false, array(array('( foo bar)'))) when input array(0,0,0,0,0,0,'( foo bar)'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 1, 'lambda' => 0), 'ops' => array('seperator' => ''), 'usedFeature' => array('subexp' => 0), 'scan' => false, 'rawblock' => false)
-     * @expect array(false, array(array('a'), array(0, '\' b c\''))) when input array(0,0,0,0,0,0,'a " b c"'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 0, 'noesc' => 0), 'scan' => false, 'rawblock' => false)
-     * @expect array(false, array(array('a'), 'q' => array(0, '\' b c\''))) when input array(0,0,0,0,0,0,'a q=" b c"'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'scan' => false, 'rawblock' => false)
-     * @expect array(false, array(array('foo'), array(0, "' =='"), array('bar'))) when input array(0,0,0,0,0,0,"foo \' ==\' bar"), array('flags' => array('advar' => 1, 'namev' => 1, 'noesc' => 0, 'this' => 0), 'scan' => false, 'rawblock' => false)
-     * @expect array(false, array(array('a'), array(' b c'))) when input array(0,0,0,0,0,0,'a [ b c]'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'scan' => false, 'rawblock' => false)
-     * @expect array(false, array(array('a'), 'q' => array(0, "' d e'"))) when input array(0,0,0,0,0,0,"a q=\' d e\'"), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'scan' => false, 'rawblock' => false)
-     * @expect array(false, array('q' => array('( foo bar)'))) when input array(0,0,0,0,0,0,'q=( foo bar)'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 0, 'lambda' => 0), 'scan' => false, 'usedFeature' => array(), 'ops' => array('seperator' => 0), 'rawblock' => false)
-     */
-    protected static function parseTokenArgs(&$token, &$context) {
-        $inner = $token[self::POS_INNERTAG];
-        trim($inner);
-
-        // skip parse when inside raw block
-        if ($context['rawblock'] && !(($token[self::POS_BEGINTAG] === '{{{{') && ($token[self::POS_OP] === '/') && ($context['rawblock'] === $inner))) {
-            return array(-1, $token);
-        }
-
-        $token[self::POS_INNERTAG] = $inner;
-
-        // Handle delimiter change
-        if (preg_match('/^=\s*([^ ]+)\s+([^ ]+)\s*=$/', $token[self::POS_INNERTAG], $matched)) {
-            static::setupToken($context, $matched[1], $matched[2]);
-            $token[self::POS_OP] = ' ';
-            return array(false, array());
-        }
-
-        // Handle raw block
-        if ($token[self::POS_BEGINTAG] === '{{{{') {
-            if ($token[self::POS_ENDTAG] !== '}}}}') {
-                $context['error'][] = 'Bad token ' . static::tokenString($token) . ' ! Do you mean {{{{' . static::tokenString($token, 4) . '}}}} ?';
-            }
-            if ($context['rawblock']) {
-                static::setupToken($context);
-                $context['rawblock'] = false;
-            } else {
-                if ($token[self::POS_OP]) {
-                    $context['error'][] = "Wrong raw block begin with " . static::tokenString($token) . ' ! Remove "' . $token[self::POS_OP] . '" to fix this issue.';
-                }
-                static::setupToken($context, '{{{{', '}}}}');
-                $token[self::POS_OP] = '#';
-                $context['rawblock'] = $token[self::POS_INNERTAG];
-            }
-            $token[self::POS_BEGINTAG] = '{{';
-            $token[self::POS_ENDTAG] = '}}';
-        }
-
-        // Skip validation on comments
-        if ($token[self::POS_OP] === '!') {
-            return array(false, array());
-        }
-
-        $vars = array();
-        $count = preg_match_all('/(\s*)([^\s]+)/', $token[self::POS_INNERTAG], $matchedall);
-        // Parse arguments and deal with "..." or [...] or (...) or \'...\'
-        if (($count > 0) && $context['flags']['advar']) {
-            $prev = '';
-            $expect = 0;
-            $stack = 0;
-
-            foreach ($matchedall[2] as $index => $t) {
-                // continue from previous match when expect something
-                if ($expect) {
-                    $prev .= "{$matchedall[1][$index]}$t";
-                    if (($stack > 0) && (substr($t, 0, 1) === '(')) {
-                        $stack++;
-                    }
-                    // end an argument when end with expected charactor
-                    if (substr($t, -1, 1) === $expect) {
-                        if ($stack > 0) {
-                            preg_match('/(\\)+)$/', $t, $matchedq);
-                            $stack -= strlen($matchedq[0]);
-                            if ($stack > 0) {
-                                continue;
-                            }
-                            if ($stack < 0) {
-                                $context['error'][] = "Unexcepted ')' in " . static::tokenString($token) . ' !!';
-                            }
-                        }
-                        $vars[] = $prev;
-                        $prev = '';
-                        $expect = 0;
-                    }
-                    continue;
-                }
-
-                // continue to next match when begin with '(' without ending ')'
-                if (preg_match('/^\([^\)]*$/', $t)) {
-                    $prev = $t;
-                    $expect = ')';
-                    $stack=1;
-                    continue;
-                }
-
-                // continue to next match when begin with '"' without ending '"'
-                if (preg_match('/^"[^"]*$/', $t)) {
-                    $prev = $t;
-                    $expect = '"';
-                    continue;
-                }
-
-                // continue to next match when begin with \' without ending '
-                if (preg_match('/^\\\\\'[^\']*$/', $t)) {
-                    $prev = $t;
-                    $expect = '\'';
-                    continue;
-                }
-
-                // continue to next match when '="' exists without ending '"'
-                if (preg_match('/^[^"]*="[^"]*$/', $t)) {
-                    $prev = $t;
-                    $expect = '"';
-                    continue;
-                }
-
-                // continue to next match when '[' exists without ending ']'
-                if (preg_match('/^([^"\'].+)?\\[[^\\]]*$/', $t)) {
-                    $prev = $t;
-                    $expect = ']';
-                    continue;
-                }
-
-                // continue to next match when =\' exists without ending '
-                if (preg_match('/^[^\']*=\\\\\'[^\']*$/', $t)) {
-                    $prev = $t;
-                    $expect = '\'';
-                    continue;
-                }
-
-                // continue to next match when =( exists without ending )
-                if (preg_match('/.+\([^\)]*$/', $t)) {
-                    $prev = $t;
-                    $expect = ')';
-                    $stack=1;
-                    continue;
-                }
-
-                $vars[] = $t;
-            }
-        } else {
-            $vars = ($count > 0) ? $matchedall[2] : explode(' ', $token[self::POS_INNERTAG]);
-        }
-
-        // Check for advanced variable.
-        $ret = array();
-        $i = 0;
-        foreach ($vars as $idx => $var) {
-            // Skip advanced processing for subexpressions
-            if (preg_match(static::IS_SUBEXP_SEARCH, $var)) {
-                static::compileSubExpression($var, $context, !$context['scan']);
-                $ret[$i] = array($var);
-                $i++;
-                continue;
-            }
-
-            if ($context['flags']['namev']) {
-                if (preg_match('/^((\\[([^\\]]+)\\])|([^=^["\']+))=(.+)$/', $var, $m)) {
-                    if (!$context['flags']['advar'] && $m[3]) {
-                        $context['error'][] = "Wrong argument name as '[$m[3]]' in " . static::tokenString($token) . ' ! You should fix your template or compile with LightnCandy::FLAG_ADVARNAME flag.';
-                    }
-                    $idx = $m[3] ? $m[3] : $m[4];
-                    $var = $m[5];
-                    // Compile subexpressions for named arguments
-                    if (preg_match(static::IS_SUBEXP_SEARCH, $var)) {
-                        static::compileSubExpression($var, $context, !$context['scan']);
-                        $ret[$idx] = array($var);
-                        continue;
-                    }
-                }
-            }
-
-            $esc = $context['scan'] ? '' : '\\\\';
-            if ($context['flags']['advar'] && !preg_match("/^(\"|$esc')(.*)(\"|$esc')$/", $var)) {
-                    // foo]  Rule 1: no starting [ or [ not start from head
-                if (preg_match('/^[^\\[\\.]+[\\]\\[]/', $var)
-                    // [bar  Rule 2: no ending ] or ] not in the end
-                    || preg_match('/[\\[\\]][^\\]\\.]+$/', $var)
-                    // ]bar. Rule 3: middle ] not before .
-                    || preg_match('/\\][^\\]\\[\\.]+\\./', $var)
-                    // .foo[ Rule 4: middle [ not after .
-                    || preg_match('/\\.[^\\]\\[\\.]+\\[/', preg_replace('/^(..\\/)+/', '', preg_replace('/\\[[^\\]]+\\]/', '[XXX]', $var)))
-                ) {
-                    $context['error'][] = "Wrong variable naming as '$var' in " . static::tokenString($token) . ' !';
-                } else {
-                    if (!$context['scan']) {
-                        $name = preg_replace('/(\\[.+?\\])/', '', $var);
-                        // Scan for invalid charactors which not be protected by [ ]
-                        // now make ( and ) pass, later fix
-                        if (preg_match('/[!"#%\'*+,;<=>{|}~]/', $name)) {
-                            $context['error'][] = "Wrong variable naming as '$var' in " . static::tokenString($token) . ' ! You should wrap ! " # % & \' * + , ; < = > { | } ~ into [ ]';
-                        }
-                    }
-                }
-            }
-
-            if (($idx === 0) && ($token[self::POS_OP] === '>')) {
-                $var = array(preg_replace('/^("(.+)")|(\\[(.+)\\])$/', '$2$4', $var));
-            } else {
-                $var = static::fixVariable($var, $context, (count($vars) === 1) && ($idx === 0));
-            }
-
-            if (is_string($idx)) {
-                $ret[$idx] = $var;
-            } else {
-                $ret[$i] = $var;
-                $i++;
-            }
-        }
-
-        return array(($token[self::POS_BEGINTAG] === '{{{') || ($token[self::POS_OP] === '&') || $context['flags']['noesc'] || $context['rawblock'], $ret);
-    }
-
-    /**
-     * Internal method used by scanFeatures(). return token string
-     *
-     * @param string[] $token detected handlebars {{ }} token
-     * @param integer $remove remove how many heading and ending token
-     *
-     * @return string Return whole token
-     *
-     * @expect 'b' when input array(0, 'a', 'b', 'c'), 1
-     * @expect 'c' when input array(0, 'a', 'b', 'c', 'd', 'e')
-     */
-    protected static function tokenString($token, $remove = 2) {
-        return implode('', array_slice($token, 1 + $remove, -$remove));
-    }
-
-    /**
      * Internal method used by scanFeatures(). Validate start and and.
      *
      * @param string[] $token detected handlebars {{ }} token
@@ -1281,12 +901,12 @@ $libstr
     protected static function validateStartEnd($token, &$context) {
         // {{ }}} or {{{ }} are invalid
         if (strlen($token[self::POS_BEGINTAG]) !== strlen($token[self::POS_ENDTAG])) {
-            $context['error'][] = 'Bad token ' . static::tokenString($token) . ' ! Do you mean {{' . static::tokenString($token, 4) . '}} or {{{' . static::tokenString($token, 4) . '}}}?';
+            $context['error'][] = 'Bad token ' . token::toString($token) . ' ! Do you mean {{' . token::toString($token, 4) . '}} or {{{' . token::toString($token, 4) . '}}}?';
             return true;
         }
         // {{{# }}} or {{{! }}} or {{{/ }}} or {{{^ }}} are invalid.
         if ((strlen($token[self::POS_BEGINTAG]) === 3) && $token[self::POS_OP] && ($token[self::POS_OP] !== '&')) {
-            $context['error'][] = 'Bad token ' . static::tokenString($token) . ' ! Do you mean {{' . static::tokenString($token, 4) . '}} ?';
+            $context['error'][] = 'Bad token ' . token::toString($token) . ' ! Do you mean {{' . token::toString($token, 4) . '}} ?';
             return true;
         }
     }
@@ -1393,7 +1013,7 @@ $libstr
      * @param array<string,array|string|integer> $context current compile context
      */
     protected static function scanFeatures($token, &$context) {
-        list($raw, $vars) = static::parseTokenArgs($token, $context);
+        list($raw, $vars) = Parser::parseTokenArgs($token, $context);
 
         if ($raw === -1) {
             return;
@@ -1412,7 +1032,7 @@ $libstr
         }
 
         if (count($vars) == 0) {
-            return $context['error'][] = 'Wrong variable naming in ' . static::tokenString($token);
+            return $context['error'][] = 'Wrong variable naming in ' . token::toString($token);
         }
 
         if (!isset($vars[0])) {
@@ -1463,7 +1083,7 @@ $libstr
      */
     public static function noNamedArguments($token, &$context, $named, $suggest = '!') {
         if ($named) {
-            $context['error'][] = 'Do not support name=value in ' . static::tokenString($token) . $suggest;
+            $context['error'][] = 'Do not support name=value in ' . token::toString($token) . $suggest;
         }
     }
 
@@ -1540,11 +1160,11 @@ $libstr
      * @return string Return compiled code segment for the token
      */
     public static function compileToken(&$token, &$context) {
-        list($raw, $vars) = static::parseTokenArgs($token, $context);
+        list($raw, $vars) = Parser::parseTokenArgs($token, $context);
 
         // Do not touch the tag, keep it as is.
         if ($raw === -1) {
-            return ".'" . static::tokenString($token) . "'.";
+            return ".'" . token::toString($token) . "'.";
         }
 
         $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;
@@ -1720,7 +1340,7 @@ $libstr
                 $pop2 = array_pop($context['stack']);
                 $v = static::getVariableName($vars[0], $context);
                 if (!$each && ($pop2 !== $v[1])) {
-                    $context['error'][] = 'Unexpect token ' . static::tokenString($token) . " ! Previous token {{{$pop}$pop2}} is not closed";
+                    $context['error'][] = 'Unexpect token ' . token::toString($token) . " ! Previous token {{{$pop}$pop2}} is not closed";
                     return;
                 }
                 if ($pop == '^') {
@@ -1728,7 +1348,7 @@ $libstr
                 }
                 return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
             default:
-                $context['error'][] = 'Unexpect token: ' . static::tokenString($token) . ' !';
+                $context['error'][] = 'Unexpect token: ' . token::toString($token) . ' !';
                 return;
         }
     }
