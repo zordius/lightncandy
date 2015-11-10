@@ -75,8 +75,8 @@ class Context extends Flags {
             'scan' => true,
             'stack' => array(),
             'error' => array(),
-            'basedir' => static::prepareBasedir($options),
-            'fileext' => static::prepareFileext($options),
+            'basedir' => self::prepareBasedir($options),
+            'fileext' => self::prepareFileext($options),
             'tokens' => array(
                 'standalone' => true,
                 'ahead' => false,
@@ -150,9 +150,9 @@ class Context extends Flags {
         );
 
         $context['ops']['enc'] = $context['flags']['jsquote'] ? 'encq' : 'enc';
-        static::updateHelperTable($context, $options);
-        static::updateHelperTable($context, $options, 'blockhelpers');
-        static::updateHelperTable($context, $options, 'hbhelpers');
+        self::updateHelperTable($context, $options);
+        self::updateHelperTable($context, $options, 'blockhelpers');
+        self::updateHelperTable($context, $options, 'hbhelpers');
 
         return $context;
     }
