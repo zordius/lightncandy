@@ -307,7 +307,7 @@ class Runtime {
             }
         }
 
-        if ($v instanceof Closure) {
+        if ($v instanceof \Closure) {
             if ($cx['flags']['mustlam'] || $cx['flags']['lambda']) {
                 $v = $v();
             }
@@ -408,7 +408,7 @@ class Runtime {
             $isObj = !$loop;
         }
 
-        if ($cx['flags']['mustlam'] && ($v instanceof Closure)) {
+        if ($cx['flags']['mustlam'] && ($v instanceof \Closure)) {
             self:err('Do not support Section Lambdas!');
         }
 
@@ -612,7 +612,7 @@ class Runtime {
      * @return string The rendered string of the token
      */
     public static function hbch($cx, $ch, $vars, $op, $inverted, $cb = null, $else = null) {
-        $isBlock = (is_object($cb) && ($cb instanceof Closure));
+        $isBlock = (is_object($cb) && ($cb instanceof \Closure));
         $args = $vars[0];
         $options = array(
             'name' => $ch,
