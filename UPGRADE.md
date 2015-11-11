@@ -9,7 +9,8 @@ Version v0.89
 * Option FLAG_MUSTACHESP removed.
 * Option FLAG_MUSTACHEPAIN removed.
 * Option FLAG_MUSTACHE includes FLAG_RUNTIMEPARTIAL now.
-* Due to big change of rendering function: sec() and inv(), the rendering supporting class `LCRun3` is renamed to `LCRun4`. If you compile templates as none standalone PHP code by LightnCandy v0.23 or before, you should compile these templates again. Or, you may run into `Class 'LCRun3' not found` error when you execute these old rendering functions.
+* LightnCandy be refactored into many sub classes, you can not just use curl to install it now.
+* Due to big change of rendering function: sec() and inv(), the rendering supporting class `LCRun3` is renamed to `LightnCandy\Runtime`. If you compile templates as none standalone PHP code by LightnCandy v0.23 or before, you should compile these templates again. Or, you may run into `Class 'LCRun3' not found` error when you execute these old rendering functions.
 
 Version v0.19
 -------------
