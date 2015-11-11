@@ -677,7 +677,7 @@ class Runtime {
 
         try {
             $r = call_user_func_array($cx['hbhelpers'][$ch], $args);
-        } catch (Exception $E) {
+        } catch (\Exception $E) {
             $e = "Runtime: call custom helper '$ch' error: " . $E->getMessage();
         }
 
