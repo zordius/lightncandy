@@ -26,7 +26,7 @@ use \LightnCandy\Token;
  */
 class Validator {
     /**
-     * Verify template and scan for used features
+     * Verify template
      *
      * @param array<string,array|string|integer> $context Current context
      * @param string $template handlebars template
@@ -34,13 +34,13 @@ class Validator {
     public static function verify(&$context, $template) {
         while (preg_match($context['tokens']['search'], $template, $matches)) {
             $context['tokens']['count']++;
-            static::scanFeatures($matches, $context);
+            static::verifyToken($matches, $context);
             $template = $matches[Token::POS_ROTHER];
         }
     }
 
     /**
-     * Internal method used by scanFeatures(). Validate start and and.
+     * Verify delimiters and operators
      *
      * @param string[] $token detected handlebars {{ }} token
      * @param array<string,array|string|integer> $context current compile context
@@ -51,7 +51,7 @@ class Validator {
      * @expect null when input array_fill(0, 9, '}}'), array()
      * @expect true when input array_fill(0, 9, '{{{'), array()
      */
-    protected static function validateStartEnd($token, &$context) {
+    protected static function delimiter($token, &$context) {
         // {{ }}} or {{{ }} are invalid
         if (strlen($token[Token::POS_BEGINTAG]) !== strlen($token[Token::POS_ENDTAG])) {
             $context['error'][] = 'Bad token ' . token::toString($token) . ' ! Do you mean {{' . token::toString($token, 4) . '}} or {{{' . token::toString($token, 4) . '}}}?';
@@ -65,7 +65,7 @@ class Validator {
     }
 
     /**
-     * Internal method used by compile(). Collect handlebars usage information, detect template error.
+     * Verify operators
      *
      * @param string[] $token detected handlebars {{ }} token
      * @param array<string,array|string|integer> $context current compile context
@@ -87,7 +87,7 @@ class Validator {
      * @expect 11 when input array(0, 0, 0, 0, 0, '#', '...'), array('hbhelpers' => array('abc' => ''), 'usedFeature' => array('hbhelper' => 10), 'level' => 0), array(array('abc'))
      * @expect true when input array(0, 0, 0, 0, 0, '>', '...'), array('basedir' => array('.'), 'fileext' => array('.tmpl'), 'usedFeature' => array('unless' => 7, 'partial' => 7), 'level' => 0, 'flags' => array('skippartial' => 0)), array('test')
      */
-    protected static function validateOperations($token, &$context, $vars) {
+    protected static function operator($token, &$context, $vars) {
         switch ($token[Token::POS_OP]) {
             case '>':
    // FIXME             static::readPartial($vars[0][0], $context);
@@ -160,23 +160,23 @@ class Validator {
     }
 
     /**
-     * Internal method used by compile(). Collect handlebars usage information, detect template error.
+     * Collect handlebars usage information, detect template error.
      *
      * @param string[] $token detected handlebars {{ }} token
      * @param array<string,array|string|integer> $context current compile context
      */
-    protected static function scanFeatures($token, &$context) {
+    protected static function verifyToken($token, &$context) {
         list($raw, $vars) = Parser::parse($token, $context);
 
         if ($raw === -1) {
             return;
         }
 
-        if (static::validateStartEnd($token, $context)) {
+        if (static::delimiter($token, $context)) {
             return;
         }
 
-        if (static::validateOperations($token, $context, $vars)) {
+        if (static::operator($token, $context, $vars)) {
             return;
         }
 
@@ -227,7 +227,7 @@ class Validator {
     }
 
     /**
-     * Internal method used by compile(). Show error message when named arguments appear without helper.
+     * Append error message when named arguments appear without helper.
      *
      * @param array<string> $token detected handlebars {{ }} token
      * @param array<string,array|string|integer> $context current compile context

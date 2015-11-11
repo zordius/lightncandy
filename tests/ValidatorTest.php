@@ -8,10 +8,10 @@ use LightnCandy\Runtime;
 class ValidatorTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @covers LightnCandy\Validator::validateStartEnd
+     * @covers LightnCandy\Validator::delimiter
      */
-    public function testOn_validateStartEnd() {
-        $method = new \ReflectionMethod('LightnCandy\Validator', 'validateStartEnd');
+    public function testOn_delimiter() {
+        $method = new \ReflectionMethod('LightnCandy\Validator', 'delimiter');
         $method->setAccessible(true);
         $this->assertEquals(null, $method->invokeArgs(null,array(
             array_fill(0, 9, ''), array()
@@ -24,10 +24,10 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LightnCandy\Validator::validateOperations
+     * @covers LightnCandy\Validator::operator
      */
-    public function testOn_validateOperations() {
-        $method = new \ReflectionMethod('LightnCandy\Validator', 'validateOperations');
+    public function testOn_operator() {
+        $method = new \ReflectionMethod('LightnCandy\Validator', 'operator');
         $method->setAccessible(true);
         $this->assertEquals(null, $method->invokeArgs(null,array(
             array(0, 0, 0, 0, 0, ''), array(), array()
