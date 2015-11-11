@@ -29,9 +29,11 @@ function recursive_lambda_fix(&$array) {
         eval("\$v = $code;");
         $array = $v;
     }
-    foreach ($array as &$value) {
-        if (is_array($value)) {
-            recursive_lambda_fix($value);
+    if (is_array($array)) {
+        foreach ($array as &$value) {
+            if (is_array($value)) {
+                recursive_lambda_fix($value);
+            }
         }
     }
 }
