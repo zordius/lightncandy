@@ -11,6 +11,7 @@ genTestForClass('Token');
 genTestForClass('Parser');
 genTestForClass('Validator');
 genTestForClass('Partial');
+genTestForClass('Exporter');
 
 function genTestForClass($classname) {
     ob_start();

@@ -40,19 +40,6 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LightnCandy\LightnCandy::getPHPCode
-     */
-    public function testOn_getPHPCode() {
-        $method = new \ReflectionMethod('LightnCandy\LightnCandy', 'getPHPCode');
-        $method->setAccessible(true);
-        $this->assertEquals('function($a) {return;}', $method->invokeArgs(null,array(
-            function ($a) {return;}
-)        ));
-        $this->assertEquals('function($a) {return;}', $method->invokeArgs(null,array(
-               function ($a) {return;}
-)        ));
-    }
-    /**
      * @covers LightnCandy\LightnCandy::handleError
      */
     public function testOn_handleError() {
