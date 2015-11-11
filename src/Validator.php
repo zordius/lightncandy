@@ -37,7 +37,7 @@ class Validator {
             $context['tokens']['count']++;
             static::pushToken($context, $matches[Token::POS_LOTHER]);
             static::pushToken($context, $matches[Token::POS_LSPACE]);
-            static::pushToken($context, static::verifyToken($matches, $context));
+            static::pushToken($context, static::token($matches, $context));
             $template = $matches[Token::POS_ROTHER];
         }
         static::pushToken($context, $template);
@@ -87,27 +87,28 @@ class Validator {
      * @param string[] $token detected handlebars {{ }} token
      * @param array<string,array|string|integer> $context current compile context
      * @param array<array> $vars parsed arguments list
+     * @param boolean $named is named arguments
      *
      * @return boolean|integer|null Return true when invalid or detected
      *
-     * @expect null when input array(0, 0, 0, 0, 0, ''), array(), array()
-     * @expect 2 when input array(0, 0, 0, 0, 0, '^', '...'), array('usedFeature' => array('isec' => 1), 'level' => 0), array(array('foo'))
-     * @expect 3 when input array(0, 0, 0, 0, 0, '!', '...'), array('usedFeature' => array('comment' => 2)), array()
-     * @expect true when input array(0, 0, 0, 0, 0, '/'), array('stack' => array(1), 'level' => 1), array()
-     * @expect 4 when input array(0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('sec' => 3), 'level' => 0), array(array('x'))
-     * @expect 5 when input array(0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('if' => 4), 'level' => 0), array(array('if'))
-     * @expect 6 when input array(0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('with' => 5), 'level' => 0, 'flags' => array('with' => 1)), array(array('with'))
-     * @expect 7 when input array(0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('each' => 6), 'level' => 0), array(array('each'))
-     * @expect 8 when input array(0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('unless' => 7), 'level' => 0), array(array('unless'))
-     * @expect 9 when input array(0, 0, 0, 0, 0, '#', '...'), array('blockhelpers' => array('abc' => ''), 'usedFeature' => array('bhelper' => 8), 'level' => 0), array(array('abc'))
-     * @expect 10 when input array(0, 0, 0, 0, 0, ' ', '...'), array('usedFeature' => array('delimiter' => 9), 'level' => 0), array()
-     * @expect 11 when input array(0, 0, 0, 0, 0, '#', '...'), array('hbhelpers' => array('abc' => ''), 'usedFeature' => array('hbhelper' => 10), 'level' => 0), array(array('abc'))
-     * @expect true when input array(0, 0, 0, 0, 0, '>', '...'), array('basedir' => array('.'), 'fileext' => array('.tmpl'), 'usedFeature' => array('unless' => 7, 'partial' => 7), 'level' => 0, 'flags' => array('skippartial' => 0)), array('test')
+     * @expect null when input array(0, 0, 0, 0, 0, ''), array(), array(), false
+     * @expect 2 when input array(0, 0, 0, 0, 0, '^', '...'), array('usedFeature' => array('isec' => 1), 'level' => 0), array(array('foo')), false
+     * @expect 3 when input array(0, 0, 0, 0, 0, '!', '...'), array('usedFeature' => array('comment' => 2)), array(), false
+     * @expect true when input array(0, 0, 0, 0, 0, '/'), array('stack' => array(1), 'level' => 1), array(), false
+     * @expect 4 when input array(0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('sec' => 3), 'level' => 0), array(array('x')), false
+     * @expect 5 when input array(0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('if' => 4), 'level' => 0), array(array('if')), false
+     * @expect 6 when input array(0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('with' => 5), 'level' => 0, 'flags' => array('with' => 1)), array(array('with')), false
+     * @expect 7 when input array(0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('each' => 6), 'level' => 0), array(array('each')), false
+     * @expect 8 when input array(0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('unless' => 7), 'level' => 0), array(array('unless')), false
+     * @expect 9 when input array(0, 0, 0, 0, 0, '#', '...'), array('blockhelpers' => array('abc' => ''), 'usedFeature' => array('bhelper' => 8), 'level' => 0), array(array('abc')), false
+     * @expect 10 when input array(0, 0, 0, 0, 0, ' ', '...'), array('usedFeature' => array('delimiter' => 9), 'level' => 0), array(), false
+     * @expect 11 when input array(0, 0, 0, 0, 0, '#', '...'), array('hbhelpers' => array('abc' => ''), 'usedFeature' => array('hbhelper' => 10), 'level' => 0), array(array('abc')), false
+     * @expect true when input array(0, 0, 0, 0, 0, '>', '...'), array('basedir' => array('.'), 'fileext' => array('.tmpl'), 'usedFeature' => array('unless' => 7, 'partial' => 7), 'level' => 0, 'flags' => array('skippartial' => 0)), array('test'), false
      */
-    protected static function operator($token, &$context, $vars) {
+    protected static function operator(&$token, &$context, $vars, $named) {
         switch ($token[Token::POS_OP]) {
             case '>':
-                Partial::readPartial($vars[0][0], $context);
+                static::partial($token, $context, $vars, $named);
                 return true;
 
             case ' ':
@@ -182,18 +183,31 @@ class Validator {
      * @param string[] $token detected handlebars {{ }} token
      * @param array<string,array|string|integer> $context current compile context
      */
-    protected static function verifyToken($token, &$context) {
+    protected static function token($token, &$context) {
         list($raw, $vars) = Parser::parse($token, $context);
 
         if ($raw === -1) {
             return Token::toString($token);
         }
 
+        $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;
+
+        // Handle spacing (standalone tags, partial indent)
+        static::spacing($token, $vars, $context);
+
+        // Handle space control.
+        if ($token[Token::POS_LSPACECTL]) {
+            $token[Token::POS_LSPACE] = '';
+        }
+        if ($token[Token::POS_RSPACECTL]) {
+            $token[Token::POS_RSPACE] = '';
+        }
+
         if (static::delimiter($token, $context)) {
             return;
         }
 
-        if (static::operator($token, $context, $vars)) {
+        if (static::operator($token, $context, $vars, $named)) {
             return;
         }
 
@@ -242,7 +256,7 @@ class Validator {
      *
      * @return integer|null Return 1 or larger number when else token detected
      */
-    public static function doElse($token, &$context, $name) {
+    protected static function doElse($token, &$context, $name) {
         if ($name === 'else') {
             if ($context['flags']['else']) {
                 return $context['usedFeature']['else']++;
@@ -259,7 +273,7 @@ class Validator {
      *
      * @return integer|null Return 1 or larger number when custom helper detected
      */
-    public static function helper($token, &$context, $name) {
+    protected static function helper($token, &$context, $name) {
         // detect handlebars custom helpers.
         if (isset($context['hbhelpers'][$name])) {
             return $context['usedFeature']['hbhelper']++;
@@ -282,6 +296,73 @@ class Validator {
     public static function noNamedArguments($token, &$context, $named, $suggest = '!') {
         if ($named) {
             $context['error'][] = 'Do not support name=value in ' . token::toString($token) . $suggest;
+        }
+    }
+
+    /**
+     * Append error message when named arguments appear without helper.
+     *
+     * @param array<string> $token detected handlebars {{ }} token
+     * @param array<string,array|string|integer> $context current compile context
+     * @param boolean $named is named arguments
+     * @param string $suggest extended hint for this no named argument error
+     */
+    public static function partial($token, &$context, $vars, $named) {
+        Partial::readPartial($vars[0][0], $context);
+    }
+
+    /**
+     * Modify $token when spacing rules matched.
+     *
+     * @param array<string> $token detected handlebars {{ }} token
+     * @param array<array|string|integer> $vars parsed arguments list
+     * @param array<string,array|string|integer> $context current compile context
+     *
+     * @return string|null Return compiled code segment for the token
+     */
+    protected static function spacing(&$token, $vars, &$context) {
+        if ($context['flags']['noind']) {
+            return;
+        }
+        // left line change detection
+        $lsp = preg_match('/^(.*)(\\r?\\n)([ \\t]*?)$/s', $token[Token::POS_LSPACE], $lmatch);
+        $ind = $lsp ? $lmatch[3] : $token[Token::POS_LSPACE];
+        // right line change detection
+        $rsp = preg_match('/^([ \\t]*?)(\\r?\\n)(.*)$/s', $token[Token::POS_RSPACE], $rmatch);
+        $st = true;
+        // setup ahead flag
+        $ahead = $context['tokens']['ahead'];
+        $context['tokens']['ahead'] = preg_match('/^[^\n]*{{/s', $token[Token::POS_RSPACE] . $token[Token::POS_ROTHER]);
+        // reset partial indent
+        $context['tokens']['partialind'] = '';
+        // same tags in the same line , not standalone
+        if (!$lsp && $ahead) {
+            $st = false;
+        }
+        // Do not need standalone detection for these tags
+        if (!$token[Token::POS_OP] || ($token[Token::POS_OP] === '&')) {
+            if (!$context['flags']['else'] || !isset($vars[0][0]) || ($vars[0][0] !== 'else')) {
+                $st = false;
+            }
+        }
+        // not standalone because other things in the same line ahead
+        if ($token[Token::POS_LOTHER] && !$token[Token::POS_LSPACE]) {
+            $st = false;
+        }
+        // not standalone because other things in the same line behind
+        if ($token[Token::POS_ROTHER] && !$token[Token::POS_RSPACE]) {
+            $st = false;
+        }
+        if ($st && (($lsp && $rsp) // both side cr
+            || ($rsp && !$token[Token::POS_LOTHER]) // first line without left
+            || ($lsp && ($context['tokens']['current'] == $context['tokens']['count']) && !$token[Token::POS_ROTHER]) // final line
+           )) {
+            // handle partial
+            if ((!$context['flags']['noind']) && ($token[Token::POS_OP] === '>')) {
+                $context['tokens']['partialind'] = $ind;
+            }
+            $token[Token::POS_LSPACE] = (isset($lmatch[2]) ? ($lmatch[1] . $lmatch[2]) : '');
+            $token[Token::POS_RSPACE] = isset($rmatch[3]) ? $rmatch[3] : '';
         }
     }
 }
