@@ -35,8 +35,24 @@ class Validator {
     public static function verify(&$context, $template) {
         while (preg_match($context['tokens']['search'], $template, $matches)) {
             $context['tokens']['count']++;
-            static::verifyToken($matches, $context);
+            static::pushToken($context, $matches[Token::POS_LOTHER]);
+            static::pushToken($context, $matches[Token::POS_LSPACE]);
+            static::pushToken($context, static::verifyToken($matches, $context));
             $template = $matches[Token::POS_ROTHER];
+        }
+        static::pushToken($context, $template);
+    }
+
+
+    /**
+     * push a token into the stack when it is not empty string
+     *
+     * @param array<string,array|string|integer> $context Current context
+     * @param string|array $token a parsed token or a string
+     */
+    protected static function pushToken(&$context, $token) {
+        if ($token !== '') {
+            $context['parsed'][] = $token;
         }
     }
 

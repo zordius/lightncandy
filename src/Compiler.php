@@ -498,7 +498,7 @@ $libstr
 
         // Do not touch the tag, keep it as is.
         if ($raw === -1) {
-            return ".'" . token::toString($token) . "'.";
+            return ".'" . Token::toString($token) . "'.";
         }
 
         $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;
@@ -674,7 +674,7 @@ $libstr
                 $pop2 = array_pop($context['stack']);
                 $v = static::getVariableName($vars[0], $context);
                 if (!$each && ($pop2 !== $v[1])) {
-                    $context['error'][] = 'Unexpect token ' . token::toString($token) . " ! Previous token {{{$pop}$pop2}} is not closed";
+                    $context['error'][] = 'Unexpect token ' . Token::toString($token) . " ! Previous token {{{$pop}$pop2}} is not closed";
                     return;
                 }
                 if ($pop == '^') {
@@ -682,7 +682,7 @@ $libstr
                 }
                 return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
             default:
-                $context['error'][] = 'Unexpect token: ' . token::toString($token) . ' !';
+                $context['error'][] = 'Unexpect token: ' . Token::toString($token) . ' !';
                 return;
         }
     }

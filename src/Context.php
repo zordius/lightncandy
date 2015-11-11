@@ -117,6 +117,7 @@ class Context extends Flags {
                 'hbhelpers' => array(),
                 'runtime' => array(),
             ),
+            'parsed' => array(),
             'partials' => (isset($options['partials']) && is_array($options['partials'])) ? $options['partials'] : array(),
             'helpers' => array(),
             'blockhelpers' => array(),
