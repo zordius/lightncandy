@@ -38,45 +38,45 @@ class Context extends Flags {
             $options = array();
         }
 
-        $flags = isset($options['flags']) ? $options['flags'] : self::FLAG_BESTPERFORMANCE;
+        $flags = isset($options['flags']) ? $options['flags'] : static::FLAG_BESTPERFORMANCE;
 
         $context = array(
             'flags' => array(
-                'errorlog' => $flags & self::FLAG_ERROR_LOG,
-                'exception' => $flags & self::FLAG_ERROR_EXCEPTION,
-                'skippartial' => $flags & self::FLAG_ERROR_SKIPPARTIAL,
-                'standalone' => $flags & self::FLAG_STANDALONE,
-                'bare' => $flags & self::FLAG_BARE,
-                'noesc' => $flags & self::FLAG_NOESCAPE,
-                'jstrue' => $flags & self::FLAG_JSTRUE,
-                'jsobj' => $flags & self::FLAG_JSOBJECT,
-                'jsquote' => $flags & self::FLAG_JSQUOTE,
-                'this' => $flags & self::FLAG_THIS,
-                'with' => $flags & self::FLAG_WITH,
-                'parent' => $flags & self::FLAG_PARENT,
-                'echo' => $flags & self::FLAG_ECHO,
-                'advar' => $flags & self::FLAG_ADVARNAME,
-                'namev' => $flags & self::FLAG_NAMEDARG,
-                'spvar' => $flags & self::FLAG_SPVARS,
-                'slash' => $flags & self::FLAG_SLASH,
-                'else' => $flags & self::FLAG_ELSE,
-                'exhlp' => $flags & self::FLAG_EXTHELPER,
-                'lambda' => $flags & self::FLAG_HANDLEBARSLAMBDA,
-                'mustlok' => $flags & self::FLAG_MUSTACHELOOKUP,
-                'mustlam' => $flags & self::FLAG_MUSTACHELAMBDA,
-                'noind' => $flags & self::FLAG_PREVENTINDENT,
-                'debug' => $flags & self::FLAG_RENDER_DEBUG,
-                'prop' => $flags & self::FLAG_PROPERTY,
-                'method' => $flags & self::FLAG_METHOD,
-                'runpart' => $flags & self::FLAG_RUNTIMEPARTIAL,
-                'rawblock' => $flags & self::FLAG_RAWBLOCK,
+                'errorlog' => $flags & static::FLAG_ERROR_LOG,
+                'exception' => $flags & static::FLAG_ERROR_EXCEPTION,
+                'skippartial' => $flags & static::FLAG_ERROR_SKIPPARTIAL,
+                'standalone' => $flags & static::FLAG_STANDALONE,
+                'bare' => $flags & static::FLAG_BARE,
+                'noesc' => $flags & static::FLAG_NOESCAPE,
+                'jstrue' => $flags & static::FLAG_JSTRUE,
+                'jsobj' => $flags & static::FLAG_JSOBJECT,
+                'jsquote' => $flags & static::FLAG_JSQUOTE,
+                'this' => $flags & static::FLAG_THIS,
+                'with' => $flags & static::FLAG_WITH,
+                'parent' => $flags & static::FLAG_PARENT,
+                'echo' => $flags & static::FLAG_ECHO,
+                'advar' => $flags & static::FLAG_ADVARNAME,
+                'namev' => $flags & static::FLAG_NAMEDARG,
+                'spvar' => $flags & static::FLAG_SPVARS,
+                'slash' => $flags & static::FLAG_SLASH,
+                'else' => $flags & static::FLAG_ELSE,
+                'exhlp' => $flags & static::FLAG_EXTHELPER,
+                'lambda' => $flags & static::FLAG_HANDLEBARSLAMBDA,
+                'mustlok' => $flags & static::FLAG_MUSTACHELOOKUP,
+                'mustlam' => $flags & static::FLAG_MUSTACHELAMBDA,
+                'noind' => $flags & static::FLAG_PREVENTINDENT,
+                'debug' => $flags & static::FLAG_RENDER_DEBUG,
+                'prop' => $flags & static::FLAG_PROPERTY,
+                'method' => $flags & static::FLAG_METHOD,
+                'runpart' => $flags & static::FLAG_RUNTIMEPARTIAL,
+                'rawblock' => $flags & static::FLAG_RAWBLOCK,
             ),
             'level' => 0,
             'scan' => true,
             'stack' => array(),
             'error' => array(),
-            'basedir' => self::prepareBasedir($options),
-            'fileext' => self::prepareFileext($options),
+            'basedir' => static::prepareBasedir($options),
+            'fileext' => static::prepareFileext($options),
             'tokens' => array(
                 'standalone' => true,
                 'ahead' => false,
@@ -150,9 +150,9 @@ class Context extends Flags {
         );
 
         $context['ops']['enc'] = $context['flags']['jsquote'] ? 'encq' : 'enc';
-        self::updateHelperTable($context, $options);
-        self::updateHelperTable($context, $options, 'blockhelpers');
-        self::updateHelperTable($context, $options, 'hbhelpers');
+        static::updateHelperTable($context, $options);
+        static::updateHelperTable($context, $options, 'blockhelpers');
+        static::updateHelperTable($context, $options, 'hbhelpers');
 
         return $context;
     }
