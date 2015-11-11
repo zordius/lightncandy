@@ -65,22 +65,22 @@ class Parser extends Token {
     protected static function getExpression($v, &$context, $asis = false) {
         // handle number
         if (is_numeric($v)) {
-            return self::getLiteral(strval(1 * $v), $asis);
+            return static::getLiteral(strval(1 * $v), $asis);
         }
 
         // handle double quoted string
         if (preg_match('/^"(.*)"$/', $v, $matched)) {
-            return self::getLiteral(preg_replace('/([^\\\\])\\\\\\\\"/', '$1"', preg_replace('/^\\\\\\\\"/', '"', $matched[1])), $asis, true);
+            return static::getLiteral(preg_replace('/([^\\\\])\\\\\\\\"/', '$1"', preg_replace('/^\\\\\\\\"/', '"', $matched[1])), $asis, true);
         }
 
         // handle single quoted string
         if (preg_match('/^\\\\\'(.*)\\\\\'$/', $v, $matched)) {
-            return self::getLiteral($matched[1], $asis, true);
+            return static::getLiteral($matched[1], $asis, true);
         }
 
         // handle boolean, null and undefined
         if (preg_match('/^(true|false|null|undefined)$/', $v)) {
-            return self::getLiteral(($v === 'undefined') ? 'null' : $v, $asis);
+            return static::getLiteral(($v === 'undefined') ? 'null' : $v, $asis);
         }
 
         $ret = array();
@@ -106,7 +106,7 @@ class Parser extends Token {
         }
 
         if ($context['flags']['advar'] && preg_match('/\\]/', $v)) {
-            preg_match_all(self::VARNAME_SEARCH, $v, $matchedall);
+            preg_match_all(static::VARNAME_SEARCH, $v, $matchedall);
         } else {
             preg_match_all('/([^\\.\\/]+)/', $v, $matchedall);
         }
@@ -157,57 +157,57 @@ class Parser extends Token {
      * @expect array(false, array('q' => array('( foo bar)'))) when input array(0,0,0,0,0,0,'q=( foo bar)'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 0, 'lambda' => 0), 'scan' => false, 'usedFeature' => array(), 'ops' => array('seperator' => 0), 'rawblock' => false)
      */
     public static function parse(&$token, &$context) {
-        $inner = $token[self::POS_INNERTAG];
+        $inner = $token[static::POS_INNERTAG];
         trim($inner);
 
         // skip parse when inside raw block
-        if ($context['rawblock'] && !(($token[self::POS_BEGINTAG] === '{{{{') && ($token[self::POS_OP] === '/') && ($context['rawblock'] === $inner))) {
+        if ($context['rawblock'] && !(($token[static::POS_BEGINTAG] === '{{{{') && ($token[static::POS_OP] === '/') && ($context['rawblock'] === $inner))) {
             return array(-1, $token);
         }
 
-        $token[self::POS_INNERTAG] = $inner;
+        $token[static::POS_INNERTAG] = $inner;
 
         // Handle delimiter change
-        if (preg_match('/^=\s*([^ ]+)\s+([^ ]+)\s*=$/', $token[self::POS_INNERTAG], $matched)) {
-            self::setDelimiter($context, $matched[1], $matched[2]);
-            $token[self::POS_OP] = ' ';
+        if (preg_match('/^=\s*([^ ]+)\s+([^ ]+)\s*=$/', $token[static::POS_INNERTAG], $matched)) {
+            static::setDelimiter($context, $matched[1], $matched[2]);
+            $token[static::POS_OP] = ' ';
             return array(false, array());
         }
 
         // Handle raw block
-        if ($token[self::POS_BEGINTAG] === '{{{{') {
-            if ($token[self::POS_ENDTAG] !== '}}}}') {
-                $context['error'][] = 'Bad token ' . self::toString($token) . ' ! Do you mean {{{{' . self::toString($token, 4) . '}}}} ?';
+        if ($token[static::POS_BEGINTAG] === '{{{{') {
+            if ($token[static::POS_ENDTAG] !== '}}}}') {
+                $context['error'][] = 'Bad token ' . static::toString($token) . ' ! Do you mean {{{{' . static::toString($token, 4) . '}}}} ?';
             }
             if ($context['rawblock']) {
-                self::setDelimiter($context);
+                static::setDelimiter($context);
                 $context['rawblock'] = false;
             } else {
-                if ($token[self::POS_OP]) {
-                    $context['error'][] = "Wrong raw block begin with " . self::toString($token) . ' ! Remove "' . $token[self::POS_OP] . '" to fix this issue.';
+                if ($token[static::POS_OP]) {
+                    $context['error'][] = "Wrong raw block begin with " . static::toString($token) . ' ! Remove "' . $token[static::POS_OP] . '" to fix this issue.';
                 }
-                self::setDelimiter($context, '{{{{', '}}}}');
-                $token[self::POS_OP] = '#';
-                $context['rawblock'] = $token[self::POS_INNERTAG];
+                static::setDelimiter($context, '{{{{', '}}}}');
+                $token[static::POS_OP] = '#';
+                $context['rawblock'] = $token[static::POS_INNERTAG];
             }
-            $token[self::POS_BEGINTAG] = '{{';
-            $token[self::POS_ENDTAG] = '}}';
+            $token[static::POS_BEGINTAG] = '{{';
+            $token[static::POS_ENDTAG] = '}}';
         }
 
         // Skip validation on comments
-        if ($token[self::POS_OP] === '!') {
+        if ($token[static::POS_OP] === '!') {
             return array(false, array());
         }
 
-        $vars = self::scan($token[self::POS_INNERTAG], $context);
+        $vars = static::scan($token[static::POS_INNERTAG], $context);
 
         // Check for advanced variable.
         $ret = array();
         $i = 0;
         foreach ($vars as $idx => $var) {
             // Skip advanced processing for subexpressions
-            if (preg_match(self::IS_SUBEXP_SEARCH, $var)) {
-// FIXME self::compileSubExpression($var, $context, !$context['scan']);
+            if (preg_match(static::IS_SUBEXP_SEARCH, $var)) {
+// FIXME static::compileSubExpression($var, $context, !$context['scan']);
                 $ret[$i] = array($var);
                 $i++;
                 continue;
@@ -216,13 +216,13 @@ class Parser extends Token {
             if ($context['flags']['namev']) {
                 if (preg_match('/^((\\[([^\\]]+)\\])|([^=^["\']+))=(.+)$/', $var, $m)) {
                     if (!$context['flags']['advar'] && $m[3]) {
-                        $context['error'][] = "Wrong argument name as '[$m[3]]' in " . self::toString($token) . ' ! You should fix your template or compile with LightnCandy::FLAG_ADVARNAME flag.';
+                        $context['error'][] = "Wrong argument name as '[$m[3]]' in " . static::toString($token) . ' ! You should fix your template or compile with LightnCandy::FLAG_ADVARNAME flag.';
                     }
                     $idx = $m[3] ? $m[3] : $m[4];
                     $var = $m[5];
                     // Compile subexpressions for named arguments
-                    if (preg_match(self::IS_SUBEXP_SEARCH, $var)) {
-// FIXME                        self::compileSubExpression($var, $context, !$context['scan']);
+                    if (preg_match(static::IS_SUBEXP_SEARCH, $var)) {
+// FIXME                        static::compileSubExpression($var, $context, !$context['scan']);
                         $ret[$idx] = array($var);
                         continue;
                     }
@@ -240,23 +240,23 @@ class Parser extends Token {
                     // .foo[ Rule 4: middle [ not after .
                     || preg_match('/\\.[^\\]\\[\\.]+\\[/', preg_replace('/^(..\\/)+/', '', preg_replace('/\\[[^\\]]+\\]/', '[XXX]', $var)))
                 ) {
-                    $context['error'][] = "Wrong variable naming as '$var' in " . self::toString($token) . ' !';
+                    $context['error'][] = "Wrong variable naming as '$var' in " . static::toString($token) . ' !';
                 } else {
                     if (!$context['scan']) {
                         $name = preg_replace('/(\\[.+?\\])/', '', $var);
                         // Scan for invalid charactors which not be protected by [ ]
                         // now make ( and ) pass, later fix
                         if (preg_match('/[!"#%\'*+,;<=>{|}~]/', $name)) {
-                            $context['error'][] = "Wrong variable naming as '$var' in " . self::toString($token) . ' ! You should wrap ! " # % & \' * + , ; < = > { | } ~ into [ ]';
+                            $context['error'][] = "Wrong variable naming as '$var' in " . static::toString($token) . ' ! You should wrap ! " # % & \' * + , ; < = > { | } ~ into [ ]';
                         }
                     }
                 }
             }
 
-            if (($idx === 0) && ($token[self::POS_OP] === '>')) {
+            if (($idx === 0) && ($token[static::POS_OP] === '>')) {
                 $var = array(preg_replace('/^("(.+)")|(\\[(.+)\\])$/', '$2$4', $var));
             } else {
-                $var = self::getExpression($var, $context, (count($vars) === 1) && ($idx === 0));
+                $var = static::getExpression($var, $context, (count($vars) === 1) && ($idx === 0));
             }
 
             if (is_string($idx)) {
@@ -267,7 +267,7 @@ class Parser extends Token {
             }
         }
 
-        return array(($token[self::POS_BEGINTAG] === '{{{') || ($token[self::POS_OP] === '&') || $context['flags']['noesc'] || $context['rawblock'], $ret);
+        return array(($token[static::POS_BEGINTAG] === '{{{') || ($token[static::POS_OP] === '&') || $context['flags']['noesc'] || $context['rawblock'], $ret);
     }
 
     /**
