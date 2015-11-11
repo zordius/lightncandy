@@ -20,6 +20,7 @@ Origin: https://github.com/zordius/lightncandy
 
 namespace LightnCandy;
 use \LightnCandy\Token;
+use \LightnCandy\Compiler;
 
 /**
  * LightnCandy Parser
@@ -207,7 +208,7 @@ class Parser extends Token {
         foreach ($vars as $idx => $var) {
             // Skip advanced processing for subexpressions
             if (preg_match(static::IS_SUBEXP_SEARCH, $var)) {
-// FIXME static::compileSubExpression($var, $context, !$context['scan']);
+                Compiler::compileSubExpression($var, $context, !$context['scan']);
                 $ret[$i] = array($var);
                 $i++;
                 continue;
@@ -222,7 +223,7 @@ class Parser extends Token {
                     $var = $m[5];
                     // Compile subexpressions for named arguments
                     if (preg_match(static::IS_SUBEXP_SEARCH, $var)) {
-// FIXME                        static::compileSubExpression($var, $context, !$context['scan']);
+                        Compiler::compileSubExpression($var, $context, !$context['scan']);
                         $ret[$idx] = array($var);
                         continue;
                     }

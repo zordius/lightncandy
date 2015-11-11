@@ -254,7 +254,7 @@ $libstr
      *
      * @return array<string> code representing passed expression
      */
-    protected static function compileSubExpression($subExpression, &$context, $keepCount = false) {
+    public static function compileSubExpression($subExpression, &$context, $keepCount = false) {
         // mock up a token for this expression
         $token = array_fill(Token::POS_LOTHER, Token::POS_ROTHER, '');
 
