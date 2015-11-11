@@ -186,7 +186,7 @@ class Validator {
         list($raw, $vars) = Parser::parse($token, $context);
 
         if ($raw === -1) {
-            return;
+            return Token::toString($token);
         }
 
         if (static::delimiter($token, $context)) {
@@ -226,19 +226,47 @@ class Validator {
             return;
         }
 
-        if ($vars[0][0] === 'else') {
+        if (static::doElse($token, $context, $vars[0][0])) {
+            return;
+        }
+
+        static::helper($token, $context, $vars[0][0]);
+    }
+
+    /**
+     * Return 1 or larger number when else token detected
+     *
+     * @param array<string> $token detected handlebars {{ }} token
+     * @param array<string,array|string|integer> $context current compile context
+     * @param string $name token name
+     *
+     * @return integer|null Return 1 or larger number when else token detected
+     */
+    public static function doElse($token, &$context, $name) {
+        if ($name === 'else') {
             if ($context['flags']['else']) {
                 return $context['usedFeature']['else']++;
             }
         }
+    }
 
+    /**
+     * Return 1 or larger number when custom helper detected
+     *
+     * @param array<string> $token detected handlebars {{ }} token
+     * @param array<string,array|string|integer> $context current compile context
+     * @param string $name token name
+     *
+     * @return integer|null Return 1 or larger number when custom helper detected
+     */
+    public static function helper($token, &$context, $name) {
         // detect handlebars custom helpers.
-        if (isset($context['hbhelpers'][$vars[0][0]])) {
+        if (isset($context['hbhelpers'][$name])) {
             return $context['usedFeature']['hbhelper']++;
         }
 
         // detect custom helpers.
-        if (isset($context['helpers'][$vars[0][0]])) {
+        if (isset($context['helpers'][$name])) {
             return $context['usedFeature']['helper']++;
         }
     }
