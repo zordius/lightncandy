@@ -20,6 +20,7 @@ Origin: https://github.com/zordius/lightncandy
 
 namespace LightnCandy;
 use \LightnCandy\Token;
+use \LightnCandy\Partial;
 
 /**
  * LightnCandy Validator
@@ -90,7 +91,7 @@ class Validator {
     protected static function operator($token, &$context, $vars) {
         switch ($token[Token::POS_OP]) {
             case '>':
-   // FIXME             static::readPartial($vars[0][0], $context);
+                Partial::readPartial($vars[0][0], $context);
                 return true;
 
             case ' ':

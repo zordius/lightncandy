@@ -23,13 +23,12 @@ use \LightnCandy\Context;
 use \LightnCandy\Parser;
 use \LightnCandy\Validator;
 use \LightnCandy\Partial;
+use \LightnCandy\String;
 
 /**
  * LightnCandy major static class
  */
 class LightnCandy extends Flags {
-    // RegExps
-    const EXTENDED_COMMENT_SEARCH = '/{{!--.*?--}}/s';
     protected static $lastContext;
 
     /**
@@ -47,7 +46,7 @@ class LightnCandy extends Flags {
             return false;
         }
 
-        $template = static::stripExtendedComments($template);
+        $template = String::stripExtendedComments($template);
 
         // Do first time scan to find out used feature, detect template error.
         Parser::setDelimiter($context);
@@ -65,7 +64,7 @@ class LightnCandy extends Flags {
         // Handle dynamic partials
         Partial::handleDynamicPartial($context);
 
-        $code = Compiler::compileTemplate($context, static::escapeTemplate($template));
+        $code = Compiler::compileTemplate($context, String::escapeTemplate($template));
 
         // return false when fatal error
         if (static::handleError($context)) {
@@ -74,36 +73,6 @@ class LightnCandy extends Flags {
 
         // Or, return full PHP render codes as string
         return Compiler::composePHPRender($context, $code);
-    }
-
-    /**
-     * Strip extended comments {{!-- .... --}}
-     *
-     * @param string $template handlebars template string
-     *
-     * @return string Stripped template
-     *
-     * @expect 'abc' when input 'abc'
-     * @expect 'abc{{!}}cde' when input 'abc{{!}}cde'
-     * @expect 'abc{{! }}cde' when input 'abc{{!----}}cde'
-     */
-    protected static function stripExtendedComments($template) {
-        return preg_replace(static::EXTENDED_COMMENT_SEARCH, '{{! }}', $template);
-    }
-
-    /**
-     * Escape template
-     *
-     * @param string $template handlebars template string
-     *
-     * @return string Escaped template
-     *
-     * @expect 'abc' when input 'abc'
-     * @expect 'a\\\\bc' when input 'a\bc'
-     * @expect 'a\\\'bc' when input 'a\'bc'
-     */
-    protected static function escapeTemplate($template) {
-        return addcslashes(addcslashes($template, '\\'), "'");
     }
 
     /**

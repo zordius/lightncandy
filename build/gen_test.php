@@ -12,6 +12,8 @@ genTestForClass('Parser');
 genTestForClass('Validator');
 genTestForClass('Partial');
 genTestForClass('Exporter');
+genTestForClass('Compiler');
+genTestForClass('String');
 
 function genTestForClass($classname) {
     ob_start();

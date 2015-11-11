@@ -8,38 +8,6 @@ use LightnCandy\Runtime;
 class LightnCandyTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @covers LightnCandy\LightnCandy::stripExtendedComments
-     */
-    public function testOn_stripExtendedComments() {
-        $method = new \ReflectionMethod('LightnCandy\LightnCandy', 'stripExtendedComments');
-        $method->setAccessible(true);
-        $this->assertEquals('abc', $method->invokeArgs(null,array(
-            'abc'
-)        ));
-        $this->assertEquals('abc{{!}}cde', $method->invokeArgs(null,array(
-            'abc{{!}}cde'
-)        ));
-        $this->assertEquals('abc{{! }}cde', $method->invokeArgs(null,array(
-            'abc{{!----}}cde'
-)        ));
-    }
-    /**
-     * @covers LightnCandy\LightnCandy::escapeTemplate
-     */
-    public function testOn_escapeTemplate() {
-        $method = new \ReflectionMethod('LightnCandy\LightnCandy', 'escapeTemplate');
-        $method->setAccessible(true);
-        $this->assertEquals('abc', $method->invokeArgs(null,array(
-            'abc'
-)        ));
-        $this->assertEquals('a\\\\bc', $method->invokeArgs(null,array(
-            'a\bc'
-)        ));
-        $this->assertEquals('a\\\'bc', $method->invokeArgs(null,array(
-            'a\'bc'
-)        ));
-    }
-    /**
      * @covers LightnCandy\LightnCandy::handleError
      */
     public function testOn_handleError() {

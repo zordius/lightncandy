@@ -20,6 +20,9 @@ Origin: https://github.com/zordius/lightncandy
 
 namespace LightnCandy;
 
+use \LightnCandy\Compiler;
+use \LightnCandy\String;
+
 /**
  * LightnCandy Partial handler
  */
@@ -45,7 +48,7 @@ class Partial {
      * @param string $name partial name
      * @param array<string,array|string|integer> $context Current context of compiler progress.
      */
-    protected static function readPartial($name, &$context) {
+    public static function readPartial($name, &$context) {
         $context['usedFeature']['partial']++;
 
         if (isset($context['usedPartial'][$name])) {
@@ -58,7 +61,7 @@ class Partial {
             return static::compilePartial($name, $context, $cnt);
         }
 
-        if (preg_match(static::IS_SUBEXP_SEARCH, $name)) {
+        if (preg_match(Compiler::IS_SUBEXP_SEARCH, $name)) {
             if ($context['flags']['runpart']) {
                 $context['usedFeature']['dynpartial']++;
                 return;
@@ -121,7 +124,7 @@ class Partial {
      * @param string $content partial content
      */
     protected static function compilePartial(&$name, &$context, $content) {
-        $context['usedPartial'][$name] = static::escapeTemplate(static::stripExtendedComments($content));
+        $context['usedPartial'][$name] = String::escapeTemplate(String::stripExtendedComments($content));
 
         $originalAhead = $context['tokens']['ahead'];
         $tmpContext = $context;
@@ -135,7 +138,7 @@ class Partial {
         $context['tokens']['ahead'] = $originalAhead;
 
         if ($context['flags']['runpart']) {
-            $code = static::compileTemplate($context, str_replace('function', static::$TMP_JS_FUNCTION_STR, $context['usedPartial'][$name]), $name);
+            $code = Compiler::compileTemplate($context, str_replace('function', static::$TMP_JS_FUNCTION_STR, $context['usedPartial'][$name]), $name);
             if (!$context['flags']['noind']) {
                 $sp = ', $sp';
                 $code = preg_replace('/^/m', "'{$context['ops']['seperator']}\$sp{$context['ops']['seperator']}'", $code);
