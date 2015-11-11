@@ -22,7 +22,7 @@ namespace LightnCandy;
 use \LightnCandy\Token;
 
 /**
- * LightnCandy major static class
+ * LightnCandy Validator
  */
 class Validator {
     /**
