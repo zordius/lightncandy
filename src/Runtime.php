@@ -125,7 +125,7 @@ class Runtime {
                     continue;
                 }
                 if (is_object($v)) {
-                    if ($cx['flags']['prop'] && isset($v->$name)) {
+                    if ($cx['flags']['prop'] && !($v instanceof \Closure) && isset($v->$name)) {
                         $v = $v->$name;
                         continue;
                     }
