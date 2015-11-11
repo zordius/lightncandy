@@ -9,6 +9,7 @@ genTestForClass('Runtime');
 genTestForClass('Context');
 genTestForClass('Token');
 genTestForClass('Parser');
+genTestForClass('Validator');
 
 function genTestForClass($classname) {
     ob_start();
