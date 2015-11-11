@@ -40,19 +40,6 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LightnCandy\LightnCandy::prePartial
-     */
-    public function testOn_prePartial() {
-        $method = new \ReflectionMethod('LightnCandy\LightnCandy', 'prePartial');
-        $method->setAccessible(true);
-        $this->assertEquals('hey', $method->invokeArgs(null,array(
-            'hey', 'haha', Array('prepartial' => false)
-)        ));
-        $this->assertEquals('haha-hoho', $method->invokeArgs(null,array(
-            'hoho', 'haha', Array('prepartial' => function ($tmpl, $name) {return "$name-$tmpl";})
-)        ));
-    }
-    /**
      * @covers LightnCandy\LightnCandy::getPHPCode
      */
     public function testOn_getPHPCode() {

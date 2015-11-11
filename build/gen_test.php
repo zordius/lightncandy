@@ -10,6 +10,7 @@ genTestForClass('Context');
 genTestForClass('Token');
 genTestForClass('Parser');
 genTestForClass('Validator');
+genTestForClass('Partial');
 
 function genTestForClass($classname) {
     ob_start();
