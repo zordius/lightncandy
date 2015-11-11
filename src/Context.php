@@ -213,8 +213,8 @@ class Context extends Flags {
      * @expect array() when input array(), array()
      * @expect array('flags' => array('exhlp' => 1)) when input array('flags' => array('exhlp' => 1)), array('helpers' => array('abc'))
      * @expect array('error' => array('Can not find custom helper function defination abc() !'), 'flags' => array('exhlp' => 0)) when input array('error' => array(), 'flags' => array('exhlp' => 0)), array('helpers' => array('abc'))
-     * @expect array('flags' => array('exhlp' => 1), 'helpers' => array('Runtime::raw' => 'Runtime::raw')) when input array('flags' => array('exhlp' => 1), 'helpers' => array()), array('helpers' => array('Runtime::raw'))
-     * @expect array('flags' => array('exhlp' => 1), 'helpers' => array('test' => 'Runtime::raw')) when input array('flags' => array('exhlp' => 1), 'helpers' => array()), array('helpers' => array('test' => 'Runtime::raw'))
+     * @expect array('flags' => array('exhlp' => 1), 'helpers' => array('\\LightnCandy\\Runtime::raw' => '\\LightnCandy\\Runtime::raw')) when input array('flags' => array('exhlp' => 1), 'helpers' => array()), array('helpers' => array('\\LightnCandy\\Runtime::raw'))
+     * @expect array('flags' => array('exhlp' => 1), 'helpers' => array('test' => '\\LightnCandy\\Runtime::raw')) when input array('flags' => array('exhlp' => 1), 'helpers' => array()), array('helpers' => array('test' => '\\LightnCandy\\Runtime::raw'))
      */
     protected static function updateHelperTable(&$context, $options, $tname = 'helpers') {
         if (isset($options[$tname]) && is_array($options[$tname])) {
