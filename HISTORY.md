@@ -20,6 +20,7 @@ v0.89-develop
       * rename LightnCandy to LightnCandy\LightnCandy
       * rename LCRun4 to LightnCandy\Runtime
       * rename `lcrun` option to `runtime`
+   * b818c2411e split LightnCandy methods into different classes
 
 v0.23 https://github.com/zordius/lightncandy/tree/v0.23
    * align with handlebars.js 3.0.3
