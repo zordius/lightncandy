@@ -8,10 +8,10 @@ use LightnCandy\Runtime;
 class ExporterTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @covers LightnCandy\Exporter::getPHPCode
+     * @covers LightnCandy\Exporter::closure
      */
-    public function testOn_getPHPCode() {
-        $method = new \ReflectionMethod('LightnCandy\Exporter', 'getPHPCode');
+    public function testOn_closure() {
+        $method = new \ReflectionMethod('LightnCandy\Exporter', 'closure');
         $method->setAccessible(true);
         $this->assertEquals('function($a) {return;}', $method->invokeArgs(null,array(
             function ($a) {return;}

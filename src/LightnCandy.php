@@ -198,11 +198,11 @@ class LightnCandy extends Flags {
         $flagMustlam = static::getBoolStr($context['flags']['mustlam']);
         $flagEcho = static::getBoolStr($context['flags']['echo']);
 
-        $libstr = Exporter::exportLCRun($context);
-        $constants = Exporter::exportLCRunConstant($context);
-        $helpers = Exporter::exportHelper($context);
-        $bhelpers = Exporter::exportHelper($context, 'blockhelpers');
-        $hbhelpers = Exporter::exportHelper($context, 'hbhelpers');
+        $libstr = Exporter::runtime($context);
+        $constants = Exporter::constants($context);
+        $helpers = Exporter::helpers($context);
+        $bhelpers = Exporter::helpers($context, 'blockhelpers');
+        $hbhelpers = Exporter::helpers($context, 'hbhelpers');
         $debug = Runtime::DEBUG_ERROR_LOG;
         $phpstart = $context['flags']['bare'] ? '' : "<?php use {$context['runtime']} as LR;\n";
         $phpend = $context['flags']['bare'] ? ';' : "\n?>";

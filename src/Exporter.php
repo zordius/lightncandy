@@ -34,7 +34,7 @@ class Exporter {
      * @expect 'function($a) {return;}' when input function ($a) {return;}
      * @expect 'function($a) {return;}' when input    function ($a) {return;}
      */
-    protected static function getPHPCode($closure) {
+    protected static function closure($closure) {
         if (is_string($closure) && preg_match('/(.+)::(.+)/', $closure, $matched)) {
             $ref = new \ReflectionMethod($matched[1], $matched[2]);
         } else {
@@ -53,21 +53,21 @@ class Exporter {
     }
 
     /**
-     * Internal method used by compile(). Export required custom helper functions.
+     * Export required custom helper functions.
      *
      * @param string $tname   helper table name
      * @param array<string,array|string|integer> $context current compile context
      *
      * @return string
      */
-    public static function exportHelper($context, $tname = 'helpers') {
+    public static function helpers($context, $tname = 'helpers') {
         $ret = '';
         foreach ($context[$tname] as $name => $func) {
             if (!isset($context['usedCount'][$tname][$name])) {
                 continue;
             }
             if ((is_object($func) && ($func instanceof \Closure)) || ($context['flags']['exhlp'] == 0)) {
-                $ret .= ("            '$name' => " . static::getPHPCode($func) . ",\n");
+                $ret .= ("            '$name' => " . static::closure($func) . ",\n");
                 continue;
             }
             $ret .= "            '$name' => '$func',\n";
@@ -77,13 +77,13 @@ class Exporter {
     }
 
     /**
-     * Internal method used by compile(). Export required standalone functions.
+     * Export required standalone Runtime methods.
      *
      * @param array<string,array|string|integer> $context current compile context
      *
      * @return string
      */
-    public static function exportLCRun($context) {
+    public static function runtime($context) {
         if ($context['flags']['standalone'] == 0) {
             return '';
         }
@@ -101,7 +101,7 @@ class Exporter {
             $spos = $file->ftell();
             $file->seek($method->getEndLine() - 2);
             $epos = $file->ftell();
-            $methods[$name] = static::scanLCRunDependency($context, preg_replace('/public static function (.+)\\(/', '\'$1\' => function (', substr($lines, $spos, $epos - $spos)));
+            $methods[$name] = static::scanDependency($context, preg_replace('/public static function (.+)\\(/', '\'$1\' => function (', substr($lines, $spos, $epos - $spos)));
         }
         unset($file);
 
@@ -130,13 +130,13 @@ class Exporter {
     }
 
     /**
-     * Internal method used by compile(). Export standalone constants.
+     * Export Runtime constants.
      *
      * @param array<string,array|string|integer> $context current compile context
      *
      * @return string
      */
-    public static function exportLCRunConstant($context) {
+    public static function constants($context) {
         if ($context['flags']['standalone'] == 0) {
             return 'array()';
         }
@@ -159,7 +159,7 @@ class Exporter {
      *
      * @return array<string|array> list of converted code and children array
      */
-    protected static function scanLCRunDependency($context, $code) {
+    protected static function scanDependency($context, $code) {
         $child = array();
 
         $code = preg_replace_callback('/static::(\w+?)\s*\(/', function ($matches) use ($context, &$child) {
