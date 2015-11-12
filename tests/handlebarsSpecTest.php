@@ -213,7 +213,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                 $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , no PHP helper code provided for this case.");
             }
 
-            $hname = "custom_helper_{$spec['no']}_{$tested}_$name";
+            $hname = preg_replace('/\\.|\\//', '_', "custom_helper_{$spec['no']}_{$tested}_$name");
             $helpers[$name] = $hname;
 
             $helper = preg_replace('/\\$options->(\\w+)/', '$options[\'$1\']',
