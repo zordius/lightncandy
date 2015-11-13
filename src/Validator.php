@@ -72,7 +72,7 @@ class Validator {
      */
     protected static function pushToken(&$context, $token) {
         if ($token !== '') {
-            $context['parsed'][] = $token;
+            $context['parsed'][0][] = $token;
         }
     }
 

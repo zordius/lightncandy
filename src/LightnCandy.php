@@ -44,6 +44,7 @@ class LightnCandy extends Flags {
         }
 
         $code = Compiler::compileTemplate($context, $template);
+        array_shift($context['parsed']);
 
         // return false when fatal error
         if (static::handleError($context)) {

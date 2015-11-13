@@ -39,6 +39,7 @@ class Compiler extends Validator {
      * @return string generated PHP code
      */
     public static function compileTemplate(&$context, $template, $partial = '') {
+        array_unshift($context['parsed'], array());
         Validator::verify($context, $template);
 
         if (count($context['error'])) {
@@ -67,7 +68,7 @@ class Compiler extends Validator {
         }
 
         $code = '';
-        foreach ($context['parsed'] as $info) {
+        foreach ($context['parsed'][0] as $info) {
             if (is_array($info)) {
                 $context['tokens']['current']++;
                 $tmpl = static::compileToken($info, $context);
@@ -497,7 +498,7 @@ $libstr
                 if ($named || $v[0] !== 'array(array($in),array())') {
                     $context['error'][] = "Do not support {{{$tag}}}, you should do compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag";
                 }
-                return "{$context['ops']['seperator']}'" . "FIXME!!!" . "'{$context['ops']['seperator']}"; // static::compileTemplate($context, preg_replace('/^/m', $context['tokens']['partialind'], $context['usedPartial'][$p[0]]), $p[0]) . "'{$context['ops']['seperator']}";
+                return "{$context['ops']['seperator']}'" . static::compileTemplate($context, preg_replace('/^/m', $context['tokens']['partialind'], $context['usedPartial'][$p[0]]), $p[0]) . "'{$context['ops']['seperator']}";
             case '^':
                 // {{^}} means {{else}}
                 if (!isset($vars[0][0])) {
