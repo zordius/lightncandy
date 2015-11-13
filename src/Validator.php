@@ -211,10 +211,6 @@ class Validator {
             return;
         }
 
-        if (($token[Token::POS_OP] === '^') && ($context['flags']['else'])) {
-            return $context['usedFeature']['else']++;
-        }
-
         if (count($vars) == 0) {
             return $context['error'][] = 'Wrong variable naming in ' . token::toString($token);
         }
@@ -223,9 +219,7 @@ class Validator {
             return static::noNamedArguments($token, $context, true, ', you should use it after a custom helper.');
         }
 
-        if ($vars[0] !== 'else') {
-            $context['usedFeature'][$raw ? 'raw' : 'enc']++;
-        }
+        $context['usedFeature'][$raw ? 'raw' : 'enc']++;
 
         foreach ($vars as $var) {
             if (!isset($var[0])) {
@@ -240,7 +234,7 @@ class Validator {
             return;
         }
 
-        if (static::doElse($token, $context, $vars[0][0])) {
+        if (static::doElse($token, $context)) {
             return;
         }
 
@@ -252,15 +246,12 @@ class Validator {
      *
      * @param array<string> $token detected handlebars {{ }} token
      * @param array<string,array|string|integer> $context current compile context
-     * @param string $name token name
      *
      * @return integer|null Return 1 or larger number when else token detected
      */
-    protected static function doElse($token, &$context, $name) {
-        if ($name === 'else') {
-            if ($context['flags']['else']) {
-                return $context['usedFeature']['else']++;
-            }
+    protected static function doElse($token, &$context) {
+        if (($token[Token::POS_OP] === '^') && ($context['flags']['else'])) {
+            return $context['usedFeature']['else']++;
         }
     }
 
