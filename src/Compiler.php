@@ -39,6 +39,20 @@ class Compiler extends Validator {
      * @return string generated PHP code
      */
     public static function compileTemplate(&$context, $template, $partial = '') {
+        Validator::verify($context, $template);
+
+        if (count($context['error'])) {
+            return;
+        }
+
+        $context['scan'] = false;
+
+        // Do PHP code generation.
+        Parser::setDelimiter($context);
+
+        // Handle dynamic partials
+        Partial::handleDynamicPartial($context);
+
         // Check for recursive partial
         if ($partial && !$context['flags']['runpart']) {
             $context['partialStack'][] = $partial;
@@ -53,35 +67,26 @@ class Compiler extends Validator {
         }
 
         $code = '';
-        while (preg_match($context['tokens']['search'], $template, $matches)) {
-            // Skip a token when it is slash escaped
-            if ($context['flags']['slash'] && ($matches[Token::POS_LSPACE] === '') && preg_match('/^(.*?)(\\\\+)$/s', $matches[Token::POS_LOTHER], $escmatch)) {
-                if (strlen($escmatch[2]) % 4) {
-                    $code .= substr($matches[Token::POS_LOTHER], 0, -2) . $context['tokens']['startchar'];
-                    $matches[Token::POS_BEGINTAG] = substr($matches[Token::POS_BEGINTAG], 1);
-                    $template = implode('', array_slice($matches, Token::POS_BEGINTAG));
-                    continue;
+        foreach ($context['parsed'] as $info) {
+            if (is_array($info)) {
+                $context['tokens']['current']++;
+                $tmpl = static::compileToken($info, $context);
+                if ($tmpl == $context['ops']['seperator']) {
+                    $tmpl = '';
                 } else {
-                    $matches[Token::POS_LOTHER] = $escmatch[1] . str_repeat('\\', strlen($escmatch[2]) / 2);
+                    $tmpl = "'$tmpl'";
                 }
-            }
-
-            $context['tokens']['current']++;
-            $tmpl = static::compileToken($matches, $context);
-            if ($tmpl == $context['ops']['seperator']) {
-                $tmpl = '';
+                $code .= $tmpl;
             } else {
-                $tmpl = "'$tmpl'";
+                $code .= $info;
             }
-            $code .= "{$matches[Token::POS_LOTHER]}{$matches[Token::POS_LSPACE]}$tmpl";
-            $template = "{$matches[Token::POS_RSPACE]}{$matches[Token::POS_ROTHER]}";
         }
 
         if ($partial && !$context['flags']['runpart']) {
             array_pop($context['partialStack']);
         }
 
-        return "$code$template";
+        return $code;
     }
 
     /**
@@ -422,79 +427,15 @@ $libstr
     }
 
     /**
-     * Internal method used by compileToken(). Modify $token when spacing rules matched.
+     * Return compiled PHP code partial for a handlebars token.
      *
-     * @param array<string> $token detected handlebars {{ }} token
-     * @param array<array|string|integer> $vars parsed arguments list
-     * @param array<string,array|string|integer> $context current compile context
-     *
-     * @return string|null Return compiled code segment for the token
-     */
-    protected static function handleSpacing(&$token, $vars, &$context) {
-        if ($context['flags']['noind']) {
-            return;
-        }
-
-        // left line change detection
-        $lsp = preg_match('/^(.*)(\\r?\\n)([ \\t]*?)$/s', $token[Token::POS_LSPACE], $lmatch);
-        $ind = $lsp ? $lmatch[3] : $token[Token::POS_LSPACE];
-
-        // right line change detection
-        $rsp = preg_match('/^([ \\t]*?)(\\r?\\n)(.*)$/s', $token[Token::POS_RSPACE], $rmatch);
-        $st = true;
-
-        // setup ahead flag
-        $ahead = $context['tokens']['ahead'];
-        $context['tokens']['ahead'] = preg_match('/^[^\n]*{{/s', $token[Token::POS_RSPACE] . $token[Token::POS_ROTHER]);
-
-        // reset partial indent
-        $context['tokens']['partialind'] = '';
-
-        // same tags in the same line , not standalone
-        if (!$lsp && $ahead) {
-            $st = false;
-        }
-
-        // Do not need standalone detection for these tags
-        if (!$token[Token::POS_OP] || ($token[Token::POS_OP] === '&')) {
-            if (!$context['flags']['else'] || !isset($vars[0][0]) || ($vars[0][0] !== 'else')) {
-                $st = false;
-            }
-        }
-
-        // not standalone because other things in the same line ahead
-        if ($token[Token::POS_LOTHER] && !$token[Token::POS_LSPACE]) {
-            $st = false;
-        }
-
-        // not standalone because other things in the same line behind
-        if ($token[Token::POS_ROTHER] && !$token[Token::POS_RSPACE]) {
-            $st = false;
-        }
-
-        if ($st && (($lsp && $rsp) // both side cr
-            || ($rsp && !$token[Token::POS_LOTHER]) // first line without left
-            || ($lsp && ($context['tokens']['current'] == $context['tokens']['count']) && !$token[Token::POS_ROTHER]) // final line
-           )) {
-            // handle partial
-            if ((!$context['flags']['noind']) && ($token[Token::POS_OP] === '>')) {
-                $context['tokens']['partialind'] = $ind;
-            }
-            $token[Token::POS_LSPACE] = (isset($lmatch[2]) ? ($lmatch[1] . $lmatch[2]) : '');
-            $token[Token::POS_RSPACE] = isset($rmatch[3]) ? $rmatch[3] : '';
-        }
-    }
-
-    /**
-     * Internal method used by compile(). Return compiled PHP code partial for a handlebars token.
-     *
-     * @param array<string> $token detected handlebars {{ }} token
+     * @param array<string,array|boolean> $info parsed information
      * @param array<string,array|string|integer> $context current compile context
      *
      * @return string Return compiled code segment for the token
      */
-    protected static function compileToken(&$token, &$context) {
-        list($raw, $vars) = Parser::parse($token, $context);
+    protected static function compileToken($info, &$context) {
+        list($raw, $vars, $token) = $info;
 
         // Do not touch the tag, keep it as is.
         if ($raw === -1) {
@@ -502,18 +443,6 @@ $libstr
         }
 
         $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;
-
-        // Handle spacing (standalone tags, partial indent)
-        static::handleSpacing($token, $vars, $context);
-
-        // Handle space control.
-        if ($token[Token::POS_LSPACECTL]) {
-            $token[Token::POS_LSPACE] = '';
-        }
-
-        if ($token[Token::POS_RSPACECTL]) {
-            $token[Token::POS_RSPACE] = '';
-        }
 
         if ($ret = static::compileSection($token, $context, $vars, $named)) {
             return $ret;
@@ -568,7 +497,7 @@ $libstr
                 if ($named || $v[0] !== 'array(array($in),array())') {
                     $context['error'][] = "Do not support {{{$tag}}}, you should do compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag";
                 }
-                return "{$context['ops']['seperator']}'" . static::compileTemplate($context, preg_replace('/^/m', $context['tokens']['partialind'], $context['usedPartial'][$p[0]]), $p[0]) . "'{$context['ops']['seperator']}";
+                return "{$context['ops']['seperator']}'" . "FIXME!!!" . "'{$context['ops']['seperator']}"; // static::compileTemplate($context, preg_replace('/^/m', $context['tokens']['partialind'], $context['usedPartial'][$p[0]]), $p[0]) . "'{$context['ops']['seperator']}";
             case '^':
                 // {{^}} means {{else}}
                 if (!isset($vars[0][0])) {

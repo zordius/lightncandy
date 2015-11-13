@@ -20,10 +20,7 @@ Origin: https://github.com/zordius/lightncandy
 
 namespace LightnCandy;
 use \LightnCandy\Context;
-use \LightnCandy\Parser;
-use \LightnCandy\Validator;
-use \LightnCandy\Partial;
-use \LightnCandy\String;
+use \LightnCandy\Compiler;
 
 /**
  * LightnCandy major static class
@@ -46,25 +43,7 @@ class LightnCandy extends Flags {
             return false;
         }
 
-        $template = String::stripExtendedComments($template);
-
-        // Do first time scan to find out used feature, detect template error.
-        Parser::setDelimiter($context);
-        Validator::verify($context, $template);
-
-        if (static::handleError($context)) {
-            return false;
-        }
-
-        $context['scan'] = false;
-
-        // Do PHP code generation.
-        Parser::setDelimiter($context);
-
-        // Handle dynamic partials
-        Partial::handleDynamicPartial($context);
-
-        $code = Compiler::compileTemplate($context, String::escapeTemplate($template));
+        $code = Compiler::compileTemplate($context, $template);
 
         // return false when fatal error
         if (static::handleError($context)) {

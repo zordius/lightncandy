@@ -138,7 +138,7 @@ class Partial {
         $context['tokens']['ahead'] = $originalAhead;
 
         if ($context['flags']['runpart']) {
-            $code = Compiler::compileTemplate($context, str_replace('function', static::$TMP_JS_FUNCTION_STR, $context['usedPartial'][$name]), $name);
+            $code = 'FIXME...'; // Compiler::compileTemplate($context, str_replace('function', static::$TMP_JS_FUNCTION_STR, $context['usedPartial'][$name]), $name);
             if (!$context['flags']['noind']) {
                 $sp = ', $sp';
                 $code = preg_replace('/^/m', "'{$context['ops']['seperator']}\$sp{$context['ops']['seperator']}'", $code);

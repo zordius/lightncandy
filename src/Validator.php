@@ -20,6 +20,7 @@ Origin: https://github.com/zordius/lightncandy
 
 namespace LightnCandy;
 use \LightnCandy\Token;
+use \LightnCandy\Parser;
 use \LightnCandy\Partial;
 
 /**
@@ -33,16 +34,35 @@ class Validator {
      * @param string $template handlebars template
      */
     public static function verify(&$context, $template) {
+        $template = String::escapeTemplate(String::stripExtendedComments($template));
+        Parser::setDelimiter($context);
+
         while (preg_match($context['tokens']['search'], $template, $matches)) {
+            // Skip a token when it is slash escaped
+            if ($context['flags']['slash'] && ($matches[Token::POS_LSPACE] === '') && preg_match('/^(.*?)(\\\\+)$/s', $matches[Token::POS_LOTHER], $escmatch)) {
+                if (strlen($escmatch[2]) % 4) {
+                    static::pushToken($context, substr($matches[Token::POS_LOTHER], 0, -2) . $context['tokens']['startchar']);
+                    $matches[Token::POS_BEGINTAG] = substr($matches[Token::POS_BEGINTAG], 1);
+                    $template = implode('', array_slice($matches, Token::POS_BEGINTAG));
+                    continue;
+                } else {
+                    $matches[Token::POS_LOTHER] = $escmatch[1] . str_repeat('\\', strlen($escmatch[2]) / 2);
+                }
+            }
             $context['tokens']['count']++;
             static::pushToken($context, $matches[Token::POS_LOTHER]);
             static::pushToken($context, $matches[Token::POS_LSPACE]);
-            static::pushToken($context, static::token($matches, $context));
+            $V = static::token($matches, $context);
+            if ($V) {
+                if (is_array($V)) {
+                    $V[] = $matches;
+                }
+                static::pushToken($context, $V);
+            }
             $template = $matches[Token::POS_ROTHER];
         }
         static::pushToken($context, $template);
     }
-
 
     /**
      * push a token into the stack when it is not empty string
@@ -208,7 +228,7 @@ class Validator {
         }
 
         if (static::operator($token, $context, $vars, $named)) {
-            return;
+            return array($raw, $vars);
         }
 
         if (count($vars) == 0) {
@@ -235,10 +255,12 @@ class Validator {
         }
 
         if (static::doElse($token, $context)) {
-            return;
+            return array($raw, $vars);
         }
 
         static::helper($token, $context, $vars[0][0]);
+
+        return array($raw, $vars);
     }
 
     /**
