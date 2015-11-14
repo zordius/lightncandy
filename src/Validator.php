@@ -71,6 +71,9 @@ class Validator {
      * @param string|array $token a parsed token or a string
      */
     protected static function pushToken(&$context, $token) {
+        if ($token === '') {
+            return;
+        }
         if (is_string($token)) {
             if (is_string(end($context['parsed'][0]))) {
                 $context['parsed'][0][key($context['parsed'][0])] .= $token;
@@ -338,9 +341,6 @@ class Validator {
      * @return string|null Return compiled code segment for the token
      */
     protected static function spacing(&$token, $vars, &$context) {
-        if ($context['flags']['noind']) {
-            return;
-        }
         // left line change detection
         $lsp = preg_match('/^(.*)(\\r?\\n)([ \\t]*?)$/s', $token[Token::POS_LSPACE], $lmatch);
         $ind = $lsp ? $lmatch[3] : $token[Token::POS_LSPACE];
