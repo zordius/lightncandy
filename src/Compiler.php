@@ -28,6 +28,7 @@ use \LightnCandy\Token;
  */
 class Compiler extends Validator {
     const IS_SUBEXP_SEARCH = '/^\(.+\)$/s';
+    public static $lastParsed;
 
     /**
      * Compile template into PHP code (internal method)
@@ -45,8 +46,6 @@ class Compiler extends Validator {
         if (count($context['error'])) {
             return;
         }
-
-        $context['scan'] = false;
 
         // Do PHP code generation.
         Parser::setDelimiter($context);
@@ -86,6 +85,8 @@ class Compiler extends Validator {
         if ($partial && !$context['flags']['runpart']) {
             array_pop($context['partialStack']);
         }
+
+        static::$lastParsed = array_shift($context['parsed']);
 
         return $code;
     }
@@ -256,11 +257,10 @@ $libstr
      *
      * @param string $subExpression subExpression to compile
      * @param array<string,array|string|integer> $context current compile context
-     * @param boolean $keepCount keep original usage count
      *
      * @return array<string> code representing passed expression
      */
-    public static function compileSubExpression($subExpression, &$context, $keepCount = false) {
+    public static function compileSubExpression($subExpression, &$context) {
         // mock up a token for this expression
         $token = array_fill(Token::POS_LOTHER, Token::POS_ROTHER, '');
 
@@ -281,18 +281,14 @@ $libstr
 
         $context['ops']['seperator'] = $origSeperator;
 
-        if ($keepCount) {
-            $context['usedFeature'] = $oldCount;
+        $context['usedFeature']['subexp']++;
+        // detect handlebars custom helpers.
+        if (isset($context['hbhelpers'][$vars[0][0]])) {
+            $context['usedFeature']['hbhelper']++;
         } else {
-            $context['usedFeature']['subexp']++;
-            // detect handlebars custom helpers.
-            if (isset($context['hbhelpers'][$vars[0][0]])) {
-                $context['usedFeature']['hbhelper']++;
-            } else {
-                // detect custom helpers.
-                if (isset($context['helpers'][$vars[0][0]])) {
-                    $context['usedFeature']['helper']++;
-                }
+            // detect custom helpers.
+            if (isset($context['helpers'][$vars[0][0]])) {
+                $context['usedFeature']['helper']++;
             }
         }
 
@@ -499,6 +495,7 @@ $libstr
                 if ($named || $v[0] !== 'array(array($in),array())') {
                     $context['error'][] = "Do not support {{{$tag}}}, you should do compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag";
                 }
+
                 return "{$context['ops']['seperator']}'" . static::compileTemplate($context, preg_replace('/^/m', $context['tokens']['partialind'], $context['usedPartial'][$p[0]]), $p[0]) . "'{$context['ops']['seperator']}";
             case '^':
                 // {{^}} means {{else}}

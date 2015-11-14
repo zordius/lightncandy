@@ -72,7 +72,6 @@ class Context extends Flags {
                 'rawblock' => $flags & static::FLAG_RAWBLOCK,
             ),
             'level' => 0,
-            'scan' => true,
             'stack' => array(),
             'error' => array(),
             'basedir' => static::prepareBasedir($options),

@@ -35,6 +35,7 @@ class Validator {
      */
     public static function verify(&$context, $template) {
         $template = String::escapeTemplate(String::stripExtendedComments($template));
+        $context['level'] = 0;
         Parser::setDelimiter($context);
 
         while (preg_match($context['tokens']['search'], $template, $matches)) {
@@ -62,6 +63,11 @@ class Validator {
             $template = "{$matches[Token::POS_RSPACE]}{$matches[Token::POS_ROTHER]}";
         }
         static::pushToken($context, $template);
+
+        if ($context['level'] > 0) {
+            $token = array_pop($context['stack']);
+            $context['error'][] = 'Unclosed token ' . ($context['rawblock'] ? "{{{{{$token}}}}}" : "{{#{$token}}}") . ' !!';
+        }
     }
 
     /**
@@ -210,7 +216,7 @@ class Validator {
      * @param string[] $token detected handlebars {{ }} token
      * @param array<string,array|string|integer> $context current compile context
      */
-    protected static function token($token, &$context) {
+    protected static function token(&$token, &$context) {
         list($raw, $vars) = Parser::parse($token, $context);
 
         if ($raw === -1) {
@@ -258,7 +264,7 @@ class Validator {
         }
 
         if (!isset($vars[0][0])) {
-            return;
+            return array($raw, $vars);
         }
 
         if (static::doElse($token, $context)) {
@@ -341,6 +347,9 @@ class Validator {
      * @return string|null Return compiled code segment for the token
      */
     protected static function spacing(&$token, $vars, &$context) {
+        if ($context['flags']['noind']) {
+            return;
+        }
         // left line change detection
         $lsp = preg_match('/^(.*)(\\r?\\n)([ \\t]*?)$/s', $token[Token::POS_LSPACE], $lmatch);
         $ind = $lsp ? $lmatch[3] : $token[Token::POS_LSPACE];

@@ -27,6 +27,7 @@ use \LightnCandy\Compiler;
  */
 class LightnCandy extends Flags {
     protected static $lastContext;
+    public static $lastParsed;
 
     /**
      * Compile handlebars template into PHP code.
@@ -44,7 +45,7 @@ class LightnCandy extends Flags {
         }
 
         $code = Compiler::compileTemplate($context, $template);
-        array_shift($context['parsed']);
+        static::$lastParsed = Compiler::$lastParsed;
 
         // return false when fatal error
         if (static::handleError($context)) {
@@ -63,16 +64,10 @@ class LightnCandy extends Flags {
      * @throws \Exception
      * @return boolean True when error detected
      *
-     * @expect true when input array('level' => 1, 'stack' => array('X'), 'flags' => array('errorlog' => 0, 'exception' => 0), 'error' => array(), 'rawblock' => 0)
-     * @expect false when input array('level' => 0, 'error' => array())
-     * @expect true when input array('level' => 0, 'error' => array('some error'), 'flags' => array('errorlog' => 0, 'exception' => 0))
+     * @expect false when input array('error' => array())
+     * @expect true when input array('error' => array('some error'), 'flags' => array('errorlog' => 0, 'exception' => 0))
      */
     protected static function handleError(&$context) {
-        if ($context['level'] > 0) {
-            $token = array_pop($context['stack']);
-            $context['error'][] = 'Unclosed token ' . ($context['rawblock'] ? "{{{{{$token}}}}}" : "{{#{$token}}}") . ' !!';
-        }
-
         static::$lastContext = $context;
 
         if (count($context['error'])) {

@@ -126,21 +126,10 @@ class Partial {
     protected static function compilePartial(&$name, &$context, $content) {
         $context['usedPartial'][$name] = $content;
 
-        /* TODO: totally remove usage count on partial in future
-        $originalAhead = $context['tokens']['ahead'];
         $tmpContext = $context;
-        $tmpContext['level'] = 0;
-        Parser::setDelimiter($tmpContext);
-
-        Validator::verify($tmpContext, $content);
-        $originalToken = $context['tokens'];
-        $context = $tmpContext;
-        $context['tokens'] = $originalToken;
-        $context['tokens']['ahead'] = $originalAhead;
-        */
 
         if ($context['flags']['runpart']) {
-            $code = Compiler::compileTemplate($context, str_replace('function', static::$TMP_JS_FUNCTION_STR, $context['usedPartial'][$name]), $name);
+            $code = Compiler::compileTemplate($tmpContext, str_replace('function', static::$TMP_JS_FUNCTION_STR, $context['usedPartial'][$name]), $name);
             if (!$context['flags']['noind']) {
                 $sp = ', $sp';
                 $code = preg_replace('/^/m', "'{$context['ops']['seperator']}\$sp{$context['ops']['seperator']}'", $code);
@@ -149,7 +138,7 @@ class Partial {
             } else {
                 $sp = '';
             }
-            $code = str_replace(static::$TMP_JS_FUNCTION_STR, 'function', $code);
+            $code = str_replace(String::escapeTemplate(static::$TMP_JS_FUNCTION_STR), 'function', $code);
             $context['partialCode'] .= "'$name' => function (\$cx, \$in{$sp}) {{$context['ops']['op_start']}'$code'{$context['ops']['op_end']}},";
         }
     }

@@ -17,12 +17,13 @@ class regressionTest extends PHPUnit_Framework_TestCase
 
         $php = LightnCandy::compile($issue['template'], isset($issue['options']) ? $issue['options'] : null);
         $context = LightnCandy::getContext();
+        $parsed = print_r(LightnCandy::$lastParsed, true);
         if (count($context['error'])) {
-            $this->fail('Compile failed due to:' . print_r($context['error'], true));
+            $this->fail('Compile failed due to:' . print_r($context['error'], true) . "\nPARSED: $parsed");
         }
         $renderer = LightnCandy::prepare($php);
 
-        $this->assertEquals($issue['expected'], $renderer($issue['data'], $issue['debug']), "PHP CODE:\n$php");
+        $this->assertEquals($issue['expected'], $renderer($issue['data'], $issue['debug']), "PHP CODE:\n$php\n$parsed");
     }
 
     public function issueProvider()
@@ -1402,27 +1403,7 @@ VAREND
                 'template' => "{{>test1}}\n  {{>test1}}\nDONE\n",
                 'data' => null,
                 'options' => Array(
-                    'flags' => LightnCandy::FLAG_MUSTACHE | LightnCandy::FLAG_RUNTIMEPARTIAL,
-                    'partials' => Array('test1' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n"),
-                ),
-                'expected' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n  1:A\n   2:B\n    3:C\n   4:D\n  5:E\nDONE\n",
-            ),
-
-            Array(
-                'template' => "{{>test1}}\n  {{>test1}}\nDONE\n",
-                'data' => null,
-                'options' => Array(
                     'flags' => LightnCandy::FLAG_MUSTACHE | LightnCandy::FLAG_PREVENTINDENT,
-                    'partials' => Array('test1' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n"),
-                ),
-                'expected' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n\n  1:A\n 2:B\n  3:C\n 4:D\n5:E\n\nDONE\n",
-            ),
-
-            Array(
-                'template' => "{{>test1}}\n  {{>test1}}\nDONE\n",
-                'data' => null,
-                'options' => Array(
-                    'flags' => LightnCandy::FLAG_MUSTACHE | LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_PREVENTINDENT,
                     'partials' => Array('test1' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n"),
                 ),
                 'expected' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n\n  1:A\n 2:B\n  3:C\n 4:D\n5:E\n\nDONE\n",
