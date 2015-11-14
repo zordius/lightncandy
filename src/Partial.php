@@ -130,6 +130,8 @@ class Partial {
 
         if ($context['flags']['runpart']) {
             $code = Compiler::compileTemplate($tmpContext, str_replace('function', static::$TMP_JS_FUNCTION_STR, $context['usedPartial'][$name]), $name);
+            $context['usedFeature'] = $tmpContext['usedFeature'];
+            $context['usedCount'] = $tmpContext['usedCount'];
             if (!$context['flags']['noind']) {
                 $sp = ', $sp';
                 $code = preg_replace('/^/m', "'{$context['ops']['seperator']}\$sp{$context['ops']['seperator']}'", $code);
