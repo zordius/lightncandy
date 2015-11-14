@@ -379,7 +379,6 @@ class errorTest extends PHPUnit_Framework_TestCase
                 'options' => Array('basedir' => 'tests', 'flags' => LightnCandy::FLAG_WITH),
                 'expected' => Array(
                     'I found recursive partial includes as the path: recursive -> recursive! You should fix your template or compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag.',
-                    "Skip rendering partial 'recursive' again due to recursive detected",
                 )
             ),
             Array(

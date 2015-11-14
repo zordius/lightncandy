@@ -57,10 +57,6 @@ class Compiler extends Validator {
         if ($partial && !$context['flags']['runpart']) {
             $context['partialStack'][] = $partial;
             $diff = count($context['partialStack']) - count(array_unique($context['partialStack']));
-            if ($diff > 1) {
-                $context['error'][] = "Skip rendering partial '$partial' again due to recursive detected";
-                return '';
-            }
             if ($diff) {
                 $context['error'][] = 'I found recursive partial includes as the path: ' . implode(' -> ', $context['partialStack']) . '! You should fix your template or compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag.';
             }
