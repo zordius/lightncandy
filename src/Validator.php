@@ -59,7 +59,7 @@ class Validator {
                 }
                 static::pushToken($context, $V);
             }
-            $template = $matches[Token::POS_ROTHER];
+            $template = "{$matches[Token::POS_RSPACE]}{$matches[Token::POS_ROTHER]}";
         }
         static::pushToken($context, $template);
     }
