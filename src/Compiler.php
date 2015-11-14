@@ -436,8 +436,9 @@ $libstr
      * @return string Return compiled code segment for the token
      */
     protected static function compileToken($info, &$context) {
-        list($raw, $vars, $token) = $info;
+        list($raw, $vars, $token, $indent) = $info;
 
+        $context['tokens']['partialind'] = $indent;
         // Do not touch the tag, keep it as is.
         if ($raw === -1) {
             return ".'" . Token::toString($token) . "'.";

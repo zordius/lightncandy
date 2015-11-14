@@ -50,12 +50,12 @@ class Validator {
                 }
             }
             $context['tokens']['count']++;
+            $V = static::token($matches, $context);
             static::pushToken($context, $matches[Token::POS_LOTHER]);
             static::pushToken($context, $matches[Token::POS_LSPACE]);
-            $V = static::token($matches, $context);
             if ($V) {
                 if (is_array($V)) {
-                    $V[] = $matches;
+                    array_push($V, $matches, $context['tokens']['partialind']);
                 }
                 static::pushToken($context, $V);
             }
@@ -71,9 +71,13 @@ class Validator {
      * @param string|array $token a parsed token or a string
      */
     protected static function pushToken(&$context, $token) {
-        if ($token !== '') {
-            $context['parsed'][0][] = $token;
+        if (is_string($token)) {
+            if (is_string(end($context['parsed'][0]))) {
+                $context['parsed'][0][key($context['parsed'][0])] .= $token;
+                return;
+            }
         }
+        $context['parsed'][0][] = $token;
     }
 
     /**

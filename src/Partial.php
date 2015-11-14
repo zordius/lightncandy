@@ -124,8 +124,9 @@ class Partial {
      * @param string $content partial content
      */
     protected static function compilePartial(&$name, &$context, $content) {
-        $context['usedPartial'][$name] = String::escapeTemplate(String::stripExtendedComments($content));
+        $context['usedPartial'][$name] = $content;
 
+        /* TODO: totally remove usage count on partial in future
         $originalAhead = $context['tokens']['ahead'];
         $tmpContext = $context;
         $tmpContext['level'] = 0;
@@ -136,6 +137,7 @@ class Partial {
         $context = $tmpContext;
         $context['tokens'] = $originalToken;
         $context['tokens']['ahead'] = $originalAhead;
+        */
 
         if ($context['flags']['runpart']) {
             $code = Compiler::compileTemplate($context, str_replace('function', static::$TMP_JS_FUNCTION_STR, $context['usedPartial'][$name]), $name);
