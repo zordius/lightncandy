@@ -521,7 +521,7 @@ $libstr
                     return $r;
                 }
                 // Compile to section {{#myVar}}
-                return static::compileBlockBegin($context, $vars, $token);
+                return static::compileBlockBegin($context, $vars);
         }
     }
 
