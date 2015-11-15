@@ -43,7 +43,7 @@ class Parser extends Token {
     /**
      * Return array presentation for an expression
      *
-     * @param string $v variable name to be fixed.
+     * @param string $v analyzed expression names.
      * @param array<string,array|string|integer> $context Current compile content.
      * @param boolean $asis keep the reference name
      *
@@ -200,7 +200,7 @@ class Parser extends Token {
             return array(false, array());
         }
 
-        $vars = static::scan($token[static::POS_INNERTAG], $context);
+        $vars = static::analyze($token[static::POS_INNERTAG], $context);
 
         // Check for advanced variable.
         $ret = array();
@@ -269,15 +269,15 @@ class Parser extends Token {
     }
 
     /**
-     * Parse the token and return parsed result.
+     * Analyze a token string and return parsed result.
      *
-     * @param array<string> $token preg_match results
+     * @param string $token preg_match results
      * @param array<string,array|string|integer> $context current compile context
      *
      * @return array<boolean|integer|array> Return parsed result
      *
      */
-    protected static function scan($token, &$context) {
+    protected static function analyze($token, &$context) {
         $count = preg_match_all('/(\s*)([^\s]+)/', $token, $matchedall);
         // Parse arguments and deal with "..." or [...] or (...) or \'...\'
         if (($count > 0) && $context['flags']['advar']) {
