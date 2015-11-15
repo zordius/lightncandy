@@ -131,7 +131,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
             array(0,0,0,0,0,0,"a q=\' d e\'"), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'rawblock' => false)
 )        ));
         $this->assertEquals(array(false, array('q' => array('( foo bar)'))), $method->invokeArgs(null,array(
-            array(0,0,0,0,0,0,'q=( foo bar)'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 0, 'lambda' => 0), 'usedFeature' => array(), 'ops' => array('seperator' => 0), 'rawblock' => false)
+            array(0,0,0,0,0,0,'q=( foo bar)'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 0, 'lambda' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('seperator' => 0), 'rawblock' => false)
 )        ));
     }
     /**
