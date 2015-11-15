@@ -132,7 +132,6 @@ class Validator {
      * @expect 7 when input array(0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('each' => 6), 'level' => 0), array(array('each'))
      * @expect 8 when input array(0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('unless' => 7), 'level' => 0), array(array('unless'))
      * @expect 9 when input array(0, 0, 0, 0, 0, '#', '...'), array('blockhelpers' => array('abc' => ''), 'usedFeature' => array('bhelper' => 8), 'level' => 0), array(array('abc'))
-     * @expect 10 when input array(0, 0, 0, 0, 0, ' ', '...'), array('usedFeature' => array('delimiter' => 9), 'level' => 0), array()
      * @expect 11 when input array(0, 0, 0, 0, 0, '#', '...'), array('hbhelpers' => array('abc' => ''), 'usedFeature' => array('hbhelper' => 10), 'level' => 0), array(array('abc'))
      * @expect true when input array(0, 0, 0, 0, 0, '>', '...'), array('basedir' => array('.'), 'fileext' => array('.tmpl'), 'usedFeature' => array('unless' => 7, 'partial' => 7), 'level' => 0, 'flags' => array('skippartial' => 0)), array('test')
      */
@@ -141,9 +140,6 @@ class Validator {
             case '>':
                 static::partial($context, $vars);
                 return true;
-
-            case ' ':
-                return ++$context['usedFeature']['delimiter'];
 
             case '^':
                 if (isset($vars[0][0])) {
@@ -215,6 +211,7 @@ class Validator {
      */
     protected static function isDelimiter(&$token, &$context) {
         if (preg_match('/^=\s*([^ ]+)\s+([^ ]+)\s*=$/', $token[Token::POS_INNERTAG], $matched)) {
+            $context['usedFeature']['delimiter']++;
             Parser::setDelimiter($context, $matched[1], $matched[2]);
             return true;
         }

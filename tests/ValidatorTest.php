@@ -56,9 +56,6 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(9, $method->invokeArgs(null,array(
             array(0, 0, 0, 0, 0, '#', '...'), array('blockhelpers' => array('abc' => ''), 'usedFeature' => array('bhelper' => 8), 'level' => 0), array(array('abc'))
 )        ));
-        $this->assertEquals(10, $method->invokeArgs(null,array(
-            array(0, 0, 0, 0, 0, ' ', '...'), array('usedFeature' => array('delimiter' => 9), 'level' => 0), array()
-)        ));
         $this->assertEquals(11, $method->invokeArgs(null,array(
             array(0, 0, 0, 0, 0, '#', '...'), array('hbhelpers' => array('abc' => ''), 'usedFeature' => array('hbhelper' => 10), 'level' => 0), array(array('abc'))
 )        ));
