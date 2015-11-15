@@ -384,6 +384,13 @@ class Validator {
      */
     public static function partial(&$context, $vars) {
         if (isset($vars[0][1]) && ($vars[0][0] === -1)) {
+            if ($context['flags']['runpart']) {
+                $context['usedFeature']['dynpartial']++;
+                return;
+            } else {
+                $context['error'][] = "You use dynamic partial name as '{$vars[0][2]}', this only works with option FLAG_RUNTIMEPARTIAL enabled";
+                return;
+            }
         } else {
             Partial::readPartial($vars[0][0], $context);
         }

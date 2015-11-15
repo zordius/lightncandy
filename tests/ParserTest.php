@@ -106,13 +106,13 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(array(false, array(array('a'), 'q' => array(0, '\'b c\''))), $method->invokeArgs(null,array(
             array(0,0,0,0,0,0,'a q="b c"'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'rawblock' => false)
 )        ));
-        $this->assertEquals(array(false, array(array(-1, array(array('foo'), array('bar'))))), $method->invokeArgs(null,array(
+        $this->assertEquals(array(false, array(array(-1, array(array('foo'), array('bar')), '(foo bar)'))), $method->invokeArgs(null,array(
             array(0,0,0,0,0,0,'(foo bar)'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 1, 'lambda' => 0), 'ops' => array('seperator' => ''), 'usedFeature' => array('subexp' => 0), 'rawblock' => false)
 )        ));
         $this->assertEquals(array(false, array(array('foo'), array("'=='"), array('bar'))), $method->invokeArgs(null,array(
             array(0,0,0,0,0,0,"foo '==' bar"), array('flags' => array('advar' => 1, 'namev' => 1, 'noesc' => 0, 'this' => 0), 'rawblock' => false)
 )        ));
-        $this->assertEquals(array(false, array(array(-1, array(array('foo'), array('bar'))))), $method->invokeArgs(null,array(
+        $this->assertEquals(array(false, array(array(-1, array(array('foo'), array('bar')), '( foo bar)'))), $method->invokeArgs(null,array(
             array(0,0,0,0,0,0,'( foo bar)'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 1, 'lambda' => 0), 'ops' => array('seperator' => ''), 'usedFeature' => array('subexp' => 0), 'rawblock' => false)
 )        ));
         $this->assertEquals(array(false, array(array('a'), array(0, '\' b c\''))), $method->invokeArgs(null,array(
@@ -130,7 +130,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(array(false, array(array('a'), 'q' => array(0, "' d e'"))), $method->invokeArgs(null,array(
             array(0,0,0,0,0,0,"a q=\' d e\'"), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'rawblock' => false)
 )        ));
-        $this->assertEquals(array(false, array('q' => array(-1, array(array('foo'), array('bar'))))), $method->invokeArgs(null,array(
+        $this->assertEquals(array(false, array('q' => array(-1, array(array('foo'), array('bar')), '( foo bar)'))), $method->invokeArgs(null,array(
             array(0,0,0,0,0,0,'q=( foo bar)'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 0, 'lambda' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('seperator' => 0), 'rawblock' => false)
 )        ));
     }

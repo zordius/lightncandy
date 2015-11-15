@@ -61,16 +61,6 @@ class Partial {
             return static::compilePartial($name, $context, $cnt);
         }
 
-        if (is_array($name) && isset($name[1]) && ($name[0] === -1)) {
-            if ($context['flags']['runpart']) {
-                $context['usedFeature']['dynpartial']++;
-                return;
-            } else {
-                $context['error'][] = "You use dynamic partial name as '$name', this only works with option FLAG_RUNTIMEPARTIAL enabled";
-                return;
-            }
-        }
-
         if (!$context['flags']['skippartial']) {
             $context['error'][] = "Can not find partial file for '$name', you should set correct basedir and fileext in options";
         }
