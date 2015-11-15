@@ -97,19 +97,30 @@ class Validator {
      *
      * @return boolean|null Return true when invalid
      *
-     * @expect null when input array_fill(0, 9, ''), array()
-     * @expect null when input array_fill(0, 9, '}}'), array()
-     * @expect true when input array_fill(0, 9, '{{{'), array()
+     * @expect null when input array_fill(0, 11, ''), array()
+     * @expect null when input array(0, 0, 0, 0, 0, '{{', '#', '...', '}}'), array()
+     * @expect true when input array(0, 0, 0, 0, 0, '{', '#', '...', '}'), array()
      */
     protected static function delimiter($token, &$context) {
         // {{ }}} or {{{ }} are invalid
-        if (strlen($token[Token::POS_BEGINTAG]) !== strlen($token[Token::POS_ENDTAG])) {
-            $context['error'][] = 'Bad token ' . token::toString($token) . ' ! Do you mean {{' . token::toString($token, 4) . '}} or {{{' . token::toString($token, 4) . '}}}?';
+        if (strlen($token[Token::POS_BEGINRAW]) !== strlen($token[Token::POS_ENDRAW])) {
+            $err = 'Bad token ' . Token::toString($token) . ' ! Do you mean ';
+            $token[Token::POS_BEGINRAW] = '';
+            $token[Token::POS_ENDRAW] = '';
+            $err .= Token::toString($token) . ' or ';
+            $token[Token::POS_BEGINRAW] = '{';
+            $token[Token::POS_ENDRAW] = '}';
+            $err .= Token::toString($token) . '?';
+            $context['error'][] = $err;
             return true;
         }
         // {{{# }}} or {{{! }}} or {{{/ }}} or {{{^ }}} are invalid.
-        if ((strlen($token[Token::POS_BEGINTAG]) === 3) && $token[Token::POS_OP] && ($token[Token::POS_OP] !== '&')) {
-            $context['error'][] = 'Bad token ' . token::toString($token) . ' ! Do you mean {{' . token::toString($token, 4) . '}} ?';
+        if ((strlen($token[Token::POS_BEGINRAW]) == 1) && $token[Token::POS_OP] && ($token[Token::POS_OP] !== '&')) {
+            $err = 'Bad token ' . Token::toString($token) . ' ! Do you mean ';
+            $token[Token::POS_BEGINRAW] = '';
+            $token[Token::POS_ENDRAW] = '';
+            $err .= Token::toString($token) . ' ?';
+            $context['error'][] = $err;
             return true;
         }
     }
@@ -123,17 +134,17 @@ class Validator {
      *
      * @return boolean|integer|null Return true when invalid or detected
      *
-     * @expect null when input array(0, 0, 0, 0, 0, ''), array(), array()
-     * @expect 2 when input array(0, 0, 0, 0, 0, '^', '...'), array('usedFeature' => array('isec' => 1), 'level' => 0), array(array('foo'))
-     * @expect true when input array(0, 0, 0, 0, 0, '/'), array('stack' => array(1), 'level' => 1), array()
-     * @expect 4 when input array(0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('sec' => 3), 'level' => 0), array(array('x'))
-     * @expect 5 when input array(0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('if' => 4), 'level' => 0), array(array('if'))
-     * @expect 6 when input array(0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('with' => 5), 'level' => 0, 'flags' => array('with' => 1)), array(array('with'))
-     * @expect 7 when input array(0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('each' => 6), 'level' => 0), array(array('each'))
-     * @expect 8 when input array(0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('unless' => 7), 'level' => 0), array(array('unless'))
-     * @expect 9 when input array(0, 0, 0, 0, 0, '#', '...'), array('blockhelpers' => array('abc' => ''), 'usedFeature' => array('bhelper' => 8), 'level' => 0), array(array('abc'))
-     * @expect 11 when input array(0, 0, 0, 0, 0, '#', '...'), array('hbhelpers' => array('abc' => ''), 'usedFeature' => array('hbhelper' => 10), 'level' => 0), array(array('abc'))
-     * @expect true when input array(0, 0, 0, 0, 0, '>', '...'), array('basedir' => array('.'), 'fileext' => array('.tmpl'), 'usedFeature' => array('unless' => 7, 'partial' => 7), 'level' => 0, 'flags' => array('skippartial' => 0)), array('test')
+     * @expect null when input array(0, 0, 0, 0, 0, 0, ''), array(), array()
+     * @expect 2 when input array(0, 0, 0, 0, 0, 0, '^', '...'), array('usedFeature' => array('isec' => 1), 'level' => 0), array(array('foo'))
+     * @expect true when input array(0, 0, 0, 0, 0, 0, '/'), array('stack' => array(1), 'level' => 1), array()
+     * @expect 4 when input array(0, 0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('sec' => 3), 'level' => 0), array(array('x'))
+     * @expect 5 when input array(0, 0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('if' => 4), 'level' => 0), array(array('if'))
+     * @expect 6 when input array(0, 0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('with' => 5), 'level' => 0, 'flags' => array('with' => 1)), array(array('with'))
+     * @expect 7 when input array(0, 0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('each' => 6), 'level' => 0), array(array('each'))
+     * @expect 8 when input array(0, 0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('unless' => 7), 'level' => 0), array(array('unless'))
+     * @expect 9 when input array(0, 0, 0, 0, 0, 0, '#', '...'), array('blockhelpers' => array('abc' => ''), 'usedFeature' => array('bhelper' => 8), 'level' => 0), array(array('abc'))
+     * @expect 11 when input array(0, 0, 0, 0, 0, 0, '#', '...'), array('hbhelpers' => array('abc' => ''), 'usedFeature' => array('hbhelper' => 10), 'level' => 0), array(array('abc'))
+     * @expect true when input array(0, 0, 0, 0, 0, 0, '>', '...'), array('basedir' => array('.'), 'fileext' => array('.tmpl'), 'usedFeature' => array('unless' => 7, 'partial' => 7), 'level' => 0, 'flags' => array('skippartial' => 0)), array('test')
      */
     protected static function operator(&$token, &$context, $vars) {
         switch ($token[Token::POS_OP]) {
@@ -230,16 +241,19 @@ class Validator {
         trim($inner);
 
         // skip parse when inside raw block
-        if ($context['rawblock'] && !(($token[Token::POS_BEGINTAG] === '{{{{') && ($token[Token::POS_OP] === '/') && ($context['rawblock'] === $inner))) {
+        if ($context['rawblock'] && !(($token[Token::POS_BEGINRAW] === '{{') && ($token[Token::POS_OP] === '/') && ($context['rawblock'] === $inner))) {
             return true;
         }
 
         $token[Token::POS_INNERTAG] = $inner;
 
         // Handle raw block
-        if ($token[Token::POS_BEGINTAG] === '{{{{') {
-            if ($token[Token::POS_ENDTAG] !== '}}}}') {
-                $context['error'][] = 'Bad token ' . Token::toString($token) . ' ! Do you mean {{{{' . Token::toString($token, 4) . '}}}} ?';
+        if ($token[Token::POS_BEGINRAW] === '{{') {
+            if ($token[Token::POS_ENDRAW] !== '}}') {
+                $err = 'Bad token ' . Token::toString($token) . ' ! Do you mean ';
+                $token[Token::POS_ENDRAW] = '}}';
+                $err .= Token::toString($token) . ' ?';
+                $context['error'][] = $err;
             }
             if ($context['rawblock']) {
                 Parser::setDelimiter($context);
@@ -248,9 +262,9 @@ class Validator {
                 if ($token[Token::POS_OP]) {
                     $context['error'][] = "Wrong raw block begin with " . Token::toString($token) . ' ! Remove "' . $token[Token::POS_OP] . '" to fix this issue.';
                 }
-                Parser::setDelimiter($context, '{{{{', '}}}}');
-                $token[Token::POS_OP] = '#';
                 $context['rawblock'] = $token[Token::POS_INNERTAG];
+                Parser::setDelimiter($context);
+                $token[Token::POS_OP] = '#';
             }
             $token[Token::POS_BEGINTAG] = '{{';
             $token[Token::POS_ENDTAG] = '}}';
@@ -308,11 +322,11 @@ class Validator {
         }
 
         if (count($vars) == 0) {
-            return $context['error'][] = 'Wrong variable naming in ' . token::toString($token);
+            return $context['error'][] = 'Wrong variable naming in ' . Token::toString($token);
         }
 
         if (!isset($vars[0])) {
-            return $context['error'][] = 'Do not support name=value in ' . token::toString($token) . ', you should use it after a custom helper.';
+            return $context['error'][] = 'Do not support name=value in ' . Token::toString($token) . ', you should use it after a custom helper.';
         }
 
         $context['usedFeature'][$raw ? 'raw' : 'enc']++;

@@ -12,9 +12,6 @@ class TokenTest extends PHPUnit_Framework_TestCase
      */
     public function testOn_toString() {
         $method = new \ReflectionMethod('LightnCandy\Token', 'toString');
-        $this->assertEquals('b', $method->invokeArgs(null,array(
-            array(0, 'a', 'b', 'c'), 1
-)        ));
         $this->assertEquals('c', $method->invokeArgs(null,array(
             array(0, 'a', 'b', 'c', 'd', 'e')
 )        ));

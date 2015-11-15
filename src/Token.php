@@ -32,12 +32,14 @@ class Token {
     const POS_LSPACE = 2;
     const POS_BEGINTAG = 3;
     const POS_LSPACECTL = 4;
-    const POS_OP = 5;
-    const POS_INNERTAG = 6;
-    const POS_RSPACECTL = 7;
-    const POS_ENDTAG = 8;
-    const POS_RSPACE = 9;
-    const POS_ROTHER = 10;
+    const POS_BEGINRAW = 5;
+    const POS_OP = 6;
+    const POS_INNERTAG = 7;
+    const POS_ENDRAW = 8;
+    const POS_RSPACECTL = 9;
+    const POS_ENDTAG = 10;
+    const POS_RSPACE = 11;
+    const POS_ROTHER = 12;
 
     /**
      * Setup delimiter by default or provided string
@@ -55,21 +57,11 @@ class Token {
         $context['tokens']['startchar'] = substr($left, 0, 1);
         $context['tokens']['left'] = $left;
         $context['tokens']['right'] = $right;
+        $rawcount = $context['rawblock'] ? '{2}' : ($context['flags']['rawblock'] ? '{0,2}' : '?');
+        $left = preg_quote($left);
+        $right = preg_quote($right);
 
-        if (($left === '{{') && ($right === '}}')) {
-            if ($context['flags']['rawblock']) {
-                $left = '\\{{2,4}';
-                $right = '\\}{2,4}';
-            } else {
-                $left = '\\{{2,3}';
-                $right = '\\}{2,3}';
-            }
-        } else {
-            $left = preg_quote($left);
-            $right = preg_quote($right);
-        }
-
-        $context['tokens']['search'] = "/^(.*?)(\\s*)($left)(~?)([\\^#\\/!&>]?)(.*?)(~?)($right)(\\s*)(.*)\$/s";
+        $context['tokens']['search'] = "/^(.*?)(\\s*)($left)(~?)(\\{{$rawcount})([\\^#\\/!&>]?)(.*?)(\\}{$rawcount})(~?)($right)(\\s*)(.*)\$/s";
     }
 
     /**
@@ -80,11 +72,10 @@ class Token {
      *
      * @return string Return whole token
      *
-     * @expect 'b' when input array(0, 'a', 'b', 'c'), 1
      * @expect 'c' when input array(0, 'a', 'b', 'c', 'd', 'e')
      */
-    public static function toString($token, $remove = 2) {
-        return implode('', array_slice($token, 1 + $remove, -$remove));
+    public static function toString($token) {
+        return implode('', array_slice($token, 3, -2));
     }
 }
 
