@@ -14,43 +14,43 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $method = new \ReflectionMethod('LightnCandy\Parser', 'getExpression');
         $method->setAccessible(true);
         $this->assertEquals(array('this'), $method->invokeArgs(null,array(
-            'this', array('flags' => array('advar' => 0, 'this' => 0))
+            'this', array('flags' => array('advar' => 0, 'this' => 0)), false
 )        ));
         $this->assertEquals(array(), $method->invokeArgs(null,array(
-            'this', array('flags' => array('advar' => 0, 'this' => 1))
+            'this', array('flags' => array('advar' => 0, 'this' => 1)), false
 )        ));
         $this->assertEquals(array(1), $method->invokeArgs(null,array(
-            '../', array('flags' => array('advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0))
+            '../', array('flags' => array('advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0)), false
 )        ));
         $this->assertEquals(array(1), $method->invokeArgs(null,array(
-            '../.', array('flags' => array('advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0))
+            '../.', array('flags' => array('advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0)), false
 )        ));
         $this->assertEquals(array(1), $method->invokeArgs(null,array(
-            '../this', array('flags' => array('advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0))
+            '../this', array('flags' => array('advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0)), false
 )        ));
         $this->assertEquals(array(1, 'a'), $method->invokeArgs(null,array(
-            '../a', array('flags' => array('advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0))
+            '../a', array('flags' => array('advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0)), false
 )        ));
         $this->assertEquals(array(2, 'a', 'b'), $method->invokeArgs(null,array(
-            '../../a.b', array('flags' => array('advar' => 0, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0))
+            '../../a.b', array('flags' => array('advar' => 0, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), false
 )        ));
         $this->assertEquals(array(2, '[a]', 'b'), $method->invokeArgs(null,array(
-            '../../[a].b', array('flags' => array('advar' => 0, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0))
+            '../../[a].b', array('flags' => array('advar' => 0, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), false
 )        ));
         $this->assertEquals(array(2, 'a', 'b'), $method->invokeArgs(null,array(
-            '../../[a].b', array('flags' => array('advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0))
+            '../../[a].b', array('flags' => array('advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), false
 )        ));
         $this->assertEquals(array('id'), $method->invokeArgs(null,array(
-            'this.id', array('flags' => array('advar' => 1, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0))
+            'this.id', array('flags' => array('advar' => 1, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0)), false
 )        ));
         $this->assertEquals(array(0, '\'a.b\''), $method->invokeArgs(null,array(
-            '"a.b"', array('flags' => array('advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0))
+            '"a.b"', array('flags' => array('advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), false
 )        ));
         $this->assertEquals(array(0, '123'), $method->invokeArgs(null,array(
-            '123', array('flags' => array('advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0))
+            '123', array('flags' => array('advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), false
 )        ));
         $this->assertEquals(array(0, 'null'), $method->invokeArgs(null,array(
-            'null', array('flags' => array('advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0))
+            'null', array('flags' => array('advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), false
 )        ));
     }
     /**
