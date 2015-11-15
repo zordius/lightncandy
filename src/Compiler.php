@@ -279,7 +279,7 @@ $libstr
      * @return array<string> variable names
      */
     protected static function getVariableNameOrSubExpression($var, &$context) {
-        if (isset($var[1]) && ($var[0] === -1)) {
+        if (Parser::isSubexp($var)) {
             return static::compileSubExpression($var[1], $context);
         }
         return static::getVariableName($var, $context);
@@ -457,7 +457,7 @@ $libstr
                 $v = static::getVariableNames($vars, $context);
                 $tag = ">$p[0] " .implode(' ', $v[1]);
                 if ($context['flags']['runpart']) {
-                    if (isset($p[1]) && ($p[0] === -1)) {
+                    if (Parser::isSubexp($p)) {
                         list($p) = static::compileSubExpression($p[1], $context);
                     } else {
                         $p = "'$p[0]'";
