@@ -43,8 +43,9 @@ class MustacheSpecTest extends PHPUnit_Framework_TestCase
                 'partials' => isset($spec['partials']) ? $spec['partials'] : null,
                 'basedir' => $tmpdir,
             ));
+            $parsed = print_r(LightnCandy::$lastParsed, true);
             $renderer = LightnCandy::prepare($php);
-            $this->assertEquals($spec['expected'], $renderer($spec['data']), "SPEC:\n" . print_r($spec, true) . "\nPHP CODE: $php");
+            $this->assertEquals($spec['expected'], $renderer($spec['data']), "SPEC:\n" . print_r($spec, true) . "\nPHP CODE: $php\nPARSED: $parsed");
         }
     }
 

@@ -361,7 +361,7 @@ class Validator {
         }
         if ($st && (($lsp && $rsp) // both side cr
             || ($rsp && !$token[Token::POS_LOTHER]) // first line without left
-            || ($lsp && ($context['tokens']['current'] == $context['tokens']['count']) && !$token[Token::POS_ROTHER]) // final line
+            || ($lsp && !$token[Token::POS_ROTHER]) // final line
            )) {
             // handle partial
             if ((!$context['flags']['noind']) && ($token[Token::POS_OP] === '>')) {
