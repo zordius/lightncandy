@@ -202,13 +202,13 @@ class Parser extends Token {
 
         $vars = static::analyze($token[static::POS_INNERTAG], $context);
         if ($token[static::POS_OP] === '>' && isset($vars[0])) {
-            $fn = array_shift($vars);
+            $fn = $vars[0];
         }
 
         $avars = static::advancedVariable($vars, $context, static::toString($token));
 
         if ($token[static::POS_OP] === '>' && isset($fn)) {
-            array_unshift($avars, array(preg_replace('/^("(.+)")|(\\[(.+)\\])$/', '$2$4', $fn)));
+            $avars[0] = array(preg_replace('/^("(.+)")|(\\[(.+)\\])$/', '$2$4', $fn));
         }
 
         return array(($token[static::POS_BEGINTAG] === '{{{') || ($token[static::POS_OP] === '&') || $context['flags']['noesc'] || $context['rawblock'], $avars);
