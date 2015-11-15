@@ -245,6 +245,8 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                     'basedir' => $tmpdir,
                     'partials' => $partials,
                 ));
+
+                $parsed = print_r(LightnCandy::$lastParsed, true);
             } catch (Exception $e) {
                 // Exception as expected, pass!
                 if (isset($spec['exception'])) {
@@ -263,16 +265,16 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
             $output = $renderer($spec['data']);
 
             if (!isset($spec['expected'])) {
-                $this->fail('Should Fail:' . print_r($spec, true)); // . print_r(LightnCandy::getContext(), true));
+                $this->fail('Should Fail:' . print_r($spec, true));
             }
 
             try {
                 $result = $renderer($spec['data'], Runtime::DEBUG_ERROR_EXCEPTION);
             } catch (Exception $e) {
-                $this->fail("Rendering Error in {$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']} PHP CODE: $php");
+                $this->fail("Rendering Error in {$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']} PHP CODE: $php\nPARSED: $parsed\n");
             }
 
-            $this->assertEquals($spec['expected'], $result, "[{$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']} PHP CODE: $php");
+            $this->assertEquals($spec['expected'], $result, "[{$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']} PHP CODE: $php\nPARSED: $parsed\n");
         }
     }
 
