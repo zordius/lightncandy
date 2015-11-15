@@ -63,7 +63,7 @@ class Parser extends Token {
      * @expect array(0, '123') when input '123', array('flags' => array('advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0))
      * @expect array(0, 'null') when input 'null', array('flags' => array('advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0))
      */
-    protected static function getExpression($v, &$context, $asis = false) {
+    protected static function getExpression($v, &$context, $asis) {
         // handle number
         if (is_numeric($v)) {
             return static::getLiteral(strval(1 * $v), $asis);
