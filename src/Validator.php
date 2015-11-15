@@ -119,7 +119,7 @@ class Validator {
      *
      * @param string[] $token detected handlebars {{ }} token
      * @param array<string,array|string|integer> $context current compile context
-     * @param array<array> $vars parsed arguments list
+     * @param array<boolean|integer|array> $vars parsed arguments list
      *
      * @return boolean|integer|null Return true when invalid or detected
      *
@@ -211,7 +211,7 @@ class Validator {
      * @param string[] $token detected handlebars {{ }} token
      * @param array<string,array|string|integer> $context current compile context
      *
-     * @return boolean Return true when delimiter changed
+     * @return boolean|null Return true when delimiter changed
      */
     protected static function isDelimiter(&$token, &$context) {
         if (preg_match('/^=\s*([^ ]+)\s+([^ ]+)\s*=$/', $token[Token::POS_INNERTAG], $matched)) {
@@ -226,7 +226,7 @@ class Validator {
      * @param string[] $token detected handlebars {{ }} token
      * @param array<string,array|string|integer> $context current compile context
      *
-     * @return boolean Return true when in rawblock mode
+     * @return boolean|null Return true when in rawblock mode
      */
     protected static function rawblock(&$token, &$context) {
         $inner = $token[Token::POS_INNERTAG];
@@ -266,7 +266,7 @@ class Validator {
      * @param string[] $token detected handlebars {{ }} token
      * @param array<string,array|string|integer> $context current compile context
      *
-     * @return boolean Return true when is comment
+     * @return boolean|null Return true when is comment
      */
     protected static function comment(&$token, &$context) {
         if ($token[Token::POS_OP] === '!') {

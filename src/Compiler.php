@@ -37,7 +37,7 @@ class Compiler extends Validator {
      * @param string $template handlebars template
      * @param string $partial partial name when $template is come from the template
      *
-     * @return string generated PHP code
+     * @return string|null generated PHP code
      */
     public static function compileTemplate(&$context, $template, $partial = '') {
         array_unshift($context['parsed'], array());
@@ -262,7 +262,6 @@ $libstr
 
         // strip outer ( ) from subexpression
         $token[Token::POS_INNERTAG] = substr($subExpression, 1, -1);
-        $oldCount = $context['usedFeature'];
         list(, $vars) = Parser::parse($token, $context);
 
         // no separator is needed, this code will be used as a function argument
@@ -271,7 +270,7 @@ $libstr
         // override $raw, subexpressions are never escaped
         $ret = static::compileCustomHelper($context, $vars, true, true);
 
-        if (!$ret && $context['flags']['lambda']) {
+        if (($ret === null) && $context['flags']['lambda']) {
             $ret = static::compileVariable($context, $vars, true);
         }
 
@@ -301,7 +300,7 @@ $libstr
      */
     protected static function getVariableNameOrSubExpression($var, &$context) {
         if (isset($var[0]) && preg_match(static::IS_SUBEXP_SEARCH, $var[0])) {
-            return static::compileSubExpression($var[0], $context, true);
+            return static::compileSubExpression($var[0], $context);
         }
         return static::getVariableName($var, $context);
     }
@@ -613,11 +612,10 @@ $libstr
      *
      * @param array<string,array|string|integer> $context current compile context
      * @param array<array|string|integer> $vars parsed arguments list
-     * @param array<string> $token detected handlebars {{ }} token
      *
      * @return string Return compiled code segment for the token
      */
-    protected static function compileBlockBegin(&$context, $vars, $token) {
+    protected static function compileBlockBegin(&$context, $vars) {
         $each = 'false';
         $v = isset($vars[1]) ? static::getVariableNameOrSubExpression($vars[1], $context) : array(null, array());
         switch (isset($vars[0][0]) ? $vars[0][0] : null) {
@@ -646,7 +644,6 @@ $libstr
                 }
         }
 
-        $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;
         $v = static::getVariableNameOrSubExpression($vars[0], $context);
         $context['stack'][] = $v[1];
         $context['stack'][] = '#';
