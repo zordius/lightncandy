@@ -141,7 +141,7 @@ class Validator {
     protected static function operator(&$token, &$context, $vars, $named) {
         switch ($token[Token::POS_OP]) {
             case '>':
-                static::partial($token, $context, $vars, $named);
+                static::partial($context, $vars);
                 return true;
 
             case ' ':
@@ -271,7 +271,7 @@ class Validator {
             return array($raw, $vars);
         }
 
-        static::helper($token, $context, $vars[0][0]);
+        static::helper($context, $vars[0][0]);
 
         return array($raw, $vars);
     }
