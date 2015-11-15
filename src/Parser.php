@@ -158,48 +158,6 @@ class Parser extends Token {
      * @expect array(false, array('q' => array('( foo bar)'))) when input array(0,0,0,0,0,0,'q=( foo bar)'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 0, 'lambda' => 0), 'usedFeature' => array(), 'ops' => array('seperator' => 0), 'rawblock' => false)
      */
     public static function parse(&$token, &$context) {
-        $inner = $token[static::POS_INNERTAG];
-        trim($inner);
-
-        // skip parse when inside raw block
-        if ($context['rawblock'] && !(($token[static::POS_BEGINTAG] === '{{{{') && ($token[static::POS_OP] === '/') && ($context['rawblock'] === $inner))) {
-            return array(-1, $token);
-        }
-
-        $token[static::POS_INNERTAG] = $inner;
-
-        // Handle delimiter change
-        if (preg_match('/^=\s*([^ ]+)\s+([^ ]+)\s*=$/', $token[static::POS_INNERTAG], $matched)) {
-            static::setDelimiter($context, $matched[1], $matched[2]);
-            $token[static::POS_OP] = ' ';
-            return array(false, array());
-        }
-
-        // Handle raw block
-        if ($token[static::POS_BEGINTAG] === '{{{{') {
-            if ($token[static::POS_ENDTAG] !== '}}}}') {
-                $context['error'][] = 'Bad token ' . static::toString($token) . ' ! Do you mean {{{{' . static::toString($token, 4) . '}}}} ?';
-            }
-            if ($context['rawblock']) {
-                static::setDelimiter($context);
-                $context['rawblock'] = false;
-            } else {
-                if ($token[static::POS_OP]) {
-                    $context['error'][] = "Wrong raw block begin with " . static::toString($token) . ' ! Remove "' . $token[static::POS_OP] . '" to fix this issue.';
-                }
-                static::setDelimiter($context, '{{{{', '}}}}');
-                $token[static::POS_OP] = '#';
-                $context['rawblock'] = $token[static::POS_INNERTAG];
-            }
-            $token[static::POS_BEGINTAG] = '{{';
-            $token[static::POS_ENDTAG] = '}}';
-        }
-
-        // Skip validation on comments
-        if ($token[static::POS_OP] === '!') {
-            return array(false, array());
-        }
-
         $vars = static::analyze($token[static::POS_INNERTAG], $context);
         if ($token[static::POS_OP] === '>' && isset($vars[0])) {
             $fn = $vars[0];

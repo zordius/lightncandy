@@ -125,7 +125,6 @@ class Validator {
      *
      * @expect null when input array(0, 0, 0, 0, 0, ''), array(), array()
      * @expect 2 when input array(0, 0, 0, 0, 0, '^', '...'), array('usedFeature' => array('isec' => 1), 'level' => 0), array(array('foo'))
-     * @expect 3 when input array(0, 0, 0, 0, 0, '!', '...'), array('usedFeature' => array('comment' => 2)), array()
      * @expect true when input array(0, 0, 0, 0, 0, '/'), array('stack' => array(1), 'level' => 1), array()
      * @expect 4 when input array(0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('sec' => 3), 'level' => 0), array(array('x'))
      * @expect 5 when input array(0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('if' => 4), 'level' => 0), array(array('if'))
@@ -162,9 +161,6 @@ class Validator {
                 array_pop($context['stack']);
                 $context['level']--;
                 return true;
-
-            case '!':
-                return ++$context['usedFeature']['comment'];
 
             case '#':
                 $context['stack'][] = $token[Token::POS_INNERTAG];
@@ -210,32 +206,105 @@ class Validator {
     }
 
     /**
+     * handle delimiter change
+     *
+     * @param string[] $token detected handlebars {{ }} token
+     * @param array<string,array|string|integer> $context current compile context
+     *
+     * @return boolean Return true when delimiter changed
+     */
+    protected static function isDelimiter(&$token, &$context) {
+        if (preg_match('/^=\s*([^ ]+)\s+([^ ]+)\s*=$/', $token[Token::POS_INNERTAG], $matched)) {
+            Parser::setDelimiter($context, $matched[1], $matched[2]);
+            return true;
+        }
+    }
+
+    /**
+     * handle raw block
+     *
+     * @param string[] $token detected handlebars {{ }} token
+     * @param array<string,array|string|integer> $context current compile context
+     *
+     * @return boolean Return true when in rawblock mode
+     */
+    protected static function rawblock(&$token, &$context) {
+        $inner = $token[Token::POS_INNERTAG];
+        trim($inner);
+
+        // skip parse when inside raw block
+        if ($context['rawblock'] && !(($token[Token::POS_BEGINTAG] === '{{{{') && ($token[Token::POS_OP] === '/') && ($context['rawblock'] === $inner))) {
+            return true;
+        }
+
+        $token[Token::POS_INNERTAG] = $inner;
+
+        // Handle raw block
+        if ($token[Token::POS_BEGINTAG] === '{{{{') {
+            if ($token[Token::POS_ENDTAG] !== '}}}}') {
+                $context['error'][] = 'Bad token ' . Token::toString($token) . ' ! Do you mean {{{{' . Token::toString($token, 4) . '}}}} ?';
+            }
+            if ($context['rawblock']) {
+                Parser::setDelimiter($context);
+                $context['rawblock'] = false;
+            } else {
+                if ($token[Token::POS_OP]) {
+                    $context['error'][] = "Wrong raw block begin with " . Token::toString($token) . ' ! Remove "' . $token[Token::POS_OP] . '" to fix this issue.';
+                }
+                Parser::setDelimiter($context, '{{{{', '}}}}');
+                $token[Token::POS_OP] = '#';
+                $context['rawblock'] = $token[Token::POS_INNERTAG];
+            }
+            $token[Token::POS_BEGINTAG] = '{{';
+            $token[Token::POS_ENDTAG] = '}}';
+        }
+    }
+
+    /**
+     * handle comment
+     *
+     * @param string[] $token detected handlebars {{ }} token
+     * @param array<string,array|string|integer> $context current compile context
+     *
+     * @return boolean Return true when is comment
+     */
+    protected static function comment(&$token, &$context) {
+        if ($token[Token::POS_OP] === '!') {
+            $context['usedFeature']['comment']++;
+            return true;
+        }
+    }
+
+    /**
      * Collect handlebars usage information, detect template error.
      *
      * @param string[] $token detected handlebars {{ }} token
      * @param array<string,array|string|integer> $context current compile context
      */
     protected static function token(&$token, &$context) {
-        list($raw, $vars) = Parser::parse($token, $context);
-
-        if ($raw === -1) {
+        if (static::rawblock($token, $context)) {
             return Token::toString($token);
-        }
-
-        // Handle spacing (standalone tags, partial indent)
-        static::spacing($token, $vars, $context);
-
-        // Handle space control.
-        if ($token[Token::POS_LSPACECTL]) {
-            $token[Token::POS_LSPACE] = '';
-        }
-        if ($token[Token::POS_RSPACECTL]) {
-            $token[Token::POS_RSPACE] = '';
         }
 
         if (static::delimiter($token, $context)) {
             return;
         }
+
+        if (static::isDelimiter($token, $context)) {
+            static::spacing($token, $context);
+            return;
+        }
+
+        if (static::comment($token, $context)) {
+            static::spacing($token, $context);
+            return;
+        }
+
+
+        list($raw, $vars) = Parser::parse($token, $context);
+
+        // Handle spacing (standalone tags, partial indent)
+        static::spacing($token, $context, (!$token[Token::POS_OP] || ($token[Token::POS_OP] === '&')) && (!$context['flags']['else'] || !isset($vars[0][0]) || ($vars[0][0] !== 'else')));
 
         if (static::operator($token, $context, $vars)) {
             return array($raw, $vars);
@@ -321,12 +390,20 @@ class Validator {
      * Modify $token when spacing rules matched.
      *
      * @param array<string> $token detected handlebars {{ }} token
-     * @param array<array|string|integer> $vars parsed arguments list
      * @param array<string,array|string|integer> $context current compile context
+     * @param boolean $nost do not do stand alone logic
      *
      * @return string|null Return compiled code segment for the token
      */
-    protected static function spacing(&$token, $vars, &$context) {
+    protected static function spacing(&$token, &$context, $nost = false) {
+        // Handle space control.
+        if ($token[Token::POS_LSPACECTL]) {
+            $token[Token::POS_LSPACE] = '';
+        }
+        if ($token[Token::POS_RSPACECTL]) {
+            $token[Token::POS_RSPACE] = '';
+        }
+
         if ($context['flags']['noind']) {
             return;
         }
@@ -345,11 +422,8 @@ class Validator {
         if (!$lsp && $ahead) {
             $st = false;
         }
-        // Do not need standalone detection for these tags
-        if (!$token[Token::POS_OP] || ($token[Token::POS_OP] === '&')) {
-            if (!$context['flags']['else'] || !isset($vars[0][0]) || ($vars[0][0] !== 'else')) {
-                $st = false;
-            }
+        if ($nost) {
+            $st = false;
         }
         // not standalone because other things in the same line ahead
         if ($token[Token::POS_LOTHER] && !$token[Token::POS_LSPACE]) {
