@@ -293,13 +293,12 @@ class Validator {
     /**
      * Return 1 or larger number when custom helper detected
      *
-     * @param array<string> $token detected handlebars {{ }} token
      * @param array<string,array|string|integer> $context current compile context
      * @param string $name token name
      *
      * @return integer|null Return 1 or larger number when custom helper detected
      */
-    protected static function helper($token, &$context, $name) {
+    protected static function helper(&$context, $name) {
         // detect handlebars custom helpers.
         if (isset($context['hbhelpers'][$name])) {
             return $context['usedFeature']['hbhelper']++;
@@ -328,12 +327,10 @@ class Validator {
     /**
      * Append error message when named arguments appear without helper.
      *
-     * @param array<string> $token detected handlebars {{ }} token
      * @param array<string,array|string|integer> $context current compile context
-     * @param boolean $named is named arguments
-     * @param string $suggest extended hint for this no named argument error
+     * @param array<array|string|integer> $vars parsed arguments list
      */
-    public static function partial($token, &$context, $vars, $named) {
+    public static function partial(&$context, $vars) {
         Partial::readPartial($vars[0][0], $context);
     }
 
