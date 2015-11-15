@@ -201,8 +201,30 @@ class Parser extends Token {
         }
 
         $vars = static::analyze($token[static::POS_INNERTAG], $context);
+        if ($token[static::POS_OP] === '>' && isset($vars[0])) {
+            $fn = array_shift($vars);
+        }
 
-        // Check for advanced variable.
+        $avars = static::advancedVariable($vars, $context, static::toString($token));
+
+        if ($token[static::POS_OP] === '>' && isset($fn)) {
+            array_unshift($avars, array(preg_replace('/^("(.+)")|(\\[(.+)\\])$/', '$2$4', $fn)));
+        }
+
+        return array(($token[static::POS_BEGINTAG] === '{{{') || ($token[static::POS_OP] === '&') || $context['flags']['noesc'] || $context['rawblock'], $avars);
+    }
+
+    /**
+     * Analyze parsed token for advanved variables.
+     *
+     * @param array<boolean|integer|array> $vars parsed token
+     * @param array<string,array|string|integer> $context current compile context
+     * @param string $token original token
+     *
+     * @return array<boolean|integer|array> Return parsed result
+     *
+     */
+    protected static function advancedVariable($vars, &$context, $token) {
         $ret = array();
         $i = 0;
         foreach ($vars as $idx => $var) {
@@ -217,7 +239,7 @@ class Parser extends Token {
             if ($context['flags']['namev']) {
                 if (preg_match('/^((\\[([^\\]]+)\\])|([^=^["\']+))=(.+)$/', $var, $m)) {
                     if (!$context['flags']['advar'] && $m[3]) {
-                        $context['error'][] = "Wrong argument name as '[$m[3]]' in " . static::toString($token) . ' ! You should fix your template or compile with LightnCandy::FLAG_ADVARNAME flag.';
+                        $context['error'][] = "Wrong argument name as '[$m[3]]' in $token ! You should fix your template or compile with LightnCandy::FLAG_ADVARNAME flag.";
                     }
                     $idx = $m[3] ? $m[3] : $m[4];
                     $var = $m[5];
@@ -240,22 +262,18 @@ class Parser extends Token {
                     // .foo[ Rule 4: middle [ not after .
                     || preg_match('/\\.[^\\]\\[\\.]+\\[/', preg_replace('/^(..\\/)+/', '', preg_replace('/\\[[^\\]]+\\]/', '[XXX]', $var)))
                 ) {
-                    $context['error'][] = "Wrong variable naming as '$var' in " . static::toString($token) . ' !';
+                    $context['error'][] = "Wrong variable naming as '$var' in $token !";
                 } else {
                     $name = preg_replace('/(\\[.+?\\])/', '', $var);
                     // Scan for invalid charactors which not be protected by [ ]
                     // now make ( and ) pass, later fix
                     if (preg_match('/[!"#%\'*+,;<=>{|}~]/', $name)) {
-                        $context['error'][] = "Wrong variable naming as '$var' in " . static::toString($token) . ' ! You should wrap ! " # % & \' * + , ; < = > { | } ~ into [ ]';
+                        $context['error'][] = "Wrong variable naming as '$var' in $token ! You should wrap ! \" # % & ' * + , ; < = > { | } ~ into [ ]";
                     }
                 }
             }
 
-            if (($idx === 0) && ($token[static::POS_OP] === '>')) {
-                $var = array(preg_replace('/^("(.+)")|(\\[(.+)\\])$/', '$2$4', $var));
-            } else {
-                $var = static::getExpression($var, $context, (count($vars) === 1) && ($idx === 0));
-            }
+            $var = static::getExpression($var, $context, (count($vars) === 1) && ($idx === 0));
 
             if (is_string($idx)) {
                 $ret[$idx] = $var;
@@ -264,8 +282,7 @@ class Parser extends Token {
                 $i++;
             }
         }
-
-        return array(($token[static::POS_BEGINTAG] === '{{{') || ($token[static::POS_OP] === '&') || $context['flags']['noesc'] || $context['rawblock'], $ret);
+        return $ret;
     }
 
     /**
