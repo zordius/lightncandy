@@ -27,7 +27,6 @@ use \LightnCandy\Token;
  * LightnCandy Compiler
  */
 class Compiler extends Validator {
-    const IS_SUBEXP_SEARCH = '/^\(.+\)$/s';
     public static $lastParsed;
 
     /**
@@ -256,18 +255,10 @@ $libstr
      *
      * @return array<string> code representing passed expression
      */
-    public static function compileSubExpression($subExpression, &$context) {
-        // mock up a token for this expression
-        $token = array_fill(Token::POS_LOTHER, Token::POS_ROTHER, '');
-
-        // strip outer ( ) from subexpression
-        $token[Token::POS_INNERTAG] = substr($subExpression, 1, -1);
-        list(, $vars) = Parser::parse($token, $context);
-
-        // no separator is needed, this code will be used as a function argument
+    public static function compileSubExpression($vars, &$context) {
         $origSeperator = $context['ops']['seperator'];
         $context['ops']['seperator'] = '';
-        // override $raw, subexpressions are never escaped
+
         $ret = static::compileCustomHelper($context, $vars, true, true);
 
         if (($ret === null) && $context['flags']['lambda']) {
@@ -276,18 +267,7 @@ $libstr
 
         $context['ops']['seperator'] = $origSeperator;
 
-        $context['usedFeature']['subexp']++;
-        // detect handlebars custom helpers.
-        if (isset($context['hbhelpers'][$vars[0][0]])) {
-            $context['usedFeature']['hbhelper']++;
-        } else {
-            // detect custom helpers.
-            if (isset($context['helpers'][$vars[0][0]])) {
-                $context['usedFeature']['helper']++;
-            }
-        }
-
-        return array($ret ? $ret : '', $subExpression);
+        return array($ret ? $ret : '', 'FIXME: $subExpression');
     }
 
     /**
@@ -299,8 +279,8 @@ $libstr
      * @return array<string> variable names
      */
     protected static function getVariableNameOrSubExpression($var, &$context) {
-        if (isset($var[0]) && preg_match(static::IS_SUBEXP_SEARCH, $var[0])) {
-            return static::compileSubExpression($var[0], $context);
+        if (isset($var[1]) && ($var[0] === -1)) {
+            return static::compileSubExpression($var[1], $context);
         }
         return static::getVariableName($var, $context);
     }
@@ -477,8 +457,8 @@ $libstr
                 $v = static::getVariableNames($vars, $context);
                 $tag = ">$p[0] " .implode(' ', $v[1]);
                 if ($context['flags']['runpart']) {
-                    if (preg_match(static::IS_SUBEXP_SEARCH, $p[0])) {
-                        list($p) = static::compileSubExpression($p[0], $context);
+                    if (isset($p[1]) && ($p[0] === -1)) {
+                        list($p) = static::compileSubExpression($p[1], $context);
                     } else {
                         $p = "'$p[0]'";
                     }

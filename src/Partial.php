@@ -61,7 +61,7 @@ class Partial {
             return static::compilePartial($name, $context, $cnt);
         }
 
-        if (preg_match(Compiler::IS_SUBEXP_SEARCH, $name)) {
+        if (is_array($name) && isset($name[1]) && ($name[0] === -1)) {
             if ($context['flags']['runpart']) {
                 $context['usedFeature']['dynpartial']++;
                 return;

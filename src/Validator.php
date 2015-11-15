@@ -383,7 +383,10 @@ class Validator {
      * @param array<array|string|integer> $vars parsed arguments list
      */
     public static function partial(&$context, $vars) {
-        Partial::readPartial($vars[0][0], $context);
+        if (isset($vars[0][1]) && ($vars[0][0] === -1)) {
+        } else {
+            Partial::readPartial($vars[0][0], $context);
+        }
     }
 
     /**

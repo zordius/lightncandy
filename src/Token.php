@@ -26,7 +26,6 @@ namespace LightnCandy;
 class Token {
     // RegExps
     const VARNAME_SEARCH = '/(\\[[^\\]]+\\]|[^\\[\\]\\.]+)/';
-    const IS_SUBEXP_SEARCH = '/^\(.+\)$/s';
 
     // Positions of matched token
     const POS_LOTHER = 1;

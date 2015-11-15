@@ -20,7 +20,7 @@ Origin: https://github.com/zordius/lightncandy
 
 namespace LightnCandy;
 use \LightnCandy\Token;
-use \LightnCandy\Compiler;
+use \LightnCandy\String;
 
 /**
  * LightnCandy Parser
@@ -147,15 +147,15 @@ class Parser extends Token {
      * @expect array(false, array(array('a'), 'q' => array('[b'), array('c]'))) when input array(0,0,0,0,0,0,'a q=[b c]'), array('flags' => array('advar' => 0, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'rawblock' => false)
      * @expect array(false, array(array('a'), 'q' => array('b'), array('c'))) when input array(0,0,0,0,0,0,'a [q]=b c'), array('flags' => array('advar' => 0, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'rawblock' => false)
      * @expect array(false, array(array('a'), 'q' => array(0, '\'b c\''))) when input array(0,0,0,0,0,0,'a q="b c"'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'rawblock' => false)
-     * @expect array(false, array(array('(foo bar)'))) when input array(0,0,0,0,0,0,'(foo bar)'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 1, 'lambda' => 0), 'ops' => array('seperator' => ''), 'usedFeature' => array('subexp' => 0), 'rawblock' => false)
+     * @expect array(false, array(array(-1, array(array('foo'), array('bar'))))) when input array(0,0,0,0,0,0,'(foo bar)'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 1, 'lambda' => 0), 'ops' => array('seperator' => ''), 'usedFeature' => array('subexp' => 0), 'rawblock' => false)
      * @expect array(false, array(array('foo'), array("'=='"), array('bar'))) when input array(0,0,0,0,0,0,"foo '==' bar"), array('flags' => array('advar' => 1, 'namev' => 1, 'noesc' => 0, 'this' => 0), 'rawblock' => false)
-     * @expect array(false, array(array('( foo bar)'))) when input array(0,0,0,0,0,0,'( foo bar)'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 1, 'lambda' => 0), 'ops' => array('seperator' => ''), 'usedFeature' => array('subexp' => 0), 'rawblock' => false)
+     * @expect array(false, array(array(-1, array(array('foo'), array('bar'))))) when input array(0,0,0,0,0,0,'( foo bar)'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 1, 'lambda' => 0), 'ops' => array('seperator' => ''), 'usedFeature' => array('subexp' => 0), 'rawblock' => false)
      * @expect array(false, array(array('a'), array(0, '\' b c\''))) when input array(0,0,0,0,0,0,'a " b c"'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 0, 'noesc' => 0), 'rawblock' => false)
      * @expect array(false, array(array('a'), 'q' => array(0, '\' b c\''))) when input array(0,0,0,0,0,0,'a q=" b c"'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'rawblock' => false)
      * @expect array(false, array(array('foo'), array(0, "' =='"), array('bar'))) when input array(0,0,0,0,0,0,"foo \' ==\' bar"), array('flags' => array('advar' => 1, 'namev' => 1, 'noesc' => 0, 'this' => 0), 'rawblock' => false)
      * @expect array(false, array(array('a'), array(' b c'))) when input array(0,0,0,0,0,0,'a [ b c]'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'rawblock' => false)
      * @expect array(false, array(array('a'), 'q' => array(0, "' d e'"))) when input array(0,0,0,0,0,0,"a q=\' d e\'"), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'rawblock' => false)
-     * @expect array(false, array('q' => array('( foo bar)'))) when input array(0,0,0,0,0,0,'q=( foo bar)'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 0, 'lambda' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('seperator' => 0), 'rawblock' => false)
+     * @expect array(false, array('q' => array(-1, array(array('foo'), array('bar'))))) when input array(0,0,0,0,0,0,'q=( foo bar)'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 0, 'lambda' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('seperator' => 0), 'rawblock' => false)
      */
     public static function parse(&$token, &$context) {
         $vars = static::analyze($token[static::POS_INNERTAG], $context);
@@ -166,10 +166,24 @@ class Parser extends Token {
         $avars = static::advancedVariable($vars, $context, static::toString($token));
 
         if ($token[static::POS_OP] === '>' && isset($fn)) {
-            $avars[0] = array(preg_replace('/^("(.+)")|(\\[(.+)\\])$/', '$2$4', $fn));
+            $avars[0] = preg_match(String::IS_SUBEXP_SEARCH, $fn) ? static::subexpression($fn, $context) : array(preg_replace('/^("(.+)")|(\\[(.+)\\])$/', '$2$4', $fn));
         }
 
         return array(($token[static::POS_BEGINTAG] === '{{{') || ($token[static::POS_OP] === '&') || $context['flags']['noesc'] || $context['rawblock'], $avars);
+    }
+
+    /**
+     * Parse a subexpression then return parsed result.
+     *
+     * @param string $expression the full string of a sub expression
+     * @param array<string,array|string|integer> $context current compile context
+     *
+     * @return array<boolean|integer|array> Return parsed result
+     */
+    public static function subexpression($expression, &$context) {
+        $vars = static::analyze(substr($expression, 1, -1), $context);
+        $avars = static::advancedVariable($vars, $context, $expression);
+        return array(-1, $avars);
     }
 
     /**
@@ -187,9 +201,8 @@ class Parser extends Token {
         $i = 0;
         foreach ($vars as $idx => $var) {
             // Skip advanced processing for subexpressions
-            if (preg_match(static::IS_SUBEXP_SEARCH, $var)) {
-                Compiler::compileSubExpression($var, $context);
-                $ret[$i] = array($var);
+            if (preg_match(String::IS_SUBEXP_SEARCH, $var)) {
+                $ret[$i] = static::subexpression($var, $context);
                 $i++;
                 continue;
             }
@@ -202,9 +215,8 @@ class Parser extends Token {
                     $idx = $m[3] ? $m[3] : $m[4];
                     $var = $m[5];
                     // Compile subexpressions for named arguments
-                    if (preg_match(static::IS_SUBEXP_SEARCH, $var)) {
-                        Compiler::compileSubExpression($var, $context);
-                        $ret[$idx] = array($var);
+                    if (preg_match(String::IS_SUBEXP_SEARCH, $var)) {
+                        $ret[$idx] = static::subexpression($var, $context);
                         continue;
                     }
                 }

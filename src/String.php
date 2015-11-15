@@ -25,6 +25,7 @@ namespace LightnCandy;
  */
 class String {
     const EXTENDED_COMMENT_SEARCH = '/{{!--.*?--}}/s';
+    const IS_SUBEXP_SEARCH = '/^\(.+\)$/s';
 
     /**
      * Strip extended comments {{!-- .... --}}
