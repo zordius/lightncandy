@@ -451,8 +451,6 @@ $libstr
             }
         }
 
-        Validator::noNamedArguments($token, $context, $named, ', maybe you missing the custom helper?');
-
         return static::compileVariable($context, $vars, $raw);
     }
 
@@ -510,7 +508,6 @@ $libstr
                 $v = static::getVariableName($vars[0], $context);
                 $context['stack'][] = $v[1];
                 $context['stack'][] = '^';
-                Validator::noNamedArguments($token, $context, $named);
                 // Compile to inverted section {{^myVar}}
                 return "{$context['ops']['cnd_start']}(" . static::getFuncName($context, 'isec', '^' . $v[1]) . "\$cx, {$v[0]})){$context['ops']['cnd_then']}";
             case '/':
@@ -650,7 +647,6 @@ $libstr
         }
 
         $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;
-        Validator::noNamedArguments($token, $context, $named, ', maybe you missing the block custom helper?');
         $v = static::getVariableNameOrSubExpression($vars[0], $context);
         $context['stack'][] = $v[1];
         $context['stack'][] = '#';

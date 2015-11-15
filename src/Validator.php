@@ -120,25 +120,24 @@ class Validator {
      * @param string[] $token detected handlebars {{ }} token
      * @param array<string,array|string|integer> $context current compile context
      * @param array<array> $vars parsed arguments list
-     * @param boolean $named is named arguments
      *
      * @return boolean|integer|null Return true when invalid or detected
      *
-     * @expect null when input array(0, 0, 0, 0, 0, ''), array(), array(), false
-     * @expect 2 when input array(0, 0, 0, 0, 0, '^', '...'), array('usedFeature' => array('isec' => 1), 'level' => 0), array(array('foo')), false
-     * @expect 3 when input array(0, 0, 0, 0, 0, '!', '...'), array('usedFeature' => array('comment' => 2)), array(), false
-     * @expect true when input array(0, 0, 0, 0, 0, '/'), array('stack' => array(1), 'level' => 1), array(), false
-     * @expect 4 when input array(0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('sec' => 3), 'level' => 0), array(array('x')), false
-     * @expect 5 when input array(0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('if' => 4), 'level' => 0), array(array('if')), false
-     * @expect 6 when input array(0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('with' => 5), 'level' => 0, 'flags' => array('with' => 1)), array(array('with')), false
-     * @expect 7 when input array(0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('each' => 6), 'level' => 0), array(array('each')), false
-     * @expect 8 when input array(0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('unless' => 7), 'level' => 0), array(array('unless')), false
-     * @expect 9 when input array(0, 0, 0, 0, 0, '#', '...'), array('blockhelpers' => array('abc' => ''), 'usedFeature' => array('bhelper' => 8), 'level' => 0), array(array('abc')), false
-     * @expect 10 when input array(0, 0, 0, 0, 0, ' ', '...'), array('usedFeature' => array('delimiter' => 9), 'level' => 0), array(), false
-     * @expect 11 when input array(0, 0, 0, 0, 0, '#', '...'), array('hbhelpers' => array('abc' => ''), 'usedFeature' => array('hbhelper' => 10), 'level' => 0), array(array('abc')), false
-     * @expect true when input array(0, 0, 0, 0, 0, '>', '...'), array('basedir' => array('.'), 'fileext' => array('.tmpl'), 'usedFeature' => array('unless' => 7, 'partial' => 7), 'level' => 0, 'flags' => array('skippartial' => 0)), array('test'), false
+     * @expect null when input array(0, 0, 0, 0, 0, ''), array(), array()
+     * @expect 2 when input array(0, 0, 0, 0, 0, '^', '...'), array('usedFeature' => array('isec' => 1), 'level' => 0), array(array('foo'))
+     * @expect 3 when input array(0, 0, 0, 0, 0, '!', '...'), array('usedFeature' => array('comment' => 2)), array()
+     * @expect true when input array(0, 0, 0, 0, 0, '/'), array('stack' => array(1), 'level' => 1), array()
+     * @expect 4 when input array(0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('sec' => 3), 'level' => 0), array(array('x'))
+     * @expect 5 when input array(0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('if' => 4), 'level' => 0), array(array('if'))
+     * @expect 6 when input array(0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('with' => 5), 'level' => 0, 'flags' => array('with' => 1)), array(array('with'))
+     * @expect 7 when input array(0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('each' => 6), 'level' => 0), array(array('each'))
+     * @expect 8 when input array(0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('unless' => 7), 'level' => 0), array(array('unless'))
+     * @expect 9 when input array(0, 0, 0, 0, 0, '#', '...'), array('blockhelpers' => array('abc' => ''), 'usedFeature' => array('bhelper' => 8), 'level' => 0), array(array('abc'))
+     * @expect 10 when input array(0, 0, 0, 0, 0, ' ', '...'), array('usedFeature' => array('delimiter' => 9), 'level' => 0), array()
+     * @expect 11 when input array(0, 0, 0, 0, 0, '#', '...'), array('hbhelpers' => array('abc' => ''), 'usedFeature' => array('hbhelper' => 10), 'level' => 0), array(array('abc'))
+     * @expect true when input array(0, 0, 0, 0, 0, '>', '...'), array('basedir' => array('.'), 'fileext' => array('.tmpl'), 'usedFeature' => array('unless' => 7, 'partial' => 7), 'level' => 0, 'flags' => array('skippartial' => 0)), array('test')
      */
-    protected static function operator(&$token, &$context, $vars, $named) {
+    protected static function operator(&$token, &$context, $vars) {
         switch ($token[Token::POS_OP]) {
             case '>':
                 static::partial($context, $vars);
@@ -223,8 +222,6 @@ class Validator {
             return Token::toString($token);
         }
 
-        $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;
-
         // Handle spacing (standalone tags, partial indent)
         static::spacing($token, $vars, $context);
 
@@ -240,7 +237,7 @@ class Validator {
             return;
         }
 
-        if (static::operator($token, $context, $vars, $named)) {
+        if (static::operator($token, $context, $vars)) {
             return array($raw, $vars);
         }
 
@@ -249,7 +246,7 @@ class Validator {
         }
 
         if (!isset($vars[0])) {
-            return static::noNamedArguments($token, $context, true, ', you should use it after a custom helper.');
+            return $context['error'][] = 'Do not support name=value in ' . token::toString($token) . ', you should use it after a custom helper.';
         }
 
         $context['usedFeature'][$raw ? 'raw' : 'enc']++;
@@ -311,21 +308,7 @@ class Validator {
     }
 
     /**
-     * Append error message when named arguments appear without helper.
-     *
-     * @param array<string> $token detected handlebars {{ }} token
-     * @param array<string,array|string|integer> $context current compile context
-     * @param boolean $named is named arguments
-     * @param string $suggest extended hint for this no named argument error
-     */
-    public static function noNamedArguments($token, &$context, $named, $suggest = '!') {
-        if ($named) {
-            $context['error'][] = 'Do not support name=value in ' . token::toString($token) . $suggest;
-        }
-    }
-
-    /**
-     * Append error message when named arguments appear without helper.
+     * validate partial
      *
      * @param array<string,array|string|integer> $context current compile context
      * @param array<array|string|integer> $vars parsed arguments list
