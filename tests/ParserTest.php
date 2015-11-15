@@ -59,13 +59,13 @@ class ParserTest extends PHPUnit_Framework_TestCase
     public function testOn_parse() {
         $method = new \ReflectionMethod('LightnCandy\Parser', 'parse');
         $this->assertEquals(array(false, array(array())), $method->invokeArgs(null,array(
-            array(0,0,0,0,0,0,''), array('flags' => array('advar' => 0, 'this' => 1, 'namev' => 0, 'noesc' => 0), 'rawblock' => false)
+            array(0,0,0,0,0,0,0,''), array('flags' => array('advar' => 0, 'this' => 1, 'namev' => 0, 'noesc' => 0), 'rawblock' => false)
 )        ));
         $this->assertEquals(array(true, array(array())), $method->invokeArgs(null,array(
             array(0,0,0,'{{',0,'{',0,''), array('flags' => array('advar' => 0, 'this' => 1, 'namev' => 0, 'noesc' => 0), 'rawblock' => false)
 )        ));
         $this->assertEquals(array(true, array(array())), $method->invokeArgs(null,array(
-            array(0,0,0,0,0,0,''), array('flags' => array('advar' => 0, 'this' => 1, 'namev' => 0, 'noesc' => 1), 'rawblock' => false)
+            array(0,0,0,0,0,0,0,''), array('flags' => array('advar' => 0, 'this' => 1, 'namev' => 0, 'noesc' => 1), 'rawblock' => false)
 )        ));
         $this->assertEquals(array(false, array(array('a'))), $method->invokeArgs(null,array(
             array(0,0,0,0,0,0,0,'a'), array('flags' => array('advar' => 0, 'this' => 1, 'namev' => 0, 'noesc' => 0), 'rawblock' => false)
