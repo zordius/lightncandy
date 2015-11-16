@@ -69,11 +69,12 @@ class Token {
      *
      * @param string[] $token detected handlebars {{ }} token
      * @param string[]|null $merge list of token strings to be merged
-     * @param integer $remove remove how many heading and ending token
      *
      * @return string Return whole token
      *
      * @expect 'c' when input array(0, 'a', 'b', 'c', 'd', 'e')
+     * @expect 'cd' when input array(0, 'a', 'b', 'c', 'd', 'e', 'f')
+     * @expect 'qd' when input array(0, 'a', 'b', 'c', 'd', 'e', 'f'), array(3 => 'q')
      */
     public static function toString($token, $merge = null) {
         if (is_array($merge)) {

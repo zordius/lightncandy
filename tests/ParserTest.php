@@ -142,6 +142,12 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('c', $method->invokeArgs(null,array(
             array(0, 'a', 'b', 'c', 'd', 'e')
 )        ));
+        $this->assertEquals('cd', $method->invokeArgs(null,array(
+            array(0, 'a', 'b', 'c', 'd', 'e', 'f')
+)        ));
+        $this->assertEquals('qd', $method->invokeArgs(null,array(
+            array(0, 'a', 'b', 'c', 'd', 'e', 'f'), array(3 => 'q')
+)        ));
     }
 }
 ?>
