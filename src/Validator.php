@@ -379,7 +379,7 @@ class Validator {
      * @param array<array|string|integer> $vars parsed arguments list
      */
     public static function partial(&$context, $vars) {
-        if (isset($vars[0][1]) && ($vars[0][0] === -1)) {
+        if (Parser::isSubexp($vars[0])) {
             if ($context['flags']['runpart']) {
                 $context['usedFeature']['dynpartial']++;
                 return;
