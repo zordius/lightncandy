@@ -109,11 +109,7 @@ class Validator {
         }
         // {{{# }}} or {{{! }}} or {{{/ }}} or {{{^ }}} are invalid.
         if ((strlen($token[Token::POS_BEGINRAW]) == 1) && $token[Token::POS_OP] && ($token[Token::POS_OP] !== '&')) {
-            $err = 'Bad token ' . Token::toString($token) . ' ! Do you mean ';
-            $token[Token::POS_BEGINRAW] = '';
-            $token[Token::POS_ENDRAW] = '';
-            $err .= Token::toString($token) . ' ?';
-            $context['error'][] = $err;
+            $context['error'][] = 'Bad token ' . Token::toString($token) . ' ! Do you mean ' . Token::toString($token, array(Token::POS_BEGINRAW => '', Token::POS_ENDRAW => '')) . ' ?';
             return true;
         }
     }
@@ -243,10 +239,7 @@ class Validator {
         // Handle raw block
         if ($token[Token::POS_BEGINRAW] === '{{') {
             if ($token[Token::POS_ENDRAW] !== '}}') {
-                $err = 'Bad token ' . Token::toString($token) . ' ! Do you mean ';
-                $token[Token::POS_ENDRAW] = '}}';
-                $err .= Token::toString($token) . ' ?';
-                $context['error'][] = $err;
+                $context['error'][] = 'Bad token ' . Token::toString($token) . ' ! Do you mean ' . Token::toString($token, array(Token::POS_ENDRAW => '}}')) . ' ?';
             }
             if ($context['rawblock']) {
                 Parser::setDelimiter($context);
@@ -259,8 +252,7 @@ class Validator {
                 Parser::setDelimiter($context);
                 $token[Token::POS_OP] = '#';
             }
-            $token[Token::POS_BEGINTAG] = '{{';
-            $token[Token::POS_ENDTAG] = '}}';
+            $token[Token::POS_ENDRAW] = '}}';
         }
     }
 

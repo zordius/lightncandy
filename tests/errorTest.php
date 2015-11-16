@@ -405,7 +405,7 @@ class errorTest extends PHPUnit_Framework_TestCase
                 ),
                 'expected' => Array(
                     'Bad token {{{{#foo}}} ! Do you mean {{{{#foo}}}} ?',
-                    'Wrong raw block begin with {{{{#foo}}}} ! Remove "#" to fix this issue.',
+                    'Wrong raw block begin with {{{{#foo}}} ! Remove "#" to fix this issue.',
                     'Unclosed token {{{{foo}}}} !!',
                 )
             ),
