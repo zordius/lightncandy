@@ -104,14 +104,7 @@ class Validator {
     protected static function delimiter($token, &$context) {
         // {{ }}} or {{{ }} are invalid
         if (strlen($token[Token::POS_BEGINRAW]) !== strlen($token[Token::POS_ENDRAW])) {
-            $err = 'Bad token ' . Token::toString($token) . ' ! Do you mean ';
-            $token[Token::POS_BEGINRAW] = '';
-            $token[Token::POS_ENDRAW] = '';
-            $err .= Token::toString($token) . ' or ';
-            $token[Token::POS_BEGINRAW] = '{';
-            $token[Token::POS_ENDRAW] = '}';
-            $err .= Token::toString($token) . '?';
-            $context['error'][] = $err;
+            $context['error'][] = 'Bad token ' . Token::toString($token) . ' ! Do you mean ' . Token::toString($token, array(Token::POS_BEGINRAW => '', Token::POS_ENDRAW => '')) . ' or ' . Token::toString($token, array(Token::POS_BEGINRAW => '{', Token::POS_ENDRAW => '}')) . '?';
             return true;
         }
         // {{{# }}} or {{{! }}} or {{{/ }}} or {{{^ }}} are invalid.
