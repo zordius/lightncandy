@@ -135,7 +135,7 @@ class Validator {
      * @expect 11 when input array(0, 0, 0, 0, 0, 0, '#', '...'), array('hbhelpers' => array('abc' => ''), 'usedFeature' => array('hbhelper' => 10), 'level' => 0), array(array('abc'))
      * @expect true when input array(0, 0, 0, 0, 0, 0, '>', '...'), array('basedir' => array('.'), 'fileext' => array('.tmpl'), 'usedFeature' => array('unless' => 7, 'partial' => 7), 'level' => 0, 'flags' => array('skippartial' => 0)), array('test')
      */
-    protected static function operator(&$token, &$context, $vars) {
+    protected static function operator(&$token, &$context, &$vars) {
         switch ($token[Token::POS_OP]) {
             case '>':
                 static::partial($context, $vars);

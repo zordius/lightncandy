@@ -383,9 +383,7 @@ $libstr
             return ".'" . Token::toString($token) . "'.";
         }
 
-        $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;
-
-        if ($ret = static::section($token, $context, $vars, $named)) {
+        if ($ret = static::operator($token, $context, $vars)) {
             return $ret;
         }
 
@@ -407,11 +405,12 @@ $libstr
      * @param array<string> $token detected handlebars {{ }} token
      * @param array<string,array|string|integer> $context current compile context
      * @param array<array|string|integer> $vars parsed arguments list
-     * @param boolean $named is named arguments or not
      *
      * @return string|null Return compiled code segment for the token when the token is section
      */
-    protected static function section(&$token, &$context, &$vars, $named) {
+    protected static function operator(&$token, &$context, &$vars) {
+        $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;
+
         switch ($token[Token::POS_OP]) {
             case '>':
                 // mustache spec: ignore missing partial
