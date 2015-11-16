@@ -138,8 +138,7 @@ class Validator {
     protected static function operator(&$token, &$context, &$vars) {
         switch ($token[Token::POS_OP]) {
             case '>':
-                static::partial($context, $vars);
-                return true;
+                return static::partial($context, $vars);
 
             case '^':
                 if (isset($vars[0][0])) {
@@ -377,19 +376,20 @@ class Validator {
      *
      * @param array<string,array|string|integer> $context current compile context
      * @param array<array|string|integer> $vars parsed arguments list
+     *
+     * @return integer|true Return 1 or larger number for runtime partial, return true for other case
      */
-    public static function partial(&$context, $vars) {
+    protected static function partial(&$context, $vars) {
         if (Parser::isSubexp($vars[0])) {
             if ($context['flags']['runpart']) {
-                $context['usedFeature']['dynpartial']++;
-                return;
+                return $context['usedFeature']['dynpartial']++;
             } else {
                 $context['error'][] = "You use dynamic partial name as '{$vars[0][2]}', this only works with option FLAG_RUNTIMEPARTIAL enabled";
-                return;
             }
         } else {
             Partial::readPartial($vars[0][0], $context);
         }
+        return true;
     }
 
     /**

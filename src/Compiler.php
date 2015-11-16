@@ -400,6 +400,41 @@ $libstr
     }
 
     /**
+     * handle partial
+     *
+     * @param array<string,array|string|integer> $context current compile context
+     * @param array<array|string|integer> $vars parsed arguments list
+     *
+     * @return string Return compiled code segment for the partial
+     */
+    public static function partial(&$context, $vars) {
+        // mustache spec: ignore missing partial
+        if (($context['usedFeature']['dynpartial'] === 0) && !isset($context['usedPartial'][$vars[0][0]])) {
+            return $context['ops']['seperator'];
+        }
+        $p = array_shift($vars);
+        if (!isset($vars[0])) {
+            $vars[0] = array();
+        }
+        $v = static::getVariableNames($vars, $context);
+        $tag = ">$p[0] " .implode(' ', $v[1]);
+        if ($context['flags']['runpart']) {
+            if (Parser::isSubexp($p)) {
+                list($p) = static::compileSubExpression($p[1], $context);
+            } else {
+                $p = "'$p[0]'";
+            }
+            $sp = $context['tokens']['partialind'] ? ", '{$context['tokens']['partialind']}'" : '';
+            return $context['ops']['seperator'] . static::getFuncName($context, 'p', $tag) . "\$cx, $p, $v[0]$sp){$context['ops']['seperator']}";
+        }
+        $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;
+        if ($named || $v[0] !== 'array(array($in),array())') {
+            $context['error'][] = "Do not support {{{$tag}}}, you should do compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag";
+        }
+        return "{$context['ops']['seperator']}'" . Partial::compileStatic($context, $p[0], $context['tokens']['partialind']) . "'{$context['ops']['seperator']}";
+    }
+
+    /**
      * Return compiled PHP code for a handlebars section token
      *
      * @param array<string> $token detected handlebars {{ }} token
@@ -409,34 +444,10 @@ $libstr
      * @return string|null Return compiled code segment for the token when the token is section
      */
     protected static function operator(&$token, &$context, &$vars) {
-        $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;
-
         switch ($token[Token::POS_OP]) {
             case '>':
-                // mustache spec: ignore missing partial
-                if (($context['usedFeature']['dynpartial'] === 0) && !isset($context['usedPartial'][$vars[0][0]])) {
-                    return $context['ops']['seperator'];
-                }
-                $p = array_shift($vars);
-                if (!isset($vars[0])) {
-                    $vars[0] = array();
-                }
-                $v = static::getVariableNames($vars, $context);
-                $tag = ">$p[0] " .implode(' ', $v[1]);
-                if ($context['flags']['runpart']) {
-                    if (Parser::isSubexp($p)) {
-                        list($p) = static::compileSubExpression($p[1], $context);
-                    } else {
-                        $p = "'$p[0]'";
-                    }
-                    $sp = $context['tokens']['partialind'] ? ", '{$context['tokens']['partialind']}'" : '';
-                    return $context['ops']['seperator'] . static::getFuncName($context, 'p', $tag) . "\$cx, $p, $v[0]$sp){$context['ops']['seperator']}";
-                }
-                if ($named || $v[0] !== 'array(array($in),array())') {
-                    $context['error'][] = "Do not support {{{$tag}}}, you should do compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag";
-                }
+                return static::partial($context, $vars);
 
-                return "{$context['ops']['seperator']}'" . Partial::compileStatic($context, $p[0], $context['tokens']['partialind']) . "'{$context['ops']['seperator']}";
             case '^':
                 // {{^}} means {{else}}
                 if (!isset($vars[0][0])) {
