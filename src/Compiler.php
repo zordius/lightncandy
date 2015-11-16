@@ -230,7 +230,7 @@ $libstr
         $origSeperator = $context['ops']['seperator'];
         $context['ops']['seperator'] = '';
 
-        $ret = static::compileCustomHelper($context, $vars, true, true);
+        $ret = static::customHelper($context, $vars, true, true);
 
         if (($ret === null) && $context['flags']['lambda']) {
             $ret = static::compileVariable($context, $vars, true);
@@ -385,12 +385,12 @@ $libstr
 
         $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;
 
-        if ($ret = static::compileSection($token, $context, $vars, $named)) {
+        if ($ret = static::section($token, $context, $vars, $named)) {
             return $ret;
         }
 
         if (isset($vars[0][0])) {
-            if ($ret = static::compileCustomHelper($context, $vars, $raw)) {
+            if ($ret = static::customHelper($context, $vars, $raw)) {
                 return $ret;
             }
             if ($ret = static::compileElse($context, $vars)) {
@@ -411,7 +411,7 @@ $libstr
      *
      * @return string|null Return compiled code segment for the token when the token is section
      */
-    protected static function compileSection(&$token, &$context, &$vars, $named) {
+    protected static function section(&$token, &$context, &$vars, $named) {
         switch ($token[Token::POS_OP]) {
             case '>':
                 // mustache spec: ignore missing partial
@@ -447,7 +447,7 @@ $libstr
                 }
 
                 // Try to compile as custom helper {{^myHelper}}
-                $r = static::compileBlockCustomHelper($context, $vars, true);
+                $r = static::blockCustomHelper($context, $vars, true);
                 if ($r !== null) {
                     return $r;
                 }
@@ -458,18 +458,18 @@ $libstr
                 // Compile to inverted section {{^myVar}}
                 return "{$context['ops']['cnd_start']}(" . static::getFuncName($context, 'isec', '^' . $v[1]) . "\$cx, {$v[0]})){$context['ops']['cnd_then']}";
             case '/':
-                return static::compileBlockEnd($token, $context, $vars);
+                return static::blockEnd($token, $context, $vars);
             case '!':
             case ' ':
                 return $context['ops']['seperator'];
             case '#':
                 // Try to compile as custom helper {{#myHelper}}
-                $r = static::compileBlockCustomHelper($context, $vars);
+                $r = static::blockCustomHelper($context, $vars);
                 if ($r !== null) {
                     return $r;
                 }
                 // Compile to section {{#myVar}}
-                return static::compileBlockBegin($context, $vars);
+                return static::blockBegin($context, $vars);
         }
     }
 
@@ -482,7 +482,7 @@ $libstr
      *
      * @return string|null Return compiled code segment for the token
      */
-    protected static function compileBlockCustomHelper(&$context, $vars, $inverted = false) {
+    protected static function blockCustomHelper(&$context, $vars, $inverted = false) {
         if (!isset($vars[0][0])) {
             return;
         }
@@ -512,7 +512,7 @@ $libstr
      *
      * @return string Return compiled code segment for the token
      */
-    protected static function compileBlockEnd(&$token, &$context, $vars) {
+    protected static function blockEnd(&$token, &$context, $vars) {
         $each = false;
         $pop = array_pop($context['stack']);
         switch ($token[Token::POS_INNERTAG]) {
@@ -563,7 +563,7 @@ $libstr
      *
      * @return string Return compiled code segment for the token
      */
-    protected static function compileBlockBegin(&$context, $vars) {
+    protected static function blockBegin(&$context, $vars) {
         $each = 'false';
         $v = isset($vars[1]) ? static::getVariableNameOrSubExpression($vars[1], $context) : array(null, array());
         switch (isset($vars[0][0]) ? $vars[0][0] : null) {
@@ -608,7 +608,7 @@ $libstr
      *
      * @return string|null Return compiled code segment for the token when the token is custom helper
      */
-    protected static function compileCustomHelper(&$context, $vars, $raw, $err = false) {
+    protected static function customHelper(&$context, $vars, $raw, $err = false) {
         $notHH = !isset($context['hbhelpers'][$vars[0][0]]);
         if (!isset($context['helpers'][$vars[0][0]]) && $notHH) {
             if ($err) {
