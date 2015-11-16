@@ -25,7 +25,7 @@ namespace LightnCandy;
  */
 class Exporter {
     /**
-     * Get PHP code string from a closure of function as string.
+     * Get PHP code string from a closure of function as string
      *
      * @param object $closure Closure object
      *
@@ -53,7 +53,7 @@ class Exporter {
     }
 
     /**
-     * Export required custom helper functions.
+     * Export required custom helper functions
      *
      * @param string $tname   helper table name
      * @param array<string,array|string|integer> $context current compile context
@@ -77,7 +77,7 @@ class Exporter {
     }
 
     /**
-     * Export required standalone Runtime methods.
+     * Export required standalone Runtime methods
      *
      * @param array<string,array|string|integer> $context current compile context
      *
@@ -130,7 +130,7 @@ class Exporter {
     }
 
     /**
-     * Export Runtime constants.
+     * Export Runtime constants
      *
      * @param array<string,array|string|integer> $context current compile context
      *
@@ -152,7 +152,7 @@ class Exporter {
     }
 
     /**
-     * Internal method used by compile(). Export required standalone functions.
+     * Scan for required standalone functions
      *
      * @param array<string,array|string|integer> $context current compile context
      * @param string $code PHP code string of the method
