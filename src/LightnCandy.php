@@ -57,7 +57,7 @@ class LightnCandy extends Flags {
     }
 
     /**
-     * Internal method used by compile(). Handle exists error and return error status.
+     * Handle exists error and return error status.
      *
      * @param array<string,array|string|integer> $context Current context of compiler progress.
      *
