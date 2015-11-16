@@ -30,11 +30,11 @@ class Compiler extends Validator {
     public static $lastParsed;
 
     /**
-     * Compile template into PHP code (internal method)
+     * Compile template into PHP code
      *
      * @param array<string,array|string|integer> $context Current context
      * @param string $template handlebars template
-     * @param string $partial partial name when $template is come from the template
+     * @param string $partial partial name when the template is come from a partial
      *
      * @return string|null generated PHP code
      */
@@ -145,7 +145,7 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Return 'true' or 'false' string.
+     * return 'true' or 'false' string.
      *
      * @param integer $v value
      *
@@ -161,7 +161,7 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Get function name for standalone or none standalone template.
+     * Get function name for standalone or none standalone template.
      *
      * @param array<string,array|string|integer> $context Current context of compiler progress.
      * @param string $name base function name
@@ -189,22 +189,7 @@ $libstr
     }
 
     /**
-     * Internal method used by getArrayCode(). Get variable names translated string.
-     *
-     * @param array<string> $scopes an array of variable names with single quote
-     *
-     * @return string PHP array names string
-     *
-     * @expect '' when input array()
-     * @expect '[a]' when input array('a')
-     * @expect '[a][b][c]' when input array('a', 'b', 'c')
-     */
-    protected static function getArrayStr($scopes) {
-        return count($scopes) ? '[' . implode('][', $scopes) . ']' : '';
-    }
-
-    /**
-     * Internal method used by getVariableName(). Get variable names translated string.
+     * Get string presentation for an array
      *
      * @param array<string> $list an array of variable names.
      *
@@ -215,9 +200,9 @@ $libstr
      * @expect "['a']['b']['c']" when input array('a', 'b', 'c')
      */
     protected static function getArrayCode($list) {
-        return static::getArrayStr(array_map(function ($v) {
-            return "'$v'";
-        }, $list));
+        return implode('', (array_map(function ($v) {
+            return "['$v']";
+        }, $list)));
     }
 
     /**

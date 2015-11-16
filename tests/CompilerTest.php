@@ -46,22 +46,6 @@ class CompilerTest extends PHPUnit_Framework_TestCase
 )        ));
     }
     /**
-     * @covers LightnCandy\Compiler::getArrayStr
-     */
-    public function testOn_getArrayStr() {
-        $method = new \ReflectionMethod('LightnCandy\Compiler', 'getArrayStr');
-        $method->setAccessible(true);
-        $this->assertEquals('', $method->invokeArgs(null,array(
-            array()
-)        ));
-        $this->assertEquals('[a]', $method->invokeArgs(null,array(
-            array('a')
-)        ));
-        $this->assertEquals('[a][b][c]', $method->invokeArgs(null,array(
-            array('a', 'b', 'c')
-)        ));
-    }
-    /**
      * @covers LightnCandy\Compiler::getArrayCode
      */
     public function testOn_getArrayCode() {
