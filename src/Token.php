@@ -68,7 +68,7 @@ class Token {
      * return token string
      *
      * @param string[] $token detected handlebars {{ }} token
-     * @param string[] $merge list of token strings to be merged
+     * @param string[]|null $merge list of token strings to be merged
      * @param integer $remove remove how many heading and ending token
      *
      * @return string Return whole token
