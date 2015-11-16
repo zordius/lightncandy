@@ -22,6 +22,7 @@ namespace LightnCandy;
 
 use \LightnCandy\Compiler;
 use \LightnCandy\String;
+use \LightnCandy\Context;
 
 /**
  * LightnCandy Partial handler
@@ -58,7 +59,8 @@ class Partial {
         $cnt = static::resolvePartial($name, $context);
 
         if ($cnt !== null) {
-            return static::compilePartial($name, $context, $cnt);
+            $context['usedPartial'][$name] = $cnt;
+            return static::compileDynamic($name, $context, $cnt);
         }
 
         if (!$context['flags']['skippartial']) {
@@ -107,34 +109,57 @@ class Partial {
     }
 
     /**
+     * compile a partial to static embed PHP code
+     *
+     * @param array<string,array|string|integer> $context Current context of compiler progress.
+     * @param string $name partial name
+     *
+     * @return string $code PHP code string
+     */
+    public static function compileStatic(&$context, $name) {
+        // Check for recursive partial
+        if (!$context['flags']['runpart']) {
+            $context['partialStack'][] = $name;
+            $diff = count($context['partialStack']) - count(array_unique($context['partialStack']));
+            if ($diff) {
+                $context['error'][] = 'I found recursive partial includes as the path: ' . implode(' -> ', $context['partialStack']) . '! You should fix your template or compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag.';
+            }
+        }
+
+        $code = Compiler::compileTemplate($context, preg_replace('/^/m', $context['tokens']['partialind'], $context['usedPartial'][$name]));
+
+        if (!$context['flags']['runpart']) {
+            array_pop($context['partialStack']);
+        }
+
+        return $code;
+    }
+
+    /**
      * compile partial file, stored in context
      *
      * @param string $name partial name
      * @param array<string,array|string|integer> $context Current context of compiler progress.
      * @param string $content partial content
      */
-    protected static function compilePartial(&$name, &$context, $content) {
-        $context['usedPartial'][$name] = $content;
+    protected static function compileDynamic(&$name, &$context, $content) {
+        if (!$context['flags']['runpart']) {
+            return;
+        }
 
         $tmpContext = $context;
-
-        if ($context['flags']['runpart']) {
-            $code = Compiler::compileTemplate($tmpContext, str_replace('function', static::$TMP_JS_FUNCTION_STR, $context['usedPartial'][$name]), $name);
-            $context['usedFeature'] = $tmpContext['usedFeature'];
-            $context['usedCount'] = $tmpContext['usedCount'];
-            $context['partialStack'] = $tmpContext['partialStack'];
-            $context['partialCode'] = $tmpContext['partialCode'];
-            if (!$context['flags']['noind']) {
-                $sp = ', $sp';
-                $code = preg_replace('/^/m', "'{$context['ops']['seperator']}\$sp{$context['ops']['seperator']}'", $code);
-                // callbacks inside partial should be aware of $sp
-                $code = preg_replace('/\bfunction\s*\((.*?)\)\s*{/', 'function(\\1)use($sp){', $code);
-            } else {
-                $sp = '';
-            }
-            $code = str_replace(String::escapeTemplate(static::$TMP_JS_FUNCTION_STR), 'function', $code);
-            $context['partialCode'] .= "'$name' => function (\$cx, \$in{$sp}) {{$context['ops']['op_start']}'$code'{$context['ops']['op_end']}},";
+        $code = Compiler::compileTemplate($tmpContext, str_replace('function', static::$TMP_JS_FUNCTION_STR, $context['usedPartial'][$name]), $name);
+        Context::merge($context, $tmpContext);
+        if (!$context['flags']['noind']) {
+            $sp = ', $sp';
+            $code = preg_replace('/^/m', "'{$context['ops']['seperator']}\$sp{$context['ops']['seperator']}'", $code);
+            // callbacks inside partial should be aware of $sp
+            $code = preg_replace('/\bfunction\s*\((.*?)\)\s*{/', 'function(\\1)use($sp){', $code);
+        } else {
+            $sp = '';
         }
+        $code = str_replace(String::escapeTemplate(static::$TMP_JS_FUNCTION_STR), 'function', $code);
+        $context['partialCode'] .= "'$name' => function (\$cx, \$in{$sp}) {{$context['ops']['op_start']}'$code'{$context['ops']['op_end']}},";
     }
 }
 

@@ -34,11 +34,10 @@ class Compiler extends Validator {
      *
      * @param array<string,array|string|integer> $context Current context
      * @param string $template handlebars template
-     * @param string $partial partial name when the template is come from a partial
      *
      * @return string|null generated PHP code
      */
-    public static function compileTemplate(&$context, $template, $partial = '') {
+    public static function compileTemplate(&$context, $template) {
         array_unshift($context['parsed'], array());
         Validator::verify($context, $template);
 
@@ -51,15 +50,6 @@ class Compiler extends Validator {
 
         // Handle dynamic partials
         Partial::handleDynamicPartial($context);
-
-        // Check for recursive partial
-        if ($partial && !$context['flags']['runpart']) {
-            $context['partialStack'][] = $partial;
-            $diff = count($context['partialStack']) - count(array_unique($context['partialStack']));
-            if ($diff) {
-                $context['error'][] = 'I found recursive partial includes as the path: ' . implode(' -> ', $context['partialStack']) . '! You should fix your template or compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag.';
-            }
-        }
 
         $code = '';
         foreach ($context['parsed'][0] as $info) {
@@ -75,10 +65,6 @@ class Compiler extends Validator {
             } else {
                 $code .= $info;
             }
-        }
-
-        if ($partial && !$context['flags']['runpart']) {
-            array_pop($context['partialStack']);
         }
 
         static::$lastParsed = array_shift($context['parsed']);
@@ -451,7 +437,7 @@ $libstr
                     $context['error'][] = "Do not support {{{$tag}}}, you should do compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag";
                 }
 
-                return "{$context['ops']['seperator']}'" . static::compileTemplate($context, preg_replace('/^/m', $context['tokens']['partialind'], $context['usedPartial'][$p[0]]), $p[0]) . "'{$context['ops']['seperator']}";
+                return "{$context['ops']['seperator']}'" . Partial::compileStatic($context, $p[0], $context['tokens']['partialind']) . "'{$context['ops']['seperator']}";
             case '^':
                 // {{^}} means {{else}}
                 if (!isset($vars[0][0])) {

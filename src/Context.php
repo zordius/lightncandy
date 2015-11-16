@@ -234,5 +234,18 @@ class Context extends Flags {
         }
         return $context;
     }
+
+    /**
+     * Merge a context into another
+     *
+     * @param array<string,array|string|integer> $context master context
+     * @param array<string,array|string|integer> $tmp another context will be overwrited into master context
+     */
+    public static function merge(&$context, $tmp) {
+        $context['usedFeature'] = $tmp['usedFeature'];
+        $context['usedCount'] = $tmp['usedCount'];
+        $context['partialStack'] = $tmp['partialStack'];
+        $context['partialCode'] = $tmp['partialCode'];
+    }
 }
 
