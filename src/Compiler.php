@@ -206,7 +206,7 @@ $libstr
     }
 
     /**
-     * Internal method used by compile().
+     * Get string presentation of variables
      *
      * @param array<array> $vn variable name array.
      * @param array<string,array|string|integer> $context current compile context
@@ -233,7 +233,7 @@ $libstr
     }
 
     /**
-     * Internal method used by compile().
+     * Get string presentation of a sub expression
      *
      * @param string $subExpression subExpression to compile
      * @param array<string,array|string|integer> $context current compile context
@@ -256,7 +256,7 @@ $libstr
     }
 
     /**
-     * Internal method used by compile().
+     * Get string presentation of a subexpression or a variable
      *
      * @param array<array|string|integer> $var variable parsed path
      * @param array<array|string|integer> $context current compile context
@@ -264,14 +264,11 @@ $libstr
      * @return array<string> variable names
      */
     protected static function getVariableNameOrSubExpression($var, &$context) {
-        if (Parser::isSubexp($var)) {
-            return static::compileSubExpression($var[1], $context);
-        }
-        return static::getVariableName($var, $context);
+        return Parser::isSubexp($var) ? static::compileSubExpression($var[1], $context) : static::getVariableName($var, $context);
     }
 
     /**
-     * Internal method used by compile().
+     * Get string presentation of a variable
      *
      * @param array<array|string|integer> $var variable parsed path
      * @param array<array|string|integer> $context current compile context
@@ -361,7 +358,7 @@ $libstr
     }
 
     /**
-     * Internal method used by compile().
+     * get normalized handlebars expression for a variable
      *
      * @param integer $levels trace N levels top parent scope
      * @param boolean $spvar is the path start with @ or not
@@ -384,7 +381,7 @@ $libstr
     }
 
     /**
-     * Return compiled PHP code partial for a handlebars token.
+     * Return compiled PHP code for a handlebars token
      *
      * @param array<string,array|boolean> $info parsed information
      * @param array<string,array|string|integer> $context current compile context
@@ -419,7 +416,7 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Return compiled PHP code partial for a handlebars section token.
+     * Return compiled PHP code for a handlebars section token
      *
      * @param array<string> $token detected handlebars {{ }} token
      * @param array<string,array|string|integer> $context current compile context
@@ -491,7 +488,7 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Return compiled PHP code partial for a handlebars block custom helper begin token.
+     * Return compiled PHP code for a handlebars block custom helper begin token
      *
      * @param array<string,array|string|integer> $context current compile context
      * @param array<array|string|integer> $vars parsed arguments list
@@ -521,7 +518,7 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Return compiled PHP code partial for a handlebars block end token.
+     * Return compiled PHP code for a handlebars block end token
      *
      * @param array<string> $token detected handlebars {{ }} token
      * @param array<string,array|string|integer> $context current compile context
@@ -573,7 +570,7 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Return compiled PHP code partial for a handlebars block begin token.
+     * Return compiled PHP code for a handlebars block begin token
      *
      * @param array<string,array|string|integer> $context current compile context
      * @param array<array|string|integer> $vars parsed arguments list
@@ -616,7 +613,7 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Return compiled PHP code partial for a handlebars custom helper token.
+     * Return compiled PHP code for a handlebars custom helper token
      *
      * @param array<string,array|string|integer> $context current compile context
      * @param array<array|string|integer> $vars parsed arguments list
@@ -644,7 +641,7 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Return compiled PHP code partial for a handlebars else token.
+     * Return compiled PHP code for a handlebars else token
      *
      * @param array<string,array|string|integer> $context current compile context
      * @param array<array|string|integer> $vars parsed arguments list
@@ -672,7 +669,7 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Return compiled PHP code partial for a handlebars variable token.
+     * Return compiled PHP code for a handlebars variable token
      *
      * @param array<string,array|string|integer> $context current compile context
      * @param array<array|string|integer> $vars parsed arguments list
@@ -690,7 +687,7 @@ $libstr
     }
 
     /**
-     * Internal method used by compile(). Add usage count to context
+     * Add usage count to context
      *
      * @param array<string,array|string|integer> $context current context
      * @param string $category ctegory name, can be one of: 'var', 'helpers', 'blockhelpers'
