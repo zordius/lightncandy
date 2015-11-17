@@ -153,9 +153,7 @@ class Validator {
                 return static::invertedSection($context, $token);
 
             case '/':
-                array_pop($context['stack']);
-                $context['level']--;
-                return true;
+                return static::blockEnd($token, $context, $vars);
 
             case '#':
                 $context['stack'][] = $token[Token::POS_INNERTAG];
@@ -212,6 +210,21 @@ class Validator {
         $context['stack'][] = $token[Token::POS_INNERTAG];
         $context['level']++;
         return ++$context['usedFeature']['isec'];
+    }
+
+    /**
+     * Return compiled PHP code for a handlebars block end token
+     *
+     * @param array<string> $token detected handlebars {{ }} token
+     * @param array<string,array|string|integer> $context current compile context
+     * @param array<array|string|integer> $vars parsed arguments list
+     *
+     * @return boolean Return true
+     */
+    protected static function blockEnd(&$token, &$context, $vars) {
+        array_pop($context['stack']);
+        $context['level']--;
+        return true;
     }
 
     /**
