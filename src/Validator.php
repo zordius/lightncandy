@@ -167,8 +167,6 @@ class Validator {
                 if (static::isBlockHelper($context, $vars)) {
                     return static::blockCustomHelper($context, $vars);
                 }
-                // Compile to section {{#myVar}}
-                //return static::blockBegin($context, $vars);
 
                 if (!isset($vars[0][0])) {
                     return;
