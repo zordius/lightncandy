@@ -141,15 +141,21 @@ class Validator {
                 return static::partial($context, $vars);
 
             case '^':
+                if (!isset($vars[0][0])) {
+                    if (!$context['flags']['else']) {
+                        $context['error'][] = 'Do not support {{^}}, you should do compile with LightnCandy::FLAG_ELSE flag';
+                    } else {
+                        static::doElse($context);
+                        return true;
+                    }
+                }
+
                 if (isset($vars[0][0])) {
                     $context['stack'][] = $token[Token::POS_INNERTAG];
                     $context['level']++;
                     return ++$context['usedFeature']['isec'];
                 }
 
-                if (!$context['flags']['else']) {
-                    $context['error'][] = 'Do not support {{^}}, you should do compile with LightnCandy::FLAG_ELSE flag';
-                }
                 return;
 
             case '/':
@@ -328,10 +334,6 @@ class Validator {
             return array($raw, $vars);
         }
 
-        if (static::doElse($token, $context)) {
-            return array($raw, $vars);
-        }
-
         static::helper($context, $vars[0][0]);
 
         return array($raw, $vars);
@@ -341,14 +343,11 @@ class Validator {
      * Return 1 or larger number when else token detected
      *
      * @param array<string> $token detected handlebars {{ }} token
-     * @param array<string,array|string|integer> $context current compile context
      *
      * @return integer|null Return 1 or larger number when else token detected
      */
-    protected static function doElse($token, &$context) {
-        if (($token[Token::POS_OP] === '^') && ($context['flags']['else'])) {
-            return $context['usedFeature']['else']++;
-        }
+    protected static function doElse(&$context) {
+        $context['usedFeature']['else']++;
     }
 
     /**

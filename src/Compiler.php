@@ -391,8 +391,8 @@ $libstr
             if ($ret = static::customHelper($context, $vars, $raw)) {
                 return $ret;
             }
-            if ($ret = static::compileElse($context, $vars)) {
-                return $ret;
+            if ($vars[0][0] === 'else') {
+                return static::doElse($context);
             }
         }
 
@@ -451,9 +451,7 @@ $libstr
             case '^':
                 // {{^}} means {{else}}
                 if (!isset($vars[0][0])) {
-                    $vars[0][0] = 'else';
-                    $token[Token::POS_OP] = '';
-                    return;
+                    return static::doElse($context);
                 }
 
                 // Try to compile as custom helper {{^myHelper}}
@@ -640,28 +638,25 @@ $libstr
      * Return compiled PHP code for a handlebars else token
      *
      * @param array<string,array|string|integer> $context current compile context
-     * @param array<array|string|integer> $vars parsed arguments list
      *
      * @return string|null Return compiled code segment for the token when the token is else
      */
-    protected static function compileElse(&$context, &$vars) {
-        if ($vars[0][0] === 'else') {
-            $c = count($context['stack']) - 1;
-            if ($c >= 0) {
-                switch ($context['stack'][count($context['stack']) - 1]) {
-                    case 'if':
-                    case 'unless':
-                        $context['stack'][] = ':';
-                        return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}" : "{$context['ops']['cnd_else']}";
-                    case 'with':
-                    case 'each':
-                    case '#':
-                        return "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}";
-                    default:
-                }
+    protected static function doElse(&$context) {
+        $c = count($context['stack']) - 1;
+        if ($c >= 0) {
+            switch ($context['stack'][count($context['stack']) - 1]) {
+                case 'if':
+                case 'unless':
+                    $context['stack'][] = ':';
+                    return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}" : "{$context['ops']['cnd_else']}";
+                case 'with':
+                case 'each':
+                case '#':
+                    return "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}";
+                default:
             }
-            $context['error'][] = '{{else}} only valid in if, unless, each, and #section context';
         }
+        $context['error'][] = '{{else}} only valid in if, unless, each, and #section context';
     }
 
     /**
