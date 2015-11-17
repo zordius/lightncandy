@@ -150,6 +150,11 @@ class Validator {
                         return true;
                     }
                 }
+
+                if (static::isBlockHelper($context, $vars)) {
+                    return static::blockCustomHelper($context, $vars, true);
+                }
+
                 return static::invertedSection($context, $token);
 
             case '/':
@@ -159,22 +164,19 @@ class Validator {
                 $context['stack'][] = $token[Token::POS_INNERTAG];
                 $context['level']++;
 
+                if (static::isBlockHelper($context, $vars)) {
+                    return static::blockCustomHelper($context, $vars);
+                }
+                // Compile to section {{#myVar}}
+                //return static::blockBegin($context, $vars);
+
+                if (static::isBlockHelper($context, $vars)) {
+                    return static::blockCustomHelper($context, $vars);
+                }
+
                 if (!isset($vars[0][0])) {
                     return;
                 }
-
-                if (is_string($vars[0][0])) {
-                    // detect handlebars custom helpers.
-                    if (isset($context['hbhelpers'][$vars[0][0]])) {
-                        return ++$context['usedFeature']['hbhelper'];
-                    }
-
-                    // detect block custom helpers.
-                    if (isset($context['blockhelpers'][$vars[0][0]])) {
-                        return ++$context['usedFeature']['bhelper'];
-                    }
-                }
-
                 switch ($vars[0][0]) {
                     case 'with':
                         if ($context['flags']['with']) {
@@ -195,6 +197,29 @@ class Validator {
                     default:
                         return ++$context['usedFeature']['sec'];
                 }
+        }
+    }
+
+    /**
+     * Return compiled PHP code for a handlebars block custom helper begin token
+     *
+     * @param array<string,array|string|integer> $context current compile context
+     * @param array<array|string|integer> $vars parsed arguments list
+     * @param boolean $inverted the logic will be inverted
+     *
+     * @return string|null Return compiled code segment for the token
+     */
+    protected static function blockCustomHelper(&$context, $vars, $inverted = false) {
+        if (is_string($vars[0][0])) {
+            // detect handlebars custom helpers.
+            if (isset($context['hbhelpers'][$vars[0][0]])) {
+                return ++$context['usedFeature']['hbhelper'];
+            }
+
+            // detect block custom helpers.
+            if (isset($context['blockhelpers'][$vars[0][0]])) {
+                return ++$context['usedFeature']['bhelper'];
+            }
         }
     }
 
