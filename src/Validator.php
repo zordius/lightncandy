@@ -168,10 +168,6 @@ class Validator {
                     return static::blockCustomHelper($context, $vars);
                 }
 
-                if (!isset($vars[0][0])) {
-                    return;
-                }
-
                 return static::blockBegin($context, $vars);
         }
     }
@@ -185,7 +181,7 @@ class Validator {
      * @return string|null Return compiled code segment for the token
      */
     protected static function blockBegin(&$context, $vars) {
-        switch ($vars[0][0]) {
+        switch (isset($vars[0][0]) ? $vars[0][0] : null) {
             case 'with':
                 if ($context['flags']['with']) {
                     if (count($vars) < 2) {
