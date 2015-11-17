@@ -174,26 +174,38 @@ class Validator {
                     return;
                 }
 
-                switch ($vars[0][0]) {
-                    case 'with':
-                        if ($context['flags']['with']) {
-                            if (count($vars) < 2) {
-                                $context['error'][] = 'No argument after {{#with}} !';
-                            }
-                        } else {
-                            if (isset($vars[1][0])) {
-                                $context['error'][] = 'Do not support {{#with var}}, you should do compile with LightnCandy::FLAG_WITH flag';
-                            }
-                        }
-                        // Continue to add usage...
-                    case 'each':
-                    case 'unless':
-                    case 'if':
-                        return ++$context['usedFeature'][$vars[0][0]];
+                return static::blockBegin($context, $vars);
+        }
+    }
 
-                    default:
-                        return ++$context['usedFeature']['sec'];
+    /**
+     * Return compiled PHP code for a handlebars block custom helper begin token
+     *
+     * @param array<string,array|string|integer> $context current compile context
+     * @param array<array|string|integer> $vars parsed arguments list
+     *
+     * @return string|null Return compiled code segment for the token
+     */
+    protected static function blockBegin(&$context, $vars) {
+        switch ($vars[0][0]) {
+            case 'with':
+                if ($context['flags']['with']) {
+                    if (count($vars) < 2) {
+                        $context['error'][] = 'No argument after {{#with}} !';
+                    }
+                } else {
+                    if (isset($vars[1][0])) {
+                        $context['error'][] = 'Do not support {{#with var}}, you should do compile with LightnCandy::FLAG_WITH flag';
+                    }
                 }
+                // Continue to add usage...
+            case 'each':
+            case 'unless':
+            case 'if':
+                return ++$context['usedFeature'][$vars[0][0]];
+
+            default:
+                return ++$context['usedFeature']['sec'];
         }
     }
 
