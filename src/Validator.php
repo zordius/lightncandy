@@ -170,13 +170,10 @@ class Validator {
                 // Compile to section {{#myVar}}
                 //return static::blockBegin($context, $vars);
 
-                if (static::isBlockHelper($context, $vars)) {
-                    return static::blockCustomHelper($context, $vars);
-                }
-
                 if (!isset($vars[0][0])) {
                     return;
                 }
+
                 switch ($vars[0][0]) {
                     case 'with':
                         if ($context['flags']['with']) {
