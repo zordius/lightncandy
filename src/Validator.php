@@ -144,19 +144,13 @@ class Validator {
                 if (!isset($vars[0][0])) {
                     if (!$context['flags']['else']) {
                         $context['error'][] = 'Do not support {{^}}, you should do compile with LightnCandy::FLAG_ELSE flag';
+                        return;
                     } else {
                         static::doElse($context);
                         return true;
                     }
                 }
-
-                if (isset($vars[0][0])) {
-                    $context['stack'][] = $token[Token::POS_INNERTAG];
-                    $context['level']++;
-                    return ++$context['usedFeature']['isec'];
-                }
-
-                return;
+                return static::invertedSection($context, $token);
 
             case '/':
                 array_pop($context['stack']);
@@ -204,6 +198,20 @@ class Validator {
                         return ++$context['usedFeature']['sec'];
                 }
         }
+    }
+
+    /**
+     * validate inverted section
+     *
+     * @param array<string,array|string|integer> $context current compile context
+     * @param string[] $token detected handlebars {{ }} token
+     *
+     * @return integer Return number of inverted sections
+     */
+    protected static function invertedSection(&$context, $token) {
+        $context['stack'][] = $token[Token::POS_INNERTAG];
+        $context['level']++;
+        return ++$context['usedFeature']['isec'];
     }
 
     /**

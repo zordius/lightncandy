@@ -459,11 +459,7 @@ $libstr
                     return static::blockCustomHelper($context, $vars, true);
                 }
 
-                $v = static::getVariableName($vars[0], $context);
-                $context['stack'][] = $v[1];
-                $context['stack'][] = '^';
-                // Compile to inverted section {{^myVar}}
-                return "{$context['ops']['cnd_start']}(" . static::getFuncName($context, 'isec', '^' . $v[1]) . "\$cx, {$v[0]})){$context['ops']['cnd_then']}";
+                return static::invertedSection($context, $vars);
             case '/':
                 return static::blockEnd($token, $context, $vars);
             case '!':
@@ -476,6 +472,22 @@ $libstr
                 // Compile to section {{#myVar}}
                 return static::blockBegin($context, $vars);
         }
+    }
+
+    /**
+     * Return compiled PHP code for a handlebars inverted section begin token
+     *
+     * @param array<string,array|string|integer> $context current compile context
+     * @param array<array|string|integer> $vars parsed arguments list
+     * @param boolean $inverted the logic will be inverted
+     *
+     * @return string Return compiled code segment for the token
+     */
+    protected static function invertedSection(&$context, $vars) {
+        $v = static::getVariableName($vars[0], $context);
+        $context['stack'][] = $v[1];
+        $context['stack'][] = '^';
+        return "{$context['ops']['cnd_start']}(" . static::getFuncName($context, 'isec', '^' . $v[1]) . "\$cx, {$v[0]})){$context['ops']['cnd_then']}";
     }
 
     /**
