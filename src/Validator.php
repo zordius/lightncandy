@@ -342,7 +342,7 @@ class Validator {
     /**
      * Return 1 or larger number when else token detected
      *
-     * @param array<string> $token detected handlebars {{ }} token
+     * @param array<string,array|string|integer> $context current compile context
      *
      * @return integer|null Return 1 or larger number when else token detected
      */
@@ -368,6 +368,27 @@ class Validator {
         if (isset($context['helpers'][$name])) {
             return $context['usedFeature']['helper']++;
         }
+    }
+
+    /**
+     * detect for block custom helper
+     *
+     * @param array<string,array|string|integer> $context current compile context
+     * @param array<array|string|integer> $vars parsed arguments list
+     *
+     * @return boolean|null Return true when this token is block :w
+custom helper
+     */
+    protected static function isBlockHelper($context, $vars) {
+        if (!isset($vars[0][0])) {
+            return;
+        }
+
+        if (!isset($context['blockhelpers'][$vars[0][0]]) && !isset($context['hbhelpers'][$vars[0][0]])) {
+            return;
+        }
+
+        return true;
     }
 
     /**

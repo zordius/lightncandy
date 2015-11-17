@@ -455,9 +455,8 @@ $libstr
                 }
 
                 // Try to compile as custom helper {{^myHelper}}
-                $r = static::blockCustomHelper($context, $vars, true);
-                if ($r !== null) {
-                    return $r;
+                if (static::isBlockHelper($context, $vars)) {
+                    return static::blockCustomHelper($context, $vars, true);
                 }
 
                 $v = static::getVariableName($vars[0], $context);
@@ -471,10 +470,8 @@ $libstr
             case ' ':
                 return $context['ops']['seperator'];
             case '#':
-                // Try to compile as custom helper {{#myHelper}}
-                $r = static::blockCustomHelper($context, $vars);
-                if ($r !== null) {
-                    return $r;
+                if (static::isBlockHelper($context, $vars)) {
+                    return static::blockCustomHelper($context, $vars);
                 }
                 // Compile to section {{#myVar}}
                 return static::blockBegin($context, $vars);
@@ -491,14 +488,7 @@ $libstr
      * @return string|null Return compiled code segment for the token
      */
     protected static function blockCustomHelper(&$context, $vars, $inverted = false) {
-        if (!isset($vars[0][0])) {
-            return;
-        }
         $notHBCH = !isset($context['hbhelpers'][$vars[0][0]]);
-
-        if (!isset($context['blockhelpers'][$vars[0][0]]) && $notHBCH) {
-            return;
-        }
 
         $v = static::getVariableName($vars[0], $context);
         $context['stack'][] = $v[1];
