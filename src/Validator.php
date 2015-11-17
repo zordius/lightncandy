@@ -173,7 +173,7 @@ class Validator {
     }
 
     /**
-     * Return compiled PHP code for a handlebars block custom helper begin token
+     * validate block begin token
      *
      * @param array<string,array|string|integer> $context current compile context
      * @param array<array|string|integer> $vars parsed arguments list
@@ -183,16 +183,7 @@ class Validator {
     protected static function blockBegin(&$context, $vars) {
         switch (isset($vars[0][0]) ? $vars[0][0] : null) {
             case 'with':
-                if ($context['flags']['with']) {
-                    if (count($vars) < 2) {
-                        $context['error'][] = 'No argument after {{#with}} !';
-                    }
-                } else {
-                    if (isset($vars[1][0])) {
-                        $context['error'][] = 'Do not support {{#with var}}, you should do compile with LightnCandy::FLAG_WITH flag';
-                    }
-                }
-                // Continue to add usage...
+                return static::with($context, $vars);
             case 'each':
             case 'unless':
             case 'if':
@@ -204,7 +195,29 @@ class Validator {
     }
 
     /**
-     * Return compiled PHP code for a handlebars block custom helper begin token
+     * validate with token
+     *
+     * @param array<string,array|string|integer> $context current compile context
+     * @param array<array|string|integer> $vars parsed arguments list
+     *
+     * @return string|null Return compiled code segment for the token
+     */
+    protected static function with(&$context, $vars) {
+        if ($context['flags']['with']) {
+            if (count($vars) < 2) {
+                $context['error'][] = 'No argument after {{#with}} !';
+            }
+        } else {
+            if (isset($vars[1][0])) {
+                $context['error'][] = 'Do not support {{#with var}}, you should do compile with LightnCandy::FLAG_WITH flag';
+            }
+        }
+        ++$context['usedFeature'][$vars[0][0]];
+        return true;
+    }
+
+    /**
+     * validate block custom helper token
      *
      * @param array<string,array|string|integer> $context current compile context
      * @param array<array|string|integer> $vars parsed arguments list

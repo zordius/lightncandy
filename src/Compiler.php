@@ -596,9 +596,8 @@ $libstr
                 }
                 break;
             case 'with':
-                if ($context['flags']['with']) {
-                    $context['stack'][] = 'with';
-                    return $context['ops']['seperator'] . static::getFuncName($context, 'wi', 'with ' . $v[1]) . "\$cx, {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
+                if ($r = static::with($context, $vars)) {
+                    return $r;
                 }
         }
 
@@ -606,6 +605,22 @@ $libstr
         $context['stack'][] = $v[1];
         $context['stack'][] = '#';
         return $context['ops']['seperator'] . static::getFuncName($context, 'sec', (($each == 'true') ? 'each ' : '') . $v[1]) . "\$cx, {$v[0]}, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
+    }
+
+    /**
+     * compile {{with}} token
+     *
+     * @param array<string,array|string|integer> $context current compile context
+     * @param array<array|string|integer> $vars parsed arguments list
+     *
+     * @return string|null Return compiled code segment for the token
+     */
+    protected static function with(&$context, $vars) {
+        if ($context['flags']['with']) {
+            $v = isset($vars[1]) ? static::getVariableNameOrSubExpression($vars[1], $context) : array(null, array());
+            $context['stack'][] = 'with';
+            return $context['ops']['seperator'] . static::getFuncName($context, 'wi', 'with ' . $v[1]) . "\$cx, {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
+        }
     }
 
     /**
