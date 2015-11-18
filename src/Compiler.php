@@ -35,7 +35,7 @@ class Compiler extends Validator {
      * @param array<string,array|string|integer> $context Current context
      * @param string $template handlebars template
      *
-     * @return string|null generated PHP code
+     * @return string generated PHP code
      */
     public static function compileTemplate(&$context, $template) {
         array_unshift($context['parsed'], array());

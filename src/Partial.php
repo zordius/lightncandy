@@ -147,7 +147,7 @@ class Partial {
         }
 
         $tmpContext = $context;
-        $code = Compiler::compileTemplate($tmpContext, str_replace('function', static::$TMP_JS_FUNCTION_STR, $context['usedPartial'][$name]), $name);
+        $code = Compiler::compileTemplate($tmpContext, str_replace('function', static::$TMP_JS_FUNCTION_STR, $context['usedPartial'][$name]));
         Context::merge($context, $tmpContext);
         if (!$context['flags']['noind']) {
             $sp = ', $sp';
