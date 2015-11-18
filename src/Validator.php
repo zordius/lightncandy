@@ -139,12 +139,12 @@ class Validator {
      * @expect true when input array(0, 0, 0, 0, 0, 0, '/'), array('stack' => array(1), 'level' => 1), array()
      * @expect 4 when input array(0, 0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('sec' => 3), 'level' => 0, 'currentToken' => ''), array(array('x'))
      * @expect 5 when input array(0, 0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('if' => 4), 'level' => 0, 'currentToken' => ''), array(array('if'))
-     * @expect 6 when input array(0, 0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('with' => 5), 'level' => 0, 'flags' => array('with' => 1)), array(array('with'))
+     * @expect 6 when input array(0, 0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('with' => 5), 'level' => 0, 'flags' => array('with' => 1, 'runpart' => 0), 'currentToken' => ''), array(array('with'))
      * @expect 7 when input array(0, 0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('each' => 6), 'level' => 0, 'currentToken' => ''), array(array('each'))
      * @expect 8 when input array(0, 0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('unless' => 7), 'level' => 0, 'currentToken' => ''), array(array('unless'))
      * @expect 9 when input array(0, 0, 0, 0, 0, 0, '#', '...'), array('blockhelpers' => array('abc' => ''), 'usedFeature' => array('bhelper' => 8), 'level' => 0, 'currentToken' => ''), array(array('abc'))
      * @expect 11 when input array(0, 0, 0, 0, 0, 0, '#', '...'), array('hbhelpers' => array('abc' => ''), 'usedFeature' => array('hbhelper' => 10), 'level' => 0, 'currentToken' => ''), array(array('abc'))
-     * @expect true when input array(0, 0, 0, 0, 0, 0, '>', '...'), array('basedir' => array('.'), 'fileext' => array('.tmpl'), 'usedFeature' => array('unless' => 7, 'partial' => 7), 'level' => 0, 'flags' => array('skippartial' => 0)), array('test')
+     * @expect true when input array(0, 0, 0, 0, 0, 0, '>', '...'), array('basedir' => array('.'), 'fileext' => array('.tmpl'), 'usedFeature' => array('unless' => 7, 'partial' => 7), 'level' => 0, 'flags' => array('skippartial' => 0, 'runpart' => 0), 'currentToken' => ''), array('test')
      */
     protected static function operator(&$token, &$context, &$vars) {
         switch ($token[Token::POS_OP]) {

@@ -33,34 +33,34 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
             array(0, 0, 0, 0, 0, 0, ''), array(), array()
 )        ));
         $this->assertEquals(2, $method->invokeArgs(null,array(
-            array(0, 0, 0, 0, 0, 0, '^', '...'), array('usedFeature' => array('isec' => 1), 'level' => 0), array(array('foo'))
+            array(0, 0, 0, 0, 0, 0, '^', '...'), array('usedFeature' => array('isec' => 1), 'level' => 0, 'currentToken' => ''), array(array('foo'))
 )        ));
         $this->assertEquals(true, $method->invokeArgs(null,array(
             array(0, 0, 0, 0, 0, 0, '/'), array('stack' => array(1), 'level' => 1), array()
 )        ));
         $this->assertEquals(4, $method->invokeArgs(null,array(
-            array(0, 0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('sec' => 3), 'level' => 0), array(array('x'))
+            array(0, 0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('sec' => 3), 'level' => 0, 'currentToken' => ''), array(array('x'))
 )        ));
         $this->assertEquals(5, $method->invokeArgs(null,array(
-            array(0, 0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('if' => 4), 'level' => 0), array(array('if'))
+            array(0, 0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('if' => 4), 'level' => 0, 'currentToken' => ''), array(array('if'))
 )        ));
         $this->assertEquals(6, $method->invokeArgs(null,array(
-            array(0, 0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('with' => 5), 'level' => 0, 'flags' => array('with' => 1)), array(array('with'))
+            array(0, 0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('with' => 5), 'level' => 0, 'flags' => array('with' => 1, 'runpart' => 0), 'currentToken' => ''), array(array('with'))
 )        ));
         $this->assertEquals(7, $method->invokeArgs(null,array(
-            array(0, 0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('each' => 6), 'level' => 0), array(array('each'))
+            array(0, 0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('each' => 6), 'level' => 0, 'currentToken' => ''), array(array('each'))
 )        ));
         $this->assertEquals(8, $method->invokeArgs(null,array(
-            array(0, 0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('unless' => 7), 'level' => 0), array(array('unless'))
+            array(0, 0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('unless' => 7), 'level' => 0, 'currentToken' => ''), array(array('unless'))
 )        ));
         $this->assertEquals(9, $method->invokeArgs(null,array(
-            array(0, 0, 0, 0, 0, 0, '#', '...'), array('blockhelpers' => array('abc' => ''), 'usedFeature' => array('bhelper' => 8), 'level' => 0), array(array('abc'))
+            array(0, 0, 0, 0, 0, 0, '#', '...'), array('blockhelpers' => array('abc' => ''), 'usedFeature' => array('bhelper' => 8), 'level' => 0, 'currentToken' => ''), array(array('abc'))
 )        ));
         $this->assertEquals(11, $method->invokeArgs(null,array(
-            array(0, 0, 0, 0, 0, 0, '#', '...'), array('hbhelpers' => array('abc' => ''), 'usedFeature' => array('hbhelper' => 10), 'level' => 0), array(array('abc'))
+            array(0, 0, 0, 0, 0, 0, '#', '...'), array('hbhelpers' => array('abc' => ''), 'usedFeature' => array('hbhelper' => 10), 'level' => 0, 'currentToken' => ''), array(array('abc'))
 )        ));
         $this->assertEquals(true, $method->invokeArgs(null,array(
-            array(0, 0, 0, 0, 0, 0, '>', '...'), array('basedir' => array('.'), 'fileext' => array('.tmpl'), 'usedFeature' => array('unless' => 7, 'partial' => 7), 'level' => 0, 'flags' => array('skippartial' => 0)), array('test')
+            array(0, 0, 0, 0, 0, 0, '>', '...'), array('basedir' => array('.'), 'fileext' => array('.tmpl'), 'usedFeature' => array('unless' => 7, 'partial' => 7), 'level' => 0, 'flags' => array('skippartial' => 0, 'runpart' => 0), 'currentToken' => ''), array('test')
 )        ));
     }
 }
