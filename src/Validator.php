@@ -184,7 +184,7 @@ class Validator {
      * @param array<string,array|string|integer> $context current compile context
      * @param array<boolean|integer|string|array> $vars parsed arguments list
      *
-     * @return string|null Return compiled code segment for the token
+     * @return boolean Return true always
      */
     protected static function blockBegin(&$context, $vars) {
         static::pushStack($context);
@@ -195,10 +195,12 @@ class Validator {
                 return static::section($context, $vars, true);
             case 'unless':
             case 'if':
-                return ++$context['usedFeature'][$vars[0][0]];
+                $context['usedFeature'][$vars[0][0]]++;
+                return true;
 
             default:
-                return ++$context['usedFeature']['sec'];
+                $context['usedFeature']['sec']++;
+                return true;
         }
     }
 
