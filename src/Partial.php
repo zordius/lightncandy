@@ -60,7 +60,7 @@ class Partial {
 
         if ($cnt !== null) {
             $context['usedPartial'][$name] = $cnt;
-            return static::compileDynamic($name, $context, $cnt);
+            return static::compileDynamic($name, $context);
         }
 
         if (!$context['flags']['skippartial']) {
@@ -140,9 +140,8 @@ class Partial {
      *
      * @param string $name partial name
      * @param array<string,array|string|integer> $context Current context of compiler progress.
-     * @param string $content partial content
      */
-    protected static function compileDynamic(&$name, &$context, $content) {
+    protected static function compileDynamic(&$name, &$context) {
         if (!$context['flags']['runpart']) {
             return;
         }
