@@ -34,6 +34,9 @@ VAR
 
     $class = new \ReflectionClass("LightnCandy\\$classname");
     foreach ($class->getMethods() as $method) {
+        if (strpos($method->getFileName(), $classname) === false) {
+            continue;
+        }
         if (preg_match_all('/@expect (.+) when input (.+)( after (.+))?/', $method->getDocComment(), $matched)) {
             echo <<<VAR
     /**

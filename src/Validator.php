@@ -165,7 +165,7 @@ class Validator {
                     return static::blockCustomHelper($context, $vars, true);
                 }
 
-                return static::invertedSection($context, $token);
+                return static::invertedSection($context, $vars);
 
             case '/':
                 return static::blockEnd($token, $context, $vars);
@@ -271,7 +271,7 @@ class Validator {
      *
      * @return integer Return number of inverted sections
      */
-    protected static function invertedSection(&$context, $token) {
+    protected static function invertedSection(&$context, $vars) {
         static::pushStack($context);
         return ++$context['usedFeature']['isec'];
     }

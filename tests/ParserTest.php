@@ -134,20 +134,5 @@ class ParserTest extends PHPUnit_Framework_TestCase
             array(0,0,0,0,0,0,0,'q=( foo bar)'), array('flags' => array('advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 0, 'lambda' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('seperator' => 0), 'rawblock' => false)
 )        ));
     }
-    /**
-     * @covers LightnCandy\Parser::toString
-     */
-    public function testOn_toString() {
-        $method = new \ReflectionMethod('LightnCandy\Parser', 'toString');
-        $this->assertEquals('c', $method->invokeArgs(null,array(
-            array(0, 'a', 'b', 'c', 'd', 'e')
-)        ));
-        $this->assertEquals('cd', $method->invokeArgs(null,array(
-            array(0, 'a', 'b', 'c', 'd', 'e', 'f')
-)        ));
-        $this->assertEquals('qd', $method->invokeArgs(null,array(
-            array(0, 'a', 'b', 'c', 'd', 'e', 'f'), array(3 => 'q')
-)        ));
-    }
 }
 ?>

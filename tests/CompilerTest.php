@@ -185,21 +185,5 @@ class CompilerTest extends PHPUnit_Framework_TestCase
             array('usedCount' => array('test' => array('testname' => 2))), 'test', 'testname', 3
 )        ));
     }
-    /**
-     * @covers LightnCandy\Compiler::delimiter
-     */
-    public function testOn_delimiter() {
-        $method = new \ReflectionMethod('LightnCandy\Compiler', 'delimiter');
-        $method->setAccessible(true);
-        $this->assertEquals(null, $method->invokeArgs(null,array(
-            array_fill(0, 11, ''), array()
-)        ));
-        $this->assertEquals(null, $method->invokeArgs(null,array(
-            array(0, 0, 0, 0, 0, '{{', '#', '...', '}}'), array()
-)        ));
-        $this->assertEquals(true, $method->invokeArgs(null,array(
-            array(0, 0, 0, 0, 0, '{', '#', '...', '}'), array()
-)        ));
-    }
 }
 ?>

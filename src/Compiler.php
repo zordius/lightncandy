@@ -431,46 +431,6 @@ $libstr
     }
 
     /**
-     * Return compiled PHP code for a handlebars section token
-     *
-     * @param array<string> $token detected handlebars {{ }} token
-     * @param array<string,array|string|integer> $context current compile context
-     * @param array<array|string|integer> $vars parsed arguments list
-     *
-     * @return string|null Return compiled code segment for the token when the token is section
-     */
-    protected static function operator(&$token, &$context, &$vars) {
-        switch ($token[Token::POS_OP]) {
-            case '>':
-                return static::partial($context, $vars);
-
-            case '^':
-                if (!isset($vars[0][0])) {
-                    if (!$context['flags']['else']) {
-                        $context['error'][] = 'Do not support {{^}}, you should do compile with LightnCandy::FLAG_ELSE flag';
-                        return;
-                    } else {
-                        return static::doElse($context);
-                    }
-                }
-
-                if (static::isBlockHelper($context, $vars)) {
-                    return static::blockCustomHelper($context, $vars, true);
-                }
-
-                return static::invertedSection($context, $vars);
-            case '/':
-                return static::blockEnd($token, $context, $vars);
-            case '#':
-                if (static::isBlockHelper($context, $vars)) {
-                    return static::blockCustomHelper($context, $vars);
-                }
-                // Compile to section {{#myVar}}
-                return static::blockBegin($context, $vars);
-        }
-    }
-
-    /**
      * Return compiled PHP code for a handlebars inverted section begin token
      *
      * @param array<string,array|string|integer> $context current compile context
