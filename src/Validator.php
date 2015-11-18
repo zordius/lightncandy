@@ -490,10 +490,18 @@ custom helper
                 return $context['usedFeature']['dynpartial']++;
             } else {
                 $context['error'][] = "You use dynamic partial name as '{$vars[0][2]}', this only works with option FLAG_RUNTIMEPARTIAL enabled";
+                return true;
             }
         } else {
             Partial::readPartial($vars[0][0], $context);
         }
+        if (!$context['flags']['runpart']) {
+        $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;
+            if ($named || (count($vars) > 1)) {
+                $context['error'][] = "Do not support {{>{$context['currentToken']}}}, you should do compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag";
+            }
+        }
+
         return true;
     }
 

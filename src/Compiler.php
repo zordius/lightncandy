@@ -427,10 +427,6 @@ $libstr
             $sp = $context['tokens']['partialind'] ? ", '{$context['tokens']['partialind']}'" : '';
             return $context['ops']['seperator'] . static::getFuncName($context, 'p', $tag) . "\$cx, $p, $v[0]$sp){$context['ops']['seperator']}";
         }
-        $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;
-        if ($named || $v[0] !== 'array(array($in),array())') {
-            $context['error'][] = "Do not support {{{$tag}}}, you should do compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag";
-        }
         return "{$context['ops']['seperator']}'" . Partial::compileStatic($context, $p[0], $context['tokens']['partialind']) . "'{$context['ops']['seperator']}";
     }
 
