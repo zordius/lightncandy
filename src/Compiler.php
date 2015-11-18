@@ -462,9 +462,6 @@ $libstr
                 return static::invertedSection($context, $vars);
             case '/':
                 return static::blockEnd($token, $context, $vars);
-            case '!':
-            case ' ':
-                return $context['ops']['seperator'];
             case '#':
                 if (static::isBlockHelper($context, $vars)) {
                     return static::blockCustomHelper($context, $vars);
