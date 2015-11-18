@@ -93,7 +93,6 @@ class Validator {
      * push current token into the section stack
      *
      * @param array<string,array|string|integer> $context Current context
-     * @param string|array $token a parsed token or a string
      */
     protected static function pushStack(&$context) {
         $context['stack'][] = $context['currentToken'];
@@ -130,7 +129,7 @@ class Validator {
      *
      * @param string[] $token detected handlebars {{ }} token
      * @param array<string,array|string|integer> $context current compile context
-     * @param array<boolean|integer|array> $vars parsed arguments list
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
      *
      * @return boolean|integer|null Return true when invalid or detected
      *
@@ -183,7 +182,7 @@ class Validator {
      * validate block begin token
      *
      * @param array<string,array|string|integer> $context current compile context
-     * @param array<array|string|integer> $vars parsed arguments list
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
      *
      * @return string|null Return compiled code segment for the token
      */
@@ -207,10 +206,10 @@ class Validator {
      * validate section token
      *
      * @param array<string,array|string|integer> $context current compile context
-     * @param array<array|string|integer> $vars parsed arguments list
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
      * @param boolean $isEach the section is #each
      *
-     * @return string|null Return compiled code segment for the token
+     * @return boolean Return true always
      */
     protected static function section(&$context, $vars, $isEach = false) {
         $context['usedFeature'][$vars[0][0]]++;
@@ -221,9 +220,9 @@ class Validator {
      * validate with token
      *
      * @param array<string,array|string|integer> $context current compile context
-     * @param array<array|string|integer> $vars parsed arguments list
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
      *
-     * @return string|null Return compiled code segment for the token
+     * @return boolean Return true always
      */
     protected static function with(&$context, $vars) {
         if ($context['flags']['with']) {
@@ -235,7 +234,7 @@ class Validator {
                 $context['error'][] = 'Do not support {{#with var}}, you should do compile with LightnCandy::FLAG_WITH flag';
             }
         }
-        ++$context['usedFeature'][$vars[0][0]];
+        $context['usedFeature'][$vars[0][0]]++;
         return true;
     }
 
@@ -243,7 +242,7 @@ class Validator {
      * validate block custom helper token
      *
      * @param array<string,array|string|integer> $context current compile context
-     * @param array<array|string|integer> $vars parsed arguments list
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
      * @param boolean $inverted the logic will be inverted
      *
      * @return string|null Return compiled code segment for the token
@@ -267,7 +266,7 @@ class Validator {
      * validate inverted section
      *
      * @param array<string,array|string|integer> $context current compile context
-     * @param string[] $token detected handlebars {{ }} token
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
      *
      * @return integer Return number of inverted sections
      */
@@ -281,7 +280,7 @@ class Validator {
      *
      * @param array<string> $token detected handlebars {{ }} token
      * @param array<string,array|string|integer> $context current compile context
-     * @param array<array|string|integer> $vars parsed arguments list
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
      *
      * @return boolean Return true
      */
@@ -428,7 +427,7 @@ class Validator {
      *
      * @param array<string,array|string|integer> $context current compile context
      *
-     * @return integer|null Return 1 or larger number when else token detected
+     * @return integer Return 1 or larger number when else token detected
      */
     protected static function doElse(&$context) {
         return ++$context['usedFeature']['else'];
@@ -458,7 +457,7 @@ class Validator {
      * detect for block custom helper
      *
      * @param array<string,array|string|integer> $context current compile context
-     * @param array<array|string|integer> $vars parsed arguments list
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
      *
      * @return boolean|null Return true when this token is block :w
 custom helper
@@ -479,7 +478,7 @@ custom helper
      * validate partial
      *
      * @param array<string,array|string|integer> $context current compile context
-     * @param array<array|string|integer> $vars parsed arguments list
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
      *
      * @return integer|true Return 1 or larger number for runtime partial, return true for other case
      */
