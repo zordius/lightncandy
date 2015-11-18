@@ -185,6 +185,7 @@ class Validator {
             case 'with':
                 return static::with($context, $vars);
             case 'each':
+                return static::section($context, $vars, true);
             case 'unless':
             case 'if':
                 return ++$context['usedFeature'][$vars[0][0]];
@@ -192,6 +193,20 @@ class Validator {
             default:
                 return ++$context['usedFeature']['sec'];
         }
+    }
+
+    /**
+     * validate section token
+     *
+     * @param array<string,array|string|integer> $context current compile context
+     * @param array<array|string|integer> $vars parsed arguments list
+     * @param boolean $isEach the section is #each
+     *
+     * @return string|null Return compiled code segment for the token
+     */
+    protected static function section(&$context, $vars, $isEach = false) {
+        $context['usedFeature'][$vars[0][0]]++;
+        return true;
     }
 
     /**

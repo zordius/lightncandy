@@ -589,11 +589,7 @@ $libstr
                     ? $context['ops']['seperator'] . static::getFuncName($context, 'unl', 'unless ' . $v[1]) . "\$cx, {$v[0]}, false, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
                     : "{$context['ops']['cnd_start']}(!" . static::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]}, false)){$context['ops']['cnd_then']}";
             case 'each':
-                $each = 'true';
-                array_shift($vars);
-                if (!isset($vars[0])) {
-                    $vars[0] = array(null);
-                }
+                return static::section($context, $vars, true);
                 break;
             case 'with':
                 if ($r = static::with($context, $vars)) {
@@ -601,10 +597,30 @@ $libstr
                 }
         }
 
+        return static::section($context, $vars);
+    }
+
+    /**
+     * compile {{#foo}} token
+     *
+     * @param array<string,array|string|integer> $context current compile context
+     * @param array<array|string|integer> $vars parsed arguments list
+     * @param boolean $isEach the section is #each
+     *
+     * @return string|null Return compiled code segment for the token
+     */
+    protected static function section(&$context, $vars, $isEach = false) {
+        if ($isEach) {
+            array_shift($vars);
+            if (!isset($vars[0])) {
+                $vars[0] = array(null);
+            }
+        }
         $v = static::getVariableNameOrSubExpression($vars[0], $context);
         $context['stack'][] = $v[1];
         $context['stack'][] = '#';
-        return $context['ops']['seperator'] . static::getFuncName($context, 'sec', (($each == 'true') ? 'each ' : '') . $v[1]) . "\$cx, {$v[0]}, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
+        $each = $isEach ? 'true' : 'false';
+        return $context['ops']['seperator'] . static::getFuncName($context, 'sec', ($isEach ? 'each ' : '') . $v[1]) . "\$cx, {$v[0]}, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
     /**
