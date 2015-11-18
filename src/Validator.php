@@ -90,6 +90,17 @@ class Validator {
     }
 
     /**
+     * push current token into the section stack
+     *
+     * @param array<string,array|string|integer> $context Current context
+     * @param string|array $token a parsed token or a string
+     */
+    protected static function pushStack(&$context) {
+        $context['stack'][] = $context['currentToken'];
+        $context['level']++;
+    }
+
+    /**
      * Verify delimiters and operators
      *
      * @param string[] $token detected handlebars {{ }} token
@@ -161,9 +172,6 @@ class Validator {
                 return static::blockEnd($token, $context, $vars);
 
             case '#':
-                $context['stack'][] = $token[Token::POS_INNERTAG];
-                $context['level']++;
-
                 if (static::isBlockHelper($context, $vars)) {
                     return static::blockCustomHelper($context, $vars);
                 }
@@ -181,6 +189,7 @@ class Validator {
      * @return string|null Return compiled code segment for the token
      */
     protected static function blockBegin(&$context, $vars) {
+        static::pushStack($context);
         switch (isset($vars[0][0]) ? $vars[0][0] : null) {
             case 'with':
                 return static::with($context, $vars);
@@ -241,6 +250,7 @@ class Validator {
      * @return string|null Return compiled code segment for the token
      */
     protected static function blockCustomHelper(&$context, $vars, $inverted = false) {
+        static::pushStack($context);
         if (is_string($vars[0][0])) {
             // detect handlebars custom helpers.
             if (isset($context['hbhelpers'][$vars[0][0]])) {
@@ -263,8 +273,7 @@ class Validator {
      * @return integer Return number of inverted sections
      */
     protected static function invertedSection(&$context, $token) {
-        $context['stack'][] = $token[Token::POS_INNERTAG];
-        $context['level']++;
+        static::pushStack($context);
         return ++$context['usedFeature']['isec'];
     }
 
@@ -286,13 +295,12 @@ class Validator {
     /**
      * handle delimiter change
      *
-     * @param string[] $token detected handlebars {{ }} token
      * @param array<string,array|string|integer> $context current compile context
      *
      * @return boolean|null Return true when delimiter changed
      */
-    protected static function isDelimiter(&$token, &$context) {
-        if (preg_match('/^=\s*([^ ]+)\s+([^ ]+)\s*=$/', $token[Token::POS_INNERTAG], $matched)) {
+    protected static function isDelimiter(&$context) {
+        if (preg_match('/^=\s*([^ ]+)\s+([^ ]+)\s*=$/', $context['currentToken'], $matched)) {
             $context['usedFeature']['delimiter']++;
             Parser::setDelimiter($context, $matched[1], $matched[2]);
             return true;
@@ -360,6 +368,7 @@ class Validator {
      * @param array<string,array|string|integer> $context current compile context
      */
     protected static function token(&$token, &$context) {
+        $context['currentToken'] = $token[Token::POS_INNERTAG];
         if (static::rawblock($token, $context)) {
             return Token::toString($token);
         }
@@ -368,7 +377,7 @@ class Validator {
             return;
         }
 
-        if (static::isDelimiter($token, $context)) {
+        if (static::isDelimiter($context)) {
             static::spacing($token, $context);
             return;
         }
@@ -377,7 +386,6 @@ class Validator {
             static::spacing($token, $context);
             return;
         }
-
 
         list($raw, $vars) = Parser::parse($token, $context);
 

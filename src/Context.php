@@ -73,6 +73,7 @@ class Context extends Flags {
             ),
             'level' => 0,
             'stack' => array(),
+            'currentToken' => null,
             'error' => array(),
             'basedir' => static::prepareBasedir($options),
             'fileext' => static::prepareFileext($options),
