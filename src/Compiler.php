@@ -445,12 +445,15 @@ $libstr
                 return static::partial($context, $vars);
 
             case '^':
-                // {{^}} means {{else}}
                 if (!isset($vars[0][0])) {
-                    return static::doElse($context);
+                    if (!$context['flags']['else']) {
+                        $context['error'][] = 'Do not support {{^}}, you should do compile with LightnCandy::FLAG_ELSE flag';
+                        return;
+                    } else {
+                        return static::doElse($context);
+                    }
                 }
 
-                // Try to compile as custom helper {{^myHelper}}
                 if (static::isBlockHelper($context, $vars)) {
                     return static::blockCustomHelper($context, $vars, true);
                 }

@@ -431,7 +431,7 @@ class Validator {
      * @return integer|null Return 1 or larger number when else token detected
      */
     protected static function doElse(&$context) {
-        return $context['usedFeature']['else']++;
+        return ++$context['usedFeature']['else'];
     }
 
     /**
