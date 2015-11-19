@@ -114,7 +114,7 @@ class Partial {
      * @param array<string,array|string|integer> $context Current context of compiler progress.
      * @param string $name partial name
      *
-     * @return string $code PHP code string
+     * @return string|null $code PHP code string
      */
     public static function compileStatic(&$context, $name) {
         // Check for recursive partial
