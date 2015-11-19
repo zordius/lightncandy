@@ -399,7 +399,6 @@ $libstr
      * @return string Return compiled code segment for the token
      */
     protected static function blockEnd(&$context, $vars) {
-        $each = false;
         $c = count($context['stack']) - 2;
         $pop = $context['stack'][$c + 1];
         $pop2 = $context['stack'][$c];
@@ -407,6 +406,7 @@ $libstr
             case 'if':
             case 'unless':
                 if ($pop == ':') {
+                    array_pop($context['stack']);
                     return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}){$context['ops']['seperator']}" : "{$context['ops']['cnd_end']}";
                 }
                 return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}){$context['ops']['seperator']}" : "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
@@ -415,8 +415,6 @@ $libstr
                     return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
                 }
                 break;
-            case 'each':
-                $each = true;
         }
 
         switch($pop) {
@@ -535,17 +533,15 @@ $libstr
      */
     protected static function doElse(&$context) {
         $c = count($context['stack']) - 2;
-        if ($c >= 0) {
-            switch ($context['stack'][$c]) {
-                case 'if':
-                case 'unless':
-                    $context['stack'][$c + 1] = ':';
-                    return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}" : "{$context['ops']['cnd_else']}";
-                case 'with':
-                case 'each':
-                default:
-                    return "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}";
-            }
+        switch ($context['stack'][$c]) {
+            case '[if]':
+            case '[unless]':
+                $context['stack'][] = ':';
+                return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}" : "{$context['ops']['cnd_else']}";
+            case '[with]':
+            case '[each]':
+            default:
+                return "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}";
         }
         $context['error'][] = '{{else}} only valid in if, unless, each, and #section context';
     }
