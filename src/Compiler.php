@@ -473,7 +473,6 @@ $libstr
     /**
      * Return compiled PHP code for a handlebars block end token
      *
-     * @param array<string> $token detected handlebars {{ }} token
      * @param array<string,array|string|integer> $context current compile context
      * @param array<boolean|integer|string|array> $vars parsed arguments list
      *
