@@ -254,27 +254,9 @@ $libstr
             return array($var[1], preg_replace('/\'(.*)\'/', '$1', $var[1]));
         }
 
-        $levels = 0;
-        $base = '$in';
-        $spvar = false;
-
-        if (isset($var[0])) {
-            // trace to parent
-            if (!is_string($var[0]) && is_int($var[0])) {
-                $levels = array_shift($var);
-            }
-        }
-
-        if (isset($var[0])) {
-            // handle @root, @index, @key, @last, etc
-            if ($context['flags']['spvar']) {
-                if (substr($var[0], 0, 1) === '@') {
-                    $spvar = true;
-                    $base = "\$cx['sp_vars']";
-                    $var[0] = substr($var[0], 1);
-                }
-            }
-        }
+        list($levels, $spvar , $var) = Expression::analyze($context, $var);
+        $exp = Expression::toString($levels, $spvar, $var);
+        $base = $spvar ? "\$cx['sp_vars']" : '$in';
 
         // change base when trace to parent
         if ($levels > 0) {
@@ -284,9 +266,6 @@ $libstr
                 $base = "\$cx['scopes'][count(\$cx['scopes'])-$levels]";
             }
         }
-
-        // Generate normalized expression for debug
-        $exp = Expression::toString($levels, $spvar, $var);
 
         if ((count($var) == 0) || (is_null($var[0]) && (count($var) == 1))) {
             return array($base, $exp);
@@ -387,8 +366,6 @@ $libstr
      */
     protected static function invertedSection(&$context, $vars) {
         $v = static::getVariableName($vars[0], $context);
-        $context['stack'][] = $v[1];
-        $context['stack'][] = '^';
         return "{$context['ops']['cnd_start']}(" . static::getFuncName($context, 'isec', '^' . $v[1]) . "\$cx, {$v[0]})){$context['ops']['cnd_then']}";
     }
 
@@ -405,8 +382,6 @@ $libstr
         $notHBCH = !isset($context['hbhelpers'][$vars[0][0]]);
 
         $v = static::getVariableName($vars[0], $context);
-        $context['stack'][] = $v[1];
-        $context['stack'][] = '#';
         $ch = array_shift($vars);
         $inverted = $inverted ? 'true' : 'false';
 
@@ -425,21 +400,18 @@ $libstr
      */
     protected static function blockEnd(&$context, $vars) {
         $each = false;
-        $pop = array_pop($context['stack']);
+        $c = count($context['stack']) - 2;
+        $pop = $context['stack'][$c + 1];
+        $pop2 = $context['stack'][$c];
         switch ($context['currentToken'][Token::POS_INNERTAG]) {
             case 'if':
             case 'unless':
                 if ($pop == ':') {
-                    array_pop($context['stack']);
                     return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}){$context['ops']['seperator']}" : "{$context['ops']['cnd_end']}";
                 }
                 return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}){$context['ops']['seperator']}" : "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
             case 'with':
                 if ($context['flags']['with']) {
-                    if ($pop !== 'with') {
-                        $context['error'][] = 'Unexpect token: {{/with}} !';
-                        return;
-                    }
                     return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
                 }
                 break;
@@ -450,7 +422,6 @@ $libstr
         switch($pop) {
             case '#':
             case '^':
-                $pop2 = array_pop($context['stack']);
                 $v = static::getVariableName($vars[0], $context);
                 if (!$each && ($pop2 !== $v[1])) {
                     $context['error'][] = 'Unexpect token ' . Token::toString($context['currentToken']) . " ! Previous token {{{$pop}$pop2}} is not closed";
@@ -478,13 +449,11 @@ $libstr
         $v = isset($vars[1]) ? static::getVariableNameOrSubExpression($vars[1], $context) : array(null, array());
         switch (isset($vars[0][0]) ? $vars[0][0] : null) {
             case 'if':
-                $context['stack'][] = 'if';
                 $includeZero = (isset($vars['includeZero'][1]) && $vars['includeZero'][1]) ? 'true' : 'false';
                 return $context['usedFeature']['parent']
                     ? $context['ops']['seperator'] . static::getFuncName($context, 'ifv', 'if ' . $v[1]) . "\$cx, {$v[0]}, {$includeZero}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
                     : "{$context['ops']['cnd_start']}(" . static::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]}, {$includeZero})){$context['ops']['cnd_then']}";
             case 'unless':
-                $context['stack'][] = 'unless';
                 return $context['usedFeature']['parent']
                     ? $context['ops']['seperator'] . static::getFuncName($context, 'unl', 'unless ' . $v[1]) . "\$cx, {$v[0]}, false, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
                     : "{$context['ops']['cnd_start']}(!" . static::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]}, false)){$context['ops']['cnd_then']}";
@@ -517,8 +486,6 @@ $libstr
             }
         }
         $v = static::getVariableNameOrSubExpression($vars[0], $context);
-        $context['stack'][] = $v[1];
-        $context['stack'][] = '#';
         $each = $isEach ? 'true' : 'false';
         return $context['ops']['seperator'] . static::getFuncName($context, 'sec', ($isEach ? 'each ' : '') . $v[1]) . "\$cx, {$v[0]}, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
@@ -534,7 +501,6 @@ $libstr
     protected static function with(&$context, $vars) {
         if ($context['flags']['with']) {
             $v = isset($vars[1]) ? static::getVariableNameOrSubExpression($vars[1], $context) : array(null, array());
-            $context['stack'][] = 'with';
             return $context['ops']['seperator'] . static::getFuncName($context, 'wi', 'with ' . $v[1]) . "\$cx, {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
         }
     }
@@ -575,18 +541,17 @@ $libstr
      * @return string|null Return compiled code segment for the token when the token is else
      */
     protected static function doElse(&$context) {
-        $c = count($context['stack']) - 1;
+        $c = count($context['stack']) - 2;
         if ($c >= 0) {
-            switch ($context['stack'][count($context['stack']) - 1]) {
+            switch ($context['stack'][$c]) {
                 case 'if':
                 case 'unless':
-                    $context['stack'][] = ':';
+                    $context['stack'][$c + 1] = ':';
                     return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}" : "{$context['ops']['cnd_else']}";
                 case 'with':
                 case 'each':
-                case '#':
-                    return "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}";
                 default:
+                    return "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}";
             }
         }
         $context['error'][] = '{{else}} only valid in if, unless, each, and #section context';

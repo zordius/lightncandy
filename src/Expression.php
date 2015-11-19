@@ -62,6 +62,39 @@ class Expression {
     }
 
     /**
+     * Analyze an expression
+     *
+     * @param array<string,array|string|integer> $context Current context
+     * @param array<array|string|integer> $var variable parsed path
+     *
+     * @return array analyzed result
+     *
+     */
+    public static function analyze($context, $var) {
+        $levels = 0;
+        $spvar = false;
+
+        if (isset($var[0])) {
+            // trace to parent
+            if (!is_string($var[0]) && is_int($var[0])) {
+                $levels = array_shift($var);
+            }
+        }
+
+        if (isset($var[0])) {
+            // handle @root, @index, @key, @last, etc
+            if ($context['flags']['spvar']) {
+                if (substr($var[0], 0, 1) === '@') {
+                    $spvar = true;
+                    $var[0] = substr($var[0], 1);
+                }
+            }
+        }
+
+        return array($levels, $spvar, $var);
+    }
+
+    /**
      * get normalized handlebars expression for a variable
      *
      * @param integer $levels trace N levels top parent scope
