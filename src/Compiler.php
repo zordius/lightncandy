@@ -435,7 +435,6 @@ $libstr
      *
      * @param array<string,array|string|integer> $context current compile context
      * @param array<boolean|integer|string|array> $vars parsed arguments list
-     * @param boolean $inverted the logic will be inverted
      *
      * @return string Return compiled code segment for the token
      */
@@ -530,7 +529,6 @@ $libstr
      * @return string Return compiled code segment for the token
      */
     protected static function blockBegin(&$context, $vars) {
-        $each = 'false';
         $v = isset($vars[1]) ? static::getVariableNameOrSubExpression($vars[1], $context) : array(null, array());
         switch (isset($vars[0][0]) ? $vars[0][0] : null) {
             case 'if':
