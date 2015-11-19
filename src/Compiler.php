@@ -221,7 +221,7 @@ $libstr
     /**
      * Get string presentation of a sub expression
      *
-     * @param string $subExpression subExpression to compile
+     * @param array<array|string|integer> $var variable parsed path
      * @param array<string,array|string|integer> $context current compile context
      *
      * @return array<string> code representing passed expression
@@ -403,7 +403,7 @@ $libstr
      * handle partial
      *
      * @param array<string,array|string|integer> $context current compile context
-     * @param array<array|string|integer> $vars parsed arguments list
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
      *
      * @return string Return compiled code segment for the partial
      */
@@ -434,7 +434,7 @@ $libstr
      * Return compiled PHP code for a handlebars inverted section begin token
      *
      * @param array<string,array|string|integer> $context current compile context
-     * @param array<array|string|integer> $vars parsed arguments list
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
      * @param boolean $inverted the logic will be inverted
      *
      * @return string Return compiled code segment for the token
@@ -450,7 +450,7 @@ $libstr
      * Return compiled PHP code for a handlebars block custom helper begin token
      *
      * @param array<string,array|string|integer> $context current compile context
-     * @param array<array|string|integer> $vars parsed arguments list
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
      * @param boolean $inverted the logic will be inverted
      *
      * @return string|null Return compiled code segment for the token
@@ -474,7 +474,7 @@ $libstr
      *
      * @param array<string> $token detected handlebars {{ }} token
      * @param array<string,array|string|integer> $context current compile context
-     * @param array<array|string|integer> $vars parsed arguments list
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
      *
      * @return string Return compiled code segment for the token
      */
@@ -525,7 +525,7 @@ $libstr
      * Return compiled PHP code for a handlebars block begin token
      *
      * @param array<string,array|string|integer> $context current compile context
-     * @param array<array|string|integer> $vars parsed arguments list
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
      *
      * @return string Return compiled code segment for the token
      */
@@ -560,7 +560,7 @@ $libstr
      * compile {{#foo}} token
      *
      * @param array<string,array|string|integer> $context current compile context
-     * @param array<array|string|integer> $vars parsed arguments list
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
      * @param boolean $isEach the section is #each
      *
      * @return string|null Return compiled code segment for the token
@@ -583,7 +583,7 @@ $libstr
      * compile {{with}} token
      *
      * @param array<string,array|string|integer> $context current compile context
-     * @param array<array|string|integer> $vars parsed arguments list
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
      *
      * @return string|null Return compiled code segment for the token
      */
@@ -599,7 +599,7 @@ $libstr
      * Return compiled PHP code for a handlebars custom helper token
      *
      * @param array<string,array|string|integer> $context current compile context
-     * @param array<array|string|integer> $vars parsed arguments list
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
      * @param boolean $raw is this {{{ token or not
      * @param boolean $err should cause error when missing helper or not
      *
@@ -652,7 +652,7 @@ $libstr
      * Return compiled PHP code for a handlebars variable token
      *
      * @param array<string,array|string|integer> $context current compile context
-     * @param array<array|string|integer> $vars parsed arguments list
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
      * @param boolean $raw is this {{{ token or not
      *
      * @return string Return compiled code segment for the token
