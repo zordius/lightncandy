@@ -4,16 +4,17 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use LightnCandy\LightnCandy;
 
-genTestForClass('LightnCandy');
-genTestForClass('Runtime');
-genTestForClass('Context');
-genTestForClass('Token');
-genTestForClass('Parser');
-genTestForClass('Validator');
-genTestForClass('Partial');
-genTestForClass('Exporter');
 genTestForClass('Compiler');
+genTestForClass('Context');
+genTestForClass('Exporter');
+genTestForClass('Expression');
+genTestForClass('LightnCandy');
+genTestForClass('Parser');
+genTestForClass('Partial');
+genTestForClass('Runtime');
 genTestForClass('String');
+genTestForClass('Token');
+genTestForClass('Validator');
 
 function genTestForClass($classname) {
     ob_start();
