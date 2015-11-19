@@ -30,37 +30,37 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         $method = new \ReflectionMethod('LightnCandy\Validator', 'operator');
         $method->setAccessible(true);
         $this->assertEquals(null, $method->invokeArgs(null,array(
-            array(0, 0, 0, 0, 0, 0, ''), array(), array()
+            '', array(), array()
 )        ));
         $this->assertEquals(2, $method->invokeArgs(null,array(
-            array(0, 0, 0, 0, 0, 0, '^', '...'), array('usedFeature' => array('isec' => 1), 'level' => 0, 'currentToken' => ''), array(array('foo'))
+            '^', array('usedFeature' => array('isec' => 1), 'level' => 0, 'currentToken' => ''), array(array('foo'))
 )        ));
         $this->assertEquals(true, $method->invokeArgs(null,array(
-            array(0, 0, 0, 0, 0, 0, '/'), array('stack' => array(1), 'level' => 1), array()
+            '/', array('stack' => array(1), 'level' => 1), array()
 )        ));
         $this->assertEquals(4, $method->invokeArgs(null,array(
-            array(0, 0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('sec' => 3), 'level' => 0, 'currentToken' => ''), array(array('x'))
+            '#', array('usedFeature' => array('sec' => 3), 'level' => 0, 'currentToken' => ''), array(array('x'))
 )        ));
         $this->assertEquals(5, $method->invokeArgs(null,array(
-            array(0, 0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('if' => 4), 'level' => 0, 'currentToken' => ''), array(array('if'))
+            '#', array('usedFeature' => array('if' => 4), 'level' => 0, 'currentToken' => ''), array(array('if'))
 )        ));
         $this->assertEquals(6, $method->invokeArgs(null,array(
-            array(0, 0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('with' => 5), 'level' => 0, 'flags' => array('with' => 1, 'runpart' => 0), 'currentToken' => ''), array(array('with'))
+            '#', array('usedFeature' => array('with' => 5), 'level' => 0, 'flags' => array('with' => 1, 'runpart' => 0), 'currentToken' => ''), array(array('with'))
 )        ));
         $this->assertEquals(7, $method->invokeArgs(null,array(
-            array(0, 0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('each' => 6), 'level' => 0, 'currentToken' => ''), array(array('each'))
+            '#', array('usedFeature' => array('each' => 6), 'level' => 0, 'currentToken' => ''), array(array('each'))
 )        ));
         $this->assertEquals(8, $method->invokeArgs(null,array(
-            array(0, 0, 0, 0, 0, 0, '#', '...'), array('usedFeature' => array('unless' => 7), 'level' => 0, 'currentToken' => ''), array(array('unless'))
+            '#', array('usedFeature' => array('unless' => 7), 'level' => 0, 'currentToken' => ''), array(array('unless'))
 )        ));
         $this->assertEquals(9, $method->invokeArgs(null,array(
-            array(0, 0, 0, 0, 0, 0, '#', '...'), array('blockhelpers' => array('abc' => ''), 'usedFeature' => array('bhelper' => 8), 'level' => 0, 'currentToken' => ''), array(array('abc'))
+            '#', array('blockhelpers' => array('abc' => ''), 'usedFeature' => array('bhelper' => 8), 'level' => 0, 'currentToken' => ''), array(array('abc'))
 )        ));
         $this->assertEquals(11, $method->invokeArgs(null,array(
-            array(0, 0, 0, 0, 0, 0, '#', '...'), array('hbhelpers' => array('abc' => ''), 'usedFeature' => array('hbhelper' => 10), 'level' => 0, 'currentToken' => ''), array(array('abc'))
+            '#', array('hbhelpers' => array('abc' => ''), 'usedFeature' => array('hbhelper' => 10), 'level' => 0, 'currentToken' => ''), array(array('abc'))
 )        ));
         $this->assertEquals(true, $method->invokeArgs(null,array(
-            array(0, 0, 0, 0, 0, 0, '>', '...'), array('basedir' => array('.'), 'fileext' => array('.tmpl'), 'usedFeature' => array('unless' => 7, 'partial' => 7), 'level' => 0, 'flags' => array('skippartial' => 0, 'runpart' => 0), 'currentToken' => ''), array('test')
+            '>', array('basedir' => array('.'), 'fileext' => array('.tmpl'), 'usedFeature' => array('unless' => 7, 'partial' => 7), 'level' => 0, 'flags' => array('skippartial' => 0, 'runpart' => 0), 'currentToken' => ''), array('test')
 )        ));
     }
 }

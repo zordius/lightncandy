@@ -330,7 +330,7 @@ $libstr
             return ".'" . Token::toString($token) . "'.";
         }
 
-        if ($ret = static::operator($token, $context, $vars)) {
+        if ($ret = static::operator($token[Token::POS_OP], $context, $vars)) {
             return $ret;
         }
 
