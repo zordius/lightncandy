@@ -8,25 +8,6 @@ use LightnCandy\Runtime;
 class CompilerTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @covers LightnCandy\Compiler::getBoolStr
-     */
-    public function testOn_getBoolStr() {
-        $method = new \ReflectionMethod('LightnCandy\Compiler', 'getBoolStr');
-        $method->setAccessible(true);
-        $this->assertEquals('true', $method->invokeArgs(null,array(
-            1
-)        ));
-        $this->assertEquals('true', $method->invokeArgs(null,array(
-            999
-)        ));
-        $this->assertEquals('false', $method->invokeArgs(null,array(
-            0
-)        ));
-        $this->assertEquals('false', $method->invokeArgs(null,array(
-            -1
-)        ));
-    }
-    /**
      * @covers LightnCandy\Compiler::getFuncName
      */
     public function testOn_getFuncName() {
@@ -43,22 +24,6 @@ class CompilerTest extends PHPUnit_Framework_TestCase
 )        ));
         $this->assertEquals('LR::debug(\'abc\', \'test\', ', $method->invokeArgs(null,array(
             array('flags' => array('standalone' => 0, 'debug' => 1), 'runtime' => 'Runtime'), 'test', 'abc'
-)        ));
-    }
-    /**
-     * @covers LightnCandy\Compiler::getArrayCode
-     */
-    public function testOn_getArrayCode() {
-        $method = new \ReflectionMethod('LightnCandy\Compiler', 'getArrayCode');
-        $method->setAccessible(true);
-        $this->assertEquals('', $method->invokeArgs(null,array(
-            array()
-)        ));
-        $this->assertEquals("['a']", $method->invokeArgs(null,array(
-            array('a')
-)        ));
-        $this->assertEquals("['a']['b']['c']", $method->invokeArgs(null,array(
-            array('a', 'b', 'c')
 )        ));
     }
     /**
@@ -139,34 +104,6 @@ class CompilerTest extends PHPUnit_Framework_TestCase
 )        ));
         $this->assertEquals(array('LR::v($cx, $in, array(\'id\'))', 'this.[id]'), $method->invokeArgs(null,array(
             array(null, 'id'), array('flags'=>array('prop'=>true,'spvar'=>true,'debug'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0,'standalone'=>0), 'runtime' => 'Runtime')
-)        ));
-    }
-    /**
-     * @covers LightnCandy\Compiler::getExpression
-     */
-    public function testOn_getExpression() {
-        $method = new \ReflectionMethod('LightnCandy\Compiler', 'getExpression');
-        $method->setAccessible(true);
-        $this->assertEquals('[a].[b]', $method->invokeArgs(null,array(
-            0, false, array('a', 'b')
-)        ));
-        $this->assertEquals('@[root]', $method->invokeArgs(null,array(
-            0, true, array('root')
-)        ));
-        $this->assertEquals('this', $method->invokeArgs(null,array(
-            0, false, null
-)        ));
-        $this->assertEquals('this.[id]', $method->invokeArgs(null,array(
-            0, false, array(null, 'id')
-)        ));
-        $this->assertEquals('@[root].[a].[b]', $method->invokeArgs(null,array(
-            0, true, array('root', 'a', 'b')
-)        ));
-        $this->assertEquals('../../[a].[b]', $method->invokeArgs(null,array(
-            2, false, array('a', 'b')
-)        ));
-        $this->assertEquals('../[a\'b]', $method->invokeArgs(null,array(
-            1, false, array('a\'b')
 )        ));
     }
     /**

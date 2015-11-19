@@ -22,6 +22,7 @@ namespace LightnCandy;
 
 use \LightnCandy\Validator;
 use \LightnCandy\Token;
+use \LightnCandy\Expression;
 
 /**
  * LightnCandy Compiler
@@ -81,15 +82,15 @@ class Compiler extends Validator {
      * @return string Composed PHP code
      */
     public static function composePHPRender($context, $code) {
-        $flagJStrue = static::getBoolStr($context['flags']['jstrue']);
-        $flagJSObj = static::getBoolStr($context['flags']['jsobj']);
-        $flagSPVar = static::getBoolStr($context['flags']['spvar']);
-        $flagProp = static::getBoolStr($context['flags']['prop']);
-        $flagMethod = static::getBoolStr($context['flags']['method']);
-        $flagLambda = static::getBoolStr($context['flags']['lambda']);
-        $flagMustlok = static::getBoolStr($context['flags']['mustlok']);
-        $flagMustlam = static::getBoolStr($context['flags']['mustlam']);
-        $flagEcho = static::getBoolStr($context['flags']['echo']);
+        $flagJStrue = Expression::boolString($context['flags']['jstrue']);
+        $flagJSObj = Expression::boolString($context['flags']['jsobj']);
+        $flagSPVar = Expression::boolString($context['flags']['spvar']);
+        $flagProp = Expression::boolString($context['flags']['prop']);
+        $flagMethod = Expression::boolString($context['flags']['method']);
+        $flagLambda = Expression::boolString($context['flags']['lambda']);
+        $flagMustlok = Expression::boolString($context['flags']['mustlok']);
+        $flagMustlam = Expression::boolString($context['flags']['mustlam']);
+        $flagEcho = Expression::boolString($context['flags']['echo']);
 
         $libstr = Exporter::runtime($context);
         $constants = Exporter::constants($context);
@@ -131,22 +132,6 @@ $libstr
     }
 
     /**
-     * return 'true' or 'false' string.
-     *
-     * @param integer $v value
-     *
-     * @return string 'true' when the value larger then 0
-     *
-     * @expect 'true' when input 1
-     * @expect 'true' when input 999
-     * @expect 'false' when input 0
-     * @expect 'false' when input -1
-     */
-    protected static function getBoolStr($v) {
-        return ($v > 0) ? 'true' : 'false';
-    }
-
-    /**
      * Get function name for standalone or none standalone template.
      *
      * @param array<string,array|string|integer> $context Current context of compiler progress.
@@ -172,23 +157,6 @@ $libstr
         }
 
         return $context['flags']['standalone'] ? "\$cx['funcs']['$name']($dbg" : "LR::$name($dbg";
-    }
-
-    /**
-     * Get string presentation for an array
-     *
-     * @param array<string> $list an array of variable names.
-     *
-     * @return string PHP array names string
-     *
-     * @expect '' when input array()
-     * @expect "['a']" when input array('a')
-     * @expect "['a']['b']['c']" when input array('a', 'b', 'c')
-     */
-    protected static function getArrayCode($list) {
-        return implode('', (array_map(function ($v) {
-            return "['$v']";
-        }, $list)));
     }
 
     /**
@@ -318,7 +286,7 @@ $libstr
         }
 
         // Generate normalized expression for debug
-        $exp = static::getExpression($levels, $spvar, $var);
+        $exp = Expression::toString($levels, $spvar, $var);
 
         if ((count($var) == 0) || (is_null($var[0]) && (count($var) == 1))) {
             return array($base, $exp);
@@ -336,34 +304,11 @@ $libstr
             }, $var)) . '))', $exp);
         }
 
-        $n = static::getArrayCode($var);
+        $n = Expression::arrayString($var);
         array_pop($var);
-        $p = count($var) ? static::getArrayCode($var) : '';
+        $p = count($var) ? Expression::arrayString($var) : '';
 
         return array("((isset($base$n) && is_array($base$p)) ? $base$n : " . ($context['flags']['debug'] ? (static::getFuncName($context, 'miss', '') . "\$cx, '$exp')") : 'null' ) . ')', $exp);
-    }
-
-    /**
-     * get normalized handlebars expression for a variable
-     *
-     * @param integer $levels trace N levels top parent scope
-     * @param boolean $spvar is the path start with @ or not
-     * @param array<string|integer> $var variable parsed path
-     *
-     * @return string normalized expression for debug display
-     *
-     * @expect '[a].[b]' when input 0, false, array('a', 'b')
-     * @expect '@[root]' when input 0, true, array('root')
-     * @expect 'this' when input 0, false, null
-     * @expect 'this.[id]' when input 0, false, array(null, 'id')
-     * @expect '@[root].[a].[b]' when input 0, true, array('root', 'a', 'b')
-     * @expect '../../[a].[b]' when input 2, false, array('a', 'b')
-     * @expect '../[a\'b]' when input 1, false, array('a\'b')
-     */
-    protected static function getExpression($levels, $spvar, $var) {
-        return ($spvar ? '@' : '') . str_repeat('../', $levels) . ((is_array($var) && count($var)) ? implode('.', array_map(function($v) {
-            return is_null($v) ? 'this' : "[$v]";
-        }, $var)) : 'this');
     }
 
     /**
