@@ -378,6 +378,8 @@ $libstr
         list($raw, $vars, $token, $indent) = $info;
 
         $context['tokens']['partialind'] = $indent;
+        $context['currentToken'] = $token;
+
         // Do not touch the tag, keep it as is.
         if ($raw === -1) {
             return ".'" . Token::toString($token) . "'.";
@@ -477,10 +479,10 @@ $libstr
      *
      * @return string Return compiled code segment for the token
      */
-    protected static function blockEnd(&$token, &$context, $vars) {
+    protected static function blockEnd(&$context, $vars) {
         $each = false;
         $pop = array_pop($context['stack']);
-        switch ($token[Token::POS_INNERTAG]) {
+        switch ($context['currentToken'][Token::POS_INNERTAG]) {
             case 'if':
             case 'unless':
                 if ($pop == ':') {
@@ -507,7 +509,7 @@ $libstr
                 $pop2 = array_pop($context['stack']);
                 $v = static::getVariableName($vars[0], $context);
                 if (!$each && ($pop2 !== $v[1])) {
-                    $context['error'][] = 'Unexpect token ' . Token::toString($token) . " ! Previous token {{{$pop}$pop2}} is not closed";
+                    $context['error'][] = 'Unexpect token ' . Token::toString($context['currentToken']) . " ! Previous token {{{$pop}$pop2}} is not closed";
                     return;
                 }
                 if ($pop == '^') {
@@ -515,7 +517,7 @@ $libstr
                 }
                 return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
             default:
-                $context['error'][] = 'Unexpect token: ' . Token::toString($token) . ' !';
+                $context['error'][] = 'Unexpect token: ' . Token::toString($context['currentToken']) . ' !';
                 return;
         }
     }
