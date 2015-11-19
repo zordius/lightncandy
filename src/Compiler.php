@@ -423,17 +423,10 @@ $libstr
             case '#':
             case '^':
                 $v = static::getVariableName($vars[0], $context);
-                if (!$each && ($pop2 !== $v[1])) {
-                    $context['error'][] = 'Unexpect token ' . Token::toString($context['currentToken']) . " ! Previous token {{{$pop}$pop2}} is not closed";
-                    return;
-                }
                 if ($pop == '^') {
                     return "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
                 }
                 return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
-            default:
-                $context['error'][] = 'Unexpect token: ' . Token::toString($context['currentToken']) . ' !';
-                return;
         }
     }
 

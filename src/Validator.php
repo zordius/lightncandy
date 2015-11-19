@@ -301,8 +301,8 @@ class Validator {
     protected static function blockEnd(&$context, $vars) {
         $context['level']--;
         $c = count($context['stack']) - 2;
-        $pop = $context['stack'][$c + 1];
-        $pop2 = $context['stack'][$c];
+        $pop = ($c >= 0) ? $context['stack'][$c + 1] : '';
+        $pop2 = ($c >= 0) ? $context['stack'][$c]: '';
         switch ($context['currentToken'][Token::POS_INNERTAG]) {
             case 'with':
                 if ($context['flags']['with']) {
