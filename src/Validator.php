@@ -434,12 +434,7 @@ class Validator {
         foreach ($vars as $var) {
             if (Parser::isSubexp($var)) {
                 if (!$context['flags']['exhlp']) {
-                    if (isset($context['hbhelpers'][$var[1][0][0]])) {
-                        $context['usedFeature']['hbhelper']++;
-                        continue;
-                    }
-                    if (isset($context['helpers'][$var[1][0][0]])) {
-                        $context['usedFeature']['helper']++;
+                    if (static::helper($context, $var[1][0][0])) {
                         continue;
                     }
                     $context['error'][] = "Can not find custom helper function defination {$var[1][0][0]}() !";

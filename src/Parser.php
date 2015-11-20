@@ -181,6 +181,7 @@ class Parser extends Token {
      * @return array<boolean|integer|array> Return parsed result
      */
     public static function subexpression($expression, &$context) {
+        $context['usedFeature']['subexp']++;
         $vars = static::analyze(substr($expression, 1, -1), $context);
         $avars = static::advancedVariable($vars, $context, $expression);
         return array(-1, $avars, $expression);
