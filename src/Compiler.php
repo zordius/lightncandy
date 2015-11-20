@@ -198,7 +198,7 @@ $libstr
         $origSeperator = $context['ops']['seperator'];
         $context['ops']['seperator'] = '';
 
-        $ret = static::customHelper($context, $vars, true, true);
+        $ret = static::customHelper($context, $vars, true);
 
         if (($ret === null) && $context['flags']['lambda']) {
             $ret = static::compileVariable($context, $vars, true);
@@ -499,18 +499,12 @@ $libstr
      * @param array<string,array|string|integer> $context current compile context
      * @param array<boolean|integer|string|array> $vars parsed arguments list
      * @param boolean $raw is this {{{ token or not
-     * @param boolean $err should cause error when missing helper or not
      *
      * @return string|null Return compiled code segment for the token when the token is custom helper
      */
-    protected static function customHelper(&$context, $vars, $raw, $err = false) {
+    protected static function customHelper(&$context, $vars, $raw) {
         $notHH = !isset($context['hbhelpers'][$vars[0][0]]);
         if (!isset($context['helpers'][$vars[0][0]]) && $notHH) {
-            if ($err) {
-                if (!$context['flags']['exhlp']) {
-                    $context['error'][] = "Can not find custom helper function defination {$vars[0][0]}() !";
-                }
-            }
             return;
         }
 

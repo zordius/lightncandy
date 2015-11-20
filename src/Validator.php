@@ -431,6 +431,22 @@ class Validator {
 
         list($raw, $vars) = Parser::parse($token, $context);
 
+        foreach ($vars as $var) {
+            if (Parser::isSubexp($var)) {
+                if (!$context['flags']['exhlp']) {
+                    if (isset($context['hbhelpers'][$var[1][0][0]])) {
+                        $context['usedFeature']['hbhelper']++;
+                        continue;
+                    }
+                    if (isset($context['helpers'][$var[1][0][0]])) {
+                        $context['usedFeature']['helper']++;
+                        continue;
+                    }
+                    $context['error'][] = "Can not find custom helper function defination {$var[1][0][0]}() !";
+                }
+            }
+        }
+
         // Handle spacing (standalone tags, partial indent)
         static::spacing($token, $context, (!$token[Token::POS_OP] || ($token[Token::POS_OP] === '&')) && (!$context['flags']['else'] || !isset($vars[0][0]) || ($vars[0][0] !== 'else')));
 
