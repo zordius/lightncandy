@@ -320,6 +320,9 @@ $libstr
             if ($vars[0][0] === 'else') {
                 return static::doElse($context);
             }
+            if ($vars[0][0] === 'lookup') {
+                return static::lookup($context);
+            }
         }
 
         return static::compileVariable($context, $vars, $raw);

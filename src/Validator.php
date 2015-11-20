@@ -462,6 +462,7 @@ class Validator {
         }
 
         static::helper($context, $vars[0][0]);
+        static::lookup($context, $vars);
 
         return array($raw, $vars);
     }
@@ -482,6 +483,21 @@ class Validator {
 
     /**
      * Return true whe the name is listed in helper table
+     *
+     * @param array<string,array|string|integer> $context current compile context
+     * @param string $name token name
+     *
+     * @return boolean Return true when it is custom helper
+     */
+    public static function lookup(&$context, $vars) {
+        if (isset($vars[0][0]) && $vars[0][0] == 'lookup') {
+            $context['usedFeature']['lookup']++;
+            return true;
+        }
+    }
+
+    /**
+     * Return true when the name is listed in helper table
      *
      * @param array<string,array|string|integer> $context current compile context
      * @param string $name token name

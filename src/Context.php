@@ -109,6 +109,7 @@ class Context extends Flags {
                 'delimiter' => 0,
                 'subexp' => 0,
                 'rawblock' => 0,
+                'lookup' => 0,
             ),
             'usedCount' => array(
                 'var' => array(),

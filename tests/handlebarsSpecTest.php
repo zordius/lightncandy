@@ -82,7 +82,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
         if (
                ($spec['it'] === 'registering undefined partial throws an exception')
            ) {
-            $this->markTestIncomplete('Not supported case: jjust skip it');
+            $this->markTestIncomplete('Not supported case: just skip it');
         }
 
         // TODO: require fix
