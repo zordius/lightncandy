@@ -143,7 +143,7 @@ class Validator {
      *
      * @expect null when input '', array(), array()
      * @expect 2 when input '^', array('usedFeature' => array('isec' => 1), 'level' => 0, 'currentToken' => ''), array(array('foo'))
-     * @expect true when input '/', array('stack' => array(1), 'level' => 1), array()
+     * @expect true when input '/', array('stack' => array('[with]', '#'), 'level' => 1, 'currentToken' => array(0,0,0,0,0,0,0,'with'), 'flags' => array('with' => 1)), array(array())
      * @expect 4 when input '#', array('usedFeature' => array('sec' => 3), 'level' => 0, 'currentToken' => ''), array(array('x'))
      * @expect 5 when input '#', array('usedFeature' => array('if' => 4), 'level' => 0, 'currentToken' => ''), array(array('if'))
      * @expect 6 when input '#', array('usedFeature' => array('with' => 5), 'level' => 0, 'flags' => array('with' => 1, 'runpart' => 0), 'currentToken' => ''), array(array('with'))
@@ -309,9 +309,10 @@ class Validator {
                 if ($context['flags']['with']) {
                     if ($pop2 !== '[with]') {
                         $context['error'][] = 'Unexpect token: {{/with}} !';
-                        return true;
+                        return;
                     }
                 }
+                return true;
         }
 
         switch($pop) {
