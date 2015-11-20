@@ -332,8 +332,6 @@ class Validator {
                 $context['error'][] = 'Unexpect token: ' . Token::toString($context['currentToken']) . ' !';
                 return;
         }
-
-        return true;
     }
 
     /**

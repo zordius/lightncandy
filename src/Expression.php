@@ -67,7 +67,7 @@ class Expression {
      * @param array<string,array|string|integer> $context Current context
      * @param array<array|string|integer> $var variable parsed path
      *
-     * @return array analyzed result
+     * @return array<integer|boolean|array> analyzed result
      *
      */
     public static function analyze($context, $var) {
