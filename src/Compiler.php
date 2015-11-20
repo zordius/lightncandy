@@ -402,29 +402,26 @@ $libstr
         $c = count($context['stack']) - 2;
         $pop = $context['stack'][$c + 1];
         $pop2 = $context['stack'][$c];
+        if ($pop === ':') {
+            array_pop($context['stack']);
+            return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}){$context['ops']['seperator']}" : "{$context['ops']['cnd_end']}";
+        }
         switch ($context['currentToken'][Token::POS_INNERTAG]) {
             case 'if':
             case 'unless':
-                if ($pop == ':') {
-                    array_pop($context['stack']);
-                    return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}){$context['ops']['seperator']}" : "{$context['ops']['cnd_end']}";
-                }
                 return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}){$context['ops']['seperator']}" : "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
             case 'with':
                 if ($context['flags']['with']) {
                     return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
                 }
-                break;
         }
 
+        $v = static::getVariableName($vars[0], $context);
         switch($pop) {
             case '#':
-            case '^':
-                $v = static::getVariableName($vars[0], $context);
-                if ($pop == '^') {
-                    return "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
-                }
                 return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
+            case '^':
+                return "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
         }
     }
 

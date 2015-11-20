@@ -168,12 +168,13 @@ class Validator {
                     }
                 }
 
-                static::pushStack($context, '^', $vars);
 
                 if (static::isBlockHelper($context, $vars)) {
+                    static::pushStack($context, '#', $vars);
                     return static::blockCustomHelper($context, $vars, true);
                 }
 
+                static::pushStack($context, '^', $vars);
                 return static::invertedSection($context, $vars);
 
             case '/':
