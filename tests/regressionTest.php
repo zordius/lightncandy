@@ -1376,14 +1376,14 @@ VAREND
             Array(
                 'template' => "   {{#if foo}}\nYES\n{{else}}\nNO\n{{/if}}\n",
                 'data' => null,
-                'options' => Array('flags' => LightnCandy::FLAG_MUSTACHE | LightnCandy::FLAG_ELSE),
+                'options' => Array('flags' => LightnCandy::FLAG_HANDLEBARS),
                 'expected' => "NO\n",
             ),
 
             Array(
                 'template' => "  {{#each foo}}\n{{@key}}: {{.}}\n{{/each}}\nDONE",
                 'data' => Array('foo' => Array('a' => 'A', 'b' => 'BOY!')),
-                'options' => Array('flags' => LightnCandy::FLAG_SPVARS | LightnCandy::FLAG_MUSTACHE),
+                'options' => Array('flags' => LightnCandy::FLAG_HANDLEBARS),
                 'expected' => "a: A\nb: BOY!\nDONE",
             ),
 
