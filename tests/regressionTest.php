@@ -1442,6 +1442,33 @@ VAREND
                 'options' => null,
                 'expected' => "A&amp;B &quot; &#039;",
             ),
+
+            Array(
+                'template' => '{{#if}}SHOW:{{.}} {{/if}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_NOHBHELPERS,
+                ),
+                'data' => Array('if' => Array(1, 3, 7), 'a' => Array(2, 4, 9)),
+                'expected' => 'SHOW:1 SHOW:3 SHOW:7 ',
+            ),
+
+            Array(
+                'template' => '{{#unless}}SHOW:{{.}} {{/unless}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_NOHBHELPERS,
+                ),
+                'data' => Array('unless' => Array(1, 3, 7), 'a' => Array(2, 4, 9)),
+                'expected' => 'SHOW:1 SHOW:3 SHOW:7 ',
+            ),
+
+            Array(
+                'template' => '{{#each}}SHOW:{{.}} {{/each}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_NOHBHELPERS,
+                ),
+                'data' => Array('each' => Array(1, 3, 7), 'a' => Array(2, 4, 9)),
+                'expected' => 'SHOW:1 SHOW:3 SHOW:7 ',
+            ),
         );
 
         return array_map(function($i) {
