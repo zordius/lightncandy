@@ -24,7 +24,8 @@ v0.89-develop
    * 67a4518460 Refactoring Validator and Compiler done
    * e1362e7779 Usage counting feature fixed
    * 4e21ff3f11 **BREAK CHANGE** remove FLAG_WITH
-   * 82e4221919 new flag FLAG_NOHBHELPERS to remove all handlebars.js builtin helpers
+   * fde6859ae7 new flag FLAG_NOHBHELPERS to remove all handlebars.js builtin helpers
+   * 82e4221919 **BREAK CHANGE** now FLAG_MUSTACHE also includes FLAG_NOHBHELPERS
 
 v0.23 https://github.com/zordius/lightncandy/tree/v0.23
    * align with handlebars.js 3.0.3
