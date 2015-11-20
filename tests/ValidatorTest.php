@@ -51,7 +51,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
             '#', array('usedFeature' => array('each' => 6), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0)), array(array('each'))
 )        ));
         $this->assertEquals(8, $method->invokeArgs(null,array(
-            '#', array('usedFeature' => array('unless' => 7), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0)), array(array('unless'))
+            '#', array('usedFeature' => array('unless' => 7), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0, 'nohbh' => 0)), array(array('unless'))
 )        ));
         $this->assertEquals(9, $method->invokeArgs(null,array(
             '#', array('blockhelpers' => array('abc' => ''), 'usedFeature' => array('bhelper' => 8), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0)), array(array('abc'))
@@ -60,7 +60,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
             '#', array('hbhelpers' => array('abc' => ''), 'usedFeature' => array('hbhelper' => 10), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0)), array(array('abc'))
 )        ));
         $this->assertEquals(true, $method->invokeArgs(null,array(
-            '>', array('basedir' => array('.'), 'fileext' => array('.tmpl'), 'usedFeature' => array('unless' => 7, 'partial' => 7), 'level' => 0, 'flags' => array('skippartial' => 0, 'runpart' => 0, 'spvar' => 0), 'currentToken' => array(0,0,0,0,0,0,0,0)), array('test')
+            '>', array('basedir' => array('.'), 'fileext' => array('.tmpl'), 'usedFeature' => array('partial' => 7), 'level' => 0, 'flags' => array('skippartial' => 0, 'runpart' => 0, 'spvar' => 0), 'currentToken' => array(0,0,0,0,0,0,0,0)), array('test')
 )        ));
     }
 }
