@@ -339,6 +339,18 @@ class errorTest extends PHPUnit_Framework_TestCase
                 'expected' => 'No argument after {{#with}} !',
             ),
             Array(
+                'template' => '{{#if}}OK!{{/if}}',
+                'expected' => 'No argument after {{#if}} !',
+            ),
+            Array(
+                'template' => '{{#unless}}OK!{{/unless}}',
+                'expected' => 'No argument after {{#unless}} !',
+            ),
+            Array(
+                'template' => '{{#each}}OK!{{/each}}',
+                'expected' => 'No argument after {{#each}} !',
+            ),
+            Array(
                 'template' => '{{>not_found}}',
                 'expected' => "Can not find partial file for 'not_found', you should set correct basedir and fileext in options",
             ),
