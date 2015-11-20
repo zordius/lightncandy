@@ -508,8 +508,7 @@ class Validator {
      * @param array<string,array|string|integer> $context current compile context
      * @param array<boolean|integer|string|array> $vars parsed arguments list
      *
-     * @return boolean|null Return true when this token is block :w
-custom helper
+     * @return boolean|null Return true when this token is block custom helper
      */
     protected static function isBlockHelper($context, $vars) {
         if (!isset($vars[0][0])) {
