@@ -147,7 +147,7 @@ class Validator {
      * @expect 4 when input '#', array('usedFeature' => array('sec' => 3), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0)), array(array('x'))
      * @expect 5 when input '#', array('usedFeature' => array('if' => 4), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0, 'nohbh' => 0)), array(array('if'))
      * @expect 6 when input '#', array('usedFeature' => array('with' => 5), 'level' => 0, 'flags' => array('nohbh' => 0, 'runpart' => 0, 'spvar' => 0), 'currentToken' => array(0,0,0,0,0,0,0,0)), array(array('with'))
-     * @expect 7 when input '#', array('usedFeature' => array('each' => 6), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0)), array(array('each'))
+     * @expect 7 when input '#', array('usedFeature' => array('each' => 6), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0, 'nohbh' => 0)), array(array('each'))
      * @expect 8 when input '#', array('usedFeature' => array('unless' => 7), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0, 'nohbh' => 0)), array(array('unless'))
      * @expect 9 when input '#', array('blockhelpers' => array('abc' => ''), 'usedFeature' => array('bhelper' => 8), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0)), array(array('abc'))
      * @expect 11 when input '#', array('hbhelpers' => array('abc' => ''), 'usedFeature' => array('hbhelper' => 10), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0)), array(array('abc'))
@@ -229,6 +229,17 @@ class Validator {
      * @return boolean Return true always
      */
     protected static function section(&$context, $vars, $isEach = false) {
+        if ($isEach) {
+            if ($context['flags']['nohbh']) {
+                if (isset($vars[1][0])) {
+                    $context['error'][] = 'Do not support {{#each var}} because you compile with LightnCandy::FLAG_NOHBHELPERS flag';
+                }
+            } else {
+                if (count($vars) < 2) {
+                    $context['error'][] = 'No argument after {{#each}} !';
+                }
+            }
+        }
         $context['usedFeature'][$vars[0][0]]++;
         return true;
     }

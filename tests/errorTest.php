@@ -353,6 +353,21 @@ class errorTest extends PHPUnit_Framework_TestCase
                 'expected' => 'Do not support {{#with var}} because you compile with LightnCandy::FLAG_NOHBHELPERS flag',
             ),
             Array(
+                'template' => '{{#if foo}}ABC{{/if}}',
+                'options' => Array('flags' => LightnCandy::FLAG_NOHBHELPERS),
+                'expected' => 'Do not support {{#if var}} because you compile with LightnCandy::FLAG_NOHBHELPERS flag',
+            ),
+            Array(
+                'template' => '{{#unless foo}}ABC{{/unless}}',
+                'options' => Array('flags' => LightnCandy::FLAG_NOHBHELPERS),
+                'expected' => 'Do not support {{#unless var}} because you compile with LightnCandy::FLAG_NOHBHELPERS flag',
+            ),
+            Array(
+                'template' => '{{#each foo}}ABC{{/each}}',
+                'options' => Array('flags' => LightnCandy::FLAG_NOHBHELPERS),
+                'expected' => 'Do not support {{#each var}} because you compile with LightnCandy::FLAG_NOHBHELPERS flag',
+            ),
+            Array(
                 'template' => '{{abc}}',
                 'options' => Array('helpers' => Array('abc')),
                 'expected' => "You provide a custom helper named as 'abc' in options['helpers'], but the function abc() is not defined!",
