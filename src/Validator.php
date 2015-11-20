@@ -145,7 +145,7 @@ class Validator {
      * @expect 2 when input '^', array('usedFeature' => array('isec' => 1), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0)), array(array('foo'))
      * @expect true when input '/', array('stack' => array('[with]', '#'), 'level' => 1, 'currentToken' => array(0,0,0,0,0,0,0,'with'), 'flags' => array('nohbh' => 0)), array(array())
      * @expect 4 when input '#', array('usedFeature' => array('sec' => 3), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0)), array(array('x'))
-     * @expect 5 when input '#', array('usedFeature' => array('if' => 4), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0)), array(array('if'))
+     * @expect 5 when input '#', array('usedFeature' => array('if' => 4), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0, 'nohbh' => 0)), array(array('if'))
      * @expect 6 when input '#', array('usedFeature' => array('with' => 5), 'level' => 0, 'flags' => array('nohbh' => 0, 'runpart' => 0, 'spvar' => 0), 'currentToken' => array(0,0,0,0,0,0,0,0)), array(array('with'))
      * @expect 7 when input '#', array('usedFeature' => array('each' => 6), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0)), array(array('each'))
      * @expect 8 when input '#', array('usedFeature' => array('unless' => 7), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0, 'nohbh' => 0)), array(array('unless'))
@@ -212,9 +212,7 @@ class Validator {
             case 'unless':
                 return static::unless($context, $vars, true);
             case 'if':
-                $context['usedFeature'][$vars[0][0]]++;
-                return true;
-
+                return static::doIf($context, $vars, true);
             default:
                 $context['usedFeature']['sec']++;
                 return true;
@@ -273,6 +271,28 @@ class Validator {
         } else {
             if (count($vars) < 2) {
                 $context['error'][] = 'No argument after {{#unless}} !';
+            }
+        }
+        $context['usedFeature'][$vars[0][0]]++;
+        return true;
+    }
+
+    /**
+     * validate if token
+     *
+     * @param array<string,array|string|integer> $context current compile context
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
+     *
+     * @return boolean Return true always
+     */
+    protected static function doIf(&$context, $vars) {
+        if ($context['flags']['nohbh']) {
+            if (isset($vars[1][0])) {
+                $context['error'][] = 'Do not support {{#if var}} because you compile with LightnCandy::FLAG_NOHBHELPERS flag';
+            }
+        } else {
+            if (count($vars) < 2) {
+                $context['error'][] = 'No argument after {{#if}} !';
             }
         }
         $context['usedFeature'][$vars[0][0]]++;
