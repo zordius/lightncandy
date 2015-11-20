@@ -353,7 +353,7 @@ $libstr
             $sp = $context['tokens']['partialind'] ? ", '{$context['tokens']['partialind']}'" : '';
             return $context['ops']['seperator'] . static::getFuncName($context, 'p', $tag) . "\$cx, $p, $v[0]$sp){$context['ops']['seperator']}";
         }
-        return "{$context['ops']['seperator']}'" . Partial::compileStatic($context, $p[0], $context['tokens']['partialind']) . "'{$context['ops']['seperator']}";
+        return "{$context['ops']['seperator']}'" . Partial::compileStatic($context, $p[0]) . "'{$context['ops']['seperator']}";
     }
 
     /**
@@ -376,12 +376,11 @@ $libstr
      * @param array<boolean|integer|string|array> $vars parsed arguments list
      * @param boolean $inverted the logic will be inverted
      *
-     * @return string|null Return compiled code segment for the token
+     * @return string Return compiled code segment for the token
      */
     protected static function blockCustomHelper(&$context, $vars, $inverted = false) {
         $notHBCH = !isset($context['hbhelpers'][$vars[0][0]]);
 
-        $v = static::getVariableName($vars[0], $context);
         $ch = array_shift($vars);
         $inverted = $inverted ? 'true' : 'false';
 
@@ -399,9 +398,7 @@ $libstr
      * @return string Return compiled code segment for the token
      */
     protected static function blockEnd(&$context, $vars) {
-        $c = count($context['stack']) - 2;
-        $pop = $context['stack'][$c + 1];
-        $pop2 = $context['stack'][$c];
+        $pop = $context['stack'][count($context['stack']) - 1];
         if ($pop === ':') {
             array_pop($context['stack']);
             return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}){$context['ops']['seperator']}" : "{$context['ops']['cnd_end']}";
@@ -447,7 +444,6 @@ $libstr
                     : "{$context['ops']['cnd_start']}(!" . static::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]}, false)){$context['ops']['cnd_then']}";
             case 'each':
                 return static::section($context, $vars, true);
-                break;
             case 'with':
                 if ($r = static::with($context, $vars)) {
                     return $r;
