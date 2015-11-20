@@ -166,7 +166,7 @@ class Parser extends Token {
         $avars = static::advancedVariable($vars, $context, static::toString($token));
 
         if ($token[static::POS_OP] === '>' && isset($fn)) {
-            $avars[0] = preg_match(String::IS_SUBEXP_SEARCH, $fn) ? static::subexpression($fn, $context) : array(preg_replace('/^("(.+)")|(\\[(.+)\\])$/', '$2$4', $fn));
+            $avars[0] = preg_match(String::IS_SUBEXP_SEARCH, $fn) ? $avars[0] : array(preg_replace('/^("(.+)")|(\\[(.+)\\])$/', '$2$4', $fn));
         }
 
         return array(($token[static::POS_BEGINRAW] === '{') || ($token[static::POS_OP] === '&') || $context['flags']['noesc'] || $context['rawblock'], $avars);
