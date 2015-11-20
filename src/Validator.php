@@ -505,23 +505,25 @@ class Validator {
     }
 
     /**
-     * Return 1 or larger number when custom helper detected
+     * Return true whe the name is listed in helper table
      *
      * @param array<string,array|string|integer> $context current compile context
      * @param string $name token name
      *
-     * @return integer|null Return 1 or larger number when custom helper detected
+     * @return boolean Return true when it is custom helper
      */
     protected static function helper(&$context, $name) {
-        // detect handlebars custom helpers.
         if (isset($context['hbhelpers'][$name])) {
-            return $context['usedFeature']['hbhelper']++;
+            $context['usedFeature']['hbhelper']++;
+            return true;
         }
 
-        // detect custom helpers.
         if (isset($context['helpers'][$name])) {
-            return $context['usedFeature']['helper']++;
+            $context['usedFeature']['helper']++;
+            return true;
         }
+
+        return false;
     }
 
     /**
