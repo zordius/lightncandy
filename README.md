@@ -116,7 +116,6 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * `FLAG_JSTRUE` : generate 'true' or 'false' when value is true or false (JavaScript behavior). Otherwise, true/false will generate ''.
 * `FLAG_JSOBJECT` : generate '[object Object]' for associated array, generate ',' separated values for array (JavaScript behavior). Otherwise, all PHP array will generate '' or 'Array'.
 * `FLAG_THIS` : resolve `{{this}}` as `{{.}}` in template. Otherwise, `{{this}}` will be resolved as normal variable.
-* `FLAG_WITH` : support `{{#with var}}` in template. Otherwise, `{{#with var}}` will cause template error.
 * `FLAG_PARENT` : support `{{../var}}` in template. Otherwise, `{{../var}}` will cause template error.
 * `FLAG_JSQUOTE` : escape `'` to `&#x27;` , <code>&#x60;</code> to `&#x60;` . Otherwise, `'` will be escaped to `&#039;` , <code>&#x60;</code> will not be touched.
 * `FLAG_ADVARNAME` : support `{{foo.[0].[#te#st].bar}}` style advanced variable naming in template. Use this flag if you wanna use `"some string"` or `(subexpresssion)` as argument.
@@ -139,6 +138,7 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * `FLAG_MUSTACHELOOKUP` : align recursive lookup up behaviors with mustache specification. And, the rendering performance will be worse.
 * `FLAG_MUSTACHELAMBDA` : support simple lambda logic as mustache specification. And, the rendering performance will be worse.
 * `FLAG_PREVENTINDENT` : align partial indent behavior with mustache specification.
+* `FLAG_NOHBHELPERS` : Do not compile handlebars.js builtin helpers. With this option, `{{#with}}`, `{{#if}}`, `{{#unless}}`, `{{#each}}` means normal section, and `{{#with foo}}`, `{{#if foo}}`, `{{#unless foo}}`, `{{#each foo}}` will cause compile error.
 * `FLAG_MUSTACHE` : support all mustache specification but performance drop, same with `FLAG_ERROR_SKIPPARTIAL` + `FLAG_MUSTACHELOOKUP` + `FLAG_MUSTACHELAMBDA` + `FLAG_RUNTIMEPARTIAL`.
 * `FLAG_ECHO` : compile to `echo 'a', $b, 'c';` to improve performance. This will slow down rendering when the template and data are simple, but will improve 1% ~ 7% when the data is big and looping in the template.
 * `FLAG_BESTPERFORMANCE` : same with `FLAG_ECHO` now. This flag may be changed base on performance testing result in the future.

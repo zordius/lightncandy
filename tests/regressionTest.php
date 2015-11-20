@@ -217,6 +217,9 @@ class regressionTest extends PHPUnit_Framework_TestCase
             Array(
                 'id' => 89,
                 'template' => '{{#with}}SHOW:{{.}} {{/with}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_NOHBHELPERS,
+                ),
                 'data' => Array('with' => Array(1, 3, 7), 'a' => Array(2, 4, 9)),
                 'expected' => 'SHOW:1 SHOW:3 SHOW:7 ',
             ),
@@ -1099,9 +1102,6 @@ VAREND
 
             Array(
                 'template' => '{{#with "{{"}}{{.}}{{/with}}',
-                'options' => Array(
-                    'flags' => LightnCandy::FLAG_WITH,
-                ),
                 'data' => null,
                 'expected' => '{{',
             ),
@@ -1263,14 +1263,12 @@ VAREND
             Array(
                 'template' => '{{#with people}}Yes , {{name}}{{else}}No, {{name}}{{/with}}',
                 'data' => Array('people' => Array('name' => 'Peter'), 'name' => 'NoOne'),
-                'options' => Array('flags' => LightnCandy::FLAG_WITH),
                 'expected' => 'Yes , Peter',
             ),
 
             Array(
                 'template' => '{{#with people}}Yes , {{name}}{{else}}No, {{name}}{{/with}}',
                 'data' => Array('name' => 'NoOne'),
-                'options' => Array('flags' => LightnCandy::FLAG_WITH),
                 'expected' => 'No, NoOne',
             ),
 

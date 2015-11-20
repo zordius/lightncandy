@@ -292,7 +292,6 @@ class errorTest extends PHPUnit_Framework_TestCase
             ),
             Array(
                 'template' => '{{#if a}}TEST{{/with}}',
-                'options' => Array('flags' => LightnCandy::FLAG_WITH),
                 'expected' => 'Unexpect token: {{/with}} !',
             ),
             Array(
@@ -326,7 +325,6 @@ class errorTest extends PHPUnit_Framework_TestCase
             ),
             Array(
                 'template' => '{{#with a}OK!{{/with}}',
-                'options' => Array('flags' => LightnCandy::FLAG_WITH),
                 'expected' => 'Unclosed token {{#with a}OK!{{/with}} !!',
             ),
             Array(
@@ -335,11 +333,9 @@ class errorTest extends PHPUnit_Framework_TestCase
             ),
             Array(
                 'template' => '{{#with items}}OK!{{/with}}',
-                'options' => Array('flags' => LightnCandy::FLAG_WITH),
             ),
             Array(
                 'template' => '{{#with}}OK!{{/with}}',
-                'options' => Array('flags' => LightnCandy::FLAG_WITH),
                 'expected' => 'No argument after {{#with}} !',
             ),
             Array(
@@ -353,7 +349,8 @@ class errorTest extends PHPUnit_Framework_TestCase
             ),
             Array(
                 'template' => '{{#with foo}}ABC{{/with}}',
-                'expected' => 'Do not support {{#with var}}, you should do compile with LightnCandy::FLAG_WITH flag',
+                'options' => Array('flags' => LightnCandy::FLAG_NOHBHELPERS),
+                'expected' => 'Do not support {{#with var}} because you compile with LightnCandy::FLAG_NOHBHELPERS flag',
             ),
             Array(
                 'template' => '{{abc}}',
@@ -366,7 +363,7 @@ class errorTest extends PHPUnit_Framework_TestCase
             ),
             Array(
                 'template' => '{{>recursive}}',
-                'options' => Array('basedir' => 'tests', 'flags' => LightnCandy::FLAG_WITH),
+                'options' => Array('basedir' => 'tests'),
                 'expected' => Array(
                     'I found recursive partial includes as the path: recursive -> recursive! You should fix your template or compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag.',
                 )

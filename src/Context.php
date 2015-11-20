@@ -52,7 +52,7 @@ class Context extends Flags {
                 'jsobj' => $flags & static::FLAG_JSOBJECT,
                 'jsquote' => $flags & static::FLAG_JSQUOTE,
                 'this' => $flags & static::FLAG_THIS,
-                'with' => $flags & static::FLAG_WITH,
+                'nohbh' => $flags & static::FLAG_NOHBHELPERS,
                 'parent' => $flags & static::FLAG_PARENT,
                 'echo' => $flags & static::FLAG_ECHO,
                 'advar' => $flags & static::FLAG_ADVARNAME,

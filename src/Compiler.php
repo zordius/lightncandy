@@ -411,7 +411,7 @@ $libstr
             case 'unless':
                 return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}){$context['ops']['seperator']}" : "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
             case 'with':
-                if ($context['flags']['with']) {
+                if (!$context['flags']['nohbh']) {
                     return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
                 }
         }
@@ -486,7 +486,7 @@ $libstr
      * @return string|null Return compiled code segment for the token
      */
     protected static function with(&$context, $vars) {
-        if ($context['flags']['with']) {
+        if (!$context['flags']['nohbh']) {
             $v = isset($vars[1]) ? static::getVariableNameOrSubExpression($vars[1], $context) : array(null, array());
             return $context['ops']['seperator'] . static::getFuncName($context, 'wi', 'with ' . $v[1]) . "\$cx, {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
         }
