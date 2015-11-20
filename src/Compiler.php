@@ -409,7 +409,10 @@ $libstr
         switch ($context['currentToken'][Token::POS_INNERTAG]) {
             case 'if':
             case 'unless':
-                return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}){$context['ops']['seperator']}" : "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
+                if (!$context['flags']['nohbh']) {
+                    return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}){$context['ops']['seperator']}" : "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
+                }
+                break;
             case 'with':
                 if (!$context['flags']['nohbh']) {
                     return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
@@ -435,22 +438,24 @@ $libstr
      */
     protected static function blockBegin(&$context, $vars) {
         $v = isset($vars[1]) ? static::getVariableNameOrSubExpression($vars[1], $context) : array(null, array());
-        switch (isset($vars[0][0]) ? $vars[0][0] : null) {
-            case 'if':
-                $includeZero = (isset($vars['includeZero'][1]) && $vars['includeZero'][1]) ? 'true' : 'false';
-                return $context['usedFeature']['parent']
-                    ? $context['ops']['seperator'] . static::getFuncName($context, 'ifv', 'if ' . $v[1]) . "\$cx, {$v[0]}, {$includeZero}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
-                    : "{$context['ops']['cnd_start']}(" . static::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]}, {$includeZero})){$context['ops']['cnd_then']}";
-            case 'unless':
-                return $context['usedFeature']['parent']
-                    ? $context['ops']['seperator'] . static::getFuncName($context, 'unl', 'unless ' . $v[1]) . "\$cx, {$v[0]}, false, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
-                    : "{$context['ops']['cnd_start']}(!" . static::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]}, false)){$context['ops']['cnd_then']}";
-            case 'each':
-                return static::section($context, $vars, true);
-            case 'with':
-                if ($r = static::with($context, $vars)) {
-                    return $r;
-                }
+        if (!$context['flags']['nohbh']) {
+            switch (isset($vars[0][0]) ? $vars[0][0] : null) {
+                case 'if':
+                    $includeZero = (isset($vars['includeZero'][1]) && $vars['includeZero'][1]) ? 'true' : 'false';
+                    return $context['usedFeature']['parent']
+                        ? $context['ops']['seperator'] . static::getFuncName($context, 'ifv', 'if ' . $v[1]) . "\$cx, {$v[0]}, {$includeZero}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
+                        : "{$context['ops']['cnd_start']}(" . static::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]}, {$includeZero})){$context['ops']['cnd_then']}";
+                case 'unless':
+                    return $context['usedFeature']['parent']
+                        ? $context['ops']['seperator'] . static::getFuncName($context, 'unl', 'unless ' . $v[1]) . "\$cx, {$v[0]}, false, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
+                        : "{$context['ops']['cnd_start']}(!" . static::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]}, false)){$context['ops']['cnd_then']}";
+                case 'each':
+                    return static::section($context, $vars, true);
+                case 'with':
+                    if ($r = static::with($context, $vars)) {
+                        return $r;
+                    }
+            }
         }
 
         return static::section($context, $vars);
@@ -486,10 +491,8 @@ $libstr
      * @return string|null Return compiled code segment for the token
      */
     protected static function with(&$context, $vars) {
-        if (!$context['flags']['nohbh']) {
-            $v = isset($vars[1]) ? static::getVariableNameOrSubExpression($vars[1], $context) : array(null, array());
-            return $context['ops']['seperator'] . static::getFuncName($context, 'wi', 'with ' . $v[1]) . "\$cx, {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
-        }
+        $v = isset($vars[1]) ? static::getVariableNameOrSubExpression($vars[1], $context) : array(null, array());
+        return $context['ops']['seperator'] . static::getFuncName($context, 'wi', 'with ' . $v[1]) . "\$cx, {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
     /**
