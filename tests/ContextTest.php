@@ -60,7 +60,7 @@ class ContextTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(array('flags' => array('exhlp' => 1)), $method->invokeArgs(null,array(
             array('flags' => array('exhlp' => 1)), array('helpers' => array('abc'))
 )        ));
-        $this->assertEquals(array('error' => array('Can not find custom helper function defination abc() !'), 'flags' => array('exhlp' => 0)), $method->invokeArgs(null,array(
+        $this->assertEquals(array('error' => array('You provide a custom helper named as \'abc\' in options[\'helpers\'], but the function abc() is not defined!'), 'flags' => array('exhlp' => 0)), $method->invokeArgs(null,array(
             array('error' => array(), 'flags' => array('exhlp' => 0)), array('helpers' => array('abc'))
 )        ));
         $this->assertEquals(array('flags' => array('exhlp' => 1), 'helpers' => array('\\LightnCandy\\Runtime::raw' => '\\LightnCandy\\Runtime::raw')), $method->invokeArgs(null,array(

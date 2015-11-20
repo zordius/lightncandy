@@ -213,21 +213,22 @@ class Context extends Flags {
      *
      * @expect array() when input array(), array()
      * @expect array('flags' => array('exhlp' => 1)) when input array('flags' => array('exhlp' => 1)), array('helpers' => array('abc'))
-     * @expect array('error' => array('Can not find custom helper function defination abc() !'), 'flags' => array('exhlp' => 0)) when input array('error' => array(), 'flags' => array('exhlp' => 0)), array('helpers' => array('abc'))
+     * @expect array('error' => array('You provide a custom helper named as \'abc\' in options[\'helpers\'], but the function abc() is not defined!'), 'flags' => array('exhlp' => 0)) when input array('error' => array(), 'flags' => array('exhlp' => 0)), array('helpers' => array('abc'))
      * @expect array('flags' => array('exhlp' => 1), 'helpers' => array('\\LightnCandy\\Runtime::raw' => '\\LightnCandy\\Runtime::raw')) when input array('flags' => array('exhlp' => 1), 'helpers' => array()), array('helpers' => array('\\LightnCandy\\Runtime::raw'))
      * @expect array('flags' => array('exhlp' => 1), 'helpers' => array('test' => '\\LightnCandy\\Runtime::raw')) when input array('flags' => array('exhlp' => 1), 'helpers' => array()), array('helpers' => array('test' => '\\LightnCandy\\Runtime::raw'))
      */
     protected static function updateHelperTable(&$context, $options, $tname = 'helpers') {
         if (isset($options[$tname]) && is_array($options[$tname])) {
             foreach ($options[$tname] as $name => $func) {
+                $tn = is_int($name) ? $func : $name;
                 if (is_callable($func)) {
-                    $context[$tname][is_int($name) ? $func : $name] = $func;
+                    $context[$tname][$tn] = $func;
                 } else {
                     if (is_array($func)) {
                         $context['error'][] = "I found an array in $tname with key as $name, please fix it.";
                     } else {
                         if (!$context['flags']['exhlp']) {
-                            $context['error'][] = "Can not find custom helper function defination $func() !";
+                            $context['error'][] = "You provide a custom helper named as '$tn' in options['$tname'], but the function $func() is not defined!";
                         }
                     }
                 }

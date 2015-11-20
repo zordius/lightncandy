@@ -358,7 +358,7 @@ class errorTest extends PHPUnit_Framework_TestCase
             Array(
                 'template' => '{{abc}}',
                 'options' => Array('helpers' => Array('abc')),
-                'expected' => 'Can not find custom helper function defination abc() !',
+                'expected' => "You provide a custom helper named as 'abc' in options['helpers'], but the function abc() is not defined!",
             ),
             Array(
                 'template' => '{{=~= =~=}}',
@@ -394,6 +394,7 @@ class errorTest extends PHPUnit_Framework_TestCase
                     'basedir' => '.',
                 ),
                 'expected' => Array(
+                    "Can not find custom helper function defination foo() !",
                     "Can not find custom helper function defination foo() !",
                     "You use dynamic partial name as '(foo)', this only works with option FLAG_RUNTIMEPARTIAL enabled",
                 )

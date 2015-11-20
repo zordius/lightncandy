@@ -184,6 +184,11 @@ class Parser extends Token {
         $context['usedFeature']['subexp']++;
         $vars = static::analyze(substr($expression, 1, -1), $context);
         $avars = static::advancedVariable($vars, $context, $expression);
+        if (isset($avars[0][0]) && !$context['flags']['exhlp']) {
+            if (!Validator::helper($context, $avars[0][0])) {
+                $context['error'][] = "Can not find custom helper function defination {$avars[0][0]}() !";
+            }
+        }
         return array(-1, $avars, $expression);
     }
 

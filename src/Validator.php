@@ -434,8 +434,6 @@ class Validator {
         // Handle spacing (standalone tags, partial indent)
         static::spacing($token, $context, (!$token[Token::POS_OP] || ($token[Token::POS_OP] === '&')) && (!$context['flags']['else'] || !isset($vars[0][0]) || ($vars[0][0] !== 'else')));
 
-        static::scanSubexpression($context, $vars);
-
         if (static::operator($token[Token::POS_OP], $context, $vars)) {
             return array($raw, $vars);
         }
@@ -469,28 +467,6 @@ class Validator {
     }
 
     /**
-     * scan for subexpressions and check for custom helpers
-     *
-     * @param array<string,array|string|integer> $context current compile context
-     *
-     * @return integer Return 1 or larger number when else token detected
-     */
-    protected static function scanSubexpression(&$context, $vars) {
-        foreach ($vars as $var) {
-            if (Parser::isSubexp($var)) {
-                if (!$context['flags']['exhlp']) {
-                    if (static::helper($context, $var[1][0][0])) {
-                        continue;
-                    }
-                    $context['error'][] = "Can not find custom helper function defination {$var[1][0][0]}() !";
-                }
-                array_shift($var[1]);
-                static::scanSubexpression($context, $var[1]);
-            }
-        }
-    }
-
-    /**
      * Return 1 or larger number when else token detected
      *
      * @param array<string,array|string|integer> $context current compile context
@@ -512,7 +488,7 @@ class Validator {
      *
      * @return boolean Return true when it is custom helper
      */
-    protected static function helper(&$context, $name) {
+    public static function helper(&$context, $name) {
         if (isset($context['hbhelpers'][$name])) {
             $context['usedFeature']['hbhelper']++;
             return true;
