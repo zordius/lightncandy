@@ -474,6 +474,9 @@ class Validator {
      * @return integer Return 1 or larger number when else token detected
      */
     protected static function doElse(&$context) {
+        if ($context['level'] == 0) {
+            $context['error'][] = '{{else}} only valid in if, unless, each, and #section context';
+        }
         return ++$context['usedFeature']['else'];
     }
 

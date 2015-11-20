@@ -189,7 +189,7 @@ $libstr
     /**
      * Get string presentation of a sub expression
      *
-     * @param array<array|string|integer> $var variable parsed path
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
      * @param array<string,array|string|integer> $context current compile context
      *
      * @return array<string> code representing passed expression
@@ -526,21 +526,17 @@ $libstr
      *
      * @param array<string,array|string|integer> $context current compile context
      *
-     * @return string|null Return compiled code segment for the token when the token is else
+     * @return string Return compiled code segment for the token when the token is else
      */
     protected static function doElse(&$context) {
-        $c = count($context['stack']) - 2;
-        switch ($context['stack'][$c]) {
+        switch ($context['stack'][count($context['stack']) - 2]) {
             case '[if]':
             case '[unless]':
                 $context['stack'][] = ':';
                 return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}" : "{$context['ops']['cnd_else']}";
-            case '[with]':
-            case '[each]':
             default:
                 return "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}";
         }
-        $context['error'][] = '{{else}} only valid in if, unless, each, and #section context';
     }
 
     /**
