@@ -396,9 +396,7 @@ class Runtime {
         $isObj = false;
 
         if ($isAry && $else !== null && count($v) === 0) {
-            $cx['scopes'][] = $in;
             $ret = $else($cx, $in);
-            array_pop($cx['scopes']);
             return $ret;
         }
 
@@ -461,9 +459,7 @@ class Runtime {
         }
         if ($each) {
             if ($else !== null) {
-                $cx['scopes'][] = $in;
                 $ret = $else($cx, $v);
-                array_pop($cx['scopes']);
                 return $ret;
             }
             return '';
@@ -484,9 +480,7 @@ class Runtime {
         }
 
         if ($else !== null) {
-            $cx['scopes'][] = $in;
             $ret = $else($cx, $in);
-            array_pop($cx['scopes']);
             return $ret;
         }
 
