@@ -346,7 +346,7 @@ class Runtime {
      * @expect '&#x60;a&#x27;b' when input array('flags' => array('mustlam' => 0, 'lambda' => 0)), '`a\'b'
      */
     public static function encq($cx, $var) {
-        return preg_replace('/`/', '&#x60;', preg_replace('/&#039;/', '&#x27;', htmlentities(static::raw($cx, $var), ENT_QUOTES, 'UTF-8')));
+        return preg_replace('/=/', '&#x3D;', preg_replace('/`/', '&#x60;', preg_replace('/&#039;/', '&#x27;', htmlentities(static::raw($cx, $var), ENT_QUOTES, 'UTF-8'))));
     }
 
     /**
