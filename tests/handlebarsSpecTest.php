@@ -142,9 +142,6 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                ($spec['it'] === 'GH-1089: should support failover content in multiple levels of inline partials') ||
                ($spec['it'] === 'GH-1099: should support greater than 3 nested levels of inline partials') ||
 
-               // partial indent
-               ($spec['it'] === 'prevent nested indented partials') ||
-
                // compat mode
                ($spec['description'] === 'compat mode') ||
 
@@ -238,6 +235,12 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                         $partials[$k] = $v;
                     }
                 };
+
+                if (isset($spec['compileOptions']['preventIndent'])) {
+                    if ($spec['compileOptions']['preventIndent']) {
+                        $f = $f | LightnCandy::FLAG_PREVENTINDENT;
+                    }
+                }
 
                 $php = LightnCandy::compile($spec['template'], Array(
                     'flags' => $f,

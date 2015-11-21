@@ -168,7 +168,6 @@ class Validator {
                     }
                 }
 
-
                 if (static::isBlockHelper($context, $vars)) {
                     static::pushStack($context, '#', $vars);
                     return static::blockCustomHelper($context, $vars, true);
@@ -486,7 +485,7 @@ class Validator {
         list($raw, $vars) = Parser::parse($token, $context);
 
         // Handle spacing (standalone tags, partial indent)
-        static::spacing($token, $context, (!$token[Token::POS_OP] || ($token[Token::POS_OP] === '&')) && (!$context['flags']['else'] || !isset($vars[0][0]) || ($vars[0][0] !== 'else')));
+        static::spacing($token, $context, (($token[Token::POS_OP] === '') || ($token[Token::POS_OP] === '&')) && (!$context['flags']['else'] || !isset($vars[0][0]) || ($vars[0][0] !== 'else')));
 
         if (static::operator($token[Token::POS_OP], $context, $vars)) {
             return array($raw, $vars);
@@ -639,9 +638,6 @@ class Validator {
             $token[Token::POS_RSPACE] = '';
         }
 
-        if ($context['flags']['noind']) {
-            return;
-        }
         // left line change detection
         $lsp = preg_match('/^(.*)(\\r?\\n)([ \\t]*?)$/s', $token[Token::POS_LSPACE], $lmatch);
         $ind = $lsp ? $lmatch[3] : $token[Token::POS_LSPACE];
@@ -673,10 +669,14 @@ class Validator {
             || ($lsp && !$token[Token::POS_ROTHER]) // final line
            )) {
             // handle partial
-            if ((!$context['flags']['noind']) && ($token[Token::POS_OP] === '>')) {
-                $context['tokens']['partialind'] = $ind;
+            if ($token[Token::POS_OP] === '>') {
+                if (!$context['flags']['noind']) {
+                    $context['tokens']['partialind'] = $ind;
+                    $token[Token::POS_LSPACE] = (isset($lmatch[2]) ? ($lmatch[1] . $lmatch[2]) : '');
+                }
+            } else {
+                $token[Token::POS_LSPACE] = (isset($lmatch[2]) ? ($lmatch[1] . $lmatch[2]) : '');
             }
-            $token[Token::POS_LSPACE] = (isset($lmatch[2]) ? ($lmatch[1] . $lmatch[2]) : '');
             $token[Token::POS_RSPACE] = isset($rmatch[3]) ? $rmatch[3] : '';
         }
     }

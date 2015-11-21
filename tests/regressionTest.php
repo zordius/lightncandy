@@ -1404,7 +1404,46 @@ VAREND
                     'flags' => LightnCandy::FLAG_MUSTACHE | LightnCandy::FLAG_PREVENTINDENT,
                     'partials' => Array('test1' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n"),
                 ),
-                'expected' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n\n  1:A\n 2:B\n  3:C\n 4:D\n5:E\n\nDONE\n",
+                'expected' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n  1:A\n 2:B\n  3:C\n 4:D\n5:E\nDONE\n",
+            ),
+
+            Array(
+                'template' => "{{foo}}\n  {{bar}}\n",
+                'data' => Array('foo' => 'ha', 'bar' => 'hey'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_MUSTACHE | LightnCandy::FLAG_PREVENTINDENT,
+                ),
+                'expected' => "ha\n  hey\n",
+            ),
+
+            Array(
+                'template' => "{{>test}}\n",
+                'data' => Array('foo' => 'ha', 'bar' => 'hey'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_MUSTACHE | LightnCandy::FLAG_PREVENTINDENT,
+                    'partials' => Array('test' => "{{foo}}\n  {{bar}}\n"),
+                ),
+                'expected' => "ha\n  hey\n",
+            ),
+
+            Array(
+                'template' => " {{>test}}\n",
+                'data' => Array('foo' => 'ha', 'bar' => 'hey'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_MUSTACHE | LightnCandy::FLAG_PREVENTINDENT,
+                    'partials' => Array('test' => "{{foo}}\n  {{bar}}\n"),
+                ),
+                'expected' => " ha\n  hey\n",
+            ),
+
+            Array(
+                'template' => "\n {{>test}}\n",
+                'data' => Array('foo' => 'ha', 'bar' => 'hey'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_MUSTACHE | LightnCandy::FLAG_PREVENTINDENT,
+                    'partials' => Array('test' => "{{foo}}\n  {{bar}}\n"),
+                ),
+                'expected' => "\n ha\n  hey\n",
             ),
 
             Array(
