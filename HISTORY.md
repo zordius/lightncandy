@@ -27,6 +27,8 @@ v0.89-develop
    * fde6859ae7 new flag FLAG_NOHBHELPERS to remove all handlebars.js builtin helpers
    * 82e4221919 **BREAK CHANGE** now FLAG_MUSTACHE also includes FLAG_NOHBHELPERS
    * b71afbead3 **BREAK CHANGE** rename FLAG_JSQUOTE to FLAG_HBESCAPE
+   * 90c2bbf16d **BREAK CHANGE** now {{#if}} and {{#unless}} context behavior align with handlebars.js 4.0.4
+   * c65e380877 **BREAK CHANGE** now flag FLAG_PREVENTINDENT behavior align with handlebars.js options.preventIndent
 
 v0.23 https://github.com/zordius/lightncandy/tree/v0.23
    * align with handlebars.js 3.0.3
