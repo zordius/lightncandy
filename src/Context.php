@@ -50,7 +50,7 @@ class Context extends Flags {
                 'noesc' => $flags & static::FLAG_NOESCAPE,
                 'jstrue' => $flags & static::FLAG_JSTRUE,
                 'jsobj' => $flags & static::FLAG_JSOBJECT,
-                'jsquote' => $flags & static::FLAG_JSQUOTE,
+                'hbesc' => $flags & static::FLAG_HBESCAPE,
                 'this' => $flags & static::FLAG_THIS,
                 'nohbh' => $flags & static::FLAG_NOHBHELPERS,
                 'parent' => $flags & static::FLAG_PARENT,
@@ -151,7 +151,7 @@ class Context extends Flags {
             'cnd_end' => ').',
         );
 
-        $context['ops']['enc'] = $context['flags']['jsquote'] ? 'encq' : 'enc';
+        $context['ops']['enc'] = $context['flags']['hbesc'] ? 'encq' : 'enc';
         static::updateHelperTable($context, $options);
         static::updateHelperTable($context, $options, 'blockhelpers');
         static::updateHelperTable($context, $options, 'hbhelpers');

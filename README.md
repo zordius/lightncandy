@@ -117,7 +117,7 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * `FLAG_JSOBJECT` : generate '[object Object]' for associated array, generate ',' separated values for array (JavaScript behavior). Otherwise, all PHP array will generate '' or 'Array'.
 * `FLAG_THIS` : resolve `{{this}}` as `{{.}}` in template. Otherwise, `{{this}}` will be resolved as normal variable.
 * `FLAG_PARENT` : support `{{../var}}` in template. Otherwise, `{{../var}}` will cause template error.
-* `FLAG_JSQUOTE` : escape `'` to `&#x27;` , <code>&#x60;</code> to `&#x60;` . Otherwise, `'` will be escaped to `&#039;` , <code>&#x60;</code> will not be touched.
+* `FLAG_HBESCAPE` : escape `'` to `&#x27;` , <code>&#x60;</code> to `&#x60;` , `=` to `&#x3D;`. Otherwise, `'` will be escaped to `&#039;` , <code>&#x60;</code> and `=` will not be touched.
 * `FLAG_ADVARNAME` : support `{{foo.[0].[#te#st].bar}}` style advanced variable naming in template. Use this flag if you wanna use `"some string"` or `(subexpresssion)` as argument.
 * `FLAG_NAMEDARG` : support named arguments for custom helper `{{helper name1=val1 nam2=val2 ...}}`.
 * `FLAG_EXTHELPER` : do not including custom helper codes into compiled PHP codes. This reduces the code size, but you need to take care of your helper functions when rendering. If you forget to include required functions when execute rendering function, `undefined function` runtime error will be triggered. NOTE: Anonymous functions will always be placed into generated codes.
@@ -132,7 +132,7 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * `FLAG_SPVARS` : support special variables include @root, @index, @key, @first, @last. Otherwise, compile these variable names with default parsing logic.
 * `FLAG_HANDLEBARSLAMBDA` : support lambda logic as handlebars.js specification. And, the rendering performance will be worse.
 * `FLAG_JS` : simulate all JavaScript string conversion behavior, same with `FLAG_JSTRUE` + `FLAG_JSOBJECT`.
-* `FLAG_HANDLEBARS` : support most handlebars extensions and also keep performance good, same with `FLAG_THIS` + `FLAG_WITH` + `FLAG_PARENT` + `FLAG_JSQUOTE` + `FLAG_ADVARNAME` + `FLAG_NAMEDARG` + `FLAG_SLASH` + `FLAG_ELSE` + `FLAG_RAWBLOCK`.
+* `FLAG_HANDLEBARS` : support most handlebars extensions and also keep performance good, same with `FLAG_THIS` + `FLAG_WITH` + `FLAG_PARENT` + `FLAG_HBESCAPE` + `FLAG_ADVARNAME` + `FLAG_NAMEDARG` + `FLAG_SLASH` + `FLAG_ELSE` + `FLAG_RAWBLOCK`.
 * `FLAG_HANDLEBARSJS` : support most handlebars.js + javascript behaviors and also keep performance good, same with `FLAG_JS` + `FLAG_HANDLEBARS`.
 * `FLAG_HANDLEBARSJS_FULL` : enable all supported handlebars.js behaviors but performance drop, same with `FLAG_HANDLEBARSJS` + `FLAG_INSTANCE` + `FLAG_RUNTIMEPARTIAL` + `FLAG_MUSTACHELOOKUP` + `FLAG_HANDLEBARSLAMBDA`.
 * `FLAG_MUSTACHELOOKUP` : align recursive lookup up behaviors with mustache specification. And, the rendering performance will be worse.
