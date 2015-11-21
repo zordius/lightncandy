@@ -1444,6 +1444,15 @@ VAREND
             ),
 
             Array(
+                'template' => "{{foo}}",
+                'data' => Array('foo' => '<a href="#">!</a>'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_NOHBHELPERS,
+                ),
+                'expected' => '&lt;a href&#x3D;&quot;#&quot;&gt;!&lt;/a&gt;',
+            ),
+
+            Array(
                 'template' => '{{#if}}SHOW:{{.}} {{/if}}',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_NOHBHELPERS,
