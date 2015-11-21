@@ -560,10 +560,10 @@ class Runtime {
      *
      * @return string The rendered string of the token
      *
-     * @expect '=-=' when input array('helpers' => array('a' => function ($i) {return "=$i[0]=";})), 'a', array(array('-'),array()), 'raw'
-     * @expect '=&amp;=' when input array('helpers' => array('a' => function ($i) {return "=$i[0]=";})), 'a', array(array('&'),array()), 'enc'
-     * @expect '=&#x27;=' when input array('helpers' => array('a' => function ($i) {return "=$i[0]=";})), 'a', array(array('\''),array()), 'encq'
-     * @expect '=b=' when input array('helpers' => array('a' => function ($i,$j) {return "={$j['a']}=";})), 'a', array(array(),array('a' => 'b')), 'raw'
+     * @expect '---' when input array('helpers' => array('a' => function ($i) {return "-$i[0]-";})), 'a', array(array('-'),array()), 'raw'
+     * @expect '-&amp;-' when input array('helpers' => array('a' => function ($i) {return "-$i[0]-";})), 'a', array(array('&'),array()), 'enc'
+     * @expect '-&#x27;-' when input array('helpers' => array('a' => function ($i) {return "-$i[0]-";})), 'a', array(array('\''),array()), 'encq'
+     * @expect '-b-' when input array('helpers' => array('a' => function ($i,$j) {return "-{$j['a']}-";})), 'a', array(array(),array('a' => 'b')), 'raw'
      */
     public static function ch($cx, $ch, $vars, $op) {
         return static::chret(call_user_func_array($cx['helpers'][$ch], $vars), $op);
@@ -577,15 +577,15 @@ class Runtime {
      *
      * @return string The rendered string of the token
      *
-     * @expect '=&=' when input '=&=', 'raw'
-     * @expect '=&amp;&#039;=' when input '=&\'=', 'enc'
-     * @expect '=&amp;&#x27;=' when input '=&\'=', 'encq'
-     * @expect '=&amp;&#039;=' when input array('=&\'='), 'enc'
-     * @expect '=&amp;&#x27;=' when input array('=&\'='), 'encq'
-     * @expect '=&amp;=' when input array('=&=', false), 'enc'
-     * @expect '=&=' when input array('=&=', false), 'raw'
-     * @expect '=&=' when input array('=&=', 'raw'), 'enc'
-     * @expect '=&amp;&#x27;=' when input array('=&\'=', 'encq'), 'raw'
+     * @expect '-&-' when input '-&-', 'raw'
+     * @expect '-&amp;&#039;-' when input '-&\'-', 'enc'
+     * @expect '-&amp;&#x27;-' when input '-&\'-', 'encq'
+     * @expect '-&amp;&#039;-' when input array('-&\'-'), 'enc'
+     * @expect '-&amp;&#x27;-' when input array('-&\'-'), 'encq'
+     * @expect '-&amp;-' when input array('-&-', false), 'enc'
+     * @expect '-&-' when input array('-&-', false), 'raw'
+     * @expect '-&-' when input array('-&-', 'raw'), 'enc'
+     * @expect '-&amp;&#x27;-' when input array('-&\'-', 'encq'), 'raw'
      */
     public static function chret($ret, $op) {
         if (is_array($ret)) {
@@ -599,7 +599,7 @@ class Runtime {
             case 'enc':
                 return htmlentities($ret, ENT_QUOTES, 'UTF-8');
             case 'encq':
-                return preg_replace('/&#039;/', '&#x27;', htmlentities($ret, ENT_QUOTES, 'UTF-8'));
+                return preg_replace('/=/', '&#x3D;', preg_replace('/`/', '&#x60;', preg_replace('/&#039;/', '&#x27;', htmlentities($ret, ENT_QUOTES, 'UTF-8'))));
         }
         return $ret;
     }

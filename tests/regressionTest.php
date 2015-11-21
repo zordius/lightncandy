@@ -474,7 +474,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                     ),
                 ),
                 'data' => Array(' abc' => 'YES!'),
-                'expected' => 'List:)YES! , ) xyz , ) def , )== , )== , )OK , '
+                'expected' => 'List:)YES! , ) xyz , ) def , )&#x3D;&#x3D; , )&#x3D;&#x3D; , )OK , ',
             ),
 
             Array(
@@ -1311,15 +1311,15 @@ VAREND
 <ul>
  <li>1. -Array-</li>
  <li>2. -Array-</li>
- <li>3. =Array=</li>
- <li>4. =Array=</li>
+ <li>3. &#x3D;Array&#x3D;</li>
+ <li>4. &#x3D;Array&#x3D;</li>
  <li>5. -Array-</li>
  <li>6. -Array-</li>
- <li>7. =Array=</li>
- <li>8. =Array=</li>
- <li>9. &lt;a href=&quot;Array&quot;&gt;click here&lt;/a&gt;</li>
- <li>10. &lt;a href=&quot;Array&quot;&gt;click here&lt;/a&gt;</li>
- <li>11. &lt;a href=&quot;Array&quot;&gt;Array&lt;/a&gt;</li>
+ <li>7. &#x3D;Array&#x3D;</li>
+ <li>8. &#x3D;Array&#x3D;</li>
+ <li>9. &lt;a href&#x3D;&quot;Array&quot;&gt;click here&lt;/a&gt;</li>
+ <li>10. &lt;a href&#x3D;&quot;Array&quot;&gt;click here&lt;/a&gt;</li>
+ <li>11. &lt;a href&#x3D;&quot;Array&quot;&gt;Array&lt;/a&gt;</li>
  <li>12. <a href="Array">Array</a></li>
 </ul>
 VAREND
@@ -1426,7 +1426,7 @@ VAREND
                         'helper1',
                     )
                 ),
-                'expected' => ">-===-<",
+                'expected' => ">-&#x3D;&#x3D;&#x3D;-<",
             ),
 
             Array(
@@ -1445,11 +1445,11 @@ VAREND
 
             Array(
                 'template' => "{{foo}}",
-                'data' => Array('foo' => '<a href="#">!</a>'),
+                'data' => Array('foo' => '<a href="#">\'</a>'),
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HBESCAPE,
                 ),
-                'expected' => '&lt;a href&#x3D;&quot;#&quot;&gt;!&lt;/a&gt;',
+                'expected' => '&lt;a href&#x3D;&quot;#&quot;&gt;&#x27;&lt;/a&gt;',
             ),
 
             Array(

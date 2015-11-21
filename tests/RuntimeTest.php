@@ -315,17 +315,17 @@ class RuntimeTest extends PHPUnit_Framework_TestCase
      */
     public function testOn_ch() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'ch');
-        $this->assertEquals('=-=', $method->invokeArgs(null,array(
-            array('helpers' => array('a' => function ($i) {return "=$i[0]=";})), 'a', array(array('-'),array()), 'raw'
+        $this->assertEquals('---', $method->invokeArgs(null,array(
+            array('helpers' => array('a' => function ($i) {return "-$i[0]-";})), 'a', array(array('-'),array()), 'raw'
 )        ));
-        $this->assertEquals('=&amp;=', $method->invokeArgs(null,array(
-            array('helpers' => array('a' => function ($i) {return "=$i[0]=";})), 'a', array(array('&'),array()), 'enc'
+        $this->assertEquals('-&amp;-', $method->invokeArgs(null,array(
+            array('helpers' => array('a' => function ($i) {return "-$i[0]-";})), 'a', array(array('&'),array()), 'enc'
 )        ));
-        $this->assertEquals('=&#x27;=', $method->invokeArgs(null,array(
-            array('helpers' => array('a' => function ($i) {return "=$i[0]=";})), 'a', array(array('\''),array()), 'encq'
+        $this->assertEquals('-&#x27;-', $method->invokeArgs(null,array(
+            array('helpers' => array('a' => function ($i) {return "-$i[0]-";})), 'a', array(array('\''),array()), 'encq'
 )        ));
-        $this->assertEquals('=b=', $method->invokeArgs(null,array(
-            array('helpers' => array('a' => function ($i,$j) {return "={$j['a']}=";})), 'a', array(array(),array('a' => 'b')), 'raw'
+        $this->assertEquals('-b-', $method->invokeArgs(null,array(
+            array('helpers' => array('a' => function ($i,$j) {return "-{$j['a']}-";})), 'a', array(array(),array('a' => 'b')), 'raw'
 )        ));
     }
     /**
@@ -333,32 +333,32 @@ class RuntimeTest extends PHPUnit_Framework_TestCase
      */
     public function testOn_chret() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'chret');
-        $this->assertEquals('=&=', $method->invokeArgs(null,array(
-            '=&=', 'raw'
+        $this->assertEquals('-&-', $method->invokeArgs(null,array(
+            '-&-', 'raw'
 )        ));
-        $this->assertEquals('=&amp;&#039;=', $method->invokeArgs(null,array(
-            '=&\'=', 'enc'
+        $this->assertEquals('-&amp;&#039;-', $method->invokeArgs(null,array(
+            '-&\'-', 'enc'
 )        ));
-        $this->assertEquals('=&amp;&#x27;=', $method->invokeArgs(null,array(
-            '=&\'=', 'encq'
+        $this->assertEquals('-&amp;&#x27;-', $method->invokeArgs(null,array(
+            '-&\'-', 'encq'
 )        ));
-        $this->assertEquals('=&amp;&#039;=', $method->invokeArgs(null,array(
-            array('=&\'='), 'enc'
+        $this->assertEquals('-&amp;&#039;-', $method->invokeArgs(null,array(
+            array('-&\'-'), 'enc'
 )        ));
-        $this->assertEquals('=&amp;&#x27;=', $method->invokeArgs(null,array(
-            array('=&\'='), 'encq'
+        $this->assertEquals('-&amp;&#x27;-', $method->invokeArgs(null,array(
+            array('-&\'-'), 'encq'
 )        ));
-        $this->assertEquals('=&amp;=', $method->invokeArgs(null,array(
-            array('=&=', false), 'enc'
+        $this->assertEquals('-&amp;-', $method->invokeArgs(null,array(
+            array('-&-', false), 'enc'
 )        ));
-        $this->assertEquals('=&=', $method->invokeArgs(null,array(
-            array('=&=', false), 'raw'
+        $this->assertEquals('-&-', $method->invokeArgs(null,array(
+            array('-&-', false), 'raw'
 )        ));
-        $this->assertEquals('=&=', $method->invokeArgs(null,array(
-            array('=&=', 'raw'), 'enc'
+        $this->assertEquals('-&-', $method->invokeArgs(null,array(
+            array('-&-', 'raw'), 'enc'
 )        ));
-        $this->assertEquals('=&amp;&#x27;=', $method->invokeArgs(null,array(
-            array('=&\'=', 'encq'), 'raw'
+        $this->assertEquals('-&amp;&#x27;-', $method->invokeArgs(null,array(
+            array('-&\'-', 'encq'), 'raw'
 )        ));
     }
     /**
