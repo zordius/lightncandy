@@ -198,21 +198,16 @@ class Runtime {
      * @expect 'N' when input array('scopes' => array()), null, false, array(), function () {return 'Y';}, function () {return 'N';}
      */
     public static function ifv($cx, $v, $zero, $in, $truecb, $falsecb = null) {
-        $ret = '';
         if (static::ifvar($cx, $v, $zero)) {
             if ($truecb) {
-                $cx['scopes'][] = $in;
-                $ret = $truecb($cx, $in);
-                array_pop($cx['scopes']);
+                return $truecb($cx, $in);
             }
         } else {
             if ($falsecb) {
-                $cx['scopes'][] = $in;
-                $ret = $falsecb($cx, $in);
-                array_pop($cx['scopes']);
+                return $falsecb($cx, $in);
             }
         }
-        return $ret;
+        return '';
     }
 
     /**

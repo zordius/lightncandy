@@ -485,7 +485,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                     'hbhelpers' => Array('myif', 'mywith'),
                 ),
-                'expected' => '#--john-##==john=###~~john~#--john-##==john=###~~john~#--john-##==john=###~~john~',
+                'expected' => '#-john--##==john=###~~john~#-john--##==john=###~~john~#-john--##==john=###~~john~',
             ),
 
             Array(
@@ -551,7 +551,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
 
             Array(
                 'id' => 134,
-                'template' => "{{#if 1}}{{list (keys ../names)}}{{/if}}",
+                'template' => "{{#if 1}}{{list (keys names)}}{{/if}}",
                 'data' => Array('names' => Array('foo' => 'bar', 'test' => 'ok')),
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,

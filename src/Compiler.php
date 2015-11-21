@@ -402,21 +402,26 @@ $libstr
      */
     protected static function blockEnd(&$context, $vars) {
         $pop = $context['stack'][count($context['stack']) - 1];
-        if ($pop === ':') {
-            array_pop($context['stack']);
-            return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}){$context['ops']['seperator']}" : "{$context['ops']['cnd_end']}";
-        }
         switch ($context['currentToken'][Token::POS_INNERTAG]) {
             case 'if':
             case 'unless':
+                if ($pop === ':') {
+                    array_pop($context['stack']);
+                    return "{$context['ops']['cnd_end']}";
+                }
                 if (!$context['flags']['nohbh']) {
-                    return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}){$context['ops']['seperator']}" : "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
+                    return "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
                 }
                 break;
             case 'with':
                 if (!$context['flags']['nohbh']) {
                     return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
                 }
+        }
+
+        if ($pop === ':') {
+            array_pop($context['stack']);
+            return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
         }
 
         $v = static::getVariableName($vars[0], $context);
@@ -442,13 +447,9 @@ $libstr
             switch (isset($vars[0][0]) ? $vars[0][0] : null) {
                 case 'if':
                     $includeZero = (isset($vars['includeZero'][1]) && $vars['includeZero'][1]) ? 'true' : 'false';
-                    return $context['usedFeature']['parent']
-                        ? $context['ops']['seperator'] . static::getFuncName($context, 'ifv', 'if ' . $v[1]) . "\$cx, {$v[0]}, {$includeZero}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
-                        : "{$context['ops']['cnd_start']}(" . static::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]}, {$includeZero})){$context['ops']['cnd_then']}";
+                    return "{$context['ops']['cnd_start']}(" . static::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]}, {$includeZero})){$context['ops']['cnd_then']}";
                 case 'unless':
-                    return $context['usedFeature']['parent']
-                        ? $context['ops']['seperator'] . static::getFuncName($context, 'unl', 'unless ' . $v[1]) . "\$cx, {$v[0]}, false, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}"
-                        : "{$context['ops']['cnd_start']}(!" . static::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]}, false)){$context['ops']['cnd_then']}";
+                    return "{$context['ops']['cnd_start']}(!" . static::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]}, false)){$context['ops']['cnd_then']}";
                 case 'each':
                     return static::section($context, $vars, true);
                 case 'with':
@@ -529,7 +530,7 @@ $libstr
             case '[if]':
             case '[unless]':
                 $context['stack'][] = ':';
-                return $context['usedFeature']['parent'] ? "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}" : "{$context['ops']['cnd_else']}";
+                return "{$context['ops']['cnd_else']}";
             default:
                 return "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}";
         }
