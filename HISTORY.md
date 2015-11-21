@@ -26,6 +26,7 @@ v0.89-develop
    * 4e21ff3f11 **BREAK CHANGE** remove FLAG_WITH
    * fde6859ae7 new flag FLAG_NOHBHELPERS to remove all handlebars.js builtin helpers
    * 82e4221919 **BREAK CHANGE** now FLAG_MUSTACHE also includes FLAG_NOHBHELPERS
+   * b71afbead3 **BREAK CHANGE** rename FLAG_JSQUOTE to FLAG_HBESCAPE
 
 v0.23 https://github.com/zordius/lightncandy/tree/v0.23
    * align with handlebars.js 3.0.3
