@@ -1438,16 +1438,16 @@ VAREND
 
             Array(
                 'template' => "{{foo}}",
-                'data' => Array('foo' => 'A&B " \''),
+                'data' => Array('foo' => 'A&B " \' ='),
                 'options' => null,
-                'expected' => "A&amp;B &quot; &#039;",
+                'expected' => "A&amp;B &quot; &#039; =",
             ),
 
             Array(
                 'template' => "{{foo}}",
                 'data' => Array('foo' => '<a href="#">!</a>'),
                 'options' => Array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_NOHBHELPERS,
+                    'flags' => LightnCandy::FLAG_HBESCAPE,
                 ),
                 'expected' => '&lt;a href&#x3D;&quot;#&quot;&gt;!&lt;/a&gt;',
             ),
