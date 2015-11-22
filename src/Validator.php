@@ -630,14 +630,6 @@ class Validator {
      * @return string|null Return compiled code segment for the token
      */
     protected static function spacing(&$token, &$context, $nost = false) {
-        // Handle space control.
-        if ($token[Token::POS_LSPACECTL]) {
-            $token[Token::POS_LSPACE] = '';
-        }
-        if ($token[Token::POS_RSPACECTL]) {
-            $token[Token::POS_RSPACE] = '';
-        }
-
         // left line change detection
         $lsp = preg_match('/^(.*)(\\r?\\n)([ \\t]*?)$/s', $token[Token::POS_LSPACE], $lmatch);
         $ind = $lsp ? $lmatch[3] : $token[Token::POS_LSPACE];
@@ -678,6 +670,14 @@ class Validator {
                 $token[Token::POS_LSPACE] = (isset($lmatch[2]) ? ($lmatch[1] . $lmatch[2]) : '');
             }
             $token[Token::POS_RSPACE] = isset($rmatch[3]) ? $rmatch[3] : '';
+        }
+
+        // Handle space control.
+        if ($token[Token::POS_LSPACECTL]) {
+            $token[Token::POS_LSPACE] = '';
+        }
+        if ($token[Token::POS_RSPACECTL]) {
+            $token[Token::POS_RSPACE] = '';
         }
     }
 }

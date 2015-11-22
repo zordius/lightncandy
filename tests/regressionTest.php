@@ -1449,6 +1449,15 @@ VAREND
             ),
 
             Array(
+                'template' => "\n{{#each foo~}}\n  <li>{{.}}</li>\n{{~/each}}\n\nOK",
+                'data' => Array('foo' => array('ha', 'hu')),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                ),
+                'expected' => "\n<li>ha</li><li>hu</li>\nOK",
+            ),
+
+            Array(
                 'template' => "ST:\n{{#foo}}\n {{>test1}}\n{{/foo}}\nOK\n",
                 'data' => Array('foo' => Array(1, 2)),
                 'options' => Array(
