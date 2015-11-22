@@ -638,17 +638,17 @@ class Runtime {
                 if ($cx['flags']['echo']) {
                     ob_start();
                 }
-                $cx['scopes'][] = $op;
                 if ($data) {
                     $tmp_data = $cx['sp_vars'];
                     $cx['sp_vars'] = array_merge($cx['sp_vars'], $data['data']);
                 }
-                if ($context === '_NO_INPUT_HERE_') {
+                if (($context === '_NO_INPUT_HERE_') || ($context === $op)) {
                     $ret = $cb($cx, $op);
                 } else {
+                    $cx['scopes'][] = $op;
                     $ret = $cb($cx, $context);
+                    array_pop($cx['scopes']);
                 }
-                array_pop($cx['scopes']);
                 if ($data) {
                     $cx['sp_vars'] = $tmp_data;
                 }
