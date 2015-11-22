@@ -382,6 +382,8 @@ class Runtime {
      * @expect '038' when input array('flags' => array('spvar' => 1, 'mustlam' => 0, 'lambda' => 0), 'sp_vars'=>array('root' => 0)), array(1,3,'a'=>4), 0, true, function ($c, $i) {return $i * $c['sp_vars']['index'];}
      */
     public static function sec($cx, $v, $in, $each, $cb, $else = null) {
+        $push = ($in !== $v) || $each;
+
         if ($v instanceof \Closure) {
             if ($cx['flags']['mustlam'] || $cx['flags']['lambda']) {
                 $v = $v();
@@ -420,7 +422,10 @@ class Runtime {
                 }
             }
             $ret = array();
-            $cx['scopes'][] = $in;
+            $c = count($cx['scopes']);
+            if ($push) {
+                $cx['scopes'][] = $in;
+            }
             $i = 0;
             if ($cx['flags']['spvar']) {
                 $old_spvar = $cx['sp_vars'];
@@ -454,7 +459,9 @@ class Runtime {
                 unset($cx['sp_vars']['first']);
                 $cx['sp_vars'] = $old_spvar;
             }
-            array_pop($cx['scopes']);
+            if ($push) {
+                array_pop($cx['scopes']);
+            }
             return join('', $ret);
         }
         if ($each) {
@@ -465,9 +472,13 @@ class Runtime {
             return '';
         }
         if ($isAry) {
-            $cx['scopes'][] = $in;
+            if ($push) {
+                $cx['scopes'][] = $in;
+            }
             $ret = $cb($cx, $v);
-            array_pop($cx['scopes']);
+            if ($push) {
+                array_pop($cx['scopes']);
+            }
             return $ret;
         }
 
