@@ -232,16 +232,16 @@ class RuntimeTest extends PHPUnit_Framework_TestCase
             array('flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), 0, 0, false, function () {return 'A';}
 )        ));
         $this->assertEquals('-a=', $method->invokeArgs(null,array(
-            array('flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), array('a'), array('a'), false, function ($c, $i) {return "-$i=";}
+            array('scopes' => array(), 'flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), array('a'), array('a'), false, function ($c, $i) {return "-$i=";}
 )        ));
         $this->assertEquals('-a=-b=', $method->invokeArgs(null,array(
-            array('flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), array('a','b'), array('a','b'), false, function ($c, $i) {return "-$i=";}
+            array('scopes' => array(), 'flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), array('a','b'), array('a','b'), false, function ($c, $i) {return "-$i=";}
 )        ));
         $this->assertEquals('', $method->invokeArgs(null,array(
-            array('flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), 'abc', 'abc', true, function ($c, $i) {return "-$i=";}
+            array('scopes' => array(), 'flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), 'abc', 'abc', true, function ($c, $i) {return "-$i=";}
 )        ));
         $this->assertEquals('-b=', $method->invokeArgs(null,array(
-            array('flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), array('a' => 'b'), array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
+            array('scopes' => array(), 'flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), array('a' => 'b'), array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
 )        ));
         $this->assertEquals('1', $method->invokeArgs(null,array(
             array('flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), 'b', 'b', false, function ($c, $i) {return count($i);}
@@ -286,10 +286,10 @@ class RuntimeTest extends PHPUnit_Framework_TestCase
             array('flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), new stdClass, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
 )        ));
         $this->assertEquals('268', $method->invokeArgs(null,array(
-            array('flags' => array('spvar' => 1, 'mustlam' => 0, 'lambda' => 0), 'sp_vars'=>array('root' => 0)), array(1,3,4), 0, false, function ($c, $i) {return $i * 2;}
+            array('scopes' => array(), 'flags' => array('spvar' => 1, 'mustlam' => 0, 'lambda' => 0), 'sp_vars'=>array('root' => 0)), array(1,3,4), 0, false, function ($c, $i) {return $i * 2;}
 )        ));
         $this->assertEquals('038', $method->invokeArgs(null,array(
-            array('flags' => array('spvar' => 1, 'mustlam' => 0, 'lambda' => 0), 'sp_vars'=>array('root' => 0)), array(1,3,'a'=>4), 0, true, function ($c, $i) {return $i * $c['sp_vars']['index'];}
+            array('scopes' => array(), 'flags' => array('spvar' => 1, 'mustlam' => 0, 'lambda' => 0), 'sp_vars'=>array('root' => 0)), array(1,3,'a'=>4), 0, true, function ($c, $i) {return $i * $c['sp_vars']['index'];}
 )        ));
     }
     /**
