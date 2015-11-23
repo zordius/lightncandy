@@ -23,7 +23,8 @@ namespace LightnCandy;
 /**
  * LightnCandy class for compiled PHP runtime.
  */
-class Runtime {
+class Runtime
+{
     const DEBUG_ERROR_LOG = 1;
     const DEBUG_ERROR_EXCEPTION = 2;
     const DEBUG_TAGS = 4;
@@ -177,7 +178,7 @@ class Runtime {
      * @expect true when input array(), array(0), false
      */
     public static function ifvar($cx, $v, $zero) {
-        return !is_null($v) && ($v !== false) && ($zero || ($v !== 0) && ($v !== 0.0)) && ($v !== '') && (is_array($v) ? (count($v) > 0) : true);
+        return ($v !== null) && ($v !== false) && ($zero || ($v !== 0) && ($v !== 0.0)) && ($v !== '') && (is_array($v) ? (count($v) > 0) : true);
     }
 
     /**
@@ -248,7 +249,7 @@ class Runtime {
      * @expect false when input array(), array('1')
      */
     public static function isec($cx, $v) {
-        return is_null($v) || ($v === false) || (is_array($v) && (count($v) === 0));
+        return ($v === null) || ($v === false) || (is_array($v) && (count($v) === 0));
     }
 
     /**
@@ -677,7 +678,6 @@ class Runtime {
             };
         }
 
-        // prepare $options['data']
         if ($cx['flags']['spvar']) {
             $options['data'] = $cx['sp_vars'];
         }
@@ -727,7 +727,7 @@ class Runtime {
         }
 
         $ret = '';
-        if (is_null($r)) {
+        if ($r === null) {
             if ($else) {
                 $cx['scopes'][] = $in;
                 $ret = $else($cx, $r);
