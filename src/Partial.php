@@ -27,7 +27,8 @@ use \LightnCandy\Context;
 /**
  * LightnCandy Partial handler
  */
-class Partial {
+class Partial
+{
     public static $TMP_JS_FUNCTION_STR = "!!\aFuNcTiOn\a!!";                                            
 
     /**

@@ -19,13 +19,15 @@ Origin: https://github.com/zordius/lightncandy
  */
 
 namespace LightnCandy;
+
 use \LightnCandy\Token;
 use \LightnCandy\SafeString;
 
 /**
  * LightnCandy Parser
  */
-class Parser extends Token {
+class Parser extends Token
+{
     /**
      * Return array presentation for an expression
      *
