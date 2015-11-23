@@ -623,8 +623,13 @@ class Runtime {
         $options = array(
             'name' => $ch,
             'hash' => $vars[1],
-            '_this' => $isBlock ? $op : $inverted,
         );
+
+        if ($isBlock) {
+            $options['_this'] = &$op;
+        } else {
+            $options['_this'] = &$inverted;
+        }
 
         // $invert the logic
         if ($inverted) {
@@ -634,7 +639,7 @@ class Runtime {
         }
 
         if ($isBlock) {
-            $options['fn'] = function ($context = '_NO_INPUT_HERE_', $data = null) use ($cx, $op, $cb) {
+            $options['fn'] = function ($context = '_NO_INPUT_HERE_', $data = null) use ($cx, &$op, $cb, $options) {
                 if ($cx['flags']['echo']) {
                     ob_start();
                 }
