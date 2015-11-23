@@ -20,7 +20,7 @@ Origin: https://github.com/zordius/lightncandy
 
 namespace LightnCandy;
 use \LightnCandy\Token;
-use \LightnCandy\String;
+use \LightnCandy\SafeString;
 
 /**
  * LightnCandy Parser
@@ -166,7 +166,7 @@ class Parser extends Token {
         $avars = static::advancedVariable($vars, $context, static::toString($token));
 
         if ($token[static::POS_OP] === '>' && isset($fn)) {
-            $avars[0] = preg_match(String::IS_SUBEXP_SEARCH, $fn) ? $avars[0] : array(preg_replace('/^("(.+)")|(\\[(.+)\\])$/', '$2$4', $fn));
+            $avars[0] = preg_match(SafeString::IS_SUBEXP_SEARCH, $fn) ? $avars[0] : array(preg_replace('/^("(.+)")|(\\[(.+)\\])$/', '$2$4', $fn));
         }
 
         return array(($token[static::POS_BEGINRAW] === '{') || ($token[static::POS_OP] === '&') || $context['flags']['noesc'] || $context['rawblock'], $avars);
@@ -218,7 +218,7 @@ class Parser extends Token {
         $i = 0;
         foreach ($vars as $idx => $var) {
             // Skip advanced processing for subexpressions
-            if (preg_match(String::IS_SUBEXP_SEARCH, $var)) {
+            if (preg_match(SafeString::IS_SUBEXP_SEARCH, $var)) {
                 $ret[$i] = static::subexpression($var, $context);
                 $i++;
                 continue;
@@ -232,7 +232,7 @@ class Parser extends Token {
                     $idx = $m[3] ? $m[3] : $m[4];
                     $var = $m[5];
                     // Compile subexpressions for named arguments
-                    if (preg_match(String::IS_SUBEXP_SEARCH, $var)) {
+                    if (preg_match(SafeString::IS_SUBEXP_SEARCH, $var)) {
                         $ret[$idx] = static::subexpression($var, $context);
                         continue;
                     }

@@ -21,7 +21,7 @@ Origin: https://github.com/zordius/lightncandy
 namespace LightnCandy;
 
 use \LightnCandy\Compiler;
-use \LightnCandy\String;
+use \LightnCandy\SafeString;
 use \LightnCandy\Context;
 
 /**
@@ -157,7 +157,7 @@ class Partial {
         } else {
             $sp = '';
         }
-        $code = str_replace(String::escapeTemplate(static::$TMP_JS_FUNCTION_STR), 'function', $code);
+        $code = str_replace(SafeString::escapeTemplate(static::$TMP_JS_FUNCTION_STR), 'function', $code);
         $context['partialCode'] .= "'$name' => function (\$cx, \$in{$sp}) {{$context['ops']['op_start']}'$code'{$context['ops']['op_end']}},";
     }
 }

@@ -12,7 +12,7 @@ genTestForClass('LightnCandy');
 genTestForClass('Parser');
 genTestForClass('Partial');
 genTestForClass('Runtime');
-genTestForClass('String');
+genTestForClass('SafeString');
 genTestForClass('Token');
 genTestForClass('Validator');
 

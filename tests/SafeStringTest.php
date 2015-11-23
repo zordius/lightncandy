@@ -7,13 +7,13 @@ use LightnCandy\Runtime;
 
 require_once(__DIR__ . '/test_util.php');
 
-class StringTest extends PHPUnit_Framework_TestCase
+class SafeStringTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @covers LightnCandy\String::stripExtendedComments
+     * @covers LightnCandy\SafeString::stripExtendedComments
      */
     public function testOn_stripExtendedComments() {
-        $method = new \ReflectionMethod('LightnCandy\String', 'stripExtendedComments');
+        $method = new \ReflectionMethod('LightnCandy\SafeString', 'stripExtendedComments');
         $this->assertEquals('abc', $method->invokeArgs(null, array_by_ref(array(
             'abc'
         ))));
@@ -25,10 +25,10 @@ class StringTest extends PHPUnit_Framework_TestCase
         ))));
     }
     /**
-     * @covers LightnCandy\String::escapeTemplate
+     * @covers LightnCandy\SafeString::escapeTemplate
      */
     public function testOn_escapeTemplate() {
-        $method = new \ReflectionMethod('LightnCandy\String', 'escapeTemplate');
+        $method = new \ReflectionMethod('LightnCandy\SafeString', 'escapeTemplate');
         $this->assertEquals('abc', $method->invokeArgs(null, array_by_ref(array(
             'abc'
         ))));

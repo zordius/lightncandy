@@ -21,9 +21,9 @@ Origin: https://github.com/zordius/lightncandy
 namespace LightnCandy;
 
 /**
- * LightnCandy major static class
+ * LightnCandy SafeString class
  */
-class String {
+class SafeString {
     const EXTENDED_COMMENT_SEARCH = '/{{!--.*?--}}/s';
     const IS_SUBEXP_SEARCH = '/^\(.+\)$/s';
 

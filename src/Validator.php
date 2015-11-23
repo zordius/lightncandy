@@ -23,6 +23,7 @@ use \LightnCandy\Token;
 use \LightnCandy\Parser;
 use \LightnCandy\Partial;
 use \LightnCandy\Expression;
+use \LightnCandy\SafeString;
 
 /**
  * LightnCandy Validator
@@ -35,7 +36,7 @@ class Validator {
      * @param string $template handlebars template
      */
     public static function verify(&$context, $template) {
-        $template = String::escapeTemplate(String::stripExtendedComments($template));
+        $template = SafeString::escapeTemplate(SafeString::stripExtendedComments($template));
         $context['level'] = 0;
         Parser::setDelimiter($context);
 
