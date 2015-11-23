@@ -5,6 +5,8 @@
 use LightnCandy\LightnCandy;
 use LightnCandy\Runtime;
 
+require_once(__DIR__ . '/test_util.php');
+
 class PartialTest extends PHPUnit_Framework_TestCase
 {
     /**
@@ -13,12 +15,12 @@ class PartialTest extends PHPUnit_Framework_TestCase
     public function testOn_prePartial() {
         $method = new \ReflectionMethod('LightnCandy\Partial', 'prePartial');
         $method->setAccessible(true);
-        $this->assertEquals('hey', $method->invokeArgs(null,array(
+        $this->assertEquals('hey', $method->invokeArgs(null, array_by_ref(array(
             'hey', 'haha', Array('prepartial' => false)
-)        ));
-        $this->assertEquals('haha-hoho', $method->invokeArgs(null,array(
+        ))));
+        $this->assertEquals('haha-hoho', $method->invokeArgs(null, array_by_ref(array(
             'hoho', 'haha', Array('prepartial' => function ($tmpl, $name) {return "$name-$tmpl";})
-)        ));
+        ))));
     }
 }
 ?>

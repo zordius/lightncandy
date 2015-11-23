@@ -5,6 +5,8 @@
 use LightnCandy\LightnCandy;
 use LightnCandy\Runtime;
 
+require_once(__DIR__ . '/test_util.php');
+
 class ContextTest extends PHPUnit_Framework_TestCase
 {
     /**
@@ -13,18 +15,18 @@ class ContextTest extends PHPUnit_Framework_TestCase
     public function testOn_prepareFileExt() {
         $method = new \ReflectionMethod('LightnCandy\Context', 'prepareFileExt');
         $method->setAccessible(true);
-        $this->assertEquals(array('.tmpl'), $method->invokeArgs(null,array(
+        $this->assertEquals(array('.tmpl'), $method->invokeArgs(null, array_by_ref(array(
             array()
-)        ));
-        $this->assertEquals(array('test'), $method->invokeArgs(null,array(
+        ))));
+        $this->assertEquals(array('test'), $method->invokeArgs(null, array_by_ref(array(
             array('fileext' => 'test')
-)        ));
-        $this->assertEquals(array('test1'), $method->invokeArgs(null,array(
+        ))));
+        $this->assertEquals(array('test1'), $method->invokeArgs(null, array_by_ref(array(
             array('fileext' => array('test1'))
-)        ));
-        $this->assertEquals(array('test2', 'test3'), $method->invokeArgs(null,array(
+        ))));
+        $this->assertEquals(array('test2', 'test3'), $method->invokeArgs(null, array_by_ref(array(
             array('fileext' => array('test2', 'test3'))
-)        ));
+        ))));
     }
     /**
      * @covers LightnCandy\Context::prepareBaseDir
@@ -32,21 +34,21 @@ class ContextTest extends PHPUnit_Framework_TestCase
     public function testOn_prepareBaseDir() {
         $method = new \ReflectionMethod('LightnCandy\Context', 'prepareBaseDir');
         $method->setAccessible(true);
-        $this->assertEquals(array(), $method->invokeArgs(null,array(
+        $this->assertEquals(array(), $method->invokeArgs(null, array_by_ref(array(
             array()
-)        ));
-        $this->assertEquals(array(), $method->invokeArgs(null,array(
+        ))));
+        $this->assertEquals(array(), $method->invokeArgs(null, array_by_ref(array(
             array('basedir' => array())
-)        ));
-        $this->assertEquals(array('src'), $method->invokeArgs(null,array(
+        ))));
+        $this->assertEquals(array('src'), $method->invokeArgs(null, array_by_ref(array(
             array('basedir' => array('src'))
-)        ));
-        $this->assertEquals(array('src'), $method->invokeArgs(null,array(
+        ))));
+        $this->assertEquals(array('src'), $method->invokeArgs(null, array_by_ref(array(
             array('basedir' => array('src', 'dir_not_found'))
-)        ));
-        $this->assertEquals(array('src', 'tests'), $method->invokeArgs(null,array(
+        ))));
+        $this->assertEquals(array('src', 'tests'), $method->invokeArgs(null, array_by_ref(array(
             array('basedir' => array('src', 'tests'))
-)        ));
+        ))));
     }
     /**
      * @covers LightnCandy\Context::updateHelperTable
@@ -54,21 +56,21 @@ class ContextTest extends PHPUnit_Framework_TestCase
     public function testOn_updateHelperTable() {
         $method = new \ReflectionMethod('LightnCandy\Context', 'updateHelperTable');
         $method->setAccessible(true);
-        $this->assertEquals(array(), $method->invokeArgs(null,array(
+        $this->assertEquals(array(), $method->invokeArgs(null, array_by_ref(array(
             array(), array()
-)        ));
-        $this->assertEquals(array('flags' => array('exhlp' => 1)), $method->invokeArgs(null,array(
+        ))));
+        $this->assertEquals(array('flags' => array('exhlp' => 1)), $method->invokeArgs(null, array_by_ref(array(
             array('flags' => array('exhlp' => 1)), array('helpers' => array('abc'))
-)        ));
-        $this->assertEquals(array('error' => array('You provide a custom helper named as \'abc\' in options[\'helpers\'], but the function abc() is not defined!'), 'flags' => array('exhlp' => 0)), $method->invokeArgs(null,array(
+        ))));
+        $this->assertEquals(array('error' => array('You provide a custom helper named as \'abc\' in options[\'helpers\'], but the function abc() is not defined!'), 'flags' => array('exhlp' => 0)), $method->invokeArgs(null, array_by_ref(array(
             array('error' => array(), 'flags' => array('exhlp' => 0)), array('helpers' => array('abc'))
-)        ));
-        $this->assertEquals(array('flags' => array('exhlp' => 1), 'helpers' => array('\\LightnCandy\\Runtime::raw' => '\\LightnCandy\\Runtime::raw')), $method->invokeArgs(null,array(
+        ))));
+        $this->assertEquals(array('flags' => array('exhlp' => 1), 'helpers' => array('\\LightnCandy\\Runtime::raw' => '\\LightnCandy\\Runtime::raw')), $method->invokeArgs(null, array_by_ref(array(
             array('flags' => array('exhlp' => 1), 'helpers' => array()), array('helpers' => array('\\LightnCandy\\Runtime::raw'))
-)        ));
-        $this->assertEquals(array('flags' => array('exhlp' => 1), 'helpers' => array('test' => '\\LightnCandy\\Runtime::raw')), $method->invokeArgs(null,array(
+        ))));
+        $this->assertEquals(array('flags' => array('exhlp' => 1), 'helpers' => array('test' => '\\LightnCandy\\Runtime::raw')), $method->invokeArgs(null, array_by_ref(array(
             array('flags' => array('exhlp' => 1), 'helpers' => array()), array('helpers' => array('test' => '\\LightnCandy\\Runtime::raw'))
-)        ));
+        ))));
     }
 }
 ?>

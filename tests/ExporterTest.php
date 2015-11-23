@@ -5,6 +5,8 @@
 use LightnCandy\LightnCandy;
 use LightnCandy\Runtime;
 
+require_once(__DIR__ . '/test_util.php');
+
 class ExporterTest extends PHPUnit_Framework_TestCase
 {
     /**
@@ -13,12 +15,12 @@ class ExporterTest extends PHPUnit_Framework_TestCase
     public function testOn_closure() {
         $method = new \ReflectionMethod('LightnCandy\Exporter', 'closure');
         $method->setAccessible(true);
-        $this->assertEquals('function($a) {return;}', $method->invokeArgs(null,array(
+        $this->assertEquals('function($a) {return;}', $method->invokeArgs(null, array_by_ref(array(
             function ($a) {return;}
-)        ));
-        $this->assertEquals('function($a) {return;}', $method->invokeArgs(null,array(
+        ))));
+        $this->assertEquals('function($a) {return;}', $method->invokeArgs(null, array_by_ref(array(
                function ($a) {return;}
-)        ));
+        ))));
     }
 }
 ?>

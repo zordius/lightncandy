@@ -5,6 +5,8 @@
 use LightnCandy\LightnCandy;
 use LightnCandy\Runtime;
 
+require_once(__DIR__ . '/test_util.php');
+
 class StringTest extends PHPUnit_Framework_TestCase
 {
     /**
@@ -12,30 +14,30 @@ class StringTest extends PHPUnit_Framework_TestCase
      */
     public function testOn_stripExtendedComments() {
         $method = new \ReflectionMethod('LightnCandy\String', 'stripExtendedComments');
-        $this->assertEquals('abc', $method->invokeArgs(null,array(
+        $this->assertEquals('abc', $method->invokeArgs(null, array_by_ref(array(
             'abc'
-)        ));
-        $this->assertEquals('abc{{!}}cde', $method->invokeArgs(null,array(
+        ))));
+        $this->assertEquals('abc{{!}}cde', $method->invokeArgs(null, array_by_ref(array(
             'abc{{!}}cde'
-)        ));
-        $this->assertEquals('abc{{! }}cde', $method->invokeArgs(null,array(
+        ))));
+        $this->assertEquals('abc{{! }}cde', $method->invokeArgs(null, array_by_ref(array(
             'abc{{!----}}cde'
-)        ));
+        ))));
     }
     /**
      * @covers LightnCandy\String::escapeTemplate
      */
     public function testOn_escapeTemplate() {
         $method = new \ReflectionMethod('LightnCandy\String', 'escapeTemplate');
-        $this->assertEquals('abc', $method->invokeArgs(null,array(
+        $this->assertEquals('abc', $method->invokeArgs(null, array_by_ref(array(
             'abc'
-)        ));
-        $this->assertEquals('a\\\\bc', $method->invokeArgs(null,array(
+        ))));
+        $this->assertEquals('a\\\\bc', $method->invokeArgs(null, array_by_ref(array(
             'a\bc'
-)        ));
-        $this->assertEquals('a\\\'bc', $method->invokeArgs(null,array(
+        ))));
+        $this->assertEquals('a\\\'bc', $method->invokeArgs(null, array_by_ref(array(
             'a\'bc'
-)        ));
+        ))));
     }
 }
 ?>

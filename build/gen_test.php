@@ -27,6 +27,8 @@ function genTestForClass($classname) {
 use LightnCandy\\LightnCandy;
 use LightnCandy\\Runtime;
 
+require_once(__DIR__ . '/test_util.php');
+
 class {$classname}Test extends PHPUnit_Framework_TestCase
 {
 
@@ -55,7 +57,7 @@ VAR
                 if ($matched[3][$idx]) {
                     echo "      {$matched[3][$idx]}\n";
                 }
-                echo "        \$this->assertEquals($expect, \$method->invokeArgs(null,array(\n            {$matched[2][$idx]}\n)        ));\n";
+                echo "        \$this->assertEquals($expect, \$method->invokeArgs(null, array_by_ref(array(\n            {$matched[2][$idx]}\n        ))));\n";
             }
             echo "    }\n";
         }

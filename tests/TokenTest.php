@@ -5,6 +5,8 @@
 use LightnCandy\LightnCandy;
 use LightnCandy\Runtime;
 
+require_once(__DIR__ . '/test_util.php');
+
 class TokenTest extends PHPUnit_Framework_TestCase
 {
     /**
@@ -12,15 +14,15 @@ class TokenTest extends PHPUnit_Framework_TestCase
      */
     public function testOn_toString() {
         $method = new \ReflectionMethod('LightnCandy\Token', 'toString');
-        $this->assertEquals('c', $method->invokeArgs(null,array(
+        $this->assertEquals('c', $method->invokeArgs(null, array_by_ref(array(
             array(0, 'a', 'b', 'c', 'd', 'e')
-)        ));
-        $this->assertEquals('cd', $method->invokeArgs(null,array(
+        ))));
+        $this->assertEquals('cd', $method->invokeArgs(null, array_by_ref(array(
             array(0, 'a', 'b', 'c', 'd', 'e', 'f')
-)        ));
-        $this->assertEquals('qd', $method->invokeArgs(null,array(
+        ))));
+        $this->assertEquals('qd', $method->invokeArgs(null, array_by_ref(array(
             array(0, 'a', 'b', 'c', 'd', 'e', 'f'), array(3 => 'q')
-)        ));
+        ))));
     }
 }
 ?>
