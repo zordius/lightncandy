@@ -26,7 +26,8 @@ use \LightnCandy\Token;
 /**
  * LightnCandy Expression handler
  */
-class Expression {
+class Expression
+{
     /**
      * return 'true' or 'false' string.
      *
@@ -113,7 +114,7 @@ class Expression {
      */
     public static function toString($levels, $spvar, $var) {
         return ($spvar ? '@' : '') . str_repeat('../', $levels) . ((is_array($var) && count($var)) ? implode('.', array_map(function($v) {
-            return is_null($v) ? 'this' : "[$v]";
+            return ($v === null) ? 'this' : "[$v]";
         }, $var)) : 'this');
     }
 }

@@ -19,13 +19,15 @@ Origin: https://github.com/zordius/lightncandy
  */
 
 namespace LightnCandy;
+
 use \LightnCandy\Context;
 use \LightnCandy\Compiler;
 
 /**
  * LightnCandy major static class
  */
-class LightnCandy extends Flags {
+class LightnCandy extends Flags
+{
     protected static $lastContext;
     public static $lastParsed;
 

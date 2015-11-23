@@ -27,7 +27,8 @@ use \LightnCandy\Expression;
 /**
  * LightnCandy Compiler
  */
-class Compiler extends Validator {
+class Compiler extends Validator
+{
     public static $lastParsed;
 
     /**
@@ -267,11 +268,11 @@ $libstr
             }
         }
 
-        if ((count($var) == 0) || (is_null($var[0]) && (count($var) == 1))) {
+        if ((count($var) == 0) || (($var[0] === null) && (count($var) == 1))) {
             return array($base, $exp);
         }
 
-        if (is_null($var[0])) {
+        if ($var[0] === null) {
             array_shift($var);
         }
 
@@ -321,7 +322,7 @@ $libstr
                 return static::doElse($context);
             }
             if ($vars[0][0] === 'lookup') {
-                return static::lookup($context);
+                return static::lookup($context, $vars);
             }
         }
 

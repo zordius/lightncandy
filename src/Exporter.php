@@ -23,7 +23,8 @@ namespace LightnCandy;
 /**
  * LightnCandy major static class
  */
-class Exporter {
+class Exporter
+{
     /**
      * Get PHP code string from a closure of function as string
      *

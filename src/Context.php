@@ -25,7 +25,8 @@ use \LightnCandy\Flags;
 /**
  * LightnCandy class to handle Context
  */
-class Context extends Flags {
+class Context extends Flags
+{
     /**
      * Create a context from options
      *
