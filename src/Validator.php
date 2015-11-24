@@ -220,6 +220,25 @@ class Validator {
     }
 
     /**
+     * validate builtin helpers
+     *
+     * @param array<string,array|string|integer> $context current compile context
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
+     */
+    protected static function builtin(&$context, $vars) {
+        if ($context['flags']['nohbh']) {
+            if (isset($vars[1][0])) {
+                $context['error'][] = "Do not support {{#{$vars[0][0]} var}} because you compile with LightnCandy::FLAG_NOHBHELPERS flag";
+            }
+        } else {
+            if (count($vars) < 2) {
+                $context['error'][] = "No argument after {{#{$vars[0][0]}}} !";
+            }
+        }
+        $context['usedFeature'][$vars[0][0]]++;
+    }
+
+    /**
      * validate section token
      *
      * @param array<string,array|string|integer> $context current compile context
@@ -230,17 +249,8 @@ class Validator {
      */
     protected static function section(&$context, $vars, $isEach = false) {
         if ($isEach) {
-            if ($context['flags']['nohbh']) {
-                if (isset($vars[1][0])) {
-                    $context['error'][] = 'Do not support {{#each var}} because you compile with LightnCandy::FLAG_NOHBHELPERS flag';
-                }
-            } else {
-                if (count($vars) < 2) {
-                    $context['error'][] = 'No argument after {{#each}} !';
-                }
-            }
+            static::builtin($context, $vars);
         }
-        $context['usedFeature'][$vars[0][0]]++;
         return true;
     }
 
@@ -253,16 +263,7 @@ class Validator {
      * @return boolean Return true always
      */
     protected static function with(&$context, $vars) {
-        if ($context['flags']['nohbh']) {
-            if (isset($vars[1][0])) {
-                $context['error'][] = 'Do not support {{#with var}} because you compile with LightnCandy::FLAG_NOHBHELPERS flag';
-            }
-        } else {
-            if (count($vars) < 2) {
-                $context['error'][] = 'No argument after {{#with}} !';
-            }
-        }
-        $context['usedFeature'][$vars[0][0]]++;
+        static::builtin($context, $vars);
         return true;
     }
 
@@ -275,16 +276,7 @@ class Validator {
      * @return boolean Return true always
      */
     protected static function unless(&$context, $vars) {
-        if ($context['flags']['nohbh']) {
-            if (isset($vars[1][0])) {
-                $context['error'][] = 'Do not support {{#unless var}} because you compile with LightnCandy::FLAG_NOHBHELPERS flag';
-            }
-        } else {
-            if (count($vars) < 2) {
-                $context['error'][] = 'No argument after {{#unless}} !';
-            }
-        }
-        $context['usedFeature'][$vars[0][0]]++;
+        static::builtin($context, $vars);
         return true;
     }
 
@@ -297,16 +289,7 @@ class Validator {
      * @return boolean Return true always
      */
     protected static function doIf(&$context, $vars) {
-        if ($context['flags']['nohbh']) {
-            if (isset($vars[1][0])) {
-                $context['error'][] = 'Do not support {{#if var}} because you compile with LightnCandy::FLAG_NOHBHELPERS flag';
-            }
-        } else {
-            if (count($vars) < 2) {
-                $context['error'][] = 'No argument after {{#if}} !';
-            }
-        }
-        $context['usedFeature'][$vars[0][0]]++;
+        static::builtin($context, $vars);
         return true;
     }
 
