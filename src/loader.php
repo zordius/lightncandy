@@ -21,7 +21,7 @@ Origin: https://github.com/zordius/lightncandy
 require_once(__DIR__ . '/Flags.php');
 require_once(__DIR__ . '/Context.php');
 require_once(__DIR__ . '/Token.php');
-require_once(__DIR__ . '/String.php');
+require_once(__DIR__ . '/SafeString.php');
 require_once(__DIR__ . '/Parser.php');
 require_once(__DIR__ . '/Expression.php');
 require_once(__DIR__ . '/Validator.php');
