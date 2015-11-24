@@ -23,7 +23,8 @@ namespace LightnCandy;
 /**
  * LightnCandy Token handler
  */
-class Token {
+class Token
+{
     // RegExps
     const VARNAME_SEARCH = '/(\\[[^\\]]+\\]|[^\\[\\]\\.]+)/';
 
