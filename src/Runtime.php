@@ -411,7 +411,7 @@ class Runtime
         }
 
         if ($cx['flags']['mustlam'] && ($v instanceof \Closure)) {
-            self:err('Do not support Section Lambdas!');
+            self::err('Do not support Section Lambdas!');
         }
 
         if (($loop && $isAry) || $isTrav) {
