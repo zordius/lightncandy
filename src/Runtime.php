@@ -547,6 +547,11 @@ class Runtime
             }
         }
 
+        if (!isset($cx['partials'][$p])) {
+            static::err($cx, "Can not find partial named as '$p' !!");
+            return '';
+        }
+
         return call_user_func($cx['partials'][$p], $cx, $param, $sp);
     }
 

@@ -154,13 +154,6 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                // track ids
                ($spec['file'] === 'specs/handlebars/spec/track-ids.json') ||
 
-               // verify and exception
-               ($spec['it'] === 'rendering undefined partial throws an exception') ||
-               ($spec['it'] === 'partials with duplicate parameters') ||
-               ($spec['template'] === '{{foo &}}') ||
-               ($spec['it'] === 'each on implicit context') ||
-               ($spec['it'] === 'failing dynamic partials') ||
-
                // Error report: position
                ($spec['it'] === 'knows how to report the correct line number in errors') ||
                ($spec['it'] === 'knows how to report the correct line number in errors when the first character is a newline') ||
@@ -265,14 +258,18 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
 
             $output = $renderer($spec['data']);
 
-            if (!isset($spec['expected'])) {
-                $this->fail('Should Fail:' . print_r($spec, true));
+            try {
+                $result = $renderer($spec['data'], array('debug' => Runtime::DEBUG_ERROR_EXCEPTION));
+            } catch (Exception $e) {
+                if (!isset($spec['expected'])) {
+                    // expected error and catched here, so passed
+                    continue;
+                }
+                $this->fail("Rendering Error in {$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']} PHP CODE: $php\nPARSED: $parsed\n");
             }
 
-            try {
-                $result = $renderer($spec['data'], Runtime::DEBUG_ERROR_EXCEPTION);
-            } catch (Exception $e) {
-                $this->fail("Rendering Error in {$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']} PHP CODE: $php\nPARSED: $parsed\n");
+            if (!isset($spec['expected'])) {
+                $this->fail('Should Fail:' . print_r($spec, true));
             }
 
             $this->assertEquals($spec['expected'], $result, "[{$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']} PHP CODE: $php\nPARSED: $parsed\n");
