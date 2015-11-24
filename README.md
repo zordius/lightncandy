@@ -795,6 +795,7 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{else}}` or `{{^}}` : run else logic, should between `{{#if var}}` and `{{/if}}` ; or between `{{#unless var}}` and `{{/unless}}`; or between `{{#foo}}` and `{{/foo}}`; or between `{{#each var}}` and `{{/each}}`; or between `{{#with var}}` and `{{/with}}`. (require `FLAG_ELSE`)
 * `{{#unless var}}` : run unless logic with original scope (null, false, empty Array and '' will render this block)
 * `{{#with var}}` : change context scope. If the var is false, skip included section. (require `FLAG_WITH`)
+* `{{lookup foo bar}}` : lookup foo by value of bar as key.
 * `{{../var}}` : parent template scope. (require `FLAG_PARENT`)
 * `{{>file}}` : partial; include another template inside a template.
 * `{{>file foo}}` : partial with new context (require `FLAG_RUNTIMEPARTIAL`)

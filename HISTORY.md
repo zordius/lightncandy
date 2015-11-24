@@ -32,6 +32,7 @@ v0.89-develop
    * f85001d225 fix standalone detection when space control {{~}} used
    * 6d1e390c5d now hbhelpers context change behavior align with handlebars.js 4.0.4
    * 0d1f00196f **BREAK CHANGE** now render function interface align with handlebars.js 4.0.4
+   * 44741ac197 supports {{lookup foo bar}} now
 
 v0.23 https://github.com/zordius/lightncandy/tree/v0.23
    * align with handlebars.js 3.0.3
