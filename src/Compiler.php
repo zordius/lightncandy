@@ -120,7 +120,7 @@ class Compiler extends Validator
         'constants' => $constants,
         'helpers' => $helpers,
         'blockhelpers' => $bhelpers,
-        'hbhelpers' => $hbhelpers,
+        'hbhelpers' => isset(\$options['helpers']) ? array_merge($hbhelpers, \$options['helpers']) : $hbhelpers,
         'partials' => array({$context['partialCode']}),
         'scopes' => array(),
         'sp_vars' => isset(\$options['data']) ? array_merge(\$options['data'], array('root' => \$in)) : array('root' => \$in),
