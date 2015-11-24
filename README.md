@@ -654,13 +654,13 @@ $renderer = LightnCandy::prepare($php);
 // error_log() when missing data:
 //   LightnCandy\Runtime: [gender] is not exist
 //   LightnCandy\Runtime: ../[test] is not exist
-$renderer(Array('name' => 'John'), LightnCandy\Runtime::DEBUG_ERROR_LOG);
+$renderer(Array('name' => 'John'), array('debug' => LightnCandy\Runtime::DEBUG_ERROR_LOG));
 
 // Output visual debug template with ANSI color:
-echo $renderer(Array('name' => 'John'), LightnCandy\Runtime::DEBUG_TAGS_ANSI);
+echo $renderer(Array('name' => 'John'), array('debug' => LightnCandy\Runtime::DEBUG_TAGS_ANSI));
 
 // Output debug template with HTML comments:
-echo $renderer(Array('name' => 'John'), LightnCandy\Runtime::DEBUG_TAGS_HTML);
+echo $renderer(Array('name' => 'John'), array('debug' => LightnCandy\Runtime::DEBUG_TAGS_HTML));
 ```
 
 The ANSI output will be: 
@@ -706,7 +706,7 @@ $php = LightnCandy::compile($template, Array(
 Your render function will be:
 
 ```php
-function ($in) {$
+function ($in) {
     $cx = array(...);
     // compiled at 1999-12-31 00:00:00
     return .....
