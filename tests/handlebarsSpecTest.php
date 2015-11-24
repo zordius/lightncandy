@@ -154,10 +154,6 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                // track ids
                ($spec['file'] === 'specs/handlebars/spec/track-ids.json') ||
 
-               // whitespace control
-               ($spec['template'] === ' {{~{foo}~}} ') ||
-               ($spec['template'] === "foo\n {{~> dude}} ") ||
-
                // verify and exception
                ($spec['it'] === 'rendering undefined partial throws an exception') ||
                ($spec['it'] === 'partials with duplicate parameters') ||

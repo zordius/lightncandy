@@ -655,7 +655,7 @@ class Validator {
             // handle partial
             if ($token[Token::POS_OP] === '>') {
                 if (!$context['flags']['noind']) {
-                    $context['tokens']['partialind'] = $ind;
+                    $context['tokens']['partialind'] = $token[Token::POS_LSPACECTL] ? '' : $ind;
                     $token[Token::POS_LSPACE] = (isset($lmatch[2]) ? ($lmatch[1] . $lmatch[2]) : '');
                 }
             } else {
