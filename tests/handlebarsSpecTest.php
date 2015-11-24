@@ -256,8 +256,6 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                 continue;
             }
 
-            $output = $renderer($spec['data']);
-
             try {
                 $result = $renderer($spec['data'], array('debug' => Runtime::DEBUG_ERROR_EXCEPTION));
             } catch (Exception $e) {
