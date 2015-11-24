@@ -485,7 +485,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                     'hbhelpers' => Array('myif', 'mywith'),
                 ),
-                // FIXME: wait for #if fix
+                // PENDING ISSUE, check for https://github.com/wycats/handlebars.js/issues/1135
                 // 'expected' => '#--john-##==john=###~~john~#--john-##==john=###~~john~#--john-##==john=###~~john~',
                 'expected' => '#-john--##=john==###~~john~#-john--##=john==###~~john~#-john--##=john==###~~john~',
             ),
