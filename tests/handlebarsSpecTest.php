@@ -38,6 +38,12 @@ function recursive_lambda_fix(&$array) {
     }
 }
 
+class Utils {
+    static public function createFrame($data) {
+        return $data;
+    }
+}
+
 class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
 {
     /**
@@ -71,11 +77,6 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                ($spec['it'] === 'block with complex lookup using nested context')
            ) {
             $this->markTestIncomplete('Not supported case: foo/bar path');
-        }
-
-        // 3. Not supported case: optional data
-        if (isset($spec['options']['data'])) {
-            $this->markTestIncomplete('Not supported case: optional data');
         }
 
         // 5. Different API, no need to test
@@ -257,7 +258,11 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
             }
 
             try {
-                $result = $renderer($spec['data'], array('debug' => Runtime::DEBUG_ERROR_EXCEPTION));
+                $ropt = array('debug' => Runtime::DEBUG_ERROR_EXCEPTION);
+                if (isset($spec['options']['data'])) {
+                    $ropt['data'] = $spec['options']['data'];
+                }
+                $result = $renderer($spec['data'], $ropt);
             } catch (Exception $e) {
                 if (!isset($spec['expected'])) {
                     // expected error and catched here, so passed

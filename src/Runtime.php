@@ -650,7 +650,9 @@ class Runtime
                 }
                 if ($data) {
                     $tmp_data = $cx['sp_vars'];
-                    $cx['sp_vars'] = array_merge($cx['sp_vars'], $data['data']);
+                    if (is_array($data)) {
+                        $cx['sp_vars'] = array_merge($cx['sp_vars'], $data['data']);
+                    }
                 }
                 if (($context === '_NO_INPUT_HERE_') || ($context === $op)) {
                     $ret = $cb($cx, $op);
