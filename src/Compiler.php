@@ -103,7 +103,7 @@ class Compiler extends Validator
         $phpend = $context['flags']['bare'] ? ';' : "\n?>";
 
         // Return generated PHP code string.
-        return "{$phpstart}return function (\$in, \$debugopt = $debug) {
+        return "{$phpstart}return function (\$in, \$options = null) {
     \$cx = array(
         'flags' => array(
             'jstrue' => $flagJStrue,
@@ -115,7 +115,7 @@ class Compiler extends Validator
             'mustlok' => $flagMustlok,
             'mustlam' => $flagMustlam,
             'echo' => $flagEcho,
-            'debug' => \$debugopt,
+            'debug' => isset(\$options['debug']) ? \$options['debug'] : $debug,
         ),
         'constants' => $constants,
         'helpers' => $helpers,
@@ -123,7 +123,7 @@ class Compiler extends Validator
         'hbhelpers' => $hbhelpers,
         'partials' => array({$context['partialCode']}),
         'scopes' => array(),
-        'sp_vars' => array('root' => \$in),
+        'sp_vars' => isset(\$options['data']) ? array_merge(\$options['data'], array('root' => \$in)) : array('root' => \$in),
         'runtime' => '{$context['runtime']}',
 $libstr
     );

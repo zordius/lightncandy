@@ -57,7 +57,7 @@ class errorTest extends PHPUnit_Framework_TestCase
         $this->setExpectedException('Exception', $test['expected']);
         $php = LightnCandy::compile($test['template'], $test['options']);
         $renderer = LightnCandy::prepare($php);
-        $renderer(null, Runtime::DEBUG_ERROR_EXCEPTION);
+        $renderer(null, array('debug' => Runtime::DEBUG_ERROR_EXCEPTION));
     }
 
     /**
@@ -68,7 +68,7 @@ class errorTest extends PHPUnit_Framework_TestCase
         start_catch_error_log();
         $php = LightnCandy::compile($test['template'], $test['options']);
         $renderer = LightnCandy::prepare($php);
-        $renderer(null, Runtime::DEBUG_ERROR_LOG);
+        $renderer(null, array('debug' => Runtime::DEBUG_ERROR_LOG));
         $e = stop_catch_error_log();
         if ($e) {
             $this->assertEquals(Array($test['expected']), $e);
