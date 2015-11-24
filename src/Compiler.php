@@ -425,7 +425,6 @@ $libstr
             return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
         }
 
-        $v = static::getVariableName($vars[0], $context);
         switch($pop) {
             case '#':
                 return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";

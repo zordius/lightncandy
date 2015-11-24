@@ -423,7 +423,6 @@ class Runtime
                 }
             }
             $ret = array();
-            $c = count($cx['scopes']);
             if ($push) {
                 $cx['scopes'][] = $in;
             }
@@ -487,7 +486,7 @@ class Runtime
             return $cb($cx, $in);
         }
 
-        if (!is_null($v) && ($v !== false)) {
+        if (($v !== null) && ($v !== false)) {
             return $cb($cx, $v);
         }
 
