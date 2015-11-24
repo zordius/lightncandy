@@ -227,6 +227,7 @@ $libstr
      *
      * @param array<array|string|integer> $var variable parsed path
      * @param array<array|string|integer> $context current compile context
+     * @param array<string> $lookup extra lookup string as valid PHP variable name
      *
      * @return array<string> variable names
      *
@@ -250,7 +251,7 @@ $libstr
      * @expect array('((isset($in[\'id\']) && is_array($in)) ? $in[\'id\'] : null)', 'this.[id]') when input array(null, 'id'), array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0))
      * @expect array('LR::v($cx, isset($in) ? $in : null, array(\'id\'))', 'this.[id]') when input array(null, 'id'), array('flags'=>array('prop'=>true,'spvar'=>true,'debug'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0,'standalone'=>0), 'runtime' => 'Runtime')
      */
-    protected static function getVariableName($var, &$context) {
+    protected static function getVariableName($var, &$context, $lookup = null) {
         if (isset($var[0]) && ($var[0] === 0)) {
             return array($var[1], preg_replace('/\'(.*)\'/', '$1', $var[1]));
         }
@@ -279,16 +280,18 @@ $libstr
         // To support recursive context lookup, instance properties + methods and lambdas
         // the only way is using slower rendering time variable resolver.
         if ($context['flags']['prop'] || $context['flags']['method'] || $context['flags']['mustlok'] || $context['flags']['mustlam'] || $context['flags']['lambda']) {
+            $L = $lookup ? ", $lookup[0]" : '';
             return array(static::getFuncName($context, 'v', $exp) . "\$cx, isset($base) ? $base : null, array(" . implode(',', array_map(function ($V) {
                 return "'$V'";
-            }, $var)) . '))', $exp);
+            }, $var)) . "$L))", $lookup ? "lookup $exp $lookup[1]" : $exp);
         }
 
         $n = Expression::arrayString($var);
         array_pop($var);
-        $p = count($var) ? Expression::arrayString($var) : '';
+        $L = $lookup ? "[{$lookup[0]}]" : '';
+        $p = $lookup ? $n : (count($var) ? Expression::arrayString($var) : '');
 
-        return array("((isset($base$n) && is_array($base$p)) ? $base$n : " . ($context['flags']['debug'] ? (static::getFuncName($context, 'miss', '') . "\$cx, '$exp')") : 'null' ) . ')', $exp);
+        return array("((isset($base$n$L) && is_array($base$p)) ? $base$n$L : " . ($context['flags']['debug'] ? (static::getFuncName($context, 'miss', '') . "\$cx, '$exp')") : 'null' ) . ')', $lookup ? "lookup $exp $lookup[1]" : $exp);
     }
 
     /**
@@ -322,7 +325,7 @@ $libstr
                 return static::doElse($context);
             }
             if ($vars[0][0] === 'lookup') {
-                return static::lookup($context, $vars);
+                return static::compileLookup($context, $vars, $raw);
             }
         }
 
@@ -533,6 +536,25 @@ $libstr
                 return "{$context['ops']['cnd_else']}";
             default:
                 return "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}";
+        }
+    }
+
+    /**
+     * Return compiled PHP code for a handlebars lookup token
+     *
+     * @param array<string,array|string|integer> $context current compile context
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
+     * @param boolean $raw is this {{{ token or not
+     *
+     * @return string Return compiled code segment for the token
+     */
+    protected static function compileLookup(&$context, &$vars, $raw) {
+        $v2 = static::getVariableName($vars[2], $context);
+        $v = static::getVariableName($vars[1], $context, $v2);
+        if ($context['flags']['hbesc'] || $context['flags']['jsobj'] || $context['flags']['jstrue'] || $context['flags']['debug']) {
+            return $context['ops']['seperator'] . static::getFuncName($context, $raw ? 'raw' : $context['ops']['enc'], $v[1]) . "\$cx, {$v[0]}){$context['ops']['seperator']}";
+        } else {
+            return $raw ? "{$context['ops']['seperator']}$v[0]{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlentities((string){$v[0]}, ENT_QUOTES, 'UTF-8'){$context['ops']['seperator']}";
         }
     }
 
