@@ -498,8 +498,9 @@ class Validator {
             return array($raw, $vars);
         }
 
-        static::helper($context, $vars[0][0]);
-        static::lookup($context, $vars);
+        if (!static::helper($context, $vars[0][0])) {
+            static::lookup($context, $vars);
+        }
 
         return array($raw, $vars);
     }
@@ -528,8 +529,15 @@ class Validator {
      */
     public static function lookup(&$context, $vars) {
         if (isset($vars[0][0]) && $vars[0][0] == 'lookup') {
-            $context['usedFeature']['lookup']++;
-            return true;
+            if (!$context['flags']['nohbh']) {
+                if (count($vars) < 2) {
+                    $context['error'][] = "No argument after {{lookup}} !";
+                } else if (count($vars) < 3) {
+                    $context['error'][] = "{{lookup}} requires 2 arguments !";
+                }
+                $context['usedFeature']['lookup']++;
+                return true;
+            }
         }
     }
 

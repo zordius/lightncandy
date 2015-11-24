@@ -100,9 +100,6 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                ($spec['it'] === 'each with block params') ||
                ($spec['description'] === 'block params') ||
 
-               // internal helper: lookup
-               ($spec['description'] === '#lookup') ||
-
                // handlebars.js API: createFrame()
                ($spec['it'] === 'deep @foo triggers automatic top-level data') ||
 
