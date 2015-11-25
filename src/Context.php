@@ -71,6 +71,7 @@ class Context extends Flags
                 'method' => $flags & static::FLAG_METHOD,
                 'runpart' => $flags & static::FLAG_RUNTIMEPARTIAL,
                 'rawblock' => $flags & static::FLAG_RAWBLOCK,
+                'partnc' => $flags & static::FLAG_PARTIALNEWCONTEXT,
             ),
             'level' => 0,
             'stack' => array(),
@@ -156,6 +157,10 @@ class Context extends Flags
         static::updateHelperTable($context, $options);
         static::updateHelperTable($context, $options, 'blockhelpers');
         static::updateHelperTable($context, $options, 'hbhelpers');
+
+        if ($context['flags']['partnc'] && ($context['flags']['runpart'] == 0)) {
+            $context['error'][] = 'The FLAG_PARTIALNEWCONTEXT requires FLAG_RUNTIMEPARTIAL! Fix your compile options please';
+        }
 
         return $context;
     }
