@@ -121,9 +121,6 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                ($spec['it'] === 'Scoped names take precedence over helpers') ||
                ($spec['it'] === 'Scoped names take precedence over block helpers') ||
 
-               // partial no context
-               ($spec['it'] === 'partials with no context') ||
-
                // partial in vm mode
                ($spec['it'] === 'rendering function partial in vm mode') ||
                ($spec['it'] === 'rendering template partial in vm mode throws an exception') ||
@@ -233,6 +230,12 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                 if (isset($spec['compileOptions']['preventIndent'])) {
                     if ($spec['compileOptions']['preventIndent']) {
                         $f = $f | LightnCandy::FLAG_PREVENTINDENT;
+                    }
+                }
+
+                if (isset($spec['compileOptions']['explicitPartialContext'])) {
+                    if ($spec['compileOptions']['explicitPartialContext']) {
+                        $f = $f | LightnCandy::FLAG_PARTIALNEWCONTEXT;
                     }
                 }
 

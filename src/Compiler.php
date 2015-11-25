@@ -92,6 +92,7 @@ class Compiler extends Validator
         $flagMustlok = Expression::boolString($context['flags']['mustlok']);
         $flagMustlam = Expression::boolString($context['flags']['mustlam']);
         $flagEcho = Expression::boolString($context['flags']['echo']);
+        $flagPartNC = Expression::boolString($context['flags']['partnc']);
 
         $libstr = Exporter::runtime($context);
         $constants = Exporter::constants($context);
@@ -115,6 +116,7 @@ class Compiler extends Validator
             'mustlok' => $flagMustlok,
             'mustlam' => $flagMustlam,
             'echo' => $flagEcho,
+            'partnc' => $flagPartNC,
             'debug' => isset(\$options['debug']) ? \$options['debug'] : $debug,
         ),
         'constants' => $constants,
@@ -346,12 +348,12 @@ $libstr
             return $context['ops']['seperator'];
         }
         $p = array_shift($vars);
-        if (!isset($vars[0])) {
-            $vars[0] = array();
-        }
-        $v = static::getVariableNames($vars, $context);
-        $tag = ">$p[0] " .implode(' ', $v[1]);
         if ($context['flags']['runpart']) {
+            if (!isset($vars[0])) {
+                $vars[0] = $context['flags']['partnc'] ? array(0, 'null') : array();
+            }
+            $v = static::getVariableNames($vars, $context);
+            $tag = ">$p[0] " .implode(' ', $v[1]);
             if (Parser::isSubexp($p)) {
                 list($p) = static::compileSubExpression($p[1], $context);
             } else {

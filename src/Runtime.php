@@ -534,7 +534,9 @@ class Runtime
         $param = $v[0][0];
 
         if (is_array($v[1])) {
-            if (is_array($v[0][0])) {
+            if ($v[0][0] === null) {
+                $param = $v[1];
+            } else if (is_array($v[0][0])) {
                 $param = array_merge($v[0][0], $v[1]);
             } else if (($cx['flags']['method'] || $cx['flags']['prop']) && is_object($v[0][0])) {
                 foreach ($v[1] as $i => $v) {
