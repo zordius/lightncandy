@@ -33,6 +33,7 @@ v0.89-develop
    * 6d1e390c5d now hbhelpers context change behavior align with handlebars.js 4.0.4
    * 0d1f00196f **BREAK CHANGE** now render function interface align with handlebars.js 4.0.4
    * 44741ac197 supports {{lookup foo bar}} now
+   * 50eae060c5 new flag FLAG_PARTIALNEWCONTEXT to create new empty context for every partial
 
 v0.23 https://github.com/zordius/lightncandy/tree/v0.23
    * align with handlebars.js 3.0.3
