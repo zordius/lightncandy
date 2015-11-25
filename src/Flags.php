@@ -49,7 +49,7 @@ class Flags
     const FLAG_PARTIALNEWCONTEXT = 536870912;
 
     // PHP behavior flags
-    const FLAG_STANDALONE = 4;
+    const FLAG_STANDALONEPHP = 4;
     const FLAG_EXTHELPER = 8192;
     const FLAG_ECHO = 16384;
     const FLAG_PROPERTY = 32768;
