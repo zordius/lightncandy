@@ -100,6 +100,9 @@ class Parser extends Token
             return '';
         }, trim($v));
 
+        // remove ./ in path
+        $v = preg_replace('/\\.\\//', '', $v);
+
         if ($levels) {
             $ret[] = $levels;
             if (!$context['flags']['parent']) {

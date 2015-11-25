@@ -142,6 +142,11 @@ class Runtime
                 return null;
             }
             if (isset($v)) {
+                if ($v instanceof \Closure) {
+                    if ($cx['flags']['mustlam'] || $cx['flags']['lambda']) {
+                        $v = $v();
+                    }
+                }
                 return $v;
             }
             $count--;
@@ -303,12 +308,6 @@ class Runtime
             }
         }
 
-        if ($v instanceof \Closure) {
-            if ($cx['flags']['mustlam'] || $cx['flags']['lambda']) {
-                $v = $v();
-            }
-        }
-
         return "$v";
     }
 
@@ -429,10 +428,7 @@ class Runtime
             $i = 0;
             if ($cx['flags']['spvar']) {
                 $old_spvar = $cx['sp_vars'];
-                $cx['sp_vars'] = array(
-                    '_parent' => $old_spvar,
-                    'root' => $old_spvar['root'],
-                );
+                $cx['sp_vars'] = array_merge(array('root' => $old_spvar['root']), $cx['sp_vars'], array('_parent' => $old_spvar));
                 if (!$isTrav) {
                     $last = count($keys) - 1;
                 }
@@ -648,11 +644,9 @@ class Runtime
                 if ($cx['flags']['echo']) {
                     ob_start();
                 }
-                if ($data) {
-                    $tmp_data = $cx['sp_vars'];
-                    if (is_array($data)) {
-                        $cx['sp_vars'] = array_merge($cx['sp_vars'], $data['data']);
-                    }
+                if (isset($data['data'])) {
+                    $old_spvar = $cx['sp_vars'];
+                    $cx['sp_vars'] = array_merge(array('root' => $old_spvar['root']), $data['data'], array('_parent' => $old_spvar));
                 }
                 if (($context === '_NO_INPUT_HERE_') || ($context === $op)) {
                     $ret = $cb($cx, $op);
@@ -661,8 +655,8 @@ class Runtime
                     $ret = $cb($cx, $context);
                     array_pop($cx['scopes']);
                 }
-                if ($data) {
-                    $cx['sp_vars'] = $tmp_data;
+                if (isset($data['data'])) {
+                    $cx['sp_vars'] = $old_spvar;
                 }
                 return $cx['flags']['echo'] ? ob_get_clean() : $ret;
             };

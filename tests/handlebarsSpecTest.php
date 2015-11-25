@@ -57,6 +57,9 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
 
         recursive_unset($spec, '!sparsearray');
         recursive_lambda_fix($spec['data']);
+        if (isset($spec['options']['data'])) {
+            recursive_lambda_fix($spec['options']['data']);
+        }
 
         $tested++;
 
@@ -100,9 +103,6 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                ($spec['it'] === 'works when data is disabled') ||
                ($spec['it'] === 'each with block params') ||
                ($spec['description'] === 'block params') ||
-
-               // handlebars.js API: createFrame()
-               ($spec['it'] === 'deep @foo triggers automatic top-level data') ||
 
                // helperMissing and blockHelperMissing
                ($spec['it'] === 'if a context is not found, helperMissing is used') ||
@@ -192,6 +192,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
 
         // setup helpers
         $helpers = Array();
+        $helpersList = '';
         foreach (array_merge((isset($spec['globalHelpers']) && is_array($spec['globalHelpers'])) ? $spec['globalHelpers'] : array(), (isset($spec['helpers']) && is_array($spec['helpers'])) ? $spec['helpers'] : array()) as $name => $func) {
             if (!isset($func['php'])) {
                 $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , no PHP helper code provided for this case.");
@@ -214,6 +215,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                 $helper = preg_replace('/\\[\'fn\'\\]\\(\\)/', '[\'fn\'](array())', $helper);
             }
 
+            $helpersList .= "$helper\n";
             eval($helper);
         }
 
@@ -275,7 +277,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                 $this->fail('Should Fail:' . print_r($spec, true));
             }
 
-            $this->assertEquals($spec['expected'], $result, "[{$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']} PHP CODE: $php\nPARSED: $parsed\n");
+            $this->assertEquals($spec['expected'], $result, "[{$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']} PHP CODE: $php\nPARSED: $parsed\nHELPERS:$helpersList");
         }
     }
 
