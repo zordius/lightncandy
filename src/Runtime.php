@@ -428,7 +428,7 @@ class Runtime
             $i = 0;
             if ($cx['flags']['spvar']) {
                 $old_spvar = $cx['sp_vars'];
-                $cx['sp_vars'] = array_merge(array('root' => $old_spvar['root']), $cx['sp_vars'], array('_parent' => $old_spvar));
+                $cx['sp_vars'] = array_merge(array('root' => $old_spvar['root']), $old_spvar, array('_parent' => $old_spvar));
                 if (!$isTrav) {
                     $last = count($keys) - 1;
                 }
