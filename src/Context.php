@@ -72,6 +72,7 @@ class Context extends Flags
                 'runpart' => $flags & static::FLAG_RUNTIMEPARTIAL,
                 'rawblock' => $flags & static::FLAG_RAWBLOCK,
                 'partnc' => $flags & static::FLAG_PARTIALNEWCONTEXT,
+                'nostd' => $flags & static::FLAG_IGNORESTANDALONE,
             ),
             'level' => 0,
             'stack' => array(),

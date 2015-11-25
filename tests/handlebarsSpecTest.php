@@ -92,8 +92,6 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
         // TODO: require fix
         if (
                ($spec['it'] === 'chained inverted sections') ||
-               ($spec['it'] === 'chained inverted sections with mismatch') ||
-               ($spec['it'] === 'block standalone else sections can be disabled') ||
 
                // Decorators: https://github.com/wycats/handlebars.js/blob/master/docs/decorators-api.md
                ($spec['description'] === 'decorators') ||
@@ -216,7 +214,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
             eval($helper);
         }
 
-        foreach (Array($hb_test_flag, $hb_test_flag | LightnCandy::FLAG_STANDALONE) as $f) {
+        foreach (Array($hb_test_flag, $hb_test_flag | LightnCandy::FLAG_STANDALONEPHP) as $f) {
             try {
                 $partials = isset($spec['globalPartials']) ? $spec['globalPartials'] : array();
 
@@ -236,6 +234,12 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                 if (isset($spec['compileOptions']['explicitPartialContext'])) {
                     if ($spec['compileOptions']['explicitPartialContext']) {
                         $f = $f | LightnCandy::FLAG_PARTIALNEWCONTEXT;
+                    }
+                }
+
+                if (isset($spec['compileOptions']['ignoreStandalone'])) {
+                    if ($spec['compileOptions']['ignoreStandalone']) {
+                        $f = $f | LightnCandy::FLAG_IGNORESTANDALONE;
                     }
                 }
 

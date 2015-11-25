@@ -469,7 +469,7 @@ class Validator {
         list($raw, $vars) = Parser::parse($token, $context);
 
         // Handle spacing (standalone tags, partial indent)
-        static::spacing($token, $context, (($token[Token::POS_OP] === '') || ($token[Token::POS_OP] === '&')) && (!$context['flags']['else'] || !isset($vars[0][0]) || ($vars[0][0] !== 'else')));
+        static::spacing($token, $context, (($token[Token::POS_OP] === '') || ($token[Token::POS_OP] === '&')) && (!$context['flags']['else'] || !isset($vars[0][0]) || ($vars[0][0] !== 'else')) || ($context['flags']['nostd'] > 0));
 
         if (static::operator($token[Token::POS_OP], $context, $vars)) {
             return array($raw, $vars);

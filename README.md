@@ -130,6 +130,7 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * `FLAG_METHOD` : support object instance method access. You MUST apply this if your data contains object. And, the rendering performance will be worse.
 * `FLAG_INSTANCE` : same with `FLAG_PROPERTY` + `FLAG_METHOD`
 * `FLAG_SPACECTL` : support space control `{{~ }}` or `{{ ~}}` in template. Otherwise, `{{~ }}` or `{{ ~}}` will cause template error.
+* `FLAG_IGNORESTANDALONE` : prevent standalone detection on `{{#foo}}`, `{{/foo}}` or `{{^}}`, the behavior is same with handlebars.js ignoreStandalone compile time option.
 * `FLAG_SPVARS` : support special variables include @root, @index, @key, @first, @last. Otherwise, compile these variable names with default parsing logic.
 * `FLAG_HANDLEBARSLAMBDA` : support lambda logic as handlebars.js specification. And, the rendering performance will be worse.
 * `FLAG_JS` : simulate all JavaScript string conversion behavior, same with `FLAG_JSTRUE` + `FLAG_JSOBJECT`.
@@ -138,7 +139,7 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * `FLAG_HANDLEBARSJS_FULL` : enable all supported handlebars.js behaviors but performance drop, same with `FLAG_HANDLEBARSJS` + `FLAG_INSTANCE` + `FLAG_RUNTIMEPARTIAL` + `FLAG_MUSTACHELOOKUP` + `FLAG_HANDLEBARSLAMBDA`.
 * `FLAG_MUSTACHELOOKUP` : align recursive lookup up behaviors with mustache specification. And, the rendering performance will be worse.
 * `FLAG_MUSTACHELAMBDA` : support simple lambda logic as mustache specification. And, the rendering performance will be worse.
-* `FLAG_PREVENTINDENT` : align partial indent behavior with mustache specification. the behavior is same with handlebars.js preventIndent copmile time option.
+* `FLAG_PREVENTINDENT` : align partial indent behavior with mustache specification. This is same with handlebars.js preventIndent copmile time option.
 * `FLAG_NOHBHELPERS` : Do not compile handlebars.js builtin helpers. With this option, `{{#with}}`, `{{#if}}`, `{{#unless}}`, `{{#each}}` means normal section, and `{{#with foo}}`, `{{#if foo}}`, `{{#unless foo}}`, `{{#each foo}}` will cause compile error.
 * `FLAG_MUSTACHE` : support all mustache specification but performance drop, same with `FLAG_ERROR_SKIPPARTIAL` + `FLAG_MUSTACHELOOKUP` + `FLAG_MUSTACHELAMBDA` + `FLAG_NOHBHELPERS` + `FLAG_RUNTIMEPARTIAL` + `FLAG_JS`.
 * `FLAG_ECHO` : compile to `echo 'a', $b, 'c';` to improve performance. This will slow down rendering when the template and data are simple, but will improve 1% ~ 7% when the data is big and looping in the template.

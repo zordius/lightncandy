@@ -35,7 +35,7 @@ class MustacheSpecTest extends PHPUnit_Framework_TestCase
             $spec['data']['lambda'] = getFunctionCode('function ($text = null) {' . $spec['data']['lambda']['php'] . '}');
         }
 
-        foreach (Array($flag, $flag | LightnCandy::FLAG_STANDALONE) as $f) {
+        foreach (Array($flag, $flag | LightnCandy::FLAG_STANDALONEPHP) as $f) {
             global $calls;
             $calls = 0;
             $php = LightnCandy::compile($spec['template'], Array(
