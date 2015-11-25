@@ -40,6 +40,13 @@ function recursive_lambda_fix(&$array) {
 
 class Utils {
     static public function createFrame($data) {
+        if (is_array($data)) {
+            $r = array();
+            foreach ($data as $k => $v) {
+                $r[$k] = $v;
+            }
+            return $r;
+        }
         return $data;
     }
 }
