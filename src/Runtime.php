@@ -637,12 +637,17 @@ class Runtime
         $options = array(
             'name' => $ch,
             'hash' => $vars[1],
+            'fn.blockParams' => 0,
         );
 
         if ($isBlock) {
             $options['_this'] = &$op;
         } else {
             $options['_this'] = &$inverted;
+        }
+
+        if (isset($vars[2])) {
+            $options['fn.blockParams'] = count($vars[2]);
         }
 
         // $invert the logic
@@ -664,6 +669,9 @@ class Runtime
                 $ex = false;
                 if (isset($data['blockParams']) && isset($vars[2])) {
                     $ex = array_combine($vars[2], array_slice($data['blockParams'], 0, count($vars[2])));
+                    array_unshift($cx['blparam'], $ex);
+                } else if (isset($cx['blparam'][0])) {
+                    $ex = $cx['blparam'][0];
                 }
                 if (($context === '_NO_INPUT_HERE_') || ($context === $op)) {
                     $ret = $cb($cx, is_array($ex) ? static::m($cx, $op, $ex) : $op);

@@ -192,6 +192,11 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
             $this->markTestIncomplete('TODO: require fix');
         }
 
+        // FIX SPEC
+        if ($spec['it'] === 'should take presednece over parent block params') {
+            $spec['helpers']['goodbyes']['php'] = 'function($options) { static $value; if($value === null) { $value = 1; } return $options->fn(array("value" => "bar"), array("blockParams" => ($options["fn.blockParams"] === 1) ? array($value++, $value++) : null));}';
+        }
+
         foreach (Array($hb_test_flag, $hb_test_flag | LightnCandy::FLAG_STANDALONEPHP) as $f) {
             // setup helpers
             $tested++;
@@ -281,7 +286,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                     // expected error and catched here, so passed
                     continue;
                 }
-                $this->fail("Rendering Error in {$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']} PHP CODE: $php\nPARSED: $parsed\n");
+                $this->fail("Rendering Error in {$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']} PHP CODE: $php\nPARSED: $parsed\n" . $e->getMessage());
             }
 
             if (!isset($spec['expected'])) {

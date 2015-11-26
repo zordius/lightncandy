@@ -127,6 +127,7 @@ class Compiler extends Validator
         'partials' => array({$context['partialCode']}),
         'scopes' => array(),
         'sp_vars' => isset(\$options['data']) ? array_merge(array('root' => \$in), \$options['data']) : array('root' => \$in),
+        'blparam' => array(),
         'runtime' => '{$context['runtime']}',
 $libstr
     );
