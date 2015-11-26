@@ -35,13 +35,13 @@ class CompilerTest extends PHPUnit_Framework_TestCase
         $method = new \ReflectionMethod('LightnCandy\Compiler', 'getVariableNames');
         $method->setAccessible(true);
         $this->assertEquals(array('array(array($in),array())', array('this')), $method->invokeArgs(null, array_by_ref(array(
-            array(null), array('flags'=>array('spvar'=>true))
+            array('flags'=>array('spvar'=>true)), array(null)
         ))));
         $this->assertEquals(array('array(array($in,$in),array())', array('this', 'this')), $method->invokeArgs(null, array_by_ref(array(
-            array(null, null), array('flags'=>array('spvar'=>true))
+            array('flags'=>array('spvar'=>true)), array(null, null)
         ))));
         $this->assertEquals(array('array(array(),array(\'a\'=>$in))', array('this')), $method->invokeArgs(null, array_by_ref(array(
-            array('a' => null), array('flags'=>array('spvar'=>true))
+            array('flags'=>array('spvar'=>true)), array('a' => null)
         ))));
     }
     /**

@@ -171,11 +171,11 @@ $libstr
      *
      * @return array<string|array> variable names
      *
-     * @expect array('array(array($in),array())', array('this')) when input array(null), array('flags'=>array('spvar'=>true))
-     * @expect array('array(array($in,$in),array())', array('this', 'this')) when input array(null, null), array('flags'=>array('spvar'=>true))
-     * @expect array('array(array(),array(\'a\'=>$in))', array('this')) when input array('a' => null), array('flags'=>array('spvar'=>true))
+     * @expect array('array(array($in),array())', array('this')) when input array('flags'=>array('spvar'=>true)), array(null)
+     * @expect array('array(array($in,$in),array())', array('this', 'this')) when input array('flags'=>array('spvar'=>true)), array(null, null)
+     * @expect array('array(array(),array(\'a\'=>$in))', array('this')) when input array('flags'=>array('spvar'=>true)), array('a' => null)
      */
-    protected static function getVariableNames($vn, &$context) {
+    protected static function getVariableNames(&$context, $vn) {
         $vars = array(array(), array());
         $exps = array();
         foreach ($vn as $i => $v) {
@@ -354,7 +354,7 @@ $libstr
             if (!isset($vars[0])) {
                 $vars[0] = $context['flags']['partnc'] ? array(0, 'null') : array();
             }
-            $v = static::getVariableNames($vars, $context);
+            $v = static::getVariableNames($context, $vars);
             $tag = ">$p[0] " .implode(' ', $v[1]);
             if (Parser::isSubExp($p)) {
                 list($p) = static::compileSubExpression($p[1], $context);
@@ -397,7 +397,7 @@ $libstr
         $inverted = $inverted ? 'true' : 'false';
 
         static::addUsageCount($context, $notHBCH ? 'blockhelpers' : 'hbhelpers', $ch[0]);
-        $v = static::getVariableNames($vars, $context);
+        $v = static::getVariableNames($context, $vars);
         return $context['ops']['seperator'] . static::getFuncName($context, $notHBCH ? 'bch' : 'hbch', ($inverted ? '^' : '#') . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, \$in, $inverted, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
@@ -522,7 +522,7 @@ $libstr
 
         $fn = $raw ? 'raw' : $context['ops']['enc'];
         $ch = array_shift($vars);
-        $v = static::getVariableNames($vars, $context);
+        $v = static::getVariableNames($context, $vars);
         static::addUsageCount($context, $notHH ? 'helpers' : 'hbhelpers', $ch[0]);
         return $context['ops']['seperator'] . static::getFuncName($context, $notHH ? 'ch' : 'hbch', "$ch[0] " . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, '$fn'" . ($notHH ? '' : ', $in') . "){$context['ops']['seperator']}";
     }
