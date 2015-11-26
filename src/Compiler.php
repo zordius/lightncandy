@@ -193,12 +193,12 @@ $libstr
     /**
      * Get string presentation of a sub expression
      *
-     * @param array<boolean|integer|string|array> $vars parsed arguments list
      * @param array<string,array|string|integer> $context current compile context
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
      *
      * @return array<string> code representing passed expression
      */
-    public static function compileSubExpression($vars, &$context) {
+    public static function compileSubExpression(&$context, $vars) {
         $origSeperator = $context['ops']['seperator'];
         $context['ops']['seperator'] = '';
 
@@ -222,7 +222,7 @@ $libstr
      * @return array<string> variable names
      */
     protected static function getVariableNameOrSubExpression($var, &$context) {
-        return Parser::isSubExp($var) ? static::compileSubExpression($var[1], $context) : static::getVariableName($var, $context);
+        return Parser::isSubExp($var) ? static::compileSubExpression($context, $var[1]) : static::getVariableName($var, $context);
     }
 
     /**
@@ -357,7 +357,7 @@ $libstr
             $v = static::getVariableNames($context, $vars);
             $tag = ">$p[0] " .implode(' ', $v[1]);
             if (Parser::isSubExp($p)) {
-                list($p) = static::compileSubExpression($p[1], $context);
+                list($p) = static::compileSubExpression($context, $p[1]);
             } else {
                 $p = "'$p[0]'";
             }
