@@ -503,7 +503,9 @@ $libstr
      */
     protected static function with(&$context, $vars) {
         $v = isset($vars[1]) ? static::getVariableNameOrSubExpression($context, $vars[1]) : array(null, array());
-        return $context['ops']['seperator'] . static::getFuncName($context, 'wi', 'with ' . $v[1]) . "\$cx, {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
+        $bp = Parser::getBlockParams($vars);
+        $bs = $bp ? ('array(' . Expression::listString($bp) . ')') : 'null';
+        return $context['ops']['seperator'] . static::getFuncName($context, 'wi', 'with ' . $v[1]) . "\$cx, {$v[0]}, $bs, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
     /**

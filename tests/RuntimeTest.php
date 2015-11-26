@@ -18,7 +18,7 @@ class RuntimeTest extends PHPUnit_Framework_TestCase
             '123', 'miss', array('flags' => array('debug' => Runtime::DEBUG_TAGS), 'runtime' => 'LightnCandy\\Runtime'), ''
         ))));
         $this->assertEquals('<!--MISSED((-->{{#123}}<!--))--><!--SKIPPED--><!--MISSED((-->{{/123}}<!--))-->', $method->invokeArgs(null, array_by_ref(array(
-            '123', 'wi', array('flags' => array('debug' => Runtime::DEBUG_TAGS_HTML), 'runtime' => 'LightnCandy\\Runtime'), false, false, function () {return 'A';}
+            '123', 'wi', array('flags' => array('debug' => Runtime::DEBUG_TAGS_HTML), 'runtime' => 'LightnCandy\\Runtime'), false, null, false, function () {return 'A';}
         ))));
     }
     /**
@@ -300,16 +300,16 @@ class RuntimeTest extends PHPUnit_Framework_TestCase
     public function testOn_wi() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'wi');
         $this->assertEquals('', $method->invokeArgs(null, array_by_ref(array(
-            array(), false, false, function () {return 'A';}
+            array(), false, null, false, function () {return 'A';}
         ))));
         $this->assertEquals('', $method->invokeArgs(null, array_by_ref(array(
-            array(), null, null, function () {return 'A';}
+            array(), null, null, null, function () {return 'A';}
         ))));
         $this->assertEquals('{"a":"b"}', $method->invokeArgs(null, array_by_ref(array(
-            array(), array('a'=>'b'), array('a'=>'c'), function ($c, $i) {return json_encode($i);}
+            array(), array('a'=>'b'), null, array('a'=>'c'), function ($c, $i) {return json_encode($i);}
         ))));
         $this->assertEquals('-b=', $method->invokeArgs(null, array_by_ref(array(
-            array(), 'b', array('a'=>'b'), function ($c, $i) {return "-$i=";}
+            array(), 'b', null, array('a'=>'b'), function ($c, $i) {return "-$i=";}
         ))));
     }
     /**

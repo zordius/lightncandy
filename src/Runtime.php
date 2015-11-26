@@ -39,7 +39,7 @@ class Runtime
      * @param array<string,array|string|integer> $cx render time context
      *
      * @expect '{{123}}' when input '123', 'miss', array('flags' => array('debug' => Runtime::DEBUG_TAGS), 'runtime' => 'LightnCandy\\Runtime'), ''
-     * @expect '<!--MISSED((-->{{#123}}<!--))--><!--SKIPPED--><!--MISSED((-->{{/123}}<!--))-->' when input '123', 'wi', array('flags' => array('debug' => Runtime::DEBUG_TAGS_HTML), 'runtime' => 'LightnCandy\\Runtime'), false, false, function () {return 'A';}
+     * @expect '<!--MISSED((-->{{#123}}<!--))--><!--SKIPPED--><!--MISSED((-->{{/123}}<!--))-->' when input '123', 'wi', array('flags' => array('debug' => Runtime::DEBUG_TAGS_HTML), 'runtime' => 'LightnCandy\\Runtime'), false, null, false, function () {return 'A';}
      */
     public static function debug($v, $f, $cx) {
         $params = array_slice(func_get_args(), 2);
@@ -500,17 +500,21 @@ class Runtime
      * @param array<string,array|string|integer> $cx render time context
      * @param array<array|string|integer>|string|integer|null $v value to be the new context
      * @param array<array|string|integer>|string|integer|null $in input data with current scope
+     * @param array<string>|null $bp block parameters
      * @param Closure $cb callback function to render child context
      * @param Closure|null $else callback function to render child context when {{else}}
      *
      * @return string The rendered string of the token
      *
-     * @expect '' when input array(), false, false, function () {return 'A';}
-     * @expect '' when input array(), null, null, function () {return 'A';}
-     * @expect '{"a":"b"}' when input array(), array('a'=>'b'), array('a'=>'c'), function ($c, $i) {return json_encode($i);}
-     * @expect '-b=' when input array(), 'b', array('a'=>'b'), function ($c, $i) {return "-$i=";}
+     * @expect '' when input array(), false, null, false, function () {return 'A';}
+     * @expect '' when input array(), null, null, null, function () {return 'A';}
+     * @expect '{"a":"b"}' when input array(), array('a'=>'b'), null, array('a'=>'c'), function ($c, $i) {return json_encode($i);}
+     * @expect '-b=' when input array(), 'b', null, array('a'=>'b'), function ($c, $i) {return "-$i=";}
      */
-    public static function wi($cx, $v, $in, $cb, $else = null) {
+    public static function wi($cx, $v, $bp, $in, $cb, $else = null) {
+        if (isset($bp[0])) {
+            $v = static::m($cx, $v, array($bp[0] => $v));
+        }
         if (($v === false) || ($v === null)) {
             return $else ? $else($cx, $in) : '';
         }

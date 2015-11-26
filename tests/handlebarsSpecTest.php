@@ -102,7 +102,6 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                ($spec['description'] === 'decorators') ||
 
                // block parameters, https://github.com/zordius/lightncandy/issues/170
-               ($spec['it'] === 'with provides block parameter') ||
                ($spec['it'] === 'works when data is disabled') ||
                ($spec['it'] === 'each with block params') ||
                ($spec['it'] === 'should allow block params on chained helpers') ||
