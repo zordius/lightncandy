@@ -221,7 +221,7 @@ $libstr
      * @return array<string> variable names
      */
     protected static function getVariableNameOrSubExpression($var, &$context) {
-        return Parser::isSubexp($var) ? static::compileSubExpression($var[1], $context) : static::getVariableName($var, $context);
+        return Parser::isSubExp($var) ? static::compileSubExpression($var[1], $context) : static::getVariableName($var, $context);
     }
 
     /**
@@ -354,7 +354,7 @@ $libstr
             }
             $v = static::getVariableNames($vars, $context);
             $tag = ">$p[0] " .implode(' ', $v[1]);
-            if (Parser::isSubexp($p)) {
+            if (Parser::isSubExp($p)) {
                 list($p) = static::compileSubExpression($p[1], $context);
             } else {
                 $p = "'$p[0]'";

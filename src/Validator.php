@@ -592,7 +592,7 @@ class Validator {
      * @return integer|true Return 1 or larger number for runtime partial, return true for other case
      */
     protected static function partial(&$context, $vars) {
-        if (Parser::isSubexp($vars[0])) {
+        if (Parser::isSubExp($vars[0])) {
             if ($context['flags']['runpart']) {
                 return $context['usedFeature']['dynpartial']++;
             } else {
