@@ -58,7 +58,7 @@ class Compiler extends Validator
         foreach ($context['parsed'][0] as $info) {
             if (is_array($info)) {
                 $context['tokens']['current']++;
-                $tmpl = static::compileToken($info, $context);
+                $tmpl = static::compileToken($context, $info);
                 if ($tmpl == $context['ops']['seperator']) {
                     $tmpl = '';
                 } else {
@@ -300,12 +300,12 @@ $libstr
     /**
      * Return compiled PHP code for a handlebars token
      *
-     * @param array<string,array|boolean> $info parsed information
      * @param array<string,array|string|integer> $context current compile context
+     * @param array<string,array|boolean> $info parsed information
      *
      * @return string Return compiled code segment for the token
      */
-    protected static function compileToken($info, &$context) {
+    protected static function compileToken(&$context, $info) {
         list($raw, $vars, $token, $indent) = $info;
 
         $context['tokens']['partialind'] = $indent;
