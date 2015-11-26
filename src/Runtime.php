@@ -410,7 +410,7 @@ class Runtime
         }
 
         if ($cx['flags']['mustlam'] && ($v instanceof \Closure)) {
-            self::err('Do not support Section Lambdas!');
+            static::err('Do not support Section Lambdas!');
         }
 
         if (($loop && $isAry) || $isTrav) {
@@ -521,6 +521,31 @@ class Runtime
     }
 
     /**
+     * LightnCandy runtime method to get merged context
+     *
+     * @param array<string,array|string|integer> $cx render time context
+     * @param array<array|string|integer>|string|integer|null $a the context to be merged
+     * @param array<array|string|integer>|string|integer|null $b the new context to overwrite
+     *
+     * @return array<array|string|integer>|string|integer the merged context object
+     *
+     */
+    public static function m($cx, $a, $b) {
+        if (is_array($b)) {
+            if ($a === null) {
+                return $b;
+            } else if (is_array($a)) {
+                return array_merge($a, $b);
+            } else if (($cx['flags']['method'] || $cx['flags']['prop']) && is_object($a)) {
+                foreach ($b as $i => $v) {
+                    $a->$i = $v;
+                }
+            }
+        }
+        return $a;
+    }
+
+    /**
      * LightnCandy runtime method for {{> partial}} .
      *
      * @param array<string,array|string|integer> $cx render time context
@@ -531,26 +556,12 @@ class Runtime
      *
      */
     public static function p($cx, $p, $v, $sp = '') {
-        $param = $v[0][0];
-
-        if (is_array($v[1])) {
-            if ($v[0][0] === null) {
-                $param = $v[1];
-            } else if (is_array($v[0][0])) {
-                $param = array_merge($v[0][0], $v[1]);
-            } else if (($cx['flags']['method'] || $cx['flags']['prop']) && is_object($v[0][0])) {
-                foreach ($v[1] as $i => $v) {
-                    $param->$i = $v;
-                }
-            }
-        }
-
         if (!isset($cx['partials'][$p])) {
             static::err($cx, "Can not find partial named as '$p' !!");
             return '';
         }
 
-        return call_user_func($cx['partials'][$p], $cx, $param, $sp);
+        return call_user_func($cx['partials'][$p], $cx, static::m($cx, $v[0][0], $v[1]), $sp);
     }
 
     /**
@@ -642,7 +653,7 @@ class Runtime
         }
 
         if ($isBlock) {
-            $options['fn'] = function ($context = '_NO_INPUT_HERE_', $data = null) use ($cx, &$op, $cb, $options) {
+            $options['fn'] = function ($context = '_NO_INPUT_HERE_', $data = null) use ($cx, &$op, $cb, $options, $vars) {
                 if ($cx['flags']['echo']) {
                     ob_start();
                 }
@@ -650,11 +661,15 @@ class Runtime
                     $old_spvar = $cx['sp_vars'];
                     $cx['sp_vars'] = array_merge(array('root' => $old_spvar['root']), $data['data'], array('_parent' => $old_spvar));
                 }
+                $ex = false;
+                if (isset($data['blockParams']) && isset($vars[2])) {
+                    $ex = array_combine($vars[2], array_slice($data['blockParams'], 0, count($vars[2])));
+                }
                 if (($context === '_NO_INPUT_HERE_') || ($context === $op)) {
-                    $ret = $cb($cx, $op);
+                    $ret = $cb($cx, is_array($ex) ? static::m($cx, $op, $ex) : $op);
                 } else {
                     $cx['scopes'][] = $op;
-                    $ret = $cb($cx, $context);
+                    $ret = $cb($cx, is_array($ex) ? static::m($cx, $context, $ex) : $context);
                     array_pop($cx['scopes']);
                 }
                 if (isset($data['data'])) {
