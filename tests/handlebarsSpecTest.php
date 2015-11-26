@@ -107,7 +107,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                ($spec['it'] === 'with provides block parameter') ||
                ($spec['it'] === 'works when data is disabled') ||
                ($spec['it'] === 'each with block params') ||
-               ($spec['description'] === 'block params') ||
+               ($spec['it'] === 'should allow block params on chained helpers') ||
 
                // helperMissing and blockHelperMissing
                ($spec['it'] === 'if a context is not found, helperMissing is used') ||

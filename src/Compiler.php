@@ -23,6 +23,7 @@ namespace LightnCandy;
 use \LightnCandy\Validator;
 use \LightnCandy\Token;
 use \LightnCandy\Expression;
+use \LightnCandy\Parser;
 
 /**
  * LightnCandy Compiler
@@ -347,6 +348,7 @@ $libstr
         if (($context['usedFeature']['dynpartial'] === 0) && !isset($context['usedPartial'][$vars[0][0]])) {
             return $context['ops']['seperator'];
         }
+        $bp = Parser::getBlockParams($vars);
         $p = array_shift($vars);
         if ($context['flags']['runpart']) {
             if (!isset($vars[0])) {
@@ -390,6 +392,7 @@ $libstr
     protected static function blockCustomHelper(&$context, $vars, $inverted = false) {
         $notHBCH = !isset($context['hbhelpers'][$vars[0][0]]);
 
+        $bp = Parser::getBlockParams($vars);
         $ch = array_shift($vars);
         $inverted = $inverted ? 'true' : 'false';
 
@@ -478,6 +481,7 @@ $libstr
      */
     protected static function section(&$context, $vars, $isEach = false) {
         if ($isEach) {
+            $bp = Parser::getBlockParams($vars);
             array_shift($vars);
             if (!isset($vars[0])) {
                 $vars[0] = array(null);

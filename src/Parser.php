@@ -28,6 +28,25 @@ use \LightnCandy\SafeString;
  */
 class Parser extends Token
 {
+    // Compile time error handling flags
+    const BLOCKPARAM = 9999;
+
+    /**
+     * Get block params and fix the variable list
+     *
+     * @param array<boolean|integer|array> $vars parsed token
+     *
+     * @return array<string>|null Return list of block params or null
+     *
+     */
+    public static function getBlockParams(&$vars) {
+        if (isset($vars[static::BLOCKPARAM])) {
+            $list = $vars[static::BLOCKPARAM];
+            unset($vars[static::BLOCKPARAM]);
+            return $list;
+        }
+    }
+
     /**
      * Return array presentation for an expression
      *
@@ -233,10 +252,16 @@ class Parser extends Token
         $ret = array();
         $i = 0;
         foreach ($vars as $idx => $var) {
-            // Skip advanced processing for subexpressions
+            // handle (...)
             if (preg_match(SafeString::IS_SUBEXP_SEARCH, $var)) {
                 $ret[$i] = static::subexpression($var, $context);
                 $i++;
+                continue;
+            }
+
+            // handle |...|
+            if (preg_match(SafeString::IS_BLOCKPARAM_SEARCH, $var, $matched)) {
+                $ret[static::BLOCKPARAM] = explode(' ', $matched[1]);
                 continue;
             }
 
@@ -247,7 +272,7 @@ class Parser extends Token
                     }
                     $idx = $m[3] ? $m[3] : $m[4];
                     $var = $m[5];
-                    // Compile subexpressions for named arguments
+                    // handle foo=(...)
                     if (preg_match(SafeString::IS_SUBEXP_SEARCH, $var)) {
                         $ret[$idx] = static::subexpression($var, $context);
                         continue;
@@ -299,7 +324,7 @@ class Parser extends Token
      */
     protected static function analyze($token, &$context) {
         $count = preg_match_all('/(\s*)([^\s]+)/', $token, $matchedall);
-        // Parse arguments and deal with "..." or [...] or (...) or \'...\'
+        // Parse arguments and deal with "..." or [...] or (...) or \'...\' or |...|
         if (($count > 0) && $context['flags']['advar']) {
             $vars = array();
             $prev = '';
@@ -317,7 +342,7 @@ class Parser extends Token
                     if (substr($t, -1, 1) === $expect) {
                         if ($stack > 0) {
                             preg_match('/(\\)+)$/', $t, $matchedq);
-                            $stack -= strlen($matchedq[0]);
+                            $stack -= isset($matchedq[0]) ? strlen($matchedq[0]) : 1;
                             if ($stack > 0) {
                                 continue;
                             }
@@ -380,6 +405,14 @@ class Parser extends Token
                 if (preg_match('/.+\([^\)]*$/', $t)) {
                     $prev = $t;
                     $expect = ')';
+                    $stack=1;
+                    continue;
+                }
+
+                // continue to next match when 'as' without ending '|'
+                if (($t === 'as') && (count($vars) > 0)) {
+                    $prev = '';
+                    $expect = '|';
                     $stack=1;
                     continue;
                 }
