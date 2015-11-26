@@ -168,6 +168,7 @@ $libstr
      *
      * @param array<string,array|string|integer> $context current compile context
      * @param array<array> $vn variable name array.
+     * @param array<string>|null $blockParams block param list
      *
      * @return array<string|array> variable names
      *
@@ -175,7 +176,7 @@ $libstr
      * @expect array('array(array($in,$in),array())', array('this', 'this')) when input array('flags'=>array('spvar'=>true)), array(null, null)
      * @expect array('array(array(),array(\'a\'=>$in))', array('this')) when input array('flags'=>array('spvar'=>true)), array('a' => null)
      */
-    protected static function getVariableNames(&$context, $vn) {
+    protected static function getVariableNames(&$context, $vn, $blockParams = null) {
         $vars = array(array(), array());
         $exps = array();
         foreach ($vn as $i => $v) {
@@ -187,7 +188,8 @@ $libstr
             }
             $exps[] = $V[1];
         }
-        return array('array(array(' . implode(',', $vars[0]) . '),array(' . implode(',', $vars[1]) . '))', $exps);
+        $bp = $blockParams ? (',array(' . Expression::listString($blockParams) . ')') : '';
+        return array('array(array(' . implode(',', $vars[0]) . '),array(' . implode(',', $vars[1]) . ")$bp)", $exps);
     }
 
     /**
@@ -284,9 +286,7 @@ $libstr
         // the only way is using slower rendering time variable resolver.
         if ($context['flags']['prop'] || $context['flags']['method'] || $context['flags']['mustlok'] || $context['flags']['mustlam'] || $context['flags']['lambda']) {
             $L = $lookup ? ", $lookup[0]" : '';
-            return array(static::getFuncName($context, 'v', $exp) . "\$cx, isset($base) ? $base : null, array(" . implode(',', array_map(function ($V) {
-                return "'$V'";
-            }, $var)) . "$L))", $lookup ? "lookup $exp $lookup[1]" : $exp);
+            return array(static::getFuncName($context, 'v', $exp) . "\$cx, isset($base) ? $base : null, array(" . Expression::listString($var) . "$L))", $lookup ? "lookup $exp $lookup[1]" : $exp);
         }
 
         $n = Expression::arrayString($var);
@@ -395,9 +395,9 @@ $libstr
         $bp = Parser::getBlockParams($vars);
         $ch = array_shift($vars);
         $inverted = $inverted ? 'true' : 'false';
-
         static::addUsageCount($context, $notHBCH ? 'blockhelpers' : 'hbhelpers', $ch[0]);
-        $v = static::getVariableNames($context, $vars);
+        $v = static::getVariableNames($context, $vars, $bp);
+
         return $context['ops']['seperator'] . static::getFuncName($context, $notHBCH ? 'bch' : 'hbch', ($inverted ? '^' : '#') . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, \$in, $inverted, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
