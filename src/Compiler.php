@@ -179,7 +179,7 @@ $libstr
         $vars = array(array(), array());
         $exps = array();
         foreach ($vn as $i => $v) {
-            $V = static::getVariableNameOrSubExpression($v, $context);
+            $V = static::getVariableNameOrSubExpression($context, $v);
             if (is_string($i)) {
                 $vars[1][] = "'$i'=>{$V[0]}";
             } else {
@@ -216,12 +216,12 @@ $libstr
     /**
      * Get string presentation of a subexpression or a variable
      *
-     * @param array<array|string|integer> $var variable parsed path
      * @param array<array|string|integer> $context current compile context
+     * @param array<array|string|integer> $var variable parsed path
      *
      * @return array<string> variable names
      */
-    protected static function getVariableNameOrSubExpression($var, &$context) {
+    protected static function getVariableNameOrSubExpression(&$context, $var) {
         return Parser::isSubExp($var) ? static::compileSubExpression($context, $var[1]) : static::getVariableName($var, $context);
     }
 
@@ -450,7 +450,7 @@ $libstr
      * @return string Return compiled code segment for the token
      */
     protected static function blockBegin(&$context, $vars) {
-        $v = isset($vars[1]) ? static::getVariableNameOrSubExpression($vars[1], $context) : array(null, array());
+        $v = isset($vars[1]) ? static::getVariableNameOrSubExpression($context, $vars[1]) : array(null, array());
         if (!$context['flags']['nohbh']) {
             switch (isset($vars[0][0]) ? $vars[0][0] : null) {
                 case 'if':
@@ -487,7 +487,7 @@ $libstr
                 $vars[0] = array(null);
             }
         }
-        $v = static::getVariableNameOrSubExpression($vars[0], $context);
+        $v = static::getVariableNameOrSubExpression($context, $vars[0]);
         $each = $isEach ? 'true' : 'false';
         return $context['ops']['seperator'] . static::getFuncName($context, 'sec', ($isEach ? 'each ' : '') . $v[1]) . "\$cx, {$v[0]}, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
@@ -501,7 +501,7 @@ $libstr
      * @return string|null Return compiled code segment for the token
      */
     protected static function with(&$context, $vars) {
-        $v = isset($vars[1]) ? static::getVariableNameOrSubExpression($vars[1], $context) : array(null, array());
+        $v = isset($vars[1]) ? static::getVariableNameOrSubExpression($context, $vars[1]) : array(null, array());
         return $context['ops']['seperator'] . static::getFuncName($context, 'wi', 'with ' . $v[1]) . "\$cx, {$v[0]}, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
