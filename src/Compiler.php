@@ -166,8 +166,8 @@ $libstr
     /**
      * Get string presentation of variables
      *
-     * @param array<array> $vn variable name array.
      * @param array<string,array|string|integer> $context current compile context
+     * @param array<array> $vn variable name array.
      *
      * @return array<string|array> variable names
      *
