@@ -44,6 +44,22 @@ class Expression
         return ($v > 0) ? 'true' : 'false';
     }
 
+    /**
+     * Get string presentation for a string list
+     *
+     * @param array<string> $list an array of strings.
+     *
+     * @return string PHP list string
+     *
+     * @expect '' when input array()
+     * @expect "'a'" when input array('a')
+     * @expect "'a','b','c'" when input array('a', 'b', 'c')
+     */
+    public static function listString($list) {
+        return implode(',', (array_map(function ($v) {
+            return "'$v'";
+        }, $list)));
+    }
 
     /**
      * Get string presentation for an array

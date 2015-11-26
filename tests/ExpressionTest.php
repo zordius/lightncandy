@@ -28,6 +28,21 @@ class ExpressionTest extends PHPUnit_Framework_TestCase
         ))));
     }
     /**
+     * @covers LightnCandy\Expression::listString
+     */
+    public function testOn_listString() {
+        $method = new \ReflectionMethod('LightnCandy\Expression', 'listString');
+        $this->assertEquals('', $method->invokeArgs(null, array_by_ref(array(
+            array()
+        ))));
+        $this->assertEquals("'a'", $method->invokeArgs(null, array_by_ref(array(
+            array('a')
+        ))));
+        $this->assertEquals("'a','b','c'", $method->invokeArgs(null, array_by_ref(array(
+            array('a', 'b', 'c')
+        ))));
+    }
+    /**
      * @covers LightnCandy\Expression::arrayString
      */
     public function testOn_arrayString() {
