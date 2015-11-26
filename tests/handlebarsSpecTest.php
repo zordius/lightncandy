@@ -68,8 +68,6 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
             recursive_lambda_fix($spec['options']['data']);
         }
 
-        $tested++;
-
         //// Skip bad specs
         // 1. No expected nor exception in spec
         if (!isset($spec['expected']) && !isset($spec['exception'])) {
@@ -108,6 +106,8 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                ($spec['it'] === 'works when data is disabled') ||
                ($spec['it'] === 'each with block params') ||
                ($spec['it'] === 'should allow block params on chained helpers') ||
+               ($spec['it'] === 'should take presedence over helper values') ||
+               ($spec['it'] === 'should not take presedence over pathed values') ||
 
                // helperMissing and blockHelperMissing
                ($spec['it'] === 'if a context is not found, helperMissing is used') ||
@@ -192,36 +192,33 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
             $this->markTestIncomplete('TODO: require fix');
         }
 
-        // setup helpers
-        $helpers = Array();
-        $helpersList = '';
-        foreach (array_merge((isset($spec['globalHelpers']) && is_array($spec['globalHelpers'])) ? $spec['globalHelpers'] : array(), (isset($spec['helpers']) && is_array($spec['helpers'])) ? $spec['helpers'] : array()) as $name => $func) {
-            if (!isset($func['php'])) {
-                $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , no PHP helper code provided for this case.");
-            }
-
-            $hname = preg_replace('/\\.|\\//', '_', "custom_helper_{$spec['no']}_{$tested}_$name");
-            $helpers[$name] = $hname;
-
-            $helper = preg_replace('/\\$options->(\\w+)/', '$options[\'$1\']',
-                    preg_replace('/\\$options->scope/', '$options[\'_this\']',
-                        preg_replace('/\\$block\\/\\*\\[\'(.+?)\'\\]\\*\\/->(.+?)\\(/', '$block[\'$2\'](',
-                            patch_safestring(
-                                preg_replace('/function/', "function $hname", $func['php'], 1)
+        foreach (Array($hb_test_flag, $hb_test_flag | LightnCandy::FLAG_STANDALONEPHP) as $f) {
+            // setup helpers
+            $tested++;
+            $helpers = Array();
+            $helpersList = '';
+            foreach (array_merge((isset($spec['globalHelpers']) && is_array($spec['globalHelpers'])) ? $spec['globalHelpers'] : array(), (isset($spec['helpers']) && is_array($spec['helpers'])) ? $spec['helpers'] : array()) as $name => $func) {
+                if (!isset($func['php'])) {
+                    $this->markTestIncomplete("Skip [{$spec['file']}#{$spec['description']}]#{$spec['no']} , no PHP helper code provided for this case.");
+                }
+                $hname = preg_replace('/\\.|\\//', '_', "custom_helper_{$spec['no']}_{$tested}_$name");
+                $helpers[$name] = $hname;
+                $helper = preg_replace('/\\$options->(\\w+)/', '$options[\'$1\']',
+                        preg_replace('/\\$options->scope/', '$options[\'_this\']',
+                            preg_replace('/\\$block\\/\\*\\[\'(.+?)\'\\]\\*\\/->(.+?)\\(/', '$block[\'$2\'](',
+                                patch_safestring(
+                                    preg_replace('/function/', "function $hname", $func['php'], 1)
+                                )
                             )
                         )
-                    )
-                );
-
-            if (($spec['it'] === 'helper block with complex lookup expression') && ($name === 'goodbyes')) {
-                $helper = preg_replace('/\\[\'fn\'\\]\\(\\)/', '[\'fn\'](array())', $helper);
+                    );
+                if (($spec['it'] === 'helper block with complex lookup expression') && ($name === 'goodbyes')) {
+                    $helper = preg_replace('/\\[\'fn\'\\]\\(\\)/', '[\'fn\'](array())', $helper);
+                }
+                $helpersList .= "$helper\n";
+                eval($helper);
             }
 
-            $helpersList .= "$helper\n";
-            eval($helper);
-        }
-
-        foreach (Array($hb_test_flag, $hb_test_flag | LightnCandy::FLAG_STANDALONEPHP) as $f) {
             try {
                 $partials = isset($spec['globalPartials']) ? $spec['globalPartials'] : array();
 
