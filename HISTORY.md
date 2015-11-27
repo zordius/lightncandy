@@ -40,6 +40,7 @@ v0.89-develop
    * 83a173e575 support block params for hbhelpers
    * 2a262f671b new flag FLAG_STRINGPARAMS to support handlebars.js options.stringParams
    * dcc84c3118 support lambda arguments
+   * edef496b25 maintain options.contexts for custom helpers now
 
 v0.23 https://github.com/zordius/lightncandy/tree/v0.23
    * align with handlebars.js 3.0.3
