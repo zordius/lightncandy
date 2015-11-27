@@ -150,9 +150,6 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                // knownHelpers and knownHelpersOnly
                ($spec['description'] === 'knownHelpers') ||
 
-               // string params mode
-               ($spec['description'] === 'string params mode') ||
-
                // directives
                ($spec['description'] === 'directives') ||
 

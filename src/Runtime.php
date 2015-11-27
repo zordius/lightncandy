@@ -601,6 +601,7 @@ class Runtime
         $options = array(
             'name' => $ch,
             'hash' => $vars[1],
+            'contexts' => count($cx['scopes']) ? $cx['scopes'] : array(null),
             'fn.blockParams' => 0,
         );
 
