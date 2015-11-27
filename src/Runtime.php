@@ -107,7 +107,7 @@ class Runtime
      * @param array|string|boolean|integer|double|null $in current context
      * @param array<array|string|integer> $base current variable context
      * @param array<string|integer> $path array of names for path
-     * @param array $args extra arguments for lambda
+     * @param array|null $args extra arguments for lambda
      *
      * @return null|string Return the value or null when not found
      *
