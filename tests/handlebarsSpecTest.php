@@ -173,7 +173,6 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                ($spec['it'] === 'fails with multiple and args') ||
                ($spec['it'] === 'functions returning safestrings shouldn\'t be escaped') ||
                ($spec['it'] === 'should handle undefined and null') ||
-               ($spec['it'] === 'with with function argument') ||
                ($spec['it'] === 'depthed block functions without context argument') ||
                ($spec['template'] === '{{echo (header)}}') ||
                ($spec['it'] === 'pathed block functions without context argument') ||

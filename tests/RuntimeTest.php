@@ -45,34 +45,34 @@ class RuntimeTest extends PHPUnit_Framework_TestCase
     public function testOn_ifvar() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'ifvar');
         $this->assertEquals(false, $method->invokeArgs(null, array_by_ref(array(
-            array(), null, null, false
+            array(), null, false
         ))));
         $this->assertEquals(false, $method->invokeArgs(null, array_by_ref(array(
-            array(), 0, null, false
+            array(), 0, false
         ))));
         $this->assertEquals(true, $method->invokeArgs(null, array_by_ref(array(
-            array(), 0, null, true
+            array(), 0, true
         ))));
         $this->assertEquals(false, $method->invokeArgs(null, array_by_ref(array(
-            array(), false, null, false
+            array(), false, false
         ))));
         $this->assertEquals(true, $method->invokeArgs(null, array_by_ref(array(
-            array(), true, null, false
+            array(), true, false
         ))));
         $this->assertEquals(true, $method->invokeArgs(null, array_by_ref(array(
-            array(), 1, null, false
+            array(), 1, false
         ))));
         $this->assertEquals(false, $method->invokeArgs(null, array_by_ref(array(
-            array(), '', null, false
+            array(), '', false
         ))));
         $this->assertEquals(false, $method->invokeArgs(null, array_by_ref(array(
-            array(), array(), null, false
+            array(), array(), false
         ))));
         $this->assertEquals(true, $method->invokeArgs(null, array_by_ref(array(
-            array(), array(''), null, false
+            array(), array(''), false
         ))));
         $this->assertEquals(true, $method->invokeArgs(null, array_by_ref(array(
-            array(), array(0), null, false
+            array(), array(0), false
         ))));
     }
     /**

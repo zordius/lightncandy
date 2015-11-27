@@ -173,23 +173,18 @@ class Runtime
      *
      * @return boolean Return true when the value is not null nor false.
      *
-     * @expect false when input array(), null, null, false
-     * @expect false when input array(), 0, null, false
-     * @expect true when input array(), 0, null, true
-     * @expect false when input array(), false, null, false
-     * @expect true when input array(), true, null, false
-     * @expect true when input array(), 1, null, false
-     * @expect false when input array(), '', null, false
-     * @expect false when input array(), array(), null, false
-     * @expect true when input array(), array(''), null, false
-     * @expect true when input array(), array(0), null, false
+     * @expect false when input array(), null, false
+     * @expect false when input array(), 0, false
+     * @expect true when input array(), 0, true
+     * @expect false when input array(), false, false
+     * @expect true when input array(), true, false
+     * @expect true when input array(), 1, false
+     * @expect false when input array(), '', false
+     * @expect false when input array(), array(), false
+     * @expect true when input array(), array(''), false
+     * @expect true when input array(), array(0), false
      */
-    public static function ifvar($cx, $v, $in, $zero) {
-        if ($v instanceof \Closure) {
-            if ($cx['flags']['mustlam'] || $cx['flags']['lambda']) {
-                $v = $v($in);
-            }
-        }
+    public static function ifvar($cx, $v, $zero) {
         return ($v !== null) && ($v !== false) && ($zero || ($v !== 0) && ($v !== 0.0)) && ($v !== '') && (is_array($v) ? (count($v) > 0) : true);
     }
 

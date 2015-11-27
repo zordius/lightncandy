@@ -456,9 +456,9 @@ $libstr
             switch (isset($vars[0][0]) ? $vars[0][0] : null) {
                 case 'if':
                     $includeZero = (isset($vars['includeZero'][1]) && $vars['includeZero'][1]) ? 'true' : 'false';
-                    return "{$context['ops']['cnd_start']}(" . static::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]}, \$in, {$includeZero})){$context['ops']['cnd_then']}";
+                    return "{$context['ops']['cnd_start']}(" . static::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]}, {$includeZero})){$context['ops']['cnd_then']}";
                 case 'unless':
-                    return "{$context['ops']['cnd_start']}(!" . static::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]}, \$in, false)){$context['ops']['cnd_then']}";
+                    return "{$context['ops']['cnd_start']}(!" . static::getFuncName($context, 'ifvar', $v[1]) . "\$cx, {$v[0]}, false)){$context['ops']['cnd_then']}";
                 case 'each':
                     return static::section($context, $vars, true);
                 case 'with':
