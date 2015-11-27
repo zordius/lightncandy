@@ -349,7 +349,7 @@ $libstr
         if (($context['usedFeature']['dynpartial'] === 0) && !isset($context['usedPartial'][$vars[0][0]])) {
             return $context['ops']['seperator'];
         }
-        $bp = Parser::getBlockParams($vars);
+        Parser::getBlockParams($vars);
         $p = array_shift($vars);
         if ($context['flags']['runpart']) {
             if (!isset($vars[0])) {
