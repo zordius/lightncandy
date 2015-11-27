@@ -204,7 +204,7 @@ class Validator {
      * @return boolean Return true always
      */
     protected static function blockBegin(&$context, $vars) {
-        switch (isset($vars[0][0]) ? $vars[0][0] : null) {
+        switch ((isset($vars[0][0]) && is_string($vars[0][0])) ? $vars[0][0] : null) {
             case 'with':
                 return static::with($context, $vars);
             case 'each':
@@ -490,7 +490,7 @@ class Validator {
         $context['usedFeature'][$raw ? 'raw' : 'enc']++;
 
         foreach ($vars as $var) {
-            if (!isset($var[0])) {
+            if (!isset($var[0]) || ($var[0] === 0)) {
                 if ($context['level'] == 0) {
                     $context['usedFeature']['rootthis']++;
                 }

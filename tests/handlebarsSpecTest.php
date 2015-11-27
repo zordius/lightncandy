@@ -125,10 +125,6 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                // helper for raw block
                ($spec['it'] === 'helper for raw block gets parameters') ||
 
-               // scoped variable lookup
-               ($spec['it'] === 'Scoped names take precedence over helpers') ||
-               ($spec['it'] === 'Scoped names take precedence over block helpers') ||
-
                // partial in vm mode
                ($spec['it'] === 'rendering function partial in vm mode') ||
                ($spec['it'] === 'rendering template partial in vm mode throws an exception') ||

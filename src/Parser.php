@@ -82,7 +82,9 @@ class Parser extends Token
      * @expect array(2, 'a', 'b') when input '../../a.b', array('flags' => array('strpar' => 0, 'advar' => 0, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
      * @expect array(2, '[a]', 'b') when input '../../[a].b', array('flags' => array('strpar' => 0, 'advar' => 0, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
      * @expect array(2, 'a', 'b') when input '../../[a].b', array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
-     * @expect array('id') when input 'this.id', array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
+     * @expect array(0, 'id') when input 'this.id', array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
+     * @expect array('this', 'id') when input 'this.id', array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
+     * @expect array(0, 'id') when input './id', array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
      * @expect array(-1, '\'a.b\'') when input '"a.b"', array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 1
      * @expect array(-1, '123') when input '123', array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 1
      * @expect array(-1, 'null') when input 'null', array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 1
@@ -125,7 +127,7 @@ class Parser extends Token
         }, trim($v));
 
         // remove ./ in path
-        $v = preg_replace('/\\.\\//', '', $v);
+        $v = preg_replace('/\\.\\//', '', $v, -1, $scoped);
 
         $strp = (($pos !== 0) && $context['flags']['strpar']);
         if ($levels && !$strp) {
@@ -147,11 +149,17 @@ class Parser extends Token
                 $ret[] = substr($m, 1, -1);
             } else if ((!$context['flags']['this'] || ($m !== 'this')) && ($m !== '.')) {
                 $ret[] = $m;
+            } else {
+                $scoped++;
             }
         }
 
         if ($strp) {
             return array(static::LITERAL, "'" . implode('.', $ret) . "'");
+        }
+
+        if (($scoped > 0) && ($levels === 0) && (count($ret) > 0)) {
+            array_unshift($ret, 0);
         }
 
         return $ret;

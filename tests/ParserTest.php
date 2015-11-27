@@ -42,8 +42,14 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(array(2, 'a', 'b'), $method->invokeArgs(null, array_by_ref(array(
             '../../[a].b', array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
         ))));
-        $this->assertEquals(array('id'), $method->invokeArgs(null, array_by_ref(array(
+        $this->assertEquals(array(0, 'id'), $method->invokeArgs(null, array_by_ref(array(
             'this.id', array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
+        ))));
+        $this->assertEquals(array('this', 'id'), $method->invokeArgs(null, array_by_ref(array(
+            'this.id', array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
+        ))));
+        $this->assertEquals(array(0, 'id'), $method->invokeArgs(null, array_by_ref(array(
+            './id', array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
         ))));
         $this->assertEquals(array(-1, '\'a.b\''), $method->invokeArgs(null, array_by_ref(array(
             '"a.b"', array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 1
