@@ -107,6 +107,7 @@ class Runtime
      * @param array|string|boolean|integer|double|null $in current context
      * @param array<array|string|integer> $base current variable context
      * @param array<string|integer> $path array of names for path
+     * @param array $args extra arguments for lambda
      *
      * @return null|string Return the value or null when not found
      *
@@ -115,7 +116,7 @@ class Runtime
      * @expect null when input array('scopes' => array(), 'flags' => array('prop' => 0, 'method' => 0, 'mustlok' => 0)), null, (Object) array('a' => array('b' => 3)), array('a', 'b')
      * @expect 3 when input array('scopes' => array(), 'flags' => array('prop' => 1, 'method' => 0, 'mustlok' => 0)), null, (Object) array('a' => array('b' => 3)), array('a', 'b')
      */
-    public static function v($cx, $in, $base, $path) {
+    public static function v($cx, $in, $base, $path, $args = null) {
         $count = count($cx['scopes']);
         while ($base) {
             $v = $base;
@@ -143,7 +144,13 @@ class Runtime
             if (isset($v)) {
                 if ($v instanceof \Closure) {
                     if ($cx['flags']['mustlam'] || $cx['flags']['lambda']) {
-                        $v = $v($in);
+                        if ($args) {
+                            $A = $args[0];
+                            $A[] = array('hash' => $args[1]);
+                            $v = call_user_func_array($v, $A);
+                        } else {
+                            $v = $v($in);
+                        }
                     }
                 }
                 return $v;
