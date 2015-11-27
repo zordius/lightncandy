@@ -105,7 +105,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                // Decorators: https://github.com/wycats/handlebars.js/blob/master/docs/decorators-api.md
                ($spec['description'] === 'decorators') ||
 
-               // block parameters, https://github.com/zordius/lightncandy/issues/170
+               // block parameters, special case now do not support
                ($spec['it'] === 'should allow block params on chained helpers') ||
                ($spec['it'] === 'should not take presedence over pathed values') ||
 
@@ -173,13 +173,11 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                ($spec['it'] === 'fails with multiple and args') ||
                ($spec['it'] === 'functions returning safestrings shouldn\'t be escaped') ||
                ($spec['it'] === 'should handle undefined and null') ||
-               ($spec['it'] === 'depthed block functions without context argument') ||
                ($spec['template'] === '{{echo (header)}}') ||
                ($spec['it'] === 'pathed block functions without context argument') ||
                ($spec['it'] === 'block functions without context argument') ||
                ($spec['it'] === 'depthed block functions with context argument') ||
                ($spec['it'] === 'block functions with context argument') ||
-               ($spec['it'] === 'depthed functions with context argument') ||
                ($spec['it'] === 'pathed functions with context argument') ||
                ($spec['it'] === 'functions with context argument') ||
                (($spec['template'] === '{{awesome}}') && ($spec['it'] === 'functions'))
