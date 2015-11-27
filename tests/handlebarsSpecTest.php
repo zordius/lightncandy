@@ -165,15 +165,11 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
 
                // need confirm
                ($spec['it'] === 'provides each nested helper invocation its own options hash') ||
-               ($spec['it'] === "subexpressions can't just be property lookups") ||
                ($spec['it'] === 'functions returning safestrings shouldn\'t be escaped') ||
                ($spec['template'] === '{{echo (header)}}') ||
-               ($spec['it'] === 'pathed block functions without context argument') ||
                ($spec['it'] === 'block functions without context argument') ||
                ($spec['it'] === 'depthed block functions with context argument') ||
                ($spec['it'] === 'block functions with context argument') ||
-               ($spec['it'] === 'pathed functions with context argument') ||
-               ($spec['it'] === 'functions with context argument') ||
                (($spec['template'] === '{{awesome}}') && ($spec['it'] === 'functions'))
            ) {
             $this->markTestIncomplete('TODO: require fix');
