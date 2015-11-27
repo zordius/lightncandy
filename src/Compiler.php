@@ -497,7 +497,12 @@ $libstr
                 $vars[0] = array(null);
             }
         }
-        $v = static::getVariableNameOrSubExpression($context, $vars[0]);
+        if ($context['flags']['lambda'] && !$isEach) {
+            $V = array_shift($vars);
+            $v = static::getVariableName($context, $V, null, count($vars) ? static::getVariableNames($context, $vars) : null);
+        } else {
+            $v = static::getVariableNameOrSubExpression($context, $vars[0]);
+        }
         $each = $isEach ? 'true' : 'false';
         return $context['ops']['seperator'] . static::getFuncName($context, 'sec', ($isEach ? 'each ' : '') . $v[1] . $be) . "\$cx, {$v[0]}, $bs, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }

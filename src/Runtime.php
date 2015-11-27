@@ -154,10 +154,6 @@ class Runtime
                     }
                 }
                 return $v;
-            } else {
-                if ($args) {
-                    static::err($cx, 'Can not find helper: "' . implode('.', $path) . '" !');
-                }
             }
             $count--;
             switch ($count) {
@@ -169,6 +165,9 @@ class Runtime
                 default:
                     $base = $cx['scopes'][$count];
             }
+        }
+        if ($args) {
+            static::err($cx, 'Can not find helper or lambda: "' . implode('.', $path) . '" !');
         }
     }
 
