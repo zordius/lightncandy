@@ -37,6 +37,7 @@ v0.89-develop
    * e118a08e6b **BREAK CHANGE** rename FLAG_STANDALONE to FLAG_STANDALONEPHP
    * 3994014ca4 support {{#with bar as |foo|}}
    * fc2f9643c7 support {{#each foo as |value index|}}
+   * 83a173e575 support block params for hbhelpers
 
 v0.23 https://github.com/zordius/lightncandy/tree/v0.23
    * align with handlebars.js 3.0.3
