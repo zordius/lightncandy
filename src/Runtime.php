@@ -360,7 +360,7 @@ class Runtime
         }
 
         if ($cx['flags']['mustlam'] && ($v instanceof \Closure)) {
-            static::err('Do not support Section Lambdas!');
+            static::err($cx, 'Do not support Section Lambdas!');
         }
 
         if (($loop && $isAry) || $isTrav) {
@@ -653,7 +653,7 @@ class Runtime
         }
 
         if ($else) {
-            $options['inverse'] = function ($context = '_NO_INPUT_HERE_', $data = null) use ($cx, $op, $else) {
+            $options['inverse'] = function ($context = '_NO_INPUT_HERE_') use ($cx, $op, $else) {
                 if ($cx['flags']['echo']) {
                     ob_start();
                 }
