@@ -118,6 +118,8 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                ($spec['it'] === 'should include full id if a hash is passed') ||
                ($spec['it'] === 'lambdas resolved by blockHelperMissing are bound to the context') ||
 
+               // number literal + lambdas arguments
+               ($spec['template'] === '{{12.34 1}}') ||
 
                // helper for raw block
                ($spec['it'] === 'helper for raw block gets parameters') ||
@@ -166,15 +168,11 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
 
                // need confirm
                ($spec['it'] === 'provides each nested helper invocation its own options hash') ||
-               ($spec['template'] === "{{blog (equal (equal true true) true fun='yes')}}") ||
-               ($spec['it'] === 'multiple subexpressions in a hash') ||
-               ($spec['it'] === 'multiple subexpressions in a hash with context') ||
                ($spec['it'] === 'in string params mode,') ||
                ($spec['it'] === "subexpressions can't just be property lookups") ||
                ($spec['it'] === 'fails with multiple and args') ||
                ($spec['it'] === 'each with function argument') ||
                ($spec['it'] === 'if with function argument') ||
-               ($spec['it'] === 'pass number literals') ||
                ($spec['it'] === 'functions returning safestrings shouldn\'t be escaped') ||
                ($spec['it'] === 'should handle undefined and null') ||
                ($spec['it'] === 'with with function argument') ||

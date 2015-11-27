@@ -528,7 +528,7 @@ class Validator {
      * @return boolean Return true when it is custom helper
      */
     public static function lookup(&$context, $vars) {
-        if (isset($vars[0][0]) && $vars[0][0] == 'lookup') {
+        if (isset($vars[0][0]) && ($vars[0][0] === 'lookup')) {
             if (!$context['flags']['nohbh']) {
                 if (count($vars) < 2) {
                     $context['error'][] = "No argument after {{lookup}} !";
