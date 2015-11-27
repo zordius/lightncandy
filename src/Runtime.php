@@ -54,8 +54,6 @@ class Runtime
                   . ($ansi ? "\033[0m" : '');
             switch ($f) {
                 case 'sec':
-                case 'ifv':
-                case 'unl':
                 case 'wi':
                     if ($r == '') {
                         if ($ansi) {
@@ -333,12 +331,6 @@ class Runtime
      */
     public static function sec($cx, $v, $bp, $in, $each, $cb, $else = null) {
         $push = ($in !== $v) || $each;
-
-        if ($v instanceof \Closure) {
-            if ($cx['flags']['mustlam'] || $cx['flags']['lambda']) {
-                $v = $v();
-            }
-        }
 
         $isAry = is_array($v) || ($v instanceof \ArrayObject);
         $isTrav = $v instanceof \Traversable;
