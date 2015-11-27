@@ -168,7 +168,6 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
 
                // need confirm
                ($spec['it'] === 'provides each nested helper invocation its own options hash') ||
-               ($spec['it'] === 'in string params mode,') ||
                ($spec['it'] === "subexpressions can't just be property lookups") ||
                ($spec['it'] === 'fails with multiple and args') ||
                ($spec['it'] === 'functions returning safestrings shouldn\'t be escaped') ||
@@ -242,6 +241,12 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                 if (isset($spec['compileOptions']['ignoreStandalone'])) {
                     if ($spec['compileOptions']['ignoreStandalone']) {
                         $f = $f | LightnCandy::FLAG_IGNORESTANDALONE;
+                    }
+                }
+
+                if (isset($spec['compileOptions']['stringParams'])) {
+                    if ($spec['compileOptions']['stringParams']) {
+                        $f = $f | LightnCandy::FLAG_STRINGPARAMS;
                     }
                 }
 

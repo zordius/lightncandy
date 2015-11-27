@@ -148,6 +148,10 @@ class Parser extends Token
             }
         }
 
+        if ($strp) {
+            return array(0, "'" . implode('.', $ret) . "'");
+        }
+
         return $ret;
     }
 

@@ -73,6 +73,7 @@ class Context extends Flags
                 'rawblock' => $flags & static::FLAG_RAWBLOCK,
                 'partnc' => $flags & static::FLAG_PARTIALNEWCONTEXT,
                 'nostd' => $flags & static::FLAG_IGNORESTANDALONE,
+                'strpar' => $flags & static::FLAG_STRINGPARAMS,
             ),
             'level' => 0,
             'stack' => array(),
