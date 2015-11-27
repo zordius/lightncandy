@@ -481,8 +481,12 @@ $libstr
      * @return string|null Return compiled code segment for the token
      */
     protected static function section(&$context, $vars, $isEach = false) {
+        $bs = 'null';
+        $be = '';
         if ($isEach) {
             $bp = Parser::getBlockParams($vars);
+            $bs = $bp ? ('array(' . Expression::listString($bp) . ')') : 'null';
+            $be = $bp ? " as |$bp[0] $bp[1]|" : '';
             array_shift($vars);
             if (!isset($vars[0])) {
                 $vars[0] = array(null);
@@ -490,7 +494,7 @@ $libstr
         }
         $v = static::getVariableNameOrSubExpression($context, $vars[0]);
         $each = $isEach ? 'true' : 'false';
-        return $context['ops']['seperator'] . static::getFuncName($context, 'sec', ($isEach ? 'each ' : '') . $v[1]) . "\$cx, {$v[0]}, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
+        return $context['ops']['seperator'] . static::getFuncName($context, 'sec', ($isEach ? 'each ' : '') . $v[1] . $be) . "\$cx, {$v[0]}, $bs, \$in, $each, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
     /**
@@ -505,7 +509,8 @@ $libstr
         $v = isset($vars[1]) ? static::getVariableNameOrSubExpression($context, $vars[1]) : array(null, array());
         $bp = Parser::getBlockParams($vars);
         $bs = $bp ? ('array(' . Expression::listString($bp) . ')') : 'null';
-        return $context['ops']['seperator'] . static::getFuncName($context, 'wi', 'with ' . $v[1]) . "\$cx, {$v[0]}, $bs, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
+        $be = $bp ? " as |$bp[0]|" : '';
+        return $context['ops']['seperator'] . static::getFuncName($context, 'wi', 'with ' . $v[1] . $be) . "\$cx, {$v[0]}, $bs, \$in, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
     /**
