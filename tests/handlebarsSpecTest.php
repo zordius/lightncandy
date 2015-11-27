@@ -107,7 +107,6 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
 
                // block parameters, https://github.com/zordius/lightncandy/issues/170
                ($spec['it'] === 'should allow block params on chained helpers') ||
-               ($spec['it'] === 'should take presedence over helper values') ||
                ($spec['it'] === 'should not take presedence over pathed values') ||
 
                // helperMissing and blockHelperMissing
