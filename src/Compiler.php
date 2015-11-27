@@ -259,10 +259,13 @@ $libstr
      */
     protected static function getVariableName(&$context, $var, $lookup = null) {
         if (isset($var[0]) && ($var[0] === 0)) {
+            if ($var[1] === "undefined") {
+                $var[1] = "null";
+            }
             return array($var[1], preg_replace('/\'(.*)\'/', '$1', $var[1]));
         }
 
-        list($levels, $spvar , $var) = Expression::analyze($context, $var);
+        list($levels, $spvar, $var) = Expression::analyze($context, $var);
         $exp = Expression::toString($levels, $spvar, $var);
         $base = $spvar ? "\$cx['sp_vars']" : '$in';
 

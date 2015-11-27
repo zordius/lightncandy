@@ -105,7 +105,7 @@ class Parser extends Token
 
         // handle boolean, null and undefined
         if (preg_match('/^(true|false|null|undefined)$/', $v)) {
-            return static::getLiteral(($v === 'undefined') ? 'null' : $v, $asis);
+            return static::getLiteral($v, $asis);
         }
 
         $ret = array();
