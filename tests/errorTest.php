@@ -351,6 +351,14 @@ class errorTest extends PHPUnit_Framework_TestCase
                 'expected' => 'No argument after {{#each}} !',
             ),
             Array(
+                'template' => '{{lookup}}',
+                'expected' => 'No argument after {{lookup}} !',
+            ),
+            Array(
+                'template' => '{{lookup foo}}',
+                'expected' => '{{lookup}} requires 2 arguments !',
+            ),
+            Array(
                 'template' => '{{>not_found}}',
                 'expected' => "Can not find partial file for 'not_found', you should set correct basedir and fileext in options",
             ),
