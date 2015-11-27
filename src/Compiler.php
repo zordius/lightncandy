@@ -257,7 +257,7 @@ $libstr
      * @expect array('((isset($in[\'id\']) && is_array($in)) ? $in[\'id\'] : null)', 'this.[id]') when input array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0)), array(null, 'id')
      * @expect array('LR::v($cx, $in, isset($in) ? $in : null, array(\'id\'))', 'this.[id]') when input array('flags'=>array('prop'=>true,'spvar'=>true,'debug'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0,'standalone'=>0), 'runtime' => 'Runtime'), array(null, 'id')
      */
-    protected static function getVariableName(&$context, $var, $lookup = null) {
+    protected static function getVariableName(&$context, $var, $lookup = null, $args = null) {
         if (isset($var[0]) && ($var[0] === 0)) {
             if ($var[1] === "undefined") {
                 $var[1] = "null";
@@ -290,7 +290,9 @@ $libstr
         // the only way is using slower rendering time variable resolver.
         if ($context['flags']['prop'] || $context['flags']['method'] || $context['flags']['mustlok'] || $context['flags']['mustlam'] || $context['flags']['lambda']) {
             $L = $lookup ? ", $lookup[0]" : '';
-            return array(static::getFuncName($context, 'v', $exp) . "\$cx, \$in, isset($base) ? $base : null, array(" . Expression::listString($var) . "$L))", $lookup ? "lookup $exp $lookup[1]" : $exp);
+            $A = $args ? ",$args[0]" : '';
+            $E = $args ? ' ' . implode(' ', $args[1]) : '';
+            return array(static::getFuncName($context, 'v', $exp) . "\$cx, \$in, isset($base) ? $base : null, array(" . Expression::listString($var) . "$L)$A)", $lookup ? "lookup $exp $lookup[1]" : "$exp$E");
         }
 
         $n = Expression::arrayString($var);
@@ -585,7 +587,12 @@ $libstr
      * @return string Return compiled code segment for the token
      */
     protected static function compileVariable(&$context, &$vars, $raw) {
-        $v = static::getVariableName($context, $vars[0]);
+        if ($context['flags']['lambda']) {
+            $V = array_shift($vars);
+            $v = static::getVariableName($context, $V, null, count($vars) ? static::getVariableNames($context, $vars) : null);
+        } else {
+            $v = static::getVariableName($context, $vars[0]);
+        }
         if ($context['flags']['hbesc'] || $context['flags']['jsobj'] || $context['flags']['jstrue'] || $context['flags']['debug']) {
             return $context['ops']['seperator'] . static::getFuncName($context, $raw ? 'raw' : $context['ops']['enc'], $v[1]) . "\$cx, {$v[0]}){$context['ops']['seperator']}";
         } else {
