@@ -644,6 +644,11 @@ class Runtime
      */
     public static function hbch($cx, $ch, $vars, $op, $inverted, $cb = null, $else = null) {
         $isBlock = (is_object($cb) && ($cb instanceof \Closure));
+
+        if (isset($cx['blparam'][0][$ch])) {
+            return $cx['blparam'][0][$ch];
+        }
+
         $args = $vars[0];
         $options = array(
             'name' => $ch,
