@@ -228,17 +228,6 @@ class Parser extends Token
     }
 
     /**
-     * Check a parsed result is a subexpression or not
-     *
-     * @param array<string|integer|array> $var
-     *
-     * @return boolean return true when input is a subexpression
-     */
-    public static function isBlockParam($var) {
-        return is_array($var) && (count($var) === 3) && ($var[0] === -2) && is_string($var[2]);
-    }
-
-    /**
      * Analyze parsed token for advanved variables.
      *
      * @param array<boolean|integer|array> $vars parsed token
