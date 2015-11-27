@@ -250,7 +250,7 @@ class Validator {
         if ($isEach) {
             static::builtin($context, $vars);
         } else {
-            if (count($vars) > 1) {
+            if ((count($vars) > 1) && !$context['flags']['lambda']) {
                 $context['error'][] = "Custom helper not found: {$vars[0][0]} in " . Token::toString($context['currentToken']) . ' !';
             }
             $context['usedFeature']['sec']++;

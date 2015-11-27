@@ -154,6 +154,10 @@ class Runtime
                     }
                 }
                 return $v;
+            } else {
+                if ($args) {
+                    static::err($cx, 'Can not find helper: "' . implode('.', $path) . '" !');
+                }
             }
             $count--;
             switch ($count) {
