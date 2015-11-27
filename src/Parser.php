@@ -30,6 +30,9 @@ class Parser extends Token
 {
     // Compile time error handling flags
     const BLOCKPARAM = 9999;
+    const LITERAL = -1;
+    const SUBEXP = -2;
+    
 
     /**
      * Get block params and fix the variable list
@@ -58,7 +61,7 @@ class Parser extends Token
      *
      */
     protected static function getLiteral($name, $asis, $quote = false) {
-        return $asis ? array($name) : array(0, $quote ? "'$name'" : $name);
+        return $asis ? array($name) : array(static::LITERAL, $quote ? "'$name'" : $name);
     }
 
     /**
@@ -80,9 +83,9 @@ class Parser extends Token
      * @expect array(2, '[a]', 'b') when input '../../[a].b', array('flags' => array('strpar' => 0, 'advar' => 0, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
      * @expect array(2, 'a', 'b') when input '../../[a].b', array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
      * @expect array('id') when input 'this.id', array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
-     * @expect array(0, '\'a.b\'') when input '"a.b"', array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 1
-     * @expect array(0, '123') when input '123', array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 1
-     * @expect array(0, 'null') when input 'null', array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 1
+     * @expect array(-1, '\'a.b\'') when input '"a.b"', array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 1
+     * @expect array(-1, '123') when input '123', array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 1
+     * @expect array(-1, 'null') when input 'null', array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 0, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 1
      */
     protected static function getExpression($v, &$context, $pos) {
         $asis = ($pos === 0);
@@ -148,7 +151,7 @@ class Parser extends Token
         }
 
         if ($strp) {
-            return array(0, "'" . implode('.', $ret) . "'");
+            return array(static::LITERAL, "'" . implode('.', $ret) . "'");
         }
 
         return $ret;
@@ -168,7 +171,7 @@ class Parser extends Token
      * @expect array(false, array(array('a'))) when input array(0,0,0,0,0,0,0,'a'), array('flags' => array('strpar' => 0, 'advar' => 0, 'this' => 1, 'namev' => 0, 'noesc' => 0), 'rawblock' => false)
      * @expect array(false, array(array('a'), array('b'))) when input array(0,0,0,0,0,0,0,'a  b'), array('flags' => array('strpar' => 0, 'advar' => 0, 'this' => 1, 'namev' => 0, 'noesc' => 0), 'rawblock' => false)
      * @expect array(false, array(array('a'), array('"b'), array('c"'))) when input array(0,0,0,0,0,0,0,'a "b c"'), array('flags' => array('strpar' => 0, 'advar' => 0, 'this' => 1, 'namev' => 0, 'noesc' => 0), 'rawblock' => false)
-     * @expect array(false, array(array('a'), array(0, '\'b c\''))) when input array(0,0,0,0,0,0,0,'a "b c"'), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 0, 'noesc' => 0), 'rawblock' => false)
+     * @expect array(false, array(array('a'), array(-1, '\'b c\''))) when input array(0,0,0,0,0,0,0,'a "b c"'), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 0, 'noesc' => 0), 'rawblock' => false)
      * @expect array(false, array(array('a'), array('[b'), array('c]'))) when input array(0,0,0,0,0,0,0,'a [b c]'), array('flags' => array('strpar' => 0, 'advar' => 0, 'this' => 1, 'namev' => 0, 'noesc' => 0), 'rawblock' => false)
      * @expect array(false, array(array('a'), array('[b'), array('c]'))) when input array(0,0,0,0,0,0,0,'a [b c]'), array('flags' => array('strpar' => 0, 'advar' => 0, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'rawblock' => false)
      * @expect array(false, array(array('a'), array('b c'))) when input array(0,0,0,0,0,0,0,'a [b c]'), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 0, 'noesc' => 0), 'rawblock' => false)
@@ -177,16 +180,16 @@ class Parser extends Token
      * @expect array(false, array(array('a'), array('q=[b c'))) when input array(0,0,0,0,0,0,0,'a [q=[b c]'), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'rawblock' => false)
      * @expect array(false, array(array('a'), 'q' => array('[b'), array('c]'))) when input array(0,0,0,0,0,0,0,'a q=[b c]'), array('flags' => array('strpar' => 0, 'advar' => 0, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'rawblock' => false)
      * @expect array(false, array(array('a'), 'q' => array('b'), array('c'))) when input array(0,0,0,0,0,0,0,'a [q]=b c'), array('flags' => array('strpar' => 0, 'advar' => 0, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'rawblock' => false)
-     * @expect array(false, array(array('a'), 'q' => array(0, '\'b c\''))) when input array(0,0,0,0,0,0,0,'a q="b c"'), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'rawblock' => false)
-     * @expect array(false, array(array(-1, array(array('foo'), array('bar')), '(foo bar)'))) when input array(0,0,0,0,0,0,0,'(foo bar)'), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 1, 'lambda' => 0), 'ops' => array('seperator' => ''), 'usedFeature' => array('subexp' => 0), 'rawblock' => false)
+     * @expect array(false, array(array('a'), 'q' => array(-1, '\'b c\''))) when input array(0,0,0,0,0,0,0,'a q="b c"'), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'rawblock' => false)
+     * @expect array(false, array(array(-2, array(array('foo'), array('bar')), '(foo bar)'))) when input array(0,0,0,0,0,0,0,'(foo bar)'), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 1, 'lambda' => 0), 'ops' => array('seperator' => ''), 'usedFeature' => array('subexp' => 0), 'rawblock' => false)
      * @expect array(false, array(array('foo'), array("'=='"), array('bar'))) when input array(0,0,0,0,0,0,0,"foo '==' bar"), array('flags' => array('strpar' => 0, 'advar' => 1, 'namev' => 1, 'noesc' => 0, 'this' => 0), 'rawblock' => false)
-     * @expect array(false, array(array(-1, array(array('foo'), array('bar')), '( foo bar)'))) when input array(0,0,0,0,0,0,0,'( foo bar)'), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 1, 'lambda' => 0), 'ops' => array('seperator' => ''), 'usedFeature' => array('subexp' => 0), 'rawblock' => false)
-     * @expect array(false, array(array('a'), array(0, '\' b c\''))) when input array(0,0,0,0,0,0,0,'a " b c"'), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 0, 'noesc' => 0), 'rawblock' => false)
-     * @expect array(false, array(array('a'), 'q' => array(0, '\' b c\''))) when input array(0,0,0,0,0,0,0,'a q=" b c"'), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'rawblock' => false)
-     * @expect array(false, array(array('foo'), array(0, "' =='"), array('bar'))) when input array(0,0,0,0,0,0,0,"foo \' ==\' bar"), array('flags' => array('strpar' => 0, 'advar' => 1, 'namev' => 1, 'noesc' => 0, 'this' => 0), 'rawblock' => false)
+     * @expect array(false, array(array(-2, array(array('foo'), array('bar')), '( foo bar)'))) when input array(0,0,0,0,0,0,0,'( foo bar)'), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 1, 'lambda' => 0), 'ops' => array('seperator' => ''), 'usedFeature' => array('subexp' => 0), 'rawblock' => false)
+     * @expect array(false, array(array('a'), array(-1, '\' b c\''))) when input array(0,0,0,0,0,0,0,'a " b c"'), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 0, 'noesc' => 0), 'rawblock' => false)
+     * @expect array(false, array(array('a'), 'q' => array(-1, '\' b c\''))) when input array(0,0,0,0,0,0,0,'a q=" b c"'), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'rawblock' => false)
+     * @expect array(false, array(array('foo'), array(-1, "' =='"), array('bar'))) when input array(0,0,0,0,0,0,0,"foo \' ==\' bar"), array('flags' => array('strpar' => 0, 'advar' => 1, 'namev' => 1, 'noesc' => 0, 'this' => 0), 'rawblock' => false)
      * @expect array(false, array(array('a'), array(' b c'))) when input array(0,0,0,0,0,0,0,'a [ b c]'), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'rawblock' => false)
-     * @expect array(false, array(array('a'), 'q' => array(0, "' d e'"))) when input array(0,0,0,0,0,0,0,"a q=\' d e\'"), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'rawblock' => false)
-     * @expect array(false, array('q' => array(-1, array(array('foo'), array('bar')), '( foo bar)'))) when input array(0,0,0,0,0,0,0,'q=( foo bar)'), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 0, 'lambda' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('seperator' => 0), 'rawblock' => false)
+     * @expect array(false, array(array('a'), 'q' => array(-1, "' d e'"))) when input array(0,0,0,0,0,0,0,"a q=\' d e\'"), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0), 'rawblock' => false)
+     * @expect array(false, array('q' => array(-2, array(array('foo'), array('bar')), '( foo bar)'))) when input array(0,0,0,0,0,0,0,'q=( foo bar)'), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 0, 'lambda' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('seperator' => 0), 'rawblock' => false)
      */
     public static function parse(&$token, &$context) {
         $vars = static::analyze($token[static::POS_INNERTAG], $context);
@@ -220,7 +223,7 @@ class Parser extends Token
                 $context['error'][] = "Can not find custom helper function defination {$avars[0][0]}() !";
             }
         }
-        return array(-1, $avars, $expression);
+        return array(static::SUBEXP, $avars, $expression);
     }
 
     /**
@@ -231,7 +234,7 @@ class Parser extends Token
      * @return boolean return true when input is a subexpression
      */
     public static function isSubExp($var) {
-        return is_array($var) && (count($var) === 3) && ($var[0] === -1) && is_string($var[2]);
+        return is_array($var) && (count($var) === 3) && ($var[0] === static::SUBEXP) && is_string($var[2]);
     }
 
     /**

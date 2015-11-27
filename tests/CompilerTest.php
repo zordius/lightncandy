@@ -60,16 +60,16 @@ class CompilerTest extends PHPUnit_Framework_TestCase
             array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0)), array('false')
         ))));
         $this->assertEquals(array('true', 'true'), $method->invokeArgs(null, array_by_ref(array(
-            array('flags'=>array('spvar'=>true,'debug'=>0)), array(0, 'true')
+            array('flags'=>array('spvar'=>true,'debug'=>0)), array(-1, 'true')
         ))));
         $this->assertEquals(array('false', 'false'), $method->invokeArgs(null, array_by_ref(array(
-            array('flags'=>array('spvar'=>true,'debug'=>0)), array(0, 'false')
+            array('flags'=>array('spvar'=>true,'debug'=>0)), array(-1, 'false')
         ))));
         $this->assertEquals(array('((isset($in[\'2\']) && is_array($in)) ? $in[\'2\'] : null)', '[2]'), $method->invokeArgs(null, array_by_ref(array(
             array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0)), array('2')
         ))));
         $this->assertEquals(array('2', '2'), $method->invokeArgs(null, array_by_ref(array(
-            array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0)), array(0, '2')
+            array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0)), array(-1, '2')
         ))));
         $this->assertEquals(array('((isset($in[\'@index\']) && is_array($in)) ? $in[\'@index\'] : null)', '[@index]'), $method->invokeArgs(null, array_by_ref(array(
             array('flags'=>array('spvar'=>false,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0)), array('@index')
@@ -90,7 +90,7 @@ class CompilerTest extends PHPUnit_Framework_TestCase
             array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0)), array('"a"')
         ))));
         $this->assertEquals(array('"a"', '"a"'), $method->invokeArgs(null, array_by_ref(array(
-            array('flags'=>array('spvar'=>true,'debug'=>0)), array(0, '"a"')
+            array('flags'=>array('spvar'=>true,'debug'=>0)), array(-1, '"a"')
         ))));
         $this->assertEquals(array('((isset($in[\'a\']) && is_array($in)) ? $in[\'a\'] : null)', '[a]'), $method->invokeArgs(null, array_by_ref(array(
             array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0)), array('a')
