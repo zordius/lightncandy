@@ -27,9 +27,13 @@ function patch_safestring($code) {
     return preg_replace('/new SafeString\((.+?)\);/', 'array($1, "raw");', $code);
 }
 
+function patch_this($code) {
+    return preg_replace('/\\$options->scope/', '$options[\'_this\']', $code);
+}
+
 function recursive_lambda_fix(&$array) {
     if (is_array($array) && isset($array['!code']) && isset($array['php'])) {
-        $code = patch_safestring($array['php']);
+        $code = patch_this(patch_safestring($array['php']));
         eval("\$v = $code;");
         $array = $v;
     }
@@ -166,8 +170,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                ($spec['template'] === '{{echo (header)}}') ||
                ($spec['it'] === 'block functions without context argument') ||
                ($spec['it'] === 'depthed block functions with context argument') ||
-               ($spec['it'] === 'block functions with context argument') ||
-               (($spec['template'] === '{{awesome}}') && ($spec['it'] === 'functions'))
+               ($spec['it'] === 'block functions with context argument')
            ) {
             $this->markTestIncomplete('TODO: require fix');
         }
@@ -192,7 +195,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                 $hname = preg_replace('/\\.|\\//', '_', "custom_helper_{$spec['no']}_{$tested}_$name");
                 $helpers[$name] = $hname;
                 $helper = preg_replace('/\\$options->(\\w+)/', '$options[\'$1\']',
-                        preg_replace('/\\$options->scope/', '$options[\'_this\']',
+                        patch_this(
                             preg_replace('/\\$block\\/\\*\\[\'(.+?)\'\\]\\*\\/->(.+?)\\(/', '$block[\'$2\'](',
                                 patch_safestring(
                                     preg_replace('/function/', "function $hname", $func['php'], 1)

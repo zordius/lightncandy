@@ -499,7 +499,7 @@ $libstr
         }
         if ($context['flags']['lambda'] && !$isEach) {
             $V = array_shift($vars);
-            $v = static::getVariableName($context, $V, null, count($vars) ? static::getVariableNames($context, $vars) : null);
+            $v = static::getVariableName($context, $V, null, count($vars) ? static::getVariableNames($context, $vars) : array('0',array('')));
         } else {
             $v = static::getVariableNameOrSubExpression($context, $vars[0]);
         }
@@ -594,7 +594,7 @@ $libstr
     protected static function compileVariable(&$context, &$vars, $raw) {
         if ($context['flags']['lambda']) {
             $V = array_shift($vars);
-            $v = static::getVariableName($context, $V, null, count($vars) ? static::getVariableNames($context, $vars) : null);
+            $v = static::getVariableName($context, $V, null, count($vars) ? static::getVariableNames($context, $vars) : array('0',array('')));
         } else {
             $v = static::getVariableName($context, $vars[0]);
         }

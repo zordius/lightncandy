@@ -144,13 +144,13 @@ class Runtime
             if (isset($v)) {
                 if ($v instanceof \Closure) {
                     if ($cx['flags']['mustlam'] || $cx['flags']['lambda']) {
-                        if ($args) {
-                            $A = $args[0];
-                            $A[] = array('hash' => $args[1]);
-                            $v = call_user_func_array($v, $A);
+                        if ($args || ($args === 0)) {
+                            $A = $args ? $args[0] : array();
+                            $A[] = array('hash' => $args[1], '_this' => $in);
                         } else {
-                            $v = $v($in);
+                            $A = array($in);
                         }
+                        $v = call_user_func_array($v, $A);
                     }
                 }
                 return $v;
