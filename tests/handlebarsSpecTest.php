@@ -6,6 +6,10 @@ use LightnCandy\Runtime;
 $tmpdir = sys_get_temp_dir();
 $hb_test_flag = LightnCandy::FLAG_HANDLEBARSJS_FULL | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_EXTHELPER;
 $tested = 0;
+$test_flags = array($hb_test_flag);
+if (!version_compare(phpversion(), '5.4.0', '<')) {
+    $test_flags[] = $hb_test_flag | LightnCandy::FLAG_STANDALONEPHP;
+}
 
 function recursive_unset(&$array, $unwanted_key) {
     if (isset($array[$unwanted_key])) {
@@ -59,8 +63,8 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
     public function testSpecs($spec)
     {
         global $tmpdir;
-        global $hb_test_flag;
         global $tested;
+        global $test_flags;
 
         recursive_unset($spec, '!sparsearray');
         recursive_lambda_fix($spec['data']);
@@ -194,7 +198,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
             $spec['helpers']['goodbyes']['php'] = 'function($options) { static $value; if($value === null) { $value = 1; } return $options->fn(array("value" => "bar"), array("blockParams" => ($options["fn.blockParams"] === 1) ? array($value++, $value++) : null));}';
         }
 
-        foreach (Array($hb_test_flag, $hb_test_flag | LightnCandy::FLAG_STANDALONEPHP) as $f) {
+        foreach ($test_flags as $f) {
             // setup helpers
             $tested++;
             $helpers = Array();
