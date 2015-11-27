@@ -91,9 +91,17 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
             $this->markTestIncomplete('Not supported case: foo/bar path');
         }
 
-        // 5. Different API, no need to test
+        // 3. Different API, no need to test
         if (
                ($spec['it'] === 'registering undefined partial throws an exception')
+           ) {
+            $this->markTestIncomplete('Not supported case: just skip it');
+        }
+
+        // 4. block parameters, special case now do not support
+        if (
+               ($spec['it'] === 'should allow block params on chained helpers') ||
+               ($spec['it'] === 'should not take presedence over pathed values')
            ) {
             $this->markTestIncomplete('Not supported case: just skip it');
         }
@@ -105,10 +113,6 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                // Decorators: https://github.com/wycats/handlebars.js/blob/master/docs/decorators-api.md
                ($spec['description'] === 'decorators') ||
 
-               // block parameters, special case now do not support
-               ($spec['it'] === 'should allow block params on chained helpers') ||
-               ($spec['it'] === 'should not take presedence over pathed values') ||
-
                // helperMissing and blockHelperMissing
                ($spec['it'] === 'if a context is not found, helperMissing is used') ||
                ($spec['it'] === 'if a context is not found, custom helperMissing is used') ||
@@ -117,9 +121,6 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                ($spec['it'] === 'should include full id') ||
                ($spec['it'] === 'should include full id if a hash is passed') ||
                ($spec['it'] === 'lambdas resolved by blockHelperMissing are bound to the context') ||
-
-               // number literal + lambdas arguments
-               ($spec['template'] === '{{12.34 1}}') ||
 
                // helper for raw block
                ($spec['it'] === 'helper for raw block gets parameters') ||
