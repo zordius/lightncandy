@@ -27,16 +27,16 @@ class RuntimeTest extends PHPUnit_Framework_TestCase
     public function testOn_v() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'v');
         $this->assertEquals(null, $method->invokeArgs(null, array_by_ref(array(
-            array('scopes' => array(), 'flags' => array('prop' => 0, 'method' => 0, 'mustlok' => 0)), 0, array('a', 'b')
+            array('scopes' => array(), 'flags' => array('prop' => 0, 'method' => 0, 'mustlok' => 0)), null, 0, array('a', 'b')
         ))));
         $this->assertEquals(3, $method->invokeArgs(null, array_by_ref(array(
-            array('scopes' => array(), 'flags' => array('prop' => 0, 'method' => 0), 'mustlok' => 0), array('a' => array('b' => 3)), array('a', 'b')
+            array('scopes' => array(), 'flags' => array('prop' => 0, 'method' => 0), 'mustlok' => 0), null, array('a' => array('b' => 3)), array('a', 'b')
         ))));
         $this->assertEquals(null, $method->invokeArgs(null, array_by_ref(array(
-            array('scopes' => array(), 'flags' => array('prop' => 0, 'method' => 0, 'mustlok' => 0)), (Object) array('a' => array('b' => 3)), array('a', 'b')
+            array('scopes' => array(), 'flags' => array('prop' => 0, 'method' => 0, 'mustlok' => 0)), null, (Object) array('a' => array('b' => 3)), array('a', 'b')
         ))));
         $this->assertEquals(3, $method->invokeArgs(null, array_by_ref(array(
-            array('scopes' => array(), 'flags' => array('prop' => 1, 'method' => 0, 'mustlok' => 0)), (Object) array('a' => array('b' => 3)), array('a', 'b')
+            array('scopes' => array(), 'flags' => array('prop' => 1, 'method' => 0, 'mustlok' => 0)), null, (Object) array('a' => array('b' => 3)), array('a', 'b')
         ))));
     }
     /**
@@ -45,34 +45,34 @@ class RuntimeTest extends PHPUnit_Framework_TestCase
     public function testOn_ifvar() {
         $method = new \ReflectionMethod('LightnCandy\Runtime', 'ifvar');
         $this->assertEquals(false, $method->invokeArgs(null, array_by_ref(array(
-            array(), null, false
+            array(), null, null, false
         ))));
         $this->assertEquals(false, $method->invokeArgs(null, array_by_ref(array(
-            array(), 0, false
+            array(), 0, null, false
         ))));
         $this->assertEquals(true, $method->invokeArgs(null, array_by_ref(array(
-            array(), 0, true
+            array(), 0, null, true
         ))));
         $this->assertEquals(false, $method->invokeArgs(null, array_by_ref(array(
-            array(), false, false
+            array(), false, null, false
         ))));
         $this->assertEquals(true, $method->invokeArgs(null, array_by_ref(array(
-            array(), true, false
+            array(), true, null, false
         ))));
         $this->assertEquals(true, $method->invokeArgs(null, array_by_ref(array(
-            array(), 1, false
+            array(), 1, null, false
         ))));
         $this->assertEquals(false, $method->invokeArgs(null, array_by_ref(array(
-            array(), '', false
+            array(), '', null, false
         ))));
         $this->assertEquals(false, $method->invokeArgs(null, array_by_ref(array(
-            array(), array(), false
+            array(), array(), null, false
         ))));
         $this->assertEquals(true, $method->invokeArgs(null, array_by_ref(array(
-            array(), array(''), false
+            array(), array(''), null, false
         ))));
         $this->assertEquals(true, $method->invokeArgs(null, array_by_ref(array(
-            array(), array(0), false
+            array(), array(0), null, false
         ))));
     }
     /**

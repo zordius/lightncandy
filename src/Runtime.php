@@ -106,17 +106,18 @@ class Runtime
      * LightnCandy runtime method for variable lookup. It is slower and only be used for instance property or method detection or lambdas.
      *
      * @param array<string,array|string|integer> $cx render time context
+     * @param array|string|boolean|integer|double|null $in current context
      * @param array<array|string|integer> $base current variable context
      * @param array<string|integer> $path array of names for path
      *
      * @return null|string Return the value or null when not found
      *
-     * @expect null when input array('scopes' => array(), 'flags' => array('prop' => 0, 'method' => 0, 'mustlok' => 0)), 0, array('a', 'b')
-     * @expect 3 when input array('scopes' => array(), 'flags' => array('prop' => 0, 'method' => 0), 'mustlok' => 0), array('a' => array('b' => 3)), array('a', 'b')
-     * @expect null when input array('scopes' => array(), 'flags' => array('prop' => 0, 'method' => 0, 'mustlok' => 0)), (Object) array('a' => array('b' => 3)), array('a', 'b')
-     * @expect 3 when input array('scopes' => array(), 'flags' => array('prop' => 1, 'method' => 0, 'mustlok' => 0)), (Object) array('a' => array('b' => 3)), array('a', 'b')
+     * @expect null when input array('scopes' => array(), 'flags' => array('prop' => 0, 'method' => 0, 'mustlok' => 0)), null, 0, array('a', 'b')
+     * @expect 3 when input array('scopes' => array(), 'flags' => array('prop' => 0, 'method' => 0), 'mustlok' => 0), null, array('a' => array('b' => 3)), array('a', 'b')
+     * @expect null when input array('scopes' => array(), 'flags' => array('prop' => 0, 'method' => 0, 'mustlok' => 0)), null, (Object) array('a' => array('b' => 3)), array('a', 'b')
+     * @expect 3 when input array('scopes' => array(), 'flags' => array('prop' => 1, 'method' => 0, 'mustlok' => 0)), null, (Object) array('a' => array('b' => 3)), array('a', 'b')
      */
-    public static function v($cx, $base, $path) {
+    public static function v($cx, $in, $base, $path) {
         $count = count($cx['scopes']);
         while ($base) {
             $v = $base;
@@ -144,7 +145,7 @@ class Runtime
             if (isset($v)) {
                 if ($v instanceof \Closure) {
                     if ($cx['flags']['mustlam'] || $cx['flags']['lambda']) {
-                        $v = $v();
+                        $v = $v($in);
                     }
                 }
                 return $v;
@@ -167,22 +168,28 @@ class Runtime
      *
      * @param array<string,array|string|integer> $cx render time context
      * @param array<array|string|integer>|string|integer|null $v value to be tested
+     * @param array|string|boolean|integer|double|null $in current context
      * @param boolean $zero include zero as true
      *
      * @return boolean Return true when the value is not null nor false.
      *
-     * @expect false when input array(), null, false
-     * @expect false when input array(), 0, false
-     * @expect true when input array(), 0, true
-     * @expect false when input array(), false, false
-     * @expect true when input array(), true, false
-     * @expect true when input array(), 1, false
-     * @expect false when input array(), '', false
-     * @expect false when input array(), array(), false
-     * @expect true when input array(), array(''), false
-     * @expect true when input array(), array(0), false
+     * @expect false when input array(), null, null, false
+     * @expect false when input array(), 0, null, false
+     * @expect true when input array(), 0, null, true
+     * @expect false when input array(), false, null, false
+     * @expect true when input array(), true, null, false
+     * @expect true when input array(), 1, null, false
+     * @expect false when input array(), '', null, false
+     * @expect false when input array(), array(), null, false
+     * @expect true when input array(), array(''), null, false
+     * @expect true when input array(), array(0), null, false
      */
-    public static function ifvar($cx, $v, $zero) {
+    public static function ifvar($cx, $v, $in, $zero) {
+        if ($v instanceof \Closure) {
+            if ($cx['flags']['mustlam'] || $cx['flags']['lambda']) {
+                $v = $v($in);
+            }
+        }
         return ($v !== null) && ($v !== false) && ($zero || ($v !== 0) && ($v !== 0.0)) && ($v !== '') && (is_array($v) ? (count($v) > 0) : true);
     }
 
@@ -204,7 +211,7 @@ class Runtime
      * @expect 'N' when input array('scopes' => array()), null, false, array(), function () {return 'Y';}, function () {return 'N';}
      */
     public static function ifv($cx, $v, $zero, $in, $truecb, $falsecb = null) {
-        if (static::ifvar($cx, $v, $zero)) {
+        if (static::ifvar($cx, $v, $in, $zero)) {
             if ($truecb) {
                 return $truecb($cx, $in);
             }

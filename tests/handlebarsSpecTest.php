@@ -171,8 +171,6 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                ($spec['it'] === 'in string params mode,') ||
                ($spec['it'] === "subexpressions can't just be property lookups") ||
                ($spec['it'] === 'fails with multiple and args') ||
-               ($spec['it'] === 'each with function argument') ||
-               ($spec['it'] === 'if with function argument') ||
                ($spec['it'] === 'functions returning safestrings shouldn\'t be escaped') ||
                ($spec['it'] === 'should handle undefined and null') ||
                ($spec['it'] === 'with with function argument') ||

@@ -104,7 +104,7 @@ class CompilerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(array('((isset($in[\'id\']) && is_array($in)) ? $in[\'id\'] : null)', 'this.[id]'), $method->invokeArgs(null, array_by_ref(array(
             array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0)), array(null, 'id')
         ))));
-        $this->assertEquals(array('LR::v($cx, isset($in) ? $in : null, array(\'id\'))', 'this.[id]'), $method->invokeArgs(null, array_by_ref(array(
+        $this->assertEquals(array('LR::v($cx, $in, isset($in) ? $in : null, array(\'id\'))', 'this.[id]'), $method->invokeArgs(null, array_by_ref(array(
             array('flags'=>array('prop'=>true,'spvar'=>true,'debug'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0,'standalone'=>0), 'runtime' => 'Runtime'), array(null, 'id')
         ))));
     }
