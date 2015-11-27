@@ -359,6 +359,10 @@ class errorTest extends PHPUnit_Framework_TestCase
                 'expected' => '{{lookup}} requires 2 arguments !',
             ),
             Array(
+                'template' => '{{#test foo}}{{/test}}',
+                'expected' => 'Custom helper not found: test in {{#test foo}} !',
+            ),
+            Array(
                 'template' => '{{>not_found}}',
                 'expected' => "Can not find partial file for 'not_found', you should set correct basedir and fileext in options",
             ),

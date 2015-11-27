@@ -169,7 +169,6 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                // need confirm
                ($spec['it'] === 'provides each nested helper invocation its own options hash') ||
                ($spec['it'] === "subexpressions can't just be property lookups") ||
-               ($spec['it'] === 'fails with multiple and args') ||
                ($spec['it'] === 'functions returning safestrings shouldn\'t be escaped') ||
                ($spec['template'] === '{{echo (header)}}') ||
                ($spec['it'] === 'pathed block functions without context argument') ||
@@ -290,7 +289,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
             }
 
             if (!isset($spec['expected'])) {
-                $this->fail('Should Fail:' . print_r($spec, true));
+                $this->fail('Should Fail:' . print_r($spec, true) . "PHP CODE: $php\nPARSED: $parsed\nHELPERS:$helpersList");
             }
 
             $this->assertEquals($spec['expected'], $result, "[{$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']} PHP CODE: $php\nPARSED: $parsed\nHELPERS:$helpersList");

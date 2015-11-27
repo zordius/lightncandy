@@ -214,8 +214,7 @@ class Validator {
             case 'if':
                 return static::doIf($context, $vars, true);
             default:
-                $context['usedFeature']['sec']++;
-                return true;
+                return static::section($context, $vars);
         }
     }
 
@@ -250,6 +249,11 @@ class Validator {
     protected static function section(&$context, $vars, $isEach = false) {
         if ($isEach) {
             static::builtin($context, $vars);
+        } else {
+            if (count($vars) > 1) {
+                $context['error'][] = "Custom helper not found: {$vars[0][0]} in " . Token::toString($context['currentToken']) . ' !';
+            }
+            $context['usedFeature']['sec']++;
         }
         return true;
     }
