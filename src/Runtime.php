@@ -168,7 +168,6 @@ class Runtime
      *
      * @param array<string,array|string|integer> $cx render time context
      * @param array<array|string|integer>|string|integer|null $v value to be tested
-     * @param array|string|boolean|integer|double|null $in current context
      * @param boolean $zero include zero as true
      *
      * @return boolean Return true when the value is not null nor false.
@@ -186,58 +185,6 @@ class Runtime
      */
     public static function ifvar($cx, $v, $zero) {
         return ($v !== null) && ($v !== false) && ($zero || ($v !== 0) && ($v !== 0.0)) && ($v !== '') && (is_array($v) ? (count($v) > 0) : true);
-    }
-
-    /**
-     * LightnCandy runtime method for {{#if var}} when {{../var}} used.
-     *
-     * @param array<string,array|string|integer> $cx render time context
-     * @param array<array|string|integer>|string|integer|null $v value to be tested
-     * @param boolean $zero include zero as true
-     * @param array<array|string|integer> $in input data with current scope
-     * @param Closure|null $truecb callback function when test result is true
-     * @param Closure|null $falsecb callback function when test result is false
-     *
-     * @return string The rendered string of the section
-     *
-     * @expect '' when input array('scopes' => array()), null, false, array(), null
-     * @expect '' when input array('scopes' => array()), null, false, array(), function () {return 'Y';}
-     * @expect 'Y' when input array('scopes' => array()), 1, false, array(), function () {return 'Y';}
-     * @expect 'N' when input array('scopes' => array()), null, false, array(), function () {return 'Y';}, function () {return 'N';}
-     */
-    public static function ifv($cx, $v, $zero, $in, $truecb, $falsecb = null) {
-        if (static::ifvar($cx, $v, $in, $zero)) {
-            if ($truecb) {
-                return $truecb($cx, $in);
-            }
-        } else {
-            if ($falsecb) {
-                return $falsecb($cx, $in);
-            }
-        }
-        return '';
-    }
-
-    /**
-     * LightnCandy runtime method for {{#unless var}} when {{../var}} used.
-     *
-     * @param array<string,array|string|integer> $cx render time context
-     * @param array<array|string|integer>|string|integer|null $var value be tested
-     * @param boolean $zero include zero as true
-     * @param array<array|string|integer>|string|integer|null $in input data with current scope
-     * @param Closure $truecb callback function when test result is true
-     * @param Closure|null $falsecb callback function when test result is false
-     *
-     * @return string Return rendered string when the value is not null nor false.
-     *
-     * @expect '' when input array('scopes' => array()), null, false, array(), null
-     * @expect 'Y' when input array('scopes' => array()), null, false, array(), function () {return 'Y';}
-     * @expect '' when input array('scopes' => array()), 1, false, array(), function () {return 'Y';}
-     * @expect 'Y' when input array('scopes' => array()), null, false, array(), function () {return 'Y';}, function () {return 'N';}
-     * @expect 'N' when input array('scopes' => array()), true, false, array(), function () {return 'Y';}, function () {return 'N';}
-     */
-    public static function unl($cx, $var, $zero, $in, $truecb, $falsecb = null) {
-        return static::ifv($cx, $var, $zero, $in, $falsecb, $truecb);
     }
 
     /**

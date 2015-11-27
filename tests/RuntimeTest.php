@@ -76,45 +76,6 @@ class RuntimeTest extends PHPUnit_Framework_TestCase
         ))));
     }
     /**
-     * @covers LightnCandy\Runtime::ifv
-     */
-    public function testOn_ifv() {
-        $method = new \ReflectionMethod('LightnCandy\Runtime', 'ifv');
-        $this->assertEquals('', $method->invokeArgs(null, array_by_ref(array(
-            array('scopes' => array()), null, false, array(), null
-        ))));
-        $this->assertEquals('', $method->invokeArgs(null, array_by_ref(array(
-            array('scopes' => array()), null, false, array(), function () {return 'Y';}
-        ))));
-        $this->assertEquals('Y', $method->invokeArgs(null, array_by_ref(array(
-            array('scopes' => array()), 1, false, array(), function () {return 'Y';}
-        ))));
-        $this->assertEquals('N', $method->invokeArgs(null, array_by_ref(array(
-            array('scopes' => array()), null, false, array(), function () {return 'Y';}, function () {return 'N';}
-        ))));
-    }
-    /**
-     * @covers LightnCandy\Runtime::unl
-     */
-    public function testOn_unl() {
-        $method = new \ReflectionMethod('LightnCandy\Runtime', 'unl');
-        $this->assertEquals('', $method->invokeArgs(null, array_by_ref(array(
-            array('scopes' => array()), null, false, array(), null
-        ))));
-        $this->assertEquals('Y', $method->invokeArgs(null, array_by_ref(array(
-            array('scopes' => array()), null, false, array(), function () {return 'Y';}
-        ))));
-        $this->assertEquals('', $method->invokeArgs(null, array_by_ref(array(
-            array('scopes' => array()), 1, false, array(), function () {return 'Y';}
-        ))));
-        $this->assertEquals('Y', $method->invokeArgs(null, array_by_ref(array(
-            array('scopes' => array()), null, false, array(), function () {return 'Y';}, function () {return 'N';}
-        ))));
-        $this->assertEquals('N', $method->invokeArgs(null, array_by_ref(array(
-            array('scopes' => array()), true, false, array(), function () {return 'Y';}, function () {return 'N';}
-        ))));
-    }
-    /**
      * @covers LightnCandy\Runtime::isec
      */
     public function testOn_isec() {
