@@ -187,6 +187,9 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
         if ($spec['it'] === 'should take presednece over parent block params') {
             $spec['helpers']['goodbyes']['php'] = 'function($options) { static $value; if($value === null) { $value = 1; } return $options->fn(array("value" => "bar"), array("blockParams" => ($options["fn.blockParams"] === 1) ? array($value++, $value++) : null));}';
         }
+        if (($spec['it'] === 'should handle undefined and null') && ($spec['expected'] === 'true true object')) {
+            $spec['expected'] = 'true true array';
+        }
 
         foreach ($test_flags as $f) {
             // setup helpers
