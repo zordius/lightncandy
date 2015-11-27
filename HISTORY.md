@@ -35,6 +35,8 @@ v0.89-develop
    * 44741ac197 supports {{lookup foo bar}} now
    * 50eae060c5 new flag FLAG_PARTIALNEWCONTEXT to create new empty context for every partial
    * e118a08e6b **BREAK CHANGE** rename FLAG_STANDALONE to FLAG_STANDALONEPHP
+   * 3994014ca4 support {{#with bar as |foo|}}
+   * fc2f9643c7 support {{#each foo as |value index|}}
 
 v0.23 https://github.com/zordius/lightncandy/tree/v0.23
    * align with handlebars.js 3.0.3
