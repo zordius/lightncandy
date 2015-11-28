@@ -148,7 +148,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                ($spec['it'] === 'helper for raw block gets parameters') ||
 
                // !!!! Never support
-               ($spec['template'] === '{{foo}') ||
+               ($spec['template'] === '{{foo}')
            ) {
             $this->markTestIncomplete('Not supported case: just skip it');
         }
