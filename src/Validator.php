@@ -212,7 +212,7 @@ class Validator {
             case 'unless':
                 return static::unless($context, $vars);
             case 'if':
-                return static::doIf($context, $vars, true);
+                return static::doIf($context, $vars);
             default:
                 return static::section($context, $vars);
         }
