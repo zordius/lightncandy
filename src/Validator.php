@@ -527,7 +527,7 @@ class Validator {
      * Return true whe the name is listed in helper table
      *
      * @param array<string,array|string|integer> $context current compile context
-     * @param string $name token name
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
      *
      * @return boolean Return true when it is custom helper
      */
