@@ -133,9 +133,6 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                ($spec['it'] === 'rendering function partial in vm mode') ||
                ($spec['it'] === 'rendering template partial in vm mode throws an exception') ||
 
-               // partial with string
-               ($spec['it'] === 'Partials with string') ||
-
                // partial blocks
                ($spec['description'] === 'partial blocks') ||
 
