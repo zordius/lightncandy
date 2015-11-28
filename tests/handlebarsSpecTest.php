@@ -155,10 +155,6 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
 
         // TODO: require fix
         if (
-               // partial in vm mode
-               ($spec['it'] === 'rendering function partial in vm mode') ||
-               ($spec['it'] === 'rendering template partial in vm mode throws an exception') ||
-
                // partial blocks
                ($spec['description'] === 'partial blocks') ||
 
@@ -170,6 +166,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
 
                // SafeString
                ($spec['it'] === 'functions returning safestrings shouldn\'t be escaped') ||
+               ($spec['it'] === 'rendering function partial in vm mode') ||
 
                // need confirm
                ($spec['it'] === 'provides each nested helper invocation its own options hash') ||
