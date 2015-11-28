@@ -104,44 +104,26 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
 
         // 4. block parameters, special case now do not support
         if (
-               ($spec['it'] === 'should allow block params on chained helpers') ||
                ($spec['it'] === 'should not take presedence over pathed values')
            ) {
             $this->markTestIncomplete('Not supported case: just skip it');
         }
 
-        // TODO: require fix
+        // 5. Not supported case: helperMissing and blockHelperMissing
         if (
-               ($spec['it'] === 'chained inverted sections') ||
-
-               // Decorators: https://github.com/wycats/handlebars.js/blob/master/docs/decorators-api.md
-               ($spec['description'] === 'decorators') ||
-
-               // helperMissing and blockHelperMissing
                ($spec['it'] === 'if a context is not found, helperMissing is used') ||
                ($spec['it'] === 'if a context is not found, custom helperMissing is used') ||
                ($spec['it'] === 'if a value is not found, custom helperMissing is used') ||
                ($spec['it'] === 'should include in simple block calls') ||
                ($spec['it'] === 'should include full id') ||
                ($spec['it'] === 'should include full id if a hash is passed') ||
-               ($spec['it'] === 'lambdas resolved by blockHelperMissing are bound to the context') ||
+               ($spec['it'] === 'lambdas resolved by blockHelperMissing are bound to the context')
+           ) {
+            $this->markTestIncomplete('Not supported case: just skip it');
+        }
 
-               // helper for raw block
-               ($spec['it'] === 'helper for raw block gets parameters') ||
-
-               // partial in vm mode
-               ($spec['it'] === 'rendering function partial in vm mode') ||
-               ($spec['it'] === 'rendering template partial in vm mode throws an exception') ||
-
-               // partial blocks
-               ($spec['description'] === 'partial blocks') ||
-
-               // inline partials
-               ($spec['description'] === 'inline partials') ||
-               ($spec['it'] === 'should support multiple levels of inline partials') ||
-               ($spec['it'] === 'GH-1089: should support failover content in multiple levels of inline partials') ||
-               ($spec['it'] === 'GH-1099: should support greater than 3 nested levels of inline partials') ||
-
+        // 6. Not supported case: misc
+        if (
                // compat mode
                ($spec['description'] === 'compat mode') ||
 
@@ -155,11 +137,39 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                ($spec['it'] === 'knows how to report the correct line number in errors') ||
                ($spec['it'] === 'knows how to report the correct line number in errors when the first character is a newline') ||
 
-               // SafeString
-               ($spec['it'] === 'functions returning safestrings shouldn\'t be escaped') ||
+               // chained inverted sections
+               ($spec['it'] === 'should allow block params on chained helpers') ||
+               ($spec['it'] === 'chained inverted sections') ||
+
+               // Decorators: https://github.com/wycats/handlebars.js/blob/master/docs/decorators-api.md
+               ($spec['description'] === 'decorators') ||
+
+               // helper for raw block
+               ($spec['it'] === 'helper for raw block gets parameters') ||
 
                // !!!! Never support
                ($spec['template'] === '{{foo}') ||
+           ) {
+            $this->markTestIncomplete('Not supported case: just skip it');
+        }
+
+        // TODO: require fix
+        if (
+               // partial in vm mode
+               ($spec['it'] === 'rendering function partial in vm mode') ||
+               ($spec['it'] === 'rendering template partial in vm mode throws an exception') ||
+
+               // partial blocks
+               ($spec['description'] === 'partial blocks') ||
+
+               // inline partials
+               ($spec['description'] === 'inline partials') ||
+               ($spec['it'] === 'should support multiple levels of inline partials') ||
+               ($spec['it'] === 'GH-1089: should support failover content in multiple levels of inline partials') ||
+               ($spec['it'] === 'GH-1099: should support greater than 3 nested levels of inline partials') ||
+
+               // SafeString
+               ($spec['it'] === 'functions returning safestrings shouldn\'t be escaped') ||
 
                // need confirm
                ($spec['it'] === 'provides each nested helper invocation its own options hash') ||
