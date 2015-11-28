@@ -94,6 +94,7 @@ class Compiler extends Validator
         $flagMustlam = Expression::boolString($context['flags']['mustlam']);
         $flagEcho = Expression::boolString($context['flags']['echo']);
         $flagPartNC = Expression::boolString($context['flags']['partnc']);
+        $flagKnownHlp = Expression::boolString($context['flags']['knohlp']);
 
         $libstr = Exporter::runtime($context);
         $constants = Exporter::constants($context);
@@ -118,6 +119,7 @@ class Compiler extends Validator
             'mustlam' => $flagMustlam,
             'echo' => $flagEcho,
             'partnc' => $flagPartNC,
+            'knohlp' => $flagKnownHlp,
             'debug' => isset(\$options['debug']) ? \$options['debug'] : $debug,
         ),
         'constants' => $constants,

@@ -132,6 +132,7 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * `FLAG_SPACECTL` : support space control `{{~ }}` or `{{ ~}}` in template. Otherwise, `{{~ }}` or `{{ ~}}` will cause template error.
 * `FLAG_IGNORESTANDALONE` : prevent standalone detection on `{{#foo}}`, `{{/foo}}` or `{{^}}`, the behavior is same with handlebars.js ignoreStandalone compile time option.
 * `FLAG_STRINGPARAMS` : pass variable name as string to helpers, the behavior is same with handlebars.js stringParams compile time option.
+* `FLAG_KNOWNHELPERSONLY`: Only pass current context to lambda, the behavior is same with handlebars.js knownHelpersOnly compile time option.
 * `FLAG_SPVARS` : support special variables include @root, @index, @key, @first, @last. Otherwise, compile these variable names with default parsing logic.
 * `FLAG_HANDLEBARSLAMBDA` : support lambda logic as handlebars.js specification. And, the rendering performance will be worse.
 * `FLAG_JS` : simulate all JavaScript string conversion behavior, same with `FLAG_JSTRUE` + `FLAG_JSOBJECT`.

@@ -145,9 +145,6 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                // compat mode
                ($spec['description'] === 'compat mode') ||
 
-               // knownHelpers and knownHelpersOnly
-               ($spec['description'] === 'knownHelpers') ||
-
                // directives
                ($spec['description'] === 'directives') ||
 
@@ -158,12 +155,14 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                ($spec['it'] === 'knows how to report the correct line number in errors') ||
                ($spec['it'] === 'knows how to report the correct line number in errors when the first character is a newline') ||
 
+               // SafeString
+               ($spec['it'] === 'functions returning safestrings shouldn\'t be escaped') ||
+
                // !!!! Never support
                ($spec['template'] === '{{foo}') ||
 
                // need confirm
                ($spec['it'] === 'provides each nested helper invocation its own options hash') ||
-               ($spec['it'] === 'functions returning safestrings shouldn\'t be escaped') ||
                ($spec['template'] === '{{echo (header)}}') ||
                ($spec['it'] === 'block functions without context argument') ||
                ($spec['it'] === 'depthed block functions with context argument') ||
@@ -238,6 +237,12 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                 if (isset($spec['compileOptions']['stringParams'])) {
                     if ($spec['compileOptions']['stringParams']) {
                         $f = $f | LightnCandy::FLAG_STRINGPARAMS;
+                    }
+                }
+
+                if (isset($spec['compileOptions']['knownHelpersOnly'])) {
+                    if ($spec['compileOptions']['knownHelpersOnly']) {
+                        $f = $f | LightnCandy::FLAG_KNOWNHELPERSONLY;
                     }
                 }
 

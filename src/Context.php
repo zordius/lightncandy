@@ -74,6 +74,7 @@ class Context extends Flags
                 'partnc' => $flags & static::FLAG_PARTIALNEWCONTEXT,
                 'nostd' => $flags & static::FLAG_IGNORESTANDALONE,
                 'strpar' => $flags & static::FLAG_STRINGPARAMS,
+                'knohlp' => $flags & static::FLAG_KNOWNHELPERSONLY,
             ),
             'level' => 0,
             'stack' => array(),

@@ -144,7 +144,7 @@ class Runtime
             if (isset($v)) {
                 if ($v instanceof \Closure) {
                     if ($cx['flags']['mustlam'] || $cx['flags']['lambda']) {
-                        if ($args || ($args === 0)) {
+                        if (!$cx['flags']['knohlp'] && ($args || ($args === 0))) {
                             $A = $args ? $args[0] : array();
                             $A[] = array('hash' => $args[1], '_this' => $in);
                         } else {
