@@ -41,6 +41,8 @@ v0.89-develop
    * 2a262f671b new flag FLAG_STRINGPARAMS to support handlebars.js options.stringParams
    * dcc84c3118 support lambda arguments
    * edef496b25 maintain options.contexts for custom helpers now
+   * 8e94d5d6ba support partial block: {{#> foo}}block{{/foo}}
+   * 4347a78b3e support partial block: {{> @partial-block}}
 
 v0.23 https://github.com/zordius/lightncandy/tree/v0.23
    * align with handlebars.js 3.0.3
