@@ -156,6 +156,11 @@ class Validator {
      */
     protected static function operator($operator, &$context, &$vars) {
         switch ($operator) {
+            case '#>':
+                static::pushStack($context, '#>', $vars);
+                array_unshift($context['partialblock'], '');
+                return static::partial($context, $vars);
+
             case '>':
                 return static::partial($context, $vars);
 
@@ -192,6 +197,41 @@ class Validator {
                 }
 
                 return static::blockBegin($context, $vars);
+        }
+    }
+
+    /**
+     * validate block begin token
+     *
+     * @param string $operator the operator string
+     * @param array<string,array|string|integer> $context current compile context
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
+     *
+     * @return boolean Return true always
+     */
+    protected static function partialBlock($operator, &$context, $vars) {
+        if (count($context['partialblock']) > 0) {
+            $context['partialblock'][0] .= $context['currentToken'][Token::POS_LOTHER] . $context['currentToken'][Token::POS_LSPACE];
+            if ($operator === '/') {
+                if (static::blockEnd($context, $vars) !== null) {
+                    if (Partial::resolvePartial($vars[0][0], $context) === null) {
+                        $context['usedPartial'][$vars[0][0]] = $context['partialblock'][0];
+                        $tmpPB = $context['partialblock'];
+                        $context['partialblock'] = array();
+                        Partial::compileDynamic($vars[0][0], $context);
+                        $context['partialblock'] = $tmpPB;
+                    } else {
+                        Partial::readPartial($vars[0][0], $context);
+                    }
+                    array_pop($context['stack']);
+                    array_pop($context['stack']);
+                    array_pop($context['stack']);
+                    array_shift($context['partialblock']);
+                    return true;
+                }
+            }
+            $context['partialblock'][0] .= Token::toString($context['currentToken']);
+            return true;
         }
     }
 
@@ -357,6 +397,7 @@ class Validator {
         }
 
         switch($pop) {
+            case '#>':
             case '#':
             case '^':
                 list($levels, $spvar, $var) = Expression::analyze($context, $vars[0]);
@@ -451,7 +492,8 @@ class Validator {
      * @param array<string,array|string|integer> $context current compile context
      */
     protected static function token(&$token, &$context) {
-        $context['currentToken'] = $token;
+        $context['currentToken'] = &$token;
+
         if (static::rawblock($token, $context)) {
             return Token::toString($token);
         }
@@ -471,6 +513,12 @@ class Validator {
         }
 
         list($raw, $vars) = Parser::parse($token, $context);
+
+        if (static::partialBlock($token[Token::POS_OP], $context, $vars)) {
+            $token[Token::POS_LOTHER] = '';
+            $token[Token::POS_LSPACE] = '';
+            return;
+        }
 
         // Handle spacing (standalone tags, partial indent)
         static::spacing($token, $context, (($token[Token::POS_OP] === '') || ($token[Token::POS_OP] === '&')) && (!$context['flags']['else'] || !isset($vars[0][0]) || ($vars[0][0] !== 'else')) || ($context['flags']['nostd'] > 0));
@@ -604,7 +652,9 @@ class Validator {
                 return true;
             }
         } else {
-            Partial::readPartial($vars[0][0], $context);
+            if ($context['currentToken'][Token::POS_OP] !== '#>') {
+                Partial::readPartial($vars[0][0], $context);
+            }
         }
         if (!$context['flags']['runpart']) {
         $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;

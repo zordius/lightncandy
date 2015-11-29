@@ -155,9 +155,6 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
 
         // TODO: require fix
         if (
-               // partial blocks
-               ($spec['description'] === 'partial blocks') ||
-
                // inline partials
                ($spec['description'] === 'inline partials') ||
                ($spec['it'] === 'should support multiple levels of inline partials') ||

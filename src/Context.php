@@ -125,6 +125,7 @@ class Context extends Flags
             ),
             'parsed' => array(),
             'partials' => (isset($options['partials']) && is_array($options['partials'])) ? $options['partials'] : array(),
+            'partialblock' => array(),
             'helpers' => array(),
             'blockhelpers' => array(),
             'hbhelpers' => array(),
@@ -258,6 +259,7 @@ class Context extends Flags
         $context['usedCount'] = $tmp['usedCount'];
         $context['partialStack'] = $tmp['partialStack'];
         $context['partialCode'] = $tmp['partialCode'];
+        $context['error'] = array_merge($context['error'], $tmp['error']);
     }
 }
 

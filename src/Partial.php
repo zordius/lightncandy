@@ -93,7 +93,7 @@ class Partial
      *
      * @return string|null $content partial content
      */
-    protected static function resolvePartial(&$name, &$context) {
+    public static function resolvePartial(&$name, &$context) {
         if (isset($context['partials'][$name])) {
             return static::prePartial($context['partials'][$name], $name, $context);
         }
@@ -142,7 +142,7 @@ class Partial
      * @param string $name partial name
      * @param array<string,array|string|integer> $context Current context of compiler progress.
      */
-    protected static function compileDynamic(&$name, &$context) {
+    public static function compileDynamic(&$name, &$context) {
         if (!$context['flags']['runpart']) {
             return;
         }
