@@ -1528,6 +1528,15 @@ VAREND
                 'data' => Array('each' => Array(1, 3, 7), 'a' => Array(2, 4, 9)),
                 'expected' => 'SHOW:1 SHOW:3 SHOW:7 ',
             ),
+
+            Array(
+                'template' => '{{#>foo}}inline\'partial{{/foo}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS_FULL,
+                ),
+                'data' => null,
+                'expected' => 'inline\'partial',
+            ),
         );
 
         return array_map(function($i) {

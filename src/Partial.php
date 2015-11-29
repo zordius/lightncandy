@@ -60,7 +60,7 @@ class Partial
         $cnt = static::resolvePartial($name, $context);
 
         if ($cnt !== null) {
-            $context['usedPartial'][$name] = $cnt;
+            $context['usedPartial'][$name] = SafeString::escapeTemplate($cnt);
             return static::compileDynamic($name, $context);
         }
 
@@ -158,7 +158,7 @@ class Partial
         } else {
             $sp = '';
         }
-        $code = str_replace(SafeString::escapeTemplate(static::$TMP_JS_FUNCTION_STR), 'function', $code);
+        $code = str_replace(static::$TMP_JS_FUNCTION_STR, 'function', $code);
         $context['partialCode'] .= "'$name' => function (\$cx, \$in{$sp}) {{$context['ops']['op_start']}'$code'{$context['ops']['op_end']}},";
     }
 }

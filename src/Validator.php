@@ -36,7 +36,7 @@ class Validator {
      * @param string $template handlebars template
      */
     public static function verify(&$context, $template) {
-        $template = SafeString::escapeTemplate(SafeString::stripExtendedComments($template));
+        $template = SafeString::stripExtendedComments($template);
         $context['level'] = 0;
         Parser::setDelimiter($context);
 

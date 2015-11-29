@@ -46,7 +46,7 @@ class LightnCandy extends Flags
             return false;
         }
 
-        $code = Compiler::compileTemplate($context, $template);
+        $code = Compiler::compileTemplate($context, SafeString::escapeTemplate($template));
         static::$lastParsed = Compiler::$lastParsed;
 
         // return false when fatal error
