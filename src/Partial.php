@@ -142,13 +142,26 @@ class Partial
      * @param string $name partial name
      * @param array<string,array|string|integer> $context Current context of compiler progress.
      */
-    public static function compileDynamic(&$name, &$context) {
+    public static function compileDynamic($name, &$context) {
         if (!$context['flags']['runpart']) {
             return;
         }
 
+        $func = static::compileLocal($context, $context['usedPartial'][$name]);
+        $context['partialCode'] .= "'$name' => $func,";
+    }
+
+    /**
+     * compile a template into a closure function
+     *
+     * @param array<string,array|string|integer> $context Current context of compiler progress.
+     * @param string $template template string
+     *
+     * @return array<string> $content array of code and space param string
+     */
+    public static function compileLocal(&$context, $template) {
         $tmpContext = $context;
-        $code = Compiler::compileTemplate($tmpContext, str_replace('function', static::$TMP_JS_FUNCTION_STR, $context['usedPartial'][$name]));
+        $code = Compiler::compileTemplate($tmpContext, str_replace('function', static::$TMP_JS_FUNCTION_STR, $template));
         Context::merge($context, $tmpContext);
         if (!$context['flags']['noind']) {
             $sp = ', $sp';
@@ -159,7 +172,7 @@ class Partial
             $sp = '';
         }
         $code = str_replace(static::$TMP_JS_FUNCTION_STR, 'function', $code);
-        $context['partialCode'] .= "'$name' => function (\$cx, \$in{$sp}) {{$context['ops']['op_start']}'$code'{$context['ops']['op_end']}},";
+        return "function (\$cx, \$in{$sp}) {{$context['ops']['op_start']}'$code'{$context['ops']['op_end']}}";
     }
 }
 

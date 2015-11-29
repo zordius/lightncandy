@@ -126,6 +126,8 @@ class Context extends Flags
             'parsed' => array(),
             'partials' => (isset($options['partials']) && is_array($options['partials'])) ? $options['partials'] : array(),
             'partialblock' => array(),
+            'inlinepartial' => array(),
+            'inlines' => array(),
             'helpers' => array(),
             'blockhelpers' => array(),
             'hbhelpers' => array(),

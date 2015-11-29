@@ -156,6 +156,11 @@ class Validator {
      */
     protected static function operator($operator, &$context, &$vars) {
         switch ($operator) {
+            case '#*':
+                static::pushStack($context, '#*', $vars);
+                array_unshift($context['inlinepartial'], '');
+                return static::inline($context, $vars);
+
             case '#>':
                 static::pushStack($context, '#>', $vars);
                 array_unshift($context['partialblock'], '');
@@ -203,16 +208,50 @@ class Validator {
     /**
      * validate block begin token
      *
-     * @param string $operator the operator string
      * @param array<string,array|string|integer> $context current compile context
      * @param array<boolean|integer|string|array> $vars parsed arguments list
      *
      * @return boolean Return true always
      */
-    protected static function partialBlock($operator, &$context, $vars) {
+    protected static function inlinePartial(&$context, $vars) {
+        if (count($context['inlinepartial']) > 0) {
+            $context['inlinepartial'][0] .= $context['currentToken'][Token::POS_LOTHER] . $context['currentToken'][Token::POS_LSPACE];
+            $context['currentToken'][Token::POS_LOTHER] = '';
+            $context['currentToken'][Token::POS_LSPACE] = '';
+            if ($context['currentToken'][Token::POS_OP] === '/') {
+                if (static::blockEnd($context, $vars) !== null) {
+                    $tmpP = $context['inlinepartial'];
+                    $context['inlinepartial'] = array();
+                    $code = Partial::compileLocal($context, $tmpP[0]);
+                    $context['inlinepartial'] = $tmpP;
+                    array_pop($context['stack']);
+                    array_pop($context['stack']);
+                    array_pop($context['stack']);
+                    array_shift($context['inlinepartial']);
+                    $c = count($context['parsed'][0]) - 1;
+                    array_push($context['parsed'][0][$c], $code);
+                    return true;
+                }
+            }
+            $context['inlinepartial'][0] .= Token::toString($context['currentToken']);
+            return true;
+        }
+    }
+
+    /**
+     * validate block begin token
+     *
+     * @param array<string,array|string|integer> $context current compile context
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
+     *
+     * @return boolean Return true always
+     */
+    protected static function partialBlock(&$context, $vars) {
         if (count($context['partialblock']) > 0) {
             $context['partialblock'][0] .= $context['currentToken'][Token::POS_LOTHER] . $context['currentToken'][Token::POS_LSPACE];
-            if ($operator === '/') {
+            $context['currentToken'][Token::POS_LOTHER] = '';
+            $context['currentToken'][Token::POS_LSPACE] = '';
+            if ($context['currentToken'][Token::POS_OP] === '/') {
                 if (static::blockEnd($context, $vars) !== null) {
                     $found = Partial::resolvePartial($vars[0][0], $context) !== null;
                     $v = $found ? '@partial-block' : $vars[0][0];
@@ -399,6 +438,7 @@ class Validator {
 
         switch($pop) {
             case '#>':
+            case '#*':
             case '#':
             case '^':
                 list($levels, $spvar, $var) = Expression::analyze($context, $vars[0]);
@@ -515,9 +555,11 @@ class Validator {
 
         list($raw, $vars) = Parser::parse($token, $context);
 
-        if (static::partialBlock($token[Token::POS_OP], $context, $vars)) {
-            $token[Token::POS_LOTHER] = '';
-            $token[Token::POS_LSPACE] = '';
+        if (static::partialBlock($context, $vars)) {
+            return;
+        }
+
+        if (static::inlinePartial($context, $vars)) {
             return;
         }
 
@@ -634,6 +676,20 @@ class Validator {
         }
 
         return true;
+    }
+
+    /**
+     * validate inline partial
+     *
+     * @param array<string,array|string|integer> $context current compile context
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
+     *
+     * @return boolean Return true always
+     */
+    protected static function inline(&$context, $vars) {
+        if (!$context['flags']['runpart']) {
+            $context['error'][] = "Do not support {{#*{$context['currentToken'][Token::POS_INNERTAG]}}}, you should do compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag";
+        }
     }
 
     /**

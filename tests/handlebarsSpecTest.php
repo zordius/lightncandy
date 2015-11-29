@@ -156,7 +156,6 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
         // TODO: require fix
         if (
                // inline partials
-               ($spec['description'] === 'inline partials') ||
                ($spec['it'] === 'should support multiple levels of inline partials') ||
                ($spec['it'] === 'GH-1089: should support failover content in multiple levels of inline partials') ||
                ($spec['it'] === 'GH-1099: should support greater than 3 nested levels of inline partials') ||
