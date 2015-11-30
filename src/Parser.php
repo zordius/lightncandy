@@ -32,7 +32,6 @@ class Parser extends Token
     const BLOCKPARAM = 9999;
     const LITERAL = -1;
     const SUBEXP = -2;
-    
 
     /**
      * Get block params and fix the variable list
@@ -205,17 +204,39 @@ class Parser extends Token
      */
     public static function parse(&$token, &$context) {
         $vars = static::analyze($token[static::POS_INNERTAG], $context);
-        if ($token[static::POS_OP] === '>' && isset($vars[0])) {
-            $fn = $vars[0];
+        if ($token[static::POS_OP] === '>') {
+            $fn = static::getPartialName($vars);
+        } else if ($token[static::POS_OP] === '#*') {
+            $fn = static::getPartialName($vars, 1);
         }
 
         $avars = static::advancedVariable($vars, $context, static::toString($token));
 
-        if ($token[static::POS_OP] === '>' && isset($fn)) {
-            $avars[0] = preg_match(SafeString::IS_SUBEXP_SEARCH, $fn) ? $avars[0] : array(preg_replace('/^("(.+)")|(\\[(.+)\\])|(\\\\\'(.+)\\\\\')$/', '$2$4$6', $fn));
+        if (isset($fn) && ($fn !== null)) {
+            if ($token[static::POS_OP] === '>') {
+                $avars[0] = $fn;
+            } else if ($token[static::POS_OP] === '#*') {
+                $avars[1] = $fn;
+            }
         }
 
         return array(($token[static::POS_BEGINRAW] === '{') || ($token[static::POS_OP] === '&') || $context['flags']['noesc'] || $context['rawblock'], $avars);
+    }
+
+    /**
+     * Get block params and fix the variable list
+     *
+     * @param array<boolean|integer|array> $vars parsed token
+     * @param integer $pos position of partial name
+     *
+     * @return array<string>|null Return list of block params or null
+     *
+     */
+    public static function getPartialName(&$vars, $pos = 0) {
+        if (!isset($vars[$pos])) {
+            return;
+        }
+        return preg_match(SafeString::IS_SUBEXP_SEARCH, $vars[$pos]) ? null : array(preg_replace('/^("(.+)")|(\\[(.+)\\])|(\\\\\'(.+)\\\\\')$/', '$2$4$6', $vars[$pos]));
     }
 
     /**

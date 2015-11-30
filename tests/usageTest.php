@@ -33,6 +33,7 @@ class usageTest extends PHPUnit_Framework_TestCase
             'comment' => 0,
             'partial' => 0,
             'dynpartial' => 0,
+            'inlpartial' => 0,
             'helper' => 0,
             'bhelper' => 0,
             'hbhelper' => 0,

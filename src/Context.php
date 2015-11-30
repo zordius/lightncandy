@@ -108,6 +108,7 @@ class Context extends Flags
                 'comment' => 0,
                 'partial' => 0,
                 'dynpartial' => 0,
+                'inlpartial' => 0,
                 'helper' => 0,
                 'bhelper' => 0,
                 'hbhelper' => 0,
@@ -261,7 +262,6 @@ class Context extends Flags
         $context['usedCount'] = $tmp['usedCount'];
         $context['partialStack'] = $tmp['partialStack'];
         $context['partialCode'] = $tmp['partialCode'];
-        $context['error'] = array_merge($context['error'], $tmp['error']);
     }
 }
 

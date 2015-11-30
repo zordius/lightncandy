@@ -353,7 +353,7 @@ $libstr
      */
     public static function partial(&$context, $vars) {
         // mustache spec: ignore missing partial
-        if (($context['usedFeature']['dynpartial'] === 0) && !isset($context['usedPartial'][$vars[0][0]])) {
+        if (($context['usedFeature']['dynpartial'] === 0) && ($context['usedFeature']['inlpartial'] === 0) && !isset($context['usedPartial'][$vars[0][0]])) {
             return $context['ops']['seperator'];
         }
         Parser::getBlockParams($vars);
@@ -373,6 +373,26 @@ $libstr
             return $context['ops']['seperator'] . static::getFuncName($context, 'p', $tag) . "\$cx, $p, $v[0]$sp){$context['ops']['seperator']}";
         }
         return "{$context['ops']['seperator']}'" . Partial::compileStatic($context, $p[0]) . "'{$context['ops']['seperator']}";
+    }
+
+    /**
+     * handle inline partial
+     *
+     * @param array<string,array|string|integer> $context current compile context
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
+     *
+     * @return string Return compiled code segment for the partial
+     */
+    public static function inline(&$context, $vars) {
+        Parser::getBlockParams($vars);
+        list($code) = array_shift($vars);
+        $p = array_shift($vars);
+        if (!isset($vars[0])) {
+            $vars[0] = $context['flags']['partnc'] ? array(0, 'null') : array();
+        }
+        $v = static::getVariableNames($context, $vars);
+        $tag = ">*inline $p[0]" .implode(' ', $v[1]);
+        return $context['ops']['seperator'] . static::getFuncName($context, 'in', $tag) . "\$cx, '{$p[0]}', $code){$context['ops']['seperator']}";
     }
 
     /**

@@ -57,6 +57,10 @@ class Partial
             return;
         }
 
+        if (isset($context['inlines'][$name])) {
+            return;
+        }
+
         $cnt = static::resolvePartial($name, $context);
 
         if ($cnt !== null) {
@@ -161,6 +165,8 @@ class Partial
      */
     public static function compileLocal(&$context, $template) {
         $tmpContext = $context;
+        $tmpContext['inlinepartial'] = array();
+        $tmpContext['partialblock'] = array();
         $code = Compiler::compileTemplate($tmpContext, str_replace('function', static::$TMP_JS_FUNCTION_STR, $template));
         Context::merge($context, $tmpContext);
         if (!$context['flags']['noind']) {

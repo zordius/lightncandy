@@ -220,16 +220,15 @@ class Validator {
             $context['currentToken'][Token::POS_LSPACE] = '';
             if ($context['currentToken'][Token::POS_OP] === '/') {
                 if (static::blockEnd($context, $vars) !== null) {
-                    $tmpP = $context['inlinepartial'];
-                    $context['inlinepartial'] = array();
-                    $code = Partial::compileLocal($context, $tmpP[0]);
-                    $context['inlinepartial'] = $tmpP;
+                    $context['usedFeature']['inlpartial']++;
+                    $code = Partial::compileLocal($context, $context['inlinepartial'][0]);
                     array_pop($context['stack']);
                     array_pop($context['stack']);
                     array_pop($context['stack']);
                     array_shift($context['inlinepartial']);
                     $c = count($context['parsed'][0]) - 1;
-                    array_push($context['parsed'][0][$c], $code);
+                    $context['parsed'][0][$c][1][0][0] = $code;
+                    $context['inlines'][$context['parsed'][0][$c][1][1][0]] = true;
                     return true;
                 }
             }
@@ -256,13 +255,10 @@ class Validator {
                     $found = Partial::resolvePartial($vars[0][0], $context) !== null;
                     $v = $found ? '@partial-block' : $vars[0][0];
                     $context['usedPartial'][$v] = $context['partialblock'][0];
-                    $tmpPB = $context['partialblock'];
-                    $context['partialblock'] = array();
                     Partial::compileDynamic($v, $context);
                     if ($found) {
                         Partial::readPartial($vars[0][0], $context);
                     }
-                    $context['partialblock'] = $tmpPB;
                     array_pop($context['stack']);
                     array_pop($context['stack']);
                     array_pop($context['stack']);

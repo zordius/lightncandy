@@ -527,6 +527,20 @@ class Runtime
     }
 
     /**
+     * LightnCandy runtime method for {{> partial}} .
+     *
+     * @param array<string,array|string|integer> $cx render time context
+     * @param string $p partial name
+     * @param Closure $code the compiled partial code
+     *
+     * @return string The rendered string of the partial
+     *
+     */
+    public static function in(&$cx, $p, $code) {
+        $cx['partials'][$p] = $code;
+    }
+
+    /**
      * LightnCandy runtime method for custom helpers.
      *
      * @param array<string,array|string|integer> $cx render time context
