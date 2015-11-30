@@ -693,6 +693,9 @@ class Validator {
         if (!isset($vars[0][0]) || ($vars[0][0] !== 'inline')) {
             $context['error'][] = "Do not support {{#*{$context['currentToken'][Token::POS_INNERTAG]}}}, now we only support {{#*inline \"partialName\"}}template...{{/inline}}";
         }
+        if (!isset($vars[1][0])) {
+            $context['error'][] = "Error in {{#*{$context['currentToken'][Token::POS_INNERTAG]}}}: inline require 1 argument for partial name!";
+        }
     }
 
     /**
