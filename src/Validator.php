@@ -690,6 +690,9 @@ class Validator {
         if (!$context['flags']['runpart']) {
             $context['error'][] = "Do not support {{#*{$context['currentToken'][Token::POS_INNERTAG]}}}, you should do compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag";
         }
+        if (!isset($vars[0][0]) || ($vars[0][0] !== 'inline')) {
+            $context['error'][] = "Do not support {{#*{$context['currentToken'][Token::POS_INNERTAG]}}}, now we only support {{#*inline \"partialName\"}}template...{{/inline}}";
+        }
     }
 
     /**
