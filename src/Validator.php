@@ -157,11 +157,13 @@ class Validator {
     protected static function operator($operator, &$context, &$vars) {
         switch ($operator) {
             case '#*':
+                $context['stack'][] = count($context['parsed'][0]);
                 static::pushStack($context, '#*', $vars);
                 array_unshift($context['inlinepartial'], '');
                 return static::inline($context, $vars);
 
             case '#>':
+                $context['stack'][] = count($context['parsed'][0]);
                 static::pushStack($context, '#>', $vars);
                 array_unshift($context['partialblock'], '');
                 return static::partial($context, $vars);
@@ -206,12 +208,12 @@ class Validator {
     }
 
     /**
-     * validate block begin token
+     * validate inline partial begin token
      *
      * @param array<string,array|string|integer> $context current compile context
      * @param array<boolean|integer|string|array> $vars parsed arguments list
      *
-     * @return boolean Return true always
+     * @return boolean Return true when inline partial ends
      */
     protected static function inlinePartial(&$context, $vars) {
         if (count($context['inlinepartial']) > 0) {
@@ -222,23 +224,24 @@ class Validator {
                 if (static::blockEnd($context, $vars) !== null) {
                     $context['usedFeature']['inlpartial']++;
                     $code = Partial::compileLocal($context, $context['inlinepartial'][0]);
-                    array_pop($context['stack']);
-                    array_pop($context['stack']);
-                    array_pop($context['stack']);
                     array_shift($context['inlinepartial']);
-                    $c = count($context['parsed'][0]) - 1;
+                    $c = $context['stack'][count($context['stack']) - 4];
+                    array_pop($context['stack']);
+                    array_pop($context['stack']);
+                    array_pop($context['stack']);
+                    array_pop($context['stack']);
+                    $context['parsed'][0] = array_slice($context['parsed'][0], 0, $c + 2);
                     $context['parsed'][0][$c][1][0][0] = $code;
                     $context['inlines'][$context['parsed'][0][$c][1][1][0]] = true;
                     return true;
                 }
             }
             $context['inlinepartial'][0] .= Token::toString($context['currentToken']);
-            return true;
         }
     }
 
     /**
-     * validate block begin token
+     * validate partial block token
      *
      * @param array<string,array|string|integer> $context current compile context
      * @param array<boolean|integer|string|array> $vars parsed arguments list
@@ -259,15 +262,17 @@ class Validator {
                     if ($found) {
                         Partial::readPartial($vars[0][0], $context);
                     }
-                    array_pop($context['stack']);
-                    array_pop($context['stack']);
-                    array_pop($context['stack']);
                     array_shift($context['partialblock']);
+                    $c = $context['stack'][count($context['stack']) - 4];
+                    array_pop($context['stack']);
+                    array_pop($context['stack']);
+                    array_pop($context['stack']);
+                    array_pop($context['stack']);
+                    $context['parsed'][0] = array_slice($context['parsed'][0], 0, $c + 1);
                     return true;
                 }
             }
             $context['partialblock'][0] .= Token::toString($context['currentToken']);
-            return true;
         }
     }
 
@@ -554,7 +559,6 @@ class Validator {
         if (static::partialBlock($context, $vars)) {
             return;
         }
-
         if (static::inlinePartial($context, $vars)) {
             return;
         }
