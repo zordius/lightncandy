@@ -120,7 +120,13 @@ class LightnCandy {
         $context['scan'] = false;
 
         // Do PHP code generation.
-        static::setupToken($context);
+
+        if (isset($options['delimiters'])) {
+            static::setupToken($context, $options['delimiters']['left'], $options['delimiters']['right']);
+        }
+        else {
+            static::setupToken($context);
+        }
 
         // Handle dynamic partials
         static::handleDynamicPartial($context);

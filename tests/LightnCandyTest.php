@@ -540,5 +540,36 @@ class LightnCandyTest extends PHPUnit_Framework_TestCase
             array('usedCount' => array('test' => array('testname' => 2))), 'test', 'testname', 3
 )        ));
     }
+
+    public function testCustomDelimiters() {
+        $tmpdir = sys_get_temp_dir();
+
+        $foo = 'bar';
+
+        $template = <<<TEMPLATE
+These are some variables [[foo]] {{foo}} where only one should get replaced.
+TEMPLATE;
+
+        $expected = <<<EXPECTED
+These are some variables {$foo} {{foo}} where only one should get replaced.
+EXPECTED;
+
+        $flags = LightnCandy::FLAG_HANDLEBARSJS |
+                 LightnCandy::FLAG_ERROR_EXCEPTION;
+
+        $php = LightnCandy::compile($template, Array(
+            'flags' => $flags,
+            'basedir' => $tmpdir,
+            'delimiters' => Array(
+                'left' => '[[',
+                'right' => ']]',
+            ),
+        ));
+
+        $renderer = LightnCandy::prepare($php);
+        $actual = $renderer(array('foo' => $foo));
+
+        $this->assertEquals($expected, $actual);
+    }
 }
 ?>
