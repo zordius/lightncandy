@@ -91,7 +91,7 @@ class Context extends Flags
             ),
             'usedPartial' => array(),
             'partialStack' => array(),
-            'partialCode' => '',
+            'partialCode' => array(),
             'usedFeature' => array(
                 'rootthis' => 0,
                 'enc' => 0,

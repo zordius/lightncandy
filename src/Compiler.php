@@ -101,6 +101,7 @@ class Compiler extends Validator
         $helpers = Exporter::helpers($context);
         $bhelpers = Exporter::helpers($context, 'blockhelpers');
         $hbhelpers = Exporter::helpers($context, 'hbhelpers');
+        $partials = implode(",\n", $context['partialCode']);
         $debug = Runtime::DEBUG_ERROR_LOG;
         $phpstart = $context['flags']['bare'] ? '' : "<?php use {$context['runtime']} as LR;\n";
         $phpend = $context['flags']['bare'] ? ';' : "\n?>";
@@ -126,7 +127,7 @@ class Compiler extends Validator
         'helpers' => $helpers,
         'blockhelpers' => $bhelpers,
         'hbhelpers' => isset(\$options['helpers']) ? array_merge($hbhelpers, \$options['helpers']) : $hbhelpers,
-        'partials' => array({$context['partialCode']}),
+        'partials' => array($partials),
         'scopes' => array(),
         'sp_vars' => isset(\$options['data']) ? array_merge(array('root' => \$in), \$options['data']) : array('root' => \$in),
         'blparam' => array(),

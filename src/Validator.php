@@ -223,10 +223,7 @@ class Validator {
                     $context['usedFeature']['inlpartial']++;
                     $tmpl = array_shift($context['inlinepartial']);
                     $c = $context['stack'][count($context['stack']) - 4];
-                    array_pop($context['stack']);
-                    array_pop($context['stack']);
-                    array_pop($context['stack']);
-                    array_pop($context['stack']);
+                    $context['stack'] = array_slice($context['stack'], 0, -4);
                     $context['parsed'][0] = array_slice($context['parsed'][0], 0, $c + 2);
                     $P = &$context['parsed'][0][$c];
                     $context['usedPartial'][$P[1][1][0]] = $tmpl;
@@ -260,10 +257,7 @@ class Validator {
                         Partial::readPartial($context, $vars[0][0]);
                     }
                     array_shift($context['partialblock']);
-                    array_pop($context['stack']);
-                    array_pop($context['stack']);
-                    array_pop($context['stack']);
-                    array_pop($context['stack']);
+                    $context['stack'] = array_slice($context['stack'], 0, -4);
                     $context['parsed'][0] = array_slice($context['parsed'][0], 0, $c + 1);
                     return true;
                 }

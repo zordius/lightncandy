@@ -59,10 +59,6 @@ class Partial
             return;
         }
 
-        if (isset($context['inlines'][$name])) {
-            return;
-        }
-
         $cnt = static::resolvePartial($context, $name);
 
         if ($cnt !== null) {
@@ -156,7 +152,11 @@ class Partial
         }
 
         $func = static::compileLocal($context, $context['usedPartial'][$name]);
-        $context['partialCode'] .= "'$name' => $func,\n";
+
+        if (!isset($context['partialCode'][$name])) {
+            $context['partialCode'][$name] = "'$name' => $func";
+        }
+
         return $func;
     }
 
