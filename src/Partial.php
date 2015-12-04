@@ -154,7 +154,7 @@ class Partial
         }
 
         $func = static::compileLocal($context, $context['usedPartial'][$name]);
-        $context['partialCode'] .= "'$name' => $func,";
+        $context['partialCode'] .= "'$name' => $func,\n";
         return $func;
     }
 
