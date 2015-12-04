@@ -128,7 +128,6 @@ class Context extends Flags
             'partials' => (isset($options['partials']) && is_array($options['partials'])) ? $options['partials'] : array(),
             'partialblock' => array(),
             'inlinepartial' => array(),
-            'inlines' => array(),
             'helpers' => array(),
             'blockhelpers' => array(),
             'hbhelpers' => array(),
@@ -258,6 +257,7 @@ class Context extends Flags
      * @param array<string,array|string|integer> $tmp another context will be overwrited into master context
      */
     public static function merge(&$context, $tmp) {
+        $context['usedPartial'] = $tmp['usedPartial'];
         $context['usedFeature'] = $tmp['usedFeature'];
         $context['usedCount'] = $tmp['usedCount'];
         $context['partialStack'] = $tmp['partialStack'];

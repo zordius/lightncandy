@@ -221,16 +221,16 @@ class Validator {
             if ($context['currentToken'][Token::POS_OP] === '/') {
                 if (static::blockEnd($context, $vars, '#*') !== null) {
                     $context['usedFeature']['inlpartial']++;
-                    $code = Partial::compileLocal($context, $context['inlinepartial'][0]);
-                    array_shift($context['inlinepartial']);
+                    $tmpl = array_shift($context['inlinepartial']);
                     $c = $context['stack'][count($context['stack']) - 4];
                     array_pop($context['stack']);
                     array_pop($context['stack']);
                     array_pop($context['stack']);
                     array_pop($context['stack']);
                     $context['parsed'][0] = array_slice($context['parsed'][0], 0, $c + 2);
-                    $context['parsed'][0][$c][1][0][0] = $code;
-                    $context['inlines'][$context['parsed'][0][$c][1][1][0]] = true;
+                    $P = &$context['parsed'][0][$c];
+                    $context['usedPartial'][$P[1][1][0]] = $tmpl;
+                    $P[1][0][0] = Partial::compileDynamic($P[1][1][0], $context);
                     return true;
                 }
             }

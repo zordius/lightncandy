@@ -145,6 +145,8 @@ class Partial
      *
      * @param string $name partial name
      * @param array<string,array|string|integer> $context Current context of compiler progress.
+     *
+     * @return string $code compiled PHP code
      */
     public static function compileDynamic($name, &$context) {
         if (!$context['flags']['runpart']) {
@@ -153,6 +155,7 @@ class Partial
 
         $func = static::compileLocal($context, $context['usedPartial'][$name]);
         $context['partialCode'] .= "'$name' => $func,";
+        return $func;
     }
 
     /**
@@ -161,7 +164,7 @@ class Partial
      * @param array<string,array|string|integer> $context Current context of compiler progress.
      * @param string $template template string
      *
-     * @return array<string> $content array of code and space param string
+     * @return string $code compiled PHP code
      */
     public static function compileLocal(&$context, $template) {
         $tmpContext = $context;
