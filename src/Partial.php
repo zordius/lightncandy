@@ -40,17 +40,19 @@ class Partial
         }
 
         foreach ($context['partials'] as $name => $code) {
-            static::readPartial($name, $context);
+            static::readPartial($context, $name);
         }
     }
 
     /**
      * Read partial file content as string and store in context
      *
-     * @param string $name partial name
      * @param array<string,array|string|integer> $context Current context of compiler progress.
+     * @param string $name partial name
+     *
+     * @return string|null $code compiled PHP code when success
      */
-    public static function readPartial($name, &$context) {
+    public static function readPartial(&$context, $name) {
         $context['usedFeature']['partial']++;
 
         if (isset($context['usedPartial'][$name])) {
@@ -146,7 +148,7 @@ class Partial
      * @param string $name partial name
      * @param array<string,array|string|integer> $context Current context of compiler progress.
      *
-     * @return string $code compiled PHP code
+     * @return string|null $code compiled PHP code when success
      */
     public static function compileDynamic($name, &$context) {
         if (!$context['flags']['runpart']) {

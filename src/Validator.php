@@ -257,7 +257,7 @@ class Validator {
                     $context['usedPartial'][$v] = $context['partialblock'][0];
                     Partial::compileDynamic($v, $context);
                     if ($found) {
-                        Partial::readPartial($vars[0][0], $context);
+                        Partial::readPartial($context, $vars[0][0]);
                     }
                     array_shift($context['partialblock']);
                     array_pop($context['stack']);
@@ -718,7 +718,7 @@ class Validator {
             }
         } else {
             if ($context['currentToken'][Token::POS_OP] !== '#>') {
-                Partial::readPartial($vars[0][0], $context);
+                Partial::readPartial($context, $vars[0][0]);
             }
         }
         if (!$context['flags']['runpart']) {
