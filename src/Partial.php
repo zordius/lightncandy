@@ -34,13 +34,13 @@ class Partial
     /**
      * Include all partials when using dynamic partials
      */
-    public static function handleDynamicPartial(&$context) {
+    public static function handleDynamic(&$context) {
         if ($context['usedFeature']['dynpartial'] == 0) {
             return;
         }
 
         foreach ($context['partials'] as $name => $code) {
-            static::readPartial($context, $name);
+            static::read($context, $name);
         }
     }
 
@@ -52,14 +52,14 @@ class Partial
      *
      * @return string|null $code compiled PHP code when success
      */
-    public static function readPartial(&$context, $name) {
+    public static function read(&$context, $name) {
         $context['usedFeature']['partial']++;
 
         if (isset($context['usedPartial'][$name])) {
             return;
         }
 
-        $cnt = static::resolvePartial($context, $name);
+        $cnt = static::resolve($context, $name);
 
         if ($cnt !== null) {
             $context['usedPartial'][$name] = SafeString::escapeTemplate($cnt);
@@ -95,7 +95,7 @@ class Partial
      *
      * @return string|null $content partial content
      */
-    public static function resolvePartial(&$context, &$name) {
+    public static function resolve(&$context, &$name) {
         if (isset($context['partials'][$name])) {
             return static::prePartial($context, $context['partials'][$name], $name);
         }
@@ -151,7 +151,7 @@ class Partial
             return;
         }
 
-        $func = static::compileLocal($context, $context['usedPartial'][$name]);
+        $func = static::compile($context, $context['usedPartial'][$name]);
 
         if (!isset($context['partialCode'][$name])) {
             $context['partialCode'][$name] = "'$name' => $func";
@@ -168,7 +168,7 @@ class Partial
      *
      * @return string $code compiled PHP code
      */
-    public static function compileLocal(&$context, $template) {
+    public static function compile(&$context, $template) {
         $tmpContext = $context;
         $tmpContext['inlinepartial'] = array();
         $tmpContext['partialblock'] = array();

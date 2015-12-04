@@ -52,7 +52,7 @@ class Compiler extends Validator
         Parser::setDelimiter($context);
 
         // Handle dynamic partials
-        Partial::handleDynamicPartial($context);
+        Partial::handleDynamic($context);
 
         $code = '';
         foreach ($context['parsed'][0] as $info) {
