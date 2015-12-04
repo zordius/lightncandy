@@ -218,8 +218,6 @@ class Validator {
     protected static function inlinePartial(&$context, $vars) {
         if (count($context['inlinepartial']) > 0) {
             $context['inlinepartial'][0] .= $context['currentToken'][Token::POS_LOTHER] . $context['currentToken'][Token::POS_LSPACE];
-            $context['currentToken'][Token::POS_LOTHER] = '';
-            $context['currentToken'][Token::POS_LSPACE] = '';
             if ($context['currentToken'][Token::POS_OP] === '/') {
                 if (static::blockEnd($context, $vars, '#*') !== null) {
                     $context['usedFeature']['inlpartial']++;
@@ -251,8 +249,6 @@ class Validator {
     protected static function partialBlock(&$context, $vars) {
         if (count($context['partialblock']) > 0) {
             $context['partialblock'][0] .= $context['currentToken'][Token::POS_LOTHER] . $context['currentToken'][Token::POS_LSPACE];
-            $context['currentToken'][Token::POS_LOTHER] = '';
-            $context['currentToken'][Token::POS_LSPACE] = '';
             if ($context['currentToken'][Token::POS_OP] === '/') {
                 if (static::blockEnd($context, $vars, '#>') !== null) {
                     $c = $context['stack'][count($context['stack']) - 4];
@@ -560,10 +556,12 @@ class Validator {
 
         list($raw, $vars) = Parser::parse($token, $context);
 
-        if (static::partialBlock($context, $vars)) {
-            return;
-        }
-        if (static::inlinePartial($context, $vars)) {
+        $partials = static::partialBlock($context, $vars);
+        $partials = static::inlinePartial($context, $vars) || $partials;
+
+        if ($partials) {
+            $context['currentToken'][Token::POS_LOTHER] = '';
+            $context['currentToken'][Token::POS_LSPACE] = '';
             return;
         }
 
