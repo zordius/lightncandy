@@ -16,10 +16,10 @@ class PartialTest extends PHPUnit_Framework_TestCase
         $method = new \ReflectionMethod('LightnCandy\Partial', 'prePartial');
         $method->setAccessible(true);
         $this->assertEquals('hey', $method->invokeArgs(null, array_by_ref(array(
-            'hey', 'haha', Array('prepartial' => false)
+            Array('prepartial' => false), 'hey', 'haha'
         ))));
         $this->assertEquals('haha-hoho', $method->invokeArgs(null, array_by_ref(array(
-            'hoho', 'haha', Array('prepartial' => function ($tmpl, $name) {return "$name-$tmpl";})
+            Array('prepartial' => function ($cx, $tmpl, $name) {return "$name-$tmpl";}), 'hoho', 'haha'
         ))));
     }
 }

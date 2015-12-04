@@ -78,17 +78,17 @@ class Partial
     /**
      * preprocess partial template before it be stored into context
      *
+     * @param array<string,array|string|integer> $context Current context of compiler progress.
      * @param string $tmpl partial template
      * @param string $name partial name
-     * @param array<string,array|string|integer> $context Current context of compiler progress.
      *
      * @return string|null $content processed partial template
      *
-     * @expect 'hey' when input 'hey', 'haha', Array('prepartial' => false)
-     * @expect 'haha-hoho' when input 'hoho', 'haha', Array('prepartial' => function ($tmpl, $name) {return "$name-$tmpl";})
+     * @expect 'hey' when input Array('prepartial' => false), 'hey', 'haha'
+     * @expect 'haha-hoho' when input Array('prepartial' => function ($cx, $tmpl, $name) {return "$name-$tmpl";}), 'hoho', 'haha'
      */
-    protected static function prePartial($tmpl, &$name, &$context) {
-        return $context['prepartial'] ? $context['prepartial']($tmpl, $name, $context) : $tmpl;
+    protected static function prePartial(&$context, $tmpl, &$name) {
+        return $context['prepartial'] ? $context['prepartial']($context, $tmpl, $name) : $tmpl;
     }
 
     /**
@@ -101,14 +101,14 @@ class Partial
      */
     public static function resolvePartial(&$context, &$name) {
         if (isset($context['partials'][$name])) {
-            return static::prePartial($context['partials'][$name], $name, $context);
+            return static::prePartial($context, $context['partials'][$name], $name);
         }
 
         foreach ($context['basedir'] as $dir) {
             foreach ($context['fileext'] as $ext) {
                 $fn = "$dir/$name$ext";
                 if (file_exists($fn)) {
-                    return static::prePartial(file_get_contents($fn), $name, $context);
+                    return static::prePartial($context, file_get_contents($fn), $name);
                 }
             }
         }
