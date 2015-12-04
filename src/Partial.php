@@ -63,7 +63,7 @@ class Partial
             return;
         }
 
-        $cnt = static::resolvePartial($name, $context);
+        $cnt = static::resolvePartial($context, $name);
 
         if ($cnt !== null) {
             $context['usedPartial'][$name] = SafeString::escapeTemplate($cnt);
@@ -94,12 +94,12 @@ class Partial
     /**
      * locate partial file, return the file name
      *
-     * @param string $name partial name
      * @param array<string,array|string|integer> $context Current context of compiler progress.
+     * @param string $name partial name
      *
      * @return string|null $content partial content
      */
-    public static function resolvePartial(&$name, &$context) {
+    public static function resolvePartial(&$context, &$name) {
         if (isset($context['partials'][$name])) {
             return static::prePartial($context['partials'][$name], $name, $context);
         }

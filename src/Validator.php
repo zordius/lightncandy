@@ -252,7 +252,7 @@ class Validator {
             if ($context['currentToken'][Token::POS_OP] === '/') {
                 if (static::blockEnd($context, $vars, '#>') !== null) {
                     $c = $context['stack'][count($context['stack']) - 4];
-                    $found = Partial::resolvePartial($vars[0][0], $context) !== null;
+                    $found = Partial::resolvePartial($context, $vars[0][0]) !== null;
                     $v = $found ? '@partial-block' : $vars[0][0];
                     $context['usedPartial'][$v] = $context['partialblock'][0];
                     Partial::compileDynamic($v, $context);
