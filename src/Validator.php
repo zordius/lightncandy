@@ -221,7 +221,7 @@ class Validator {
             $context['currentToken'][Token::POS_LOTHER] = '';
             $context['currentToken'][Token::POS_LSPACE] = '';
             if ($context['currentToken'][Token::POS_OP] === '/') {
-                if (static::blockEnd($context, $vars) !== null) {
+                if (static::blockEnd($context, $vars, '#*') !== null) {
                     $context['usedFeature']['inlpartial']++;
                     $code = Partial::compileLocal($context, $context['inlinepartial'][0]);
                     array_shift($context['inlinepartial']);
@@ -254,7 +254,8 @@ class Validator {
             $context['currentToken'][Token::POS_LOTHER] = '';
             $context['currentToken'][Token::POS_LSPACE] = '';
             if ($context['currentToken'][Token::POS_OP] === '/') {
-                if (static::blockEnd($context, $vars) !== null) {
+                if (static::blockEnd($context, $vars, '#>') !== null) {
+                    $c = $context['stack'][count($context['stack']) - 4];
                     $found = Partial::resolvePartial($vars[0][0], $context) !== null;
                     $v = $found ? '@partial-block' : $vars[0][0];
                     $context['usedPartial'][$v] = $context['partialblock'][0];
@@ -263,7 +264,6 @@ class Validator {
                         Partial::readPartial($vars[0][0], $context);
                     }
                     array_shift($context['partialblock']);
-                    $c = $context['stack'][count($context['stack']) - 4];
                     array_pop($context['stack']);
                     array_pop($context['stack']);
                     array_pop($context['stack']);
@@ -418,10 +418,11 @@ class Validator {
      *
      * @param array<string,array|string|integer> $context current compile context
      * @param array<boolean|integer|string|array> $vars parsed arguments list
+     * @param string|null $matchop should also match to this operator
      *
      * @return boolean Return true
      */
-    protected static function blockEnd(&$context, $vars) {
+    protected static function blockEnd(&$context, $vars, $match = NULL) {
         $context['level']--;
         $c = count($context['stack']) - 2;
         $pop = ($c >= 0) ? $context['stack'][$c + 1] : '';
@@ -446,6 +447,9 @@ class Validator {
                 $v = Expression::toString($levels, $spvar, $var);
                 if ($pop2 !== $v) {
                     $context['error'][] = 'Unexpect token ' . Token::toString($context['currentToken']) . " ! Previous token {{{$pop}$pop2}} is not closed";
+                    return;
+                }
+                if (($match !== null) && ($match !== $pop)) {
                     return;
                 }
                 if ($pop == '^') {

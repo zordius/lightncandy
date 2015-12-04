@@ -434,10 +434,11 @@ $libstr
      *
      * @param array<string,array|string|integer> $context current compile context
      * @param array<boolean|integer|string|array> $vars parsed arguments list
+     * @param string|null $matchop should also match to this operator
      *
      * @return string Return compiled code segment for the token
      */
-    protected static function blockEnd(&$context, $vars) {
+    protected static function blockEnd(&$context, $vars, $matchop = NULL) {
         $pop = $context['stack'][count($context['stack']) - 1];
         switch ($context['currentToken'][Token::POS_INNERTAG]) {
             case 'if':
