@@ -230,7 +230,7 @@ class Validator {
                     $context['parsed'][0] = array_slice($context['parsed'][0], 0, $c + 2);
                     $P = &$context['parsed'][0][$c];
                     $context['usedPartial'][$P[1][1][0]] = $tmpl;
-                    $P[1][0][0] = Partial::compileDynamic($P[1][1][0], $context);
+                    $P[1][0][0] = Partial::compileDynamic($context, $P[1][1][0]);
                     return true;
                 }
             }
@@ -255,7 +255,7 @@ class Validator {
                     $found = Partial::resolvePartial($context, $vars[0][0]) !== null;
                     $v = $found ? '@partial-block' : $vars[0][0];
                     $context['usedPartial'][$v] = $context['partialblock'][0];
-                    Partial::compileDynamic($v, $context);
+                    Partial::compileDynamic($context, $v);
                     if ($found) {
                         Partial::readPartial($context, $vars[0][0]);
                     }

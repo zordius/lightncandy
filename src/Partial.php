@@ -67,7 +67,7 @@ class Partial
 
         if ($cnt !== null) {
             $context['usedPartial'][$name] = SafeString::escapeTemplate($cnt);
-            return static::compileDynamic($name, $context);
+            return static::compileDynamic($context, $name);
         }
 
         if (!$context['flags']['skippartial']) {
@@ -145,12 +145,12 @@ class Partial
     /**
      * compile partial file, stored in context
      *
-     * @param string $name partial name
      * @param array<string,array|string|integer> $context Current context of compiler progress.
+     * @param string $name partial name
      *
      * @return string|null $code compiled PHP code when success
      */
-    public static function compileDynamic($name, &$context) {
+    public static function compileDynamic(&$context, $name) {
         if (!$context['flags']['runpart']) {
             return;
         }
