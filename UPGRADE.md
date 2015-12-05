@@ -8,7 +8,13 @@ Upgrade Notice
 Version v0.89
 * Option FLAG_MUSTACHESP removed.
 * Option FLAG_MUSTACHEPAIN removed.
+* Option FLAG_WITH removed.
 * Option FLAG_MUSTACHE includes FLAG_RUNTIMEPARTIAL now.
+* Option FLAG_MUSTACHE includes FLAG_NOHBHELPERS now.
+* Option FLAG_JSQUOTE is changed to FLAG_HBESCAPE
+* Option FLAG_STANDALONE is changed to FLAG_STANDALONEPHP
+* Option `lcrun` is changed to `runtime`
+* generated render function interface changed, aligned with handlebars.js now
 * LightnCandy be refactored into many sub classes, you can not just use curl to install it now.
 * Due to big change of rendering function: sec() and inv(), the rendering supporting class `LCRun3` is renamed to `LightnCandy\Runtime`. If you compile templates as none standalone PHP code by LightnCandy v0.23 or before, you should compile these templates again. Or, you may run into `Class 'LCRun3' not found` error when you execute these old rendering functions.
 

@@ -1,7 +1,7 @@
 HISTORY
 =======
 
-v0.89-develop
+v0.89 https://github.com/zordius/lightncandy/tree/v0.89
    * align with handlebars.js 4.0.4
    * use newer handlebars spec: https://github.com/jbboehr/handlebars-spec
    * 50028d36a7 **BREAK CHANGE** remove FLAG_MUSTACHESP
@@ -13,7 +13,7 @@ v0.89-develop
    * 0d3a92a52e new flag FLAG_HANDLEBARSJS_FULL to enable all handlebars features with performance drop
    * c76b9c6fc0 **BREAK CHANGE** now FLAG_MUSTACHE also includes FLAG_RUNTIMEPARTIAL
    * 28be0377ea new flag FLAG_MUSTACHELAMBDA to support simple case of mustache lambda
-   * 37ba20c234 rename LCRun3 to LCRun4 for interface changed, old none standalone templates will error with newer version
+   * 37ba20c234 **BREAK CHANGE** rename LCRun3 to LCRun4 for interface changed, old none standalone templates will error with newer version
    * 8f062e4ef1 fix for nested subexpression parsing bug
    * b3704e78c4 new flag FLAG_HANDLEBARSLAMBDA to support handlebars lambda
    * 4d4f4d5b57 **BREAK CHANGE** start to use namespace, support psr-4 autoloader by composer
