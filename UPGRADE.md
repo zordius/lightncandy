@@ -6,6 +6,7 @@ Upgrade Notice
 * Recompile your none standalone templates when you upgrade LightnCandy.
 
 Version v0.89
+-------------
 * Option FLAG_MUSTACHESP removed.
 * Option FLAG_MUSTACHEPAIN removed.
 * Option FLAG_WITH removed.
