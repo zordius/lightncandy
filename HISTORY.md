@@ -44,6 +44,7 @@ v0.89-develop
    * 8e94d5d6ba support partial block: {{#> foo}}block{{/foo}}
    * 4347a78b3e support partial block: {{> @partial-block}}
    * f4df6d722f support inline partial: {{#*inline "partial_name"}}...{{/inline}}
+   * 71130e69e0 fix partial block + inline partial parsing bugs
 
 v0.23 https://github.com/zordius/lightncandy/tree/v0.23
    * align with handlebars.js 3.0.3
