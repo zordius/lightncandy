@@ -217,13 +217,15 @@ class Validator {
      */
     protected static function inlinePartial(&$context, $vars) {
         if (count($context['inlinepartial']) > 0) {
-            $context['inlinepartial'][0] .= $context['currentToken'][Token::POS_LOTHER] . $context['currentToken'][Token::POS_LSPACE];
+            $append = $context['currentToken'][Token::POS_LOTHER] . $context['currentToken'][Token::POS_LSPACE];
+            array_walk($context['inlinepartial'], function (&$pb) use ($context, $append) {
+                $pb .= $append;
+            });
             if ($context['currentToken'][Token::POS_OP] === '/') {
                 if (static::blockEnd($context, $vars, '#*') !== null) {
                     $context['usedFeature']['inlpartial']++;
                     $tmpl = array_shift($context['inlinepartial']);
                     $c = $context['stack'][count($context['stack']) - 4];
-                    $context['stack'] = array_slice($context['stack'], 0, -4);
                     $context['parsed'][0] = array_slice($context['parsed'][0], 0, $c + 2);
                     $P = &$context['parsed'][0][$c];
                     $context['usedPartial'][$P[1][1][0]] = $tmpl;
@@ -231,7 +233,10 @@ class Validator {
                     return true;
                 }
             }
-            $context['inlinepartial'][0] .= Token::toString($context['currentToken']);
+            $append = Token::toString($context['currentToken']);
+            array_walk($context['inlinepartial'], function (&$pb) use ($context, $append) {
+                $pb .= $append;
+            });
         }
     }
 
@@ -245,7 +250,10 @@ class Validator {
      */
     protected static function partialBlock(&$context, $vars) {
         if (count($context['partialblock']) > 0) {
-            $context['partialblock'][0] .= $context['currentToken'][Token::POS_LOTHER] . $context['currentToken'][Token::POS_LSPACE];
+            $append = $context['currentToken'][Token::POS_LOTHER] . $context['currentToken'][Token::POS_LSPACE];
+            array_walk($context['partialblock'], function (&$pb) use ($context, $append) {
+                $pb .= $append;
+            });
             if ($context['currentToken'][Token::POS_OP] === '/') {
                 if (static::blockEnd($context, $vars, '#>') !== null) {
                     $c = $context['stack'][count($context['stack']) - 4];
@@ -257,12 +265,14 @@ class Validator {
                         Partial::read($context, $vars[0][0]);
                     }
                     array_shift($context['partialblock']);
-                    $context['stack'] = array_slice($context['stack'], 0, -4);
                     $context['parsed'][0] = array_slice($context['parsed'][0], 0, $c + 1);
                     return true;
                 }
             }
-            $context['partialblock'][0] .= Token::toString($context['currentToken']);
+            $append = Token::toString($context['currentToken']);
+            array_walk($context['partialblock'], function (&$pb) use ($context, $append) {
+                $pb .= $append;
+            });
         }
     }
 
@@ -412,10 +422,13 @@ class Validator {
      *
      * @return boolean Return true
      */
-    protected static function blockEnd(&$context, $vars, $match = NULL) {
+    protected static function blockEnd(&$context, $vars, $match = null) {
         $context['level']--;
         $c = count($context['stack']) - 2;
         $pop = ($c >= 0) ? $context['stack'][$c + 1] : '';
+        if (($match !== null) && ($match !== $pop)) {
+            return;
+        }
         $pop2 = ($c >= 0) ? $context['stack'][$c]: '';
         switch ($context['currentToken'][Token::POS_INNERTAG]) {
             case 'with':
@@ -437,9 +450,6 @@ class Validator {
                 $v = Expression::toString($levels, $spvar, $var);
                 if ($pop2 !== $v) {
                     $context['error'][] = 'Unexpect token ' . Token::toString($context['currentToken']) . " ! Previous token {{{$pop}$pop2}} is not closed";
-                    return;
-                }
-                if (($match !== null) && ($match !== $pop)) {
                     return;
                 }
                 if ($pop == '^') {
@@ -554,6 +564,7 @@ class Validator {
         $partials = static::inlinePartial($context, $vars) || $partials;
 
         if ($partials) {
+            $context['stack'] = array_slice($context['stack'], 0, -4);
             $context['currentToken'][Token::POS_LOTHER] = '';
             $context['currentToken'][Token::POS_LSPACE] = '';
             return;
