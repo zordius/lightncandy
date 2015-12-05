@@ -88,7 +88,7 @@ class Partial
     }
 
     /**
-     * locate partial file, return the file name
+     * locate partial, return the partial content
      *
      * @param array<string,array|string|integer> $context Current context of compiler progress.
      * @param string $name partial name
@@ -139,7 +139,7 @@ class Partial
     }
 
     /**
-     * compile partial file, stored in context
+     * compile partial as closure, stored in context
      *
      * @param array<string,array|string|integer> $context Current context of compiler progress.
      * @param string $name partial name
