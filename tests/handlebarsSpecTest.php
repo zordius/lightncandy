@@ -158,7 +158,6 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                // inline partials
                ($spec['template'] === '{{#with .}}{{#*inline "myPartial"}}success{{/inline}}{{/with}}{{> myPartial}}') ||
                ($spec['it'] === 'should support multiple levels of inline partials') ||
-               ($spec['it'] === 'GH-1099: should support greater than 3 nested levels of inline partials') ||
 
                // SafeString
                ($spec['it'] === 'functions returning safestrings shouldn\'t be escaped') ||
