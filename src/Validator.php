@@ -213,10 +213,11 @@ class Validator {
      * @param array<string,array|string|integer> $context current compile context
      * @param array<boolean|integer|string|array> $vars parsed arguments list
      *
-     * @return boolean Return true when inline partial ends
+     * @return boolean|null Return true when inline partial ends
      */
     protected static function inlinePartial(&$context, $vars) {
         if (count($context['inlinepartial']) > 0) {
+            $ended = false;
             $append = $context['currentToken'][Token::POS_LOTHER] . $context['currentToken'][Token::POS_LSPACE];
             array_walk($context['inlinepartial'], function (&$pb) use ($context, $append) {
                 $pb .= $append;
@@ -230,13 +231,14 @@ class Validator {
                     $P = &$context['parsed'][0][$c];
                     $context['usedPartial'][$P[1][1][0]] = $tmpl;
                     $P[1][0][0] = Partial::compileDynamic($context, $P[1][1][0]);
-                    return true;
+                    $ended = true;
                 }
             }
             $append = Token::toString($context['currentToken']);
             array_walk($context['inlinepartial'], function (&$pb) use ($context, $append) {
                 $pb .= $append;
             });
+            return $ended;
         }
     }
 
@@ -246,10 +248,11 @@ class Validator {
      * @param array<string,array|string|integer> $context current compile context
      * @param array<boolean|integer|string|array> $vars parsed arguments list
      *
-     * @return boolean Return true always
+     * @return boolean|null Return true when partial block ends
      */
     protected static function partialBlock(&$context, $vars) {
         if (count($context['partialblock']) > 0) {
+            $ended = false;
             $append = $context['currentToken'][Token::POS_LOTHER] . $context['currentToken'][Token::POS_LSPACE];
             array_walk($context['partialblock'], function (&$pb) use ($context, $append) {
                 $pb .= $append;
@@ -266,13 +269,14 @@ class Validator {
                     }
                     array_shift($context['partialblock']);
                     $context['parsed'][0] = array_slice($context['parsed'][0], 0, $c + 1);
-                    return true;
+                    $ended = true;
                 }
             }
             $append = Token::toString($context['currentToken']);
             array_walk($context['partialblock'], function (&$pb) use ($context, $append) {
                 $pb .= $append;
             });
+            return $ended;
         }
     }
 
