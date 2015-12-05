@@ -157,7 +157,6 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
         if (
                // inline partials
                ($spec['template'] === '{{#with .}}{{#*inline "myPartial"}}success{{/inline}}{{/with}}{{> myPartial}}') ||
-               ($spec['it'] === 'should support multiple levels of inline partials') ||
 
                // SafeString
                ($spec['it'] === 'functions returning safestrings shouldn\'t be escaped') ||
