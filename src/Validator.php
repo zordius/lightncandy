@@ -54,8 +54,7 @@ class Validator {
             }
             $context['tokens']['count']++;
             $V = static::token($matches, $context);
-            static::pushToken($context, $matches[Token::POS_LOTHER]);
-            static::pushToken($context, $matches[Token::POS_LSPACE]);
+            static::pushLeft($context);
             if ($V) {
                 if (is_array($V)) {
                     array_push($V, $matches, $context['tokens']['partialind']);
@@ -72,6 +71,16 @@ class Validator {
             $token = array_pop($context['stack']);
             $context['error'][] = 'Unclosed token ' . ($context['rawblock'] ? "{{{{{$token}}}}}" : "{{#{$token}}}") . ' !!';
         }
+    }
+
+    /**
+     * push left string of current token and clear it
+     *
+     * @param array<string,array|string|integer> $context Current context
+     */
+    protected static function pushLeft(&$context) {
+        static::pushToken($context, $context['currentToken'][Token::POS_LOTHER] . $context['currentToken'][Token::POS_LSPACE]);
+        $context['currentToken'][Token::POS_LOTHER] = $context['currentToken'][Token::POS_LSPACE] = '';
     }
 
     /**
@@ -157,12 +166,14 @@ class Validator {
     protected static function operator($operator, &$context, &$vars) {
         switch ($operator) {
             case '#*':
+                static::pushLeft($context);
                 $context['stack'][] = count($context['parsed'][0]);
                 static::pushStack($context, '#*', $vars);
                 array_unshift($context['inlinepartial'], '');
                 return static::inline($context, $vars);
 
             case '#>':
+                static::pushLeft($context);
                 $context['stack'][] = count($context['parsed'][0]);
                 static::pushStack($context, '#>', $vars);
                 array_unshift($context['partialblock'], '');
@@ -227,7 +238,7 @@ class Validator {
                     $context['usedFeature']['inlpartial']++;
                     $tmpl = array_shift($context['inlinepartial']);
                     $c = $context['stack'][count($context['stack']) - 4];
-                    $context['parsed'][0] = array_slice($context['parsed'][0], 0, $c + 2);
+                    $context['parsed'][0] = array_slice($context['parsed'][0], 0, $c + 1);
                     $P = &$context['parsed'][0][$c];
                     $context['usedPartial'][$P[1][1][0]] = $tmpl;
                     $P[1][0][0] = Partial::compileDynamic($context, $P[1][1][0]);
@@ -268,7 +279,7 @@ class Validator {
                         Partial::read($context, $vars[0][0]);
                     }
                     array_shift($context['partialblock']);
-                    $context['parsed'][0] = array_slice($context['parsed'][0], 0, $c + 2);
+                    $context['parsed'][0] = array_slice($context['parsed'][0], 0, $c + 1);
                     $ended = true;
                 }
             }
