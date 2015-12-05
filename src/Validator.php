@@ -268,7 +268,7 @@ class Validator {
                         Partial::read($context, $vars[0][0]);
                     }
                     array_shift($context['partialblock']);
-                    $context['parsed'][0] = array_slice($context['parsed'][0], 0, $c + 1);
+                    $context['parsed'][0] = array_slice($context['parsed'][0], 0, $c + 2);
                     $ended = true;
                 }
             }
