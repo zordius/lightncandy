@@ -898,6 +898,20 @@ VAREND
             ),
 
             Array(
+                'id' => 191,
+                'template' => '<% foo %> is good <%> bar %>',
+                'data' => Array('foo' => 'world'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'delimiters' => array('<%', '%>'),
+                    'partials' => array(
+                        'bar' => '<% @root.foo %>{{:D}}!',
+                    )
+                ),
+                'expected' => 'world is good world{{:D}}!',
+            ),
+
+            Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
                 'options' => Array(

@@ -76,6 +76,10 @@ class Context extends Flags
                 'strpar' => $flags & static::FLAG_STRINGPARAMS,
                 'knohlp' => $flags & static::FLAG_KNOWNHELPERSONLY,
             ),
+            'delimiters' => array(
+                isset($options['delimiters'][0]) ? $options['delimiters'][0] : '{{',
+                isset($options['delimiters'][1]) ? $options['delimiters'][1] : '}}',
+            ),
             'level' => 0,
             'stack' => array(),
             'currentToken' => null,

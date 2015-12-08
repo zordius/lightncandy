@@ -49,7 +49,13 @@ class Token
      * @param string $left left string of a token
      * @param string $right right string of a token
      */
-    public static function setDelimiter(&$context, $left = '{{', $right = '}}') {
+    public static function setDelimiter(&$context, $left = null, $right = null) {
+        if (!$left) {
+            $left = $context['delimiters'][0];
+        }
+        if (!$right) {
+            $right = $context['delimiters'][1];
+        }
         if (preg_match('/=/', "$left$right")) {
             $context['error'][] = "Can not set delimiter contains '=' , you try to set delimiter as '$left' and '$right'.";
             return;
