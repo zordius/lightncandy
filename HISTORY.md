@@ -1,6 +1,10 @@
 HISTORY
 =======
 
+v0.90 current master, not released
+   * 47e1b28847 performance improvement: now `{{ ... }}` escaping only takes 70% time.
+   * ff776f1dff add new options `delimiters` to change default delimiters.
+
 v0.89 https://github.com/zordius/lightncandy/tree/v0.89
    * align with handlebars.js 4.0.4
    * use newer handlebars spec: https://github.com/jbboehr/handlebars-spec
