@@ -700,13 +700,13 @@ If you want to do extra process before the partial be compiled, you may use `pre
 ```php
 $php = LightnCandy::compile($template, Array(
     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-    'prepartial' => function ($partial, $name) {
-        return "<!-- partial start: $name -->$partial<!-- partial end: $name -->";
+    'prepartial' => function ($context, $template, $name) {
+        return "<!-- partial start: $name -->$template<!-- partial end: $name -->";
     }
 ));
 ```
 
-You may also extend `LightnCandy` by override the `prePartial()` static method to turn your preprocess into a built-in feature.
+You may also extend <a href="https://zordius.github.io/lightncandy/class-LightnCandy.Partial.html">LightnCandy\Partial</a> by override the <a href="https://zordius.github.io/lightncandy/class-LightnCandy.Partial.html#_prePartial">prePartial()</a> static method to turn your preprocess into a built-in feature.
 
 Customize Render Function
 -------------------------
