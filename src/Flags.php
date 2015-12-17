@@ -58,7 +58,6 @@ class Flags
     const FLAG_PROPERTY = 32768;
     const FLAG_METHOD = 65536;
     const FLAG_RUNTIMEPARTIAL = 1048576;
-    const FLAG_BARE = 33554432;
     const FLAG_NOESCAPE = 67108864;
 
     // Mustache compatibility

@@ -105,6 +105,8 @@ class LightnCandy extends Flags
      * @deprecated
      */
     public static function prepare($php, $tmpDir = null, $delete = true) {
+        $php = "<?php $php ?>";
+
         if (!ini_get('allow_url_include') || !ini_get('allow_url_fopen')) {
             if (!is_string($tmpDir) || !is_dir($tmpDir)) {
                 $tmpDir = sys_get_temp_dir();

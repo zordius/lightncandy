@@ -103,11 +103,10 @@ class Compiler extends Validator
         $hbhelpers = Exporter::helpers($context, 'hbhelpers');
         $partials = implode(",\n", $context['partialCode']);
         $debug = Runtime::DEBUG_ERROR_LOG;
-        $phpstart = $context['flags']['bare'] ? '' : "<?php use {$context['runtime']} as LR;\n";
-        $phpend = $context['flags']['bare'] ? ';' : "\n?>";
 
         // Return generated PHP code string.
-        return "{$phpstart}return function (\$in, \$options = null) {
+        return "use {$context['runtime']} as LR;
+return function (\$in, \$options = null) {
     \$cx = array(
         'flags' => array(
             'jstrue' => $flagJStrue,
@@ -136,7 +135,7 @@ $libstr
     );
     {$context['renderex']}
     {$context['ops']['op_start']}'$code'{$context['ops']['op_end']}
-}$phpend";
+}";
     }
 
     /**
