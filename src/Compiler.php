@@ -440,12 +440,13 @@ $libstr
      */
     protected static function blockEnd(&$context, &$vars, $matchop = NULL) {
         $pop = $context['stack'][count($context['stack']) - 1];
+        $elsifend = isset($vars[0][-1]) ? str_repeat($context['ops']['cnd_nend'], $vars[0][-1]) : '';
         switch ($context['currentToken'][Token::POS_INNERTAG]) {
             case 'if':
             case 'unless':
                 if ($pop === ':') {
                     array_pop($context['stack']);
-                    return "{$context['ops']['cnd_end']}";
+                    return "$elsifend{$context['ops']['cnd_end']}";
                 }
                 if (!$context['flags']['nohbh']) {
                     return "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
@@ -453,20 +454,24 @@ $libstr
                 break;
             case 'with':
                 if (!$context['flags']['nohbh']) {
-                    return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
+                    return "$elsifend{$context['ops']['f_end']}}){$context['ops']['seperator']}";
                 }
         }
 
         if ($pop === ':') {
             array_pop($context['stack']);
-            return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
+            return "$elsifend{$context['ops']['f_end']}}){$context['ops']['seperator']}";
+        }
+
+        if ($elsifend !== '') {
+            $elsifend = "{$context['ops']['cnd_else']}''$elsifend";
         }
 
         switch($pop) {
             case '#':
-                return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
+                return "$elsifend{$context['ops']['f_end']}}){$context['ops']['seperator']}";
             case '^':
-                return "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
+                return "$elsifend{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
         }
     }
 

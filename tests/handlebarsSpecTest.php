@@ -264,7 +264,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                 // Failed this case
                 $this->fail('Exception:' . $e->getMessage());
             }
-            $renderer = LightnCandy::prepare($php);
+            $renderer = LightnCandy::prepare($php, null, false);
             if ($spec['description'] === 'Tokenizer') {
                 // no compile error means passed
                 continue;

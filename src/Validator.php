@@ -318,14 +318,17 @@ class Validator {
     protected static function blockBegin(&$context, $vars) {
         switch ((isset($vars[0][0]) && is_string($vars[0][0])) ? $vars[0][0] : null) {
             case 'with':
+                array_unshift($context['elselvl'], 0);
                 return static::with($context, $vars);
             case 'each':
+                array_unshift($context['elselvl'], 0);
                 return static::section($context, $vars, true);
             case 'unless':
                 return static::unless($context, $vars);
             case 'if':
                 return static::doIf($context, $vars);
             default:
+                array_unshift($context['elselvl'], 0);
                 return static::section($context, $vars);
         }
     }
@@ -486,7 +489,7 @@ class Validator {
                     return;
                 }
                 if (count($context['elselvl']) > 0) {
-                    $vars[0][1] = $context['elselvl'][0];
+                    $vars[0][-1] = $context['elselvl'][0];
                     array_shift($context['elselvl']);
                 }
                 return true;
@@ -661,7 +664,7 @@ class Validator {
 
         if (isset($vars[1][0]) && (($vars[1][0] === 'if') || ($vars[1][0] === 'unless'))) {
             $token = $context['currentToken'];
-            $context['currentToken'][Token::POS_RSPACE] = '{{#' . $vars[1][0] . ' ' . preg_replace('/^\\s*else\\s+ ' . $vars[1][0] . '\\s+/', '', $token[Token::POS_INNERTAG]) . '}}' . $context['currentToken'][Token::POS_RSPACE];
+            $context['currentToken'][Token::POS_RSPACE] = '{{#' . $vars[1][0] . ' ' . preg_replace('/^\\s*else\\s+' . $vars[1][0] . '\\s+/', '', $token[Token::POS_INNERTAG]) . '}}' . $context['currentToken'][Token::POS_RSPACE];
             $context['elseif'] = true;
             $context['elselvl'][0]++;
         }
