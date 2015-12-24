@@ -152,6 +152,7 @@ class Context extends Flags
             'cnd_then' => '{echo ',
             'cnd_else' => ';}else{echo ',
             'cnd_end' => ';}echo ',
+            'cnd_nend' => ';}',
         ) : array(
             'seperator' => '.',
             'f_start' => 'return ',
@@ -162,6 +163,7 @@ class Context extends Flags
             'cnd_then' => ' ? ',
             'cnd_else' => ' : ',
             'cnd_end' => ').',
+            'cnd_nend' => ')',
         );
 
         $context['ops']['enc'] = $context['flags']['hbesc'] ? 'encq' : 'enc';

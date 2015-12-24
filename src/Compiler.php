@@ -438,7 +438,7 @@ $libstr
      *
      * @return string Return compiled code segment for the token
      */
-    protected static function blockEnd(&$context, $vars, $matchop = NULL) {
+    protected static function blockEnd(&$context, &$vars, $matchop = NULL) {
         $pop = $context['stack'][count($context['stack']) - 1];
         switch ($context['currentToken'][Token::POS_INNERTAG]) {
             case 'if':

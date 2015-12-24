@@ -41,7 +41,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
             '/', array('stack' => array('[with]', '#'), 'level' => 1, 'currentToken' => array(0,0,0,0,0,0,0,'with'), 'flags' => array('nohbh' => 0)), array(array())
         ))));
         $this->assertEquals(4, $method->invokeArgs(null, array_by_ref(array(
-            '#', array('usedFeature' => array('sec' => 3), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0), 'elseif' => false), array(array('x'))
+            '#', array('usedFeature' => array('sec' => 3), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0), 'elseif' => false, 'elselvl' => array()), array(array('x'))
         ))));
         $this->assertEquals(5, $method->invokeArgs(null, array_by_ref(array(
             '#', array('usedFeature' => array('if' => 4), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0, 'nohbh' => 0), 'elseif' => false, 'elselvl' => array()), array(array('if'))

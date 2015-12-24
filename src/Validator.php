@@ -154,14 +154,14 @@ class Validator {
      * @expect null when input '', array(), array()
      * @expect 2 when input '^', array('usedFeature' => array('isec' => 1), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0)), array(array('foo'))
      * @expect true when input '/', array('stack' => array('[with]', '#'), 'level' => 1, 'currentToken' => array(0,0,0,0,0,0,0,'with'), 'flags' => array('nohbh' => 0)), array(array())
-     * @expect 4 when input '#', array('usedFeature' => array('sec' => 3), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0), 'elseif' => false), array(array('x'))
-     * @expect 5 when input '#', array('usedFeature' => array('if' => 4), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0, 'nohbh' => 0), 'elseif' => false), array(array('if'))
-     * @expect 6 when input '#', array('usedFeature' => array('with' => 5), 'level' => 0, 'flags' => array('nohbh' => 0, 'runpart' => 0, 'spvar' => 0), 'currentToken' => array(0,0,0,0,0,0,0,0), 'elseif' => false), array(array('with'))
-     * @expect 7 when input '#', array('usedFeature' => array('each' => 6), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0, 'nohbh' => 0), 'elseif' => false), array(array('each'))
-     * @expect 8 when input '#', array('usedFeature' => array('unless' => 7), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0, 'nohbh' => 0), 'elseif' => false), array(array('unless'))
-     * @expect 9 when input '#', array('blockhelpers' => array('abc' => ''), 'usedFeature' => array('bhelper' => 8), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0), 'elseif' => false), array(array('abc'))
-     * @expect 11 when input '#', array('hbhelpers' => array('abc' => ''), 'usedFeature' => array('hbhelper' => 10), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0), 'elseif' => false), array(array('abc'))
-     * @expect true when input '>', array('basedir' => array('.'), 'fileext' => array('.tmpl'), 'usedFeature' => array('partial' => 7), 'level' => 0, 'flags' => array('skippartial' => 0, 'runpart' => 0, 'spvar' => 0), 'currentToken' => array(0,0,0,0,0,0,0,0), 'elseif' => false), array('test')
+     * @expect 4 when input '#', array('usedFeature' => array('sec' => 3), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0), 'elseif' => false, 'elselvl' => array()), array(array('x'))
+     * @expect 5 when input '#', array('usedFeature' => array('if' => 4), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0, 'nohbh' => 0), 'elseif' => false, 'elselvl' => array()), array(array('if'))
+     * @expect 6 when input '#', array('usedFeature' => array('with' => 5), 'level' => 0, 'flags' => array('nohbh' => 0, 'runpart' => 0, 'spvar' => 0), 'currentToken' => array(0,0,0,0,0,0,0,0), 'elseif' => false, 'elselvl' => array()), array(array('with'))
+     * @expect 7 when input '#', array('usedFeature' => array('each' => 6), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0, 'nohbh' => 0), 'elseif' => false, 'elselvl' => array()), array(array('each'))
+     * @expect 8 when input '#', array('usedFeature' => array('unless' => 7), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0, 'nohbh' => 0), 'elseif' => false, 'elselvl' => array()), array(array('unless'))
+     * @expect 9 when input '#', array('blockhelpers' => array('abc' => ''), 'usedFeature' => array('bhelper' => 8), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0), 'elseif' => false, 'elselvl' => array()), array(array('abc'))
+     * @expect 11 when input '#', array('hbhelpers' => array('abc' => ''), 'usedFeature' => array('hbhelper' => 10), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0), 'elseif' => false, 'elselvl' => array()), array(array('abc'))
+     * @expect true when input '>', array('basedir' => array('.'), 'fileext' => array('.tmpl'), 'usedFeature' => array('partial' => 7), 'level' => 0, 'flags' => array('skippartial' => 0, 'runpart' => 0, 'spvar' => 0), 'currentToken' => array(0,0,0,0,0,0,0,0), 'elseif' => false, 'elselvl' => array()), array('test')
      */
     protected static function operator($operator, &$context, &$vars) {
         switch ($operator) {
@@ -299,7 +299,7 @@ class Validator {
      *
      * @param array<string,array|string|integer> $context current compile context
      */
-    protected static function elseIf(&$context) {
+    protected static function doElseIf(&$context) {
         if ($context['elseif']) {
             $context['elseif'] = false;
         } else {
@@ -392,7 +392,7 @@ class Validator {
      * @return boolean Return true always
      */
     protected static function unless(&$context, $vars) {
-        static::elseIf($context);
+        static::doElseIf($context);
         static::builtin($context, $vars);
         return true;
     }
@@ -406,7 +406,7 @@ class Validator {
      * @return boolean Return true always
      */
     protected static function doIf(&$context, $vars) {
-        static::elseIf($context);
+        static::doElseIf($context);
         static::builtin($context, $vars);
         return true;
     }
@@ -455,7 +455,7 @@ class Validator {
      *
      * @return boolean Return true
      */
-    protected static function blockEnd(&$context, $vars, $match = null) {
+    protected static function blockEnd(&$context, &$vars, $match = null) {
         $context['level']--;
         $c = count($context['stack']) - 2;
         $pop = ($c >= 0) ? $context['stack'][$c + 1] : '';
@@ -484,6 +484,10 @@ class Validator {
                 if ($pop2 !== $v) {
                     $context['error'][] = 'Unexpect token ' . Token::toString($context['currentToken']) . " ! Previous token {{{$pop}$pop2}} is not closed";
                     return;
+                }
+                if (count($context['elselvl']) > 0) {
+                    $vars[0][1] = $context['elselvl'][0];
+                    array_shift($context['elselvl']);
                 }
                 return true;
             default:
