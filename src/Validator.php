@@ -421,7 +421,7 @@ class Validator {
      * @param array<boolean|integer|string|array> $vars parsed arguments list
      * @param boolean $inverted the logic will be inverted
      *
-     * @return string|null Return compiled code segment for the token
+     * @return integer|null Return number of used custom helpers
      */
     protected static function blockCustomHelper(&$context, $vars, $inverted = false) {
         if (is_string($vars[0][0])) {
@@ -454,7 +454,7 @@ class Validator {
      *
      * @param array<string,array|string|integer> $context current compile context
      * @param array<boolean|integer|string|array> $vars parsed arguments list
-     * @param string|null $matchop should also match to this operator
+     * @param string|null $match should also match to this operator
      *
      * @return boolean Return true
      */
@@ -678,7 +678,7 @@ class Validator {
      * @param array<string,array|string|integer> $context current compile context
      * @param array<boolean|integer|string|array> $vars parsed arguments list
      *
-     * @return boolean Return true when it is custom helper
+     * @return boolean|null Return true when it is custom helper
      */
     public static function lookup(&$context, $vars) {
         if (isset($vars[0][0]) && ($vars[0][0] === 'lookup')) {
@@ -754,6 +754,7 @@ class Validator {
         if (!isset($vars[1][0])) {
             $context['error'][] = "Error in {{#*{$context['currentToken'][Token::POS_INNERTAG]}}}: inline require 1 argument for partial name!";
         }
+        return true;
     }
 
     /**
@@ -762,7 +763,7 @@ class Validator {
      * @param array<string,array|string|integer> $context current compile context
      * @param array<boolean|integer|string|array> $vars parsed arguments list
      *
-     * @return integer|true Return 1 or larger number for runtime partial, return true for other case
+     * @return integer|boolean Return 1 or larger number for runtime partial, return true for other case
      */
     protected static function partial(&$context, $vars) {
         if (Parser::isSubExp($vars[0])) {
