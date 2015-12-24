@@ -103,10 +103,10 @@ class Compiler extends Validator
         $hbhelpers = Exporter::helpers($context, 'hbhelpers');
         $partials = implode(",\n", $context['partialCode']);
         $debug = Runtime::DEBUG_ERROR_LOG;
+        $use = $context['flags']['standalone'] ? '' : "use {$context['runtime']} as LR;";
 
         // Return generated PHP code string.
-        return "use {$context['runtime']} as LR;
-return function (\$in, \$options = null) {
+        return "{$use}return function (\$in, \$options = null) {
     \$cx = array(
         'flags' => array(
             'jstrue' => $flagJStrue,
