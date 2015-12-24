@@ -839,8 +839,6 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 
 *TODO*
 
-* https://github.com/wycats/handlebars.js/issues/1114
-* https://github.com/wycats/handlebars.js/issues/1099
 * https://github.com/wycats/handlebars.js/issues/1092
 
 Framework Integration
