@@ -6,6 +6,7 @@ v0.90 current master, not released
    * ff776f1dff add new options `delimiters` to change default delimiters.
    * 8942155d20 **BREAK CHANGE** remove FLAG_BARE , the generated PHP code will not includes `<?php` and `?>` now.
    * 9dab19e658 support `{{else if ...}}` and `{{else unless ...}}` now.
+   * 58a23f3ef6 support `{{log ...}}` now.
 
 v0.89 https://github.com/zordius/lightncandy/tree/v0.89
    * align with handlebars.js 4.0.4
