@@ -21,11 +21,11 @@ class CompilerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('LR::test2(', $method->invokeArgs(null, array_by_ref(array(
             array('flags' => array('standalone' => 0, 'debug' => 0), 'runtime' => 'Runtime'), 'test2', ''
         ))));
-        $this->assertEquals("\$cx['funcs']['test3'](", $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('standalone' => 1, 'debug' => 0), 'runtime' => 'Runtime'), 'test3', ''
+        $this->assertEquals("lala_abctest3(", $method->invokeArgs(null, array_by_ref(array(
+            array('flags' => array('standalone' => 1, 'debug' => 0), 'runtime' => 'Runtime', 'funcprefix' => 'lala_abc'), 'test3', ''
         ))));
         $this->assertEquals('LR::debug(\'abc\', \'test\', ', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('standalone' => 0, 'debug' => 1), 'runtime' => 'Runtime'), 'test', 'abc'
+            array('flags' => array('standalone' => 0, 'debug' => 1), 'runtime' => 'Runtime', 'funcprefix' => 'haha456'), 'test', 'abc'
         ))));
     }
     /**
