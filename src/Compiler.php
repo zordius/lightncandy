@@ -235,7 +235,7 @@ $libstr
      *
      * @param array<array|string|integer> $var variable parsed path
      * @param array<array|string|integer> $context current compile context
-     * @param array<string> $lookup extra lookup string as valid PHP variable name
+     * @param array<string>|null $lookup extra lookup string as valid PHP variable name
      *
      * @return array<string> variable names
      *
