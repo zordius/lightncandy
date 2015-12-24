@@ -96,14 +96,13 @@ class Compiler extends Validator
         $flagPartNC = Expression::boolString($context['flags']['partnc']);
         $flagKnownHlp = Expression::boolString($context['flags']['knohlp']);
 
-        $libstr = Exporter::runtime($context);
         $constants = Exporter::constants($context);
         $helpers = Exporter::helpers($context);
         $bhelpers = Exporter::helpers($context, 'blockhelpers');
         $hbhelpers = Exporter::helpers($context, 'hbhelpers');
         $partials = implode(",\n", $context['partialCode']);
         $debug = Runtime::DEBUG_ERROR_LOG;
-        $use = $context['flags']['standalone'] ? '' : "use {$context['runtime']} as LR;";
+        $use = $context['flags']['standalone'] ? Exporter::runtime($context) : "use {$context['runtime']} as LR;";
 
         // Return generated PHP code string.
         return "{$use}return function (\$in, \$options = null) {
@@ -131,7 +130,6 @@ class Compiler extends Validator
         'sp_vars' => isset(\$options['data']) ? array_merge(array('root' => \$in), \$options['data']) : array('root' => \$in),
         'blparam' => array(),
         'runtime' => '{$context['runtime']}',
-$libstr
     );
     {$context['renderex']}
     {$context['ops']['op_start']}'$code'{$context['ops']['op_end']}
@@ -163,7 +161,7 @@ $libstr
             $dbg = '';
         }
 
-        return $context['flags']['standalone'] ? "\$cx['funcs']['$name']($dbg" : "LR::$name($dbg";
+        return $context['flags']['standalone'] ? "{$context['funcprefix']}$name($dbg" : "LR::$name($dbg";
     }
 
     /**

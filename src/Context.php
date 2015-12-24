@@ -141,6 +141,7 @@ class Context extends Flags
             'prepartial' => (isset($options['prepartial']) && is_callable($options['prepartial'])) ? $options['prepartial'] : false,
             'runtime' => isset($options['runtime']) ? $options['runtime'] : '\\LightnCandy\\Runtime',
             'rawblock' => false,
+            'funcprefix' => uniqid('lcr'),
         );
 
         $context['ops'] = $context['flags']['echo'] ? array(

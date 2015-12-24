@@ -94,7 +94,7 @@ class Exporter
         $lines = file_get_contents($fname);
         $file = new \SplFileObject($fname);
         $methods = array();
-        $ret = "'funcs' => array(\n";
+        $ret = '';
 
         foreach ($class->getMethods() as $method) {
             $name = $method->getName();
@@ -102,7 +102,7 @@ class Exporter
             $spos = $file->ftell();
             $file->seek($method->getEndLine() - 2);
             $epos = $file->ftell();
-            $methods[$name] = static::scanDependency($context, preg_replace('/public static function (.+)\\(/', '\'$1\' => function (', substr($lines, $spos, $epos - $spos)));
+            $methods[$name] = static::scanDependency($context, preg_replace('/public static function (.+)\\(/', "function {$context['funcprefix']}\$1(", substr($lines, $spos, $epos - $spos)));
         }
         unset($file);
 
@@ -124,10 +124,10 @@ class Exporter
         }
 
         foreach ($exports as $export) {
-            $ret .= ($methods[$export][0] . "    },\n");
+            $ret .= ($methods[$export][0] . "}\n");
         }
 
-        return "$ret)\n";
+        return $ret;
     }
 
     /**
@@ -169,7 +169,7 @@ class Exporter
             }
             $child[$matches[1]]++;
 
-            return "\$cx['funcs']['{$matches[1]}'](";
+            return "{$context['funcprefix']}{$matches[1]}(";
         }, $code);
 
         // replace the constants
