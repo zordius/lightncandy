@@ -83,6 +83,8 @@ class Context extends Flags
             'stack' => array(),
             'currentToken' => null,
             'error' => array(),
+            'elselvl' => array(),
+            'elseif' => false,
             'basedir' => static::prepareBasedir($options),
             'fileext' => static::prepareFileext($options),
             'tokens' => array(

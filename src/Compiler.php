@@ -333,7 +333,7 @@ $libstr
                 return $ret;
             }
             if ($vars[0][0] === 'else') {
-                return static::doElse($context);
+                return static::doElse($context, $vars);
             }
             if ($vars[0][0] === 'lookup') {
                 return static::compileLookup($context, $vars, $raw);
@@ -572,10 +572,11 @@ $libstr
      * Return compiled PHP code for a handlebars else token
      *
      * @param array<string,array|string|integer> $context current compile context
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
      *
      * @return string Return compiled code segment for the token when the token is else
      */
-    protected static function doElse(&$context) {
+    protected static function doElse(&$context, $vars) {
         switch ($context['stack'][count($context['stack']) - 2]) {
             case '[if]':
             case '[unless]':

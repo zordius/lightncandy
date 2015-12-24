@@ -154,14 +154,14 @@ class Validator {
      * @expect null when input '', array(), array()
      * @expect 2 when input '^', array('usedFeature' => array('isec' => 1), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0)), array(array('foo'))
      * @expect true when input '/', array('stack' => array('[with]', '#'), 'level' => 1, 'currentToken' => array(0,0,0,0,0,0,0,'with'), 'flags' => array('nohbh' => 0)), array(array())
-     * @expect 4 when input '#', array('usedFeature' => array('sec' => 3), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0)), array(array('x'))
-     * @expect 5 when input '#', array('usedFeature' => array('if' => 4), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0, 'nohbh' => 0)), array(array('if'))
-     * @expect 6 when input '#', array('usedFeature' => array('with' => 5), 'level' => 0, 'flags' => array('nohbh' => 0, 'runpart' => 0, 'spvar' => 0), 'currentToken' => array(0,0,0,0,0,0,0,0)), array(array('with'))
-     * @expect 7 when input '#', array('usedFeature' => array('each' => 6), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0, 'nohbh' => 0)), array(array('each'))
-     * @expect 8 when input '#', array('usedFeature' => array('unless' => 7), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0, 'nohbh' => 0)), array(array('unless'))
-     * @expect 9 when input '#', array('blockhelpers' => array('abc' => ''), 'usedFeature' => array('bhelper' => 8), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0)), array(array('abc'))
-     * @expect 11 when input '#', array('hbhelpers' => array('abc' => ''), 'usedFeature' => array('hbhelper' => 10), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0)), array(array('abc'))
-     * @expect true when input '>', array('basedir' => array('.'), 'fileext' => array('.tmpl'), 'usedFeature' => array('partial' => 7), 'level' => 0, 'flags' => array('skippartial' => 0, 'runpart' => 0, 'spvar' => 0), 'currentToken' => array(0,0,0,0,0,0,0,0)), array('test')
+     * @expect 4 when input '#', array('usedFeature' => array('sec' => 3), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0), 'elseif' => false), array(array('x'))
+     * @expect 5 when input '#', array('usedFeature' => array('if' => 4), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0, 'nohbh' => 0), 'elseif' => false), array(array('if'))
+     * @expect 6 when input '#', array('usedFeature' => array('with' => 5), 'level' => 0, 'flags' => array('nohbh' => 0, 'runpart' => 0, 'spvar' => 0), 'currentToken' => array(0,0,0,0,0,0,0,0), 'elseif' => false), array(array('with'))
+     * @expect 7 when input '#', array('usedFeature' => array('each' => 6), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0, 'nohbh' => 0), 'elseif' => false), array(array('each'))
+     * @expect 8 when input '#', array('usedFeature' => array('unless' => 7), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0, 'nohbh' => 0), 'elseif' => false), array(array('unless'))
+     * @expect 9 when input '#', array('blockhelpers' => array('abc' => ''), 'usedFeature' => array('bhelper' => 8), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0), 'elseif' => false), array(array('abc'))
+     * @expect 11 when input '#', array('hbhelpers' => array('abc' => ''), 'usedFeature' => array('hbhelper' => 10), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0), 'elseif' => false), array(array('abc'))
+     * @expect true when input '>', array('basedir' => array('.'), 'fileext' => array('.tmpl'), 'usedFeature' => array('partial' => 7), 'level' => 0, 'flags' => array('skippartial' => 0, 'runpart' => 0, 'spvar' => 0), 'currentToken' => array(0,0,0,0,0,0,0,0), 'elseif' => false), array('test')
      */
     protected static function operator($operator, &$context, &$vars) {
         switch ($operator) {
@@ -188,7 +188,7 @@ class Validator {
                         $context['error'][] = 'Do not support {{^}}, you should do compile with LightnCandy::FLAG_ELSE flag';
                         return;
                     } else {
-                        return static::doElse($context);
+                        return static::doElse($context, $vars);
                     }
                 }
 
@@ -208,10 +208,13 @@ class Validator {
                 return $r;
 
             case '#':
-                static::pushStack($context, '#', $vars);
-
                 if (static::isBlockHelper($context, $vars)) {
+                    static::pushStack($context, '#', $vars);
                     return static::blockCustomHelper($context, $vars);
+                }
+
+                if (!$context['elseif']) {
+                    static::pushStack($context, '#', $vars);
                 }
 
                 return static::blockBegin($context, $vars);
@@ -288,6 +291,19 @@ class Validator {
                 $pb .= $append;
             });
             return $ended;
+        }
+    }
+
+    /**
+     * handle else if
+     *
+     * @param array<string,array|string|integer> $context current compile context
+     */
+    protected static function elseIf(&$context) {
+        if ($context['elseif']) {
+            $context['elseif'] = false;
+        } else {
+            array_unshift($context['elselvl'], 0);
         }
     }
 
@@ -376,6 +392,7 @@ class Validator {
      * @return boolean Return true always
      */
     protected static function unless(&$context, $vars) {
+        static::elseIf($context);
         static::builtin($context, $vars);
         return true;
     }
@@ -389,6 +406,7 @@ class Validator {
      * @return boolean Return true always
      */
     protected static function doIf(&$context, $vars) {
+        static::elseIf($context);
         static::builtin($context, $vars);
         return true;
     }
@@ -467,10 +485,7 @@ class Validator {
                     $context['error'][] = 'Unexpect token ' . Token::toString($context['currentToken']) . " ! Previous token {{{$pop}$pop2}} is not closed";
                     return;
                 }
-                if ($pop == '^') {
-                    return "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
-                }
-                return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
+                return true;
             default:
                 $context['error'][] = 'Unexpect token: ' . Token::toString($context['currentToken']) . ' !';
                 return;
@@ -616,7 +631,7 @@ class Validator {
         }
 
         if ($vars[0][0] === 'else') {
-            static::doElse($context);
+            static::doElse($context, $vars);
             return array($raw, $vars);
         }
 
@@ -631,13 +646,22 @@ class Validator {
      * Return 1 or larger number when else token detected
      *
      * @param array<string,array|string|integer> $context current compile context
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
      *
      * @return integer Return 1 or larger number when else token detected
      */
-    protected static function doElse(&$context) {
+    protected static function doElse(&$context, $vars) {
         if ($context['level'] == 0) {
             $context['error'][] = '{{else}} only valid in if, unless, each, and #section context';
         }
+
+        if (isset($vars[1][0]) && (($vars[1][0] === 'if') || ($vars[1][0] === 'unless'))) {
+            $token = $context['currentToken'];
+            $context['currentToken'][Token::POS_RSPACE] = '{{#' . $vars[1][0] . ' ' . preg_replace('/^\\s*else\\s+ ' . $vars[1][0] . '\\s+/', '', $token[Token::POS_INNERTAG]) . '}}' . $context['currentToken'][Token::POS_RSPACE];
+            $context['elseif'] = true;
+            $context['elselvl'][0]++;
+        }
+
         return ++$context['usedFeature']['else'];
     }
 
