@@ -607,7 +607,7 @@ $libstr
     protected static function compileLog(&$context, &$vars, $raw) {
         array_shift($vars);
         $v = static::getVariableNames($context, $vars);
-        return $context['ops']['seperator'] . static::getFuncName($context, 'lo', $v[1]) . "\$cx, array({$v[0]})){$context['ops']['seperator']}";
+        return $context['ops']['seperator'] . static::getFuncName($context, 'lo', $v[1]) . "\$cx, {$v[0]}){$context['ops']['seperator']}";
     }
 
     /**

@@ -107,7 +107,7 @@ class Runtime
      * @param string $v expression
      */
     public static function lo($cx, $v) {
-        error_log(var_export($v, true));
+        error_log(var_export($v[0], true));
         return '';
     }
 
