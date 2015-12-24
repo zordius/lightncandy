@@ -137,9 +137,8 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                ($spec['it'] === 'knows how to report the correct line number in errors') ||
                ($spec['it'] === 'knows how to report the correct line number in errors when the first character is a newline') ||
 
-               // chained inverted sections
+               // chained inverted sections + block params
                ($spec['it'] === 'should allow block params on chained helpers') ||
-               ($spec['it'] === 'chained inverted sections') ||
 
                // Decorators: https://github.com/wycats/handlebars.js/blob/master/docs/decorators-api.md
                ($spec['description'] === 'decorators') ||
