@@ -644,6 +644,7 @@ class Validator {
 
         if (!static::helper($context, $vars[0][0])) {
             static::lookup($context, $vars);
+            static::log($context, $vars);
         }
 
         return array($raw, $vars);
@@ -673,7 +674,27 @@ class Validator {
     }
 
     /**
-     * Return true whe the name is listed in helper table
+     * Return true when this is {{log ...}}
+     *
+     * @param array<string,array|string|integer> $context current compile context
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
+     *
+     * @return boolean|null Return true when it is custom helper
+     */
+    public static function log(&$context, $vars) {
+        if (isset($vars[0][0]) && ($vars[0][0] === 'log')) {
+            if (!$context['flags']['nohbh']) {
+                if (count($vars) < 2) {
+                    $context['error'][] = "No argument after {{log}} !";
+                }
+                $context['usedFeature']['log']++;
+                return true;
+            }
+        }
+    }
+
+    /**
+     * Return true when this is {{lookup ...}}
      *
      * @param array<string,array|string|integer> $context current compile context
      * @param array<boolean|integer|string|array> $vars parsed arguments list

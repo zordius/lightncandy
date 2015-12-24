@@ -101,6 +101,17 @@ class Runtime
     }
 
     /**
+     * LightnCandy runtime method for log.
+     *
+     * @param array<string,array|string|integer> $cx render time context
+     * @param string $v expression
+     */
+    public static function lo($cx, $v) {
+        error_log(var_export($v, true));
+        return '';
+    }
+
+    /**
      * LightnCandy runtime method for variable lookup. It is slower and only be used for instance property or method detection or lambdas.
      *
      * @param array<string,array|string|integer> $cx render time context

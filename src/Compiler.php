@@ -338,6 +338,9 @@ $libstr
             if ($vars[0][0] === 'lookup') {
                 return static::compileLookup($context, $vars, $raw);
             }
+            if ($vars[0][0] === 'log') {
+                return static::compileLog($context, $vars, $raw);
+            }
         }
 
         return static::compileVariable($context, $vars, $raw);
@@ -590,6 +593,21 @@ $libstr
             default:
                 return "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}";
         }
+    }
+
+    /**
+     * Return compiled PHP code for a handlebars log token
+     *
+     * @param array<string,array|string|integer> $context current compile context
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
+     * @param boolean $raw is this {{{ token or not
+     *
+     * @return string Return compiled code segment for the token
+     */
+    protected static function compileLog(&$context, &$vars, $raw) {
+        array_shift($vars);
+        $v = static::getVariableNames($context, $vars);
+        return $context['ops']['seperator'] . static::getFuncName($context, 'lo', $v[1]) . "\$cx, array({$v[0]})){$context['ops']['seperator']}";
     }
 
     /**

@@ -41,6 +41,7 @@ class usageTest extends PHPUnit_Framework_TestCase
             'subexp' => 0,
             'rawblock' => 0,
             'lookup' => 0,
+            'log' => 0,
         );
 
         $compileCases = Array(
@@ -282,6 +283,18 @@ class usageTest extends PHPUnit_Framework_TestCase
                      'if' => 1,
                      'hbhelper' => 2,
                      'subexp' => 1,
+                 ),
+             ),
+
+             Array(
+                 'id' => '196',
+                 'template' => '{{log "this is a test"}}',
+                 'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                ),
+                 'expected' => Array(
+                     'log' => 1,
+                     'enc' => 1,
                  ),
              ),
         );

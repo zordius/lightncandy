@@ -121,6 +121,7 @@ class Context extends Flags
                 'subexp' => 0,
                 'rawblock' => 0,
                 'lookup' => 0,
+                'log' => 0,
             ),
             'usedCount' => array(
                 'var' => array(),
