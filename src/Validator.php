@@ -615,6 +615,11 @@ class Validator {
             return array($raw, $vars);
         }
 
+        if ($vars[0][0] === 'else') {
+            static::doElse($context);
+            return array($raw, $vars);
+        }
+
         if (!static::helper($context, $vars[0][0])) {
             static::lookup($context, $vars);
         }
