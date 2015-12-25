@@ -23,7 +23,8 @@ function recursive_unset(&$array, $unwanted_key) {
 }
 
 function patch_safestring($code) {
-    return preg_replace('/new \\\\Handlebars\\\\SafeString\((.+?)\);/', 'new SafeString($1);', $code);
+    $code = preg_replace('/new \\\\Handlebars\\\\SafeString\((.+?)\);/', 'new \\LightnCandy\\SafeString($1);', $code);
+    return preg_replace('/new SafeString\((.+?)\);/', 'new \\LightnCandy\\SafeString($1);', $code);
 }
 
 function patch_this($code) {

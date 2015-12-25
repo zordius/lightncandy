@@ -229,26 +229,5 @@ class RuntimeTest extends PHPUnit_Framework_TestCase
             array(), 'b', null, array('a'=>'b'), function ($c, $i) {return "-$i=";}
         ))));
     }
-    /**
-     * @covers LightnCandy\Runtime::chret
-     */
-    public function testOn_chret() {
-        $method = new \ReflectionMethod('LightnCandy\Runtime', 'chret');
-        $this->assertEquals('-&-', $method->invokeArgs(null, array_by_ref(array(
-            '-&-', 'raw'
-        ))));
-        $this->assertEquals('-&amp;&#039;-', $method->invokeArgs(null, array_by_ref(array(
-            '-&\'-', 'enc'
-        ))));
-        $this->assertEquals('-&amp;&#x27;-', $method->invokeArgs(null, array_by_ref(array(
-            '-&\'-', 'encq'
-        ))));
-        $this->assertEquals('-&-', $method->invokeArgs(null, array_by_ref(array(
-            new SafeString('-&-'), 'enc'
-        ))));
-        $this->assertEquals('-&amp;&#x27;-', $method->invokeArgs(null, array_by_ref(array(
-            new SafeString('-&\'-', 'encq'), 'raw'
-        ))));
-    }
 }
 ?>

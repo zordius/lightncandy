@@ -103,7 +103,7 @@ class Compiler extends Validator
         $use = $context['flags']['standalone'] ? Exporter::runtime($context) : "use {$context['runtime']} as LR;";
 
         // Return generated PHP code string.
-        return "{$use}return function (\$in, \$options = null) {
+        return "use {$context['safestring']} as SafeString;{$use}return function (\$in, \$options = null) {
     \$cx = array(
         'flags' => array(
             'jstrue' => $flagJStrue,
@@ -631,7 +631,7 @@ class Compiler extends Validator
      */
     protected static function compileOutput(&$context, $variable, $expression, $raw, $nosep) {
         $sep = $nosep ? '' : $context['ops']['seperator'];
-        if ($context['flags']['hbesc'] || $context['flags']['jsobj'] || $context['flags']['jstrue'] || $context['flags']['debug']) {
+        if ($context['flags']['hbesc'] || $context['flags']['jsobj'] || $context['flags']['jstrue'] || $context['flags']['debug'] || $nosep) {
             return $sep . static::getFuncName($context, $raw ? 'raw' : $context['ops']['enc'], $expression) . "\$cx, $variable)$sep";
         } else {
             return $raw ? "$sep$variable{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlentities((string)$variable, ENT_QUOTES, 'UTF-8')$sep";

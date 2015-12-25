@@ -240,6 +240,10 @@ class Runtime extends Encoder
      * @expect 'a&#039;b' when input array('flags' => array('mustlam' => 0, 'lambda' => 0)), 'a\'b'
      */
     public static function enc($cx, $var) {
+        if ($var instanceof SafeString) {
+            return (string)$var;
+        }
+
         return htmlentities(static::raw($cx, $var), ENT_QUOTES, 'UTF-8');
     }
 
@@ -257,6 +261,10 @@ class Runtime extends Encoder
      * @expect '&#x60;a&#x27;b' when input array('flags' => array('mustlam' => 0, 'lambda' => 0)), '`a\'b'
      */
     public static function encq($cx, $var) {
+        if ($var instanceof SafeString) {
+            return (string)$var;
+        }
+
         return str_replace(array('=', '`', '&#039;'), array('&#x3D;', '&#x60;', '&#x27;'), htmlentities(static::raw($cx, $var), ENT_QUOTES, 'UTF-8'));
     }
 
@@ -498,36 +506,6 @@ class Runtime extends Encoder
     }
 
     /**
-     * LightnCandy runtime method to handle response of custom helpers.
-     *
-     * @param array<string,array|string|integer> $cx render time context
-     * @param string|array<string,array|string|integer> $ret return value from custom helper
-     * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
-     *
-     * @return string The rendered string of the token
-     *
-     * @expect '-&-' when input '-&-', 'raw'
-     * @expect '-&amp;&#039;-' when input '-&\'-', 'enc'
-     * @expect '-&amp;&#x27;-' when input '-&\'-', 'encq'
-     * @expect '-&-' when input new SafeString('-&-'), 'enc'
-     * @expect '-&amp;&#x27;-' when input new SafeString('-&\'-', 'encq'), 'raw'
-     */
-    public static function chret($ret, $op) {
-        if ($ret instanceof SafeString) {
-            $op = 'raw';
-        }
-
-        switch ($op) {
-            case 'enc':
-                return htmlentities($ret, ENT_QUOTES, 'UTF-8');
-            case 'encq':
-                return str_replace(array('=', '`', '&#039;'), array('&#x3D;', '&#x60;', '&#x27;'), htmlentities($ret, ENT_QUOTES, 'UTF-8'));
-        }
-
-        return $ret;
-    }
-
-    /**
      * LightnCandy runtime method for Handlebars.js style custom helpers.
      *
      * @param array<string,array|string|integer> $cx render time context
@@ -636,7 +614,7 @@ class Runtime extends Encoder
             static::err($cx, $e);
         }
 
-        return static::chret($r, $isBlock ? 'raw' : $op);
+        return $r;
     }
 }
 
