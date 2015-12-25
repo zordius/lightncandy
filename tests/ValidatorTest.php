@@ -4,6 +4,7 @@
  */
 use LightnCandy\LightnCandy;
 use LightnCandy\Runtime;
+use LightnCandy\SafeString;
 
 require_once(__DIR__ . '/test_util.php');
 
@@ -56,7 +57,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
             '#', array('usedFeature' => array('unless' => 7), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0, 'nohbh' => 0), 'elseif' => false, 'elselvl' => array()), array(array('unless'))
         ))));
         $this->assertEquals(9, $method->invokeArgs(null, array_by_ref(array(
-            '#', array('blockhelpers' => array('abc' => ''), 'usedFeature' => array('bhelper' => 8), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0), 'elseif' => false, 'elselvl' => array()), array(array('abc'))
+            '#', array('hbhelpers' => array('abc' => ''), 'usedFeature' => array('hbhelper' => 8), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0), 'elseif' => false, 'elselvl' => array()), array(array('abc'))
         ))));
         $this->assertEquals(11, $method->invokeArgs(null, array_by_ref(array(
             '#', array('hbhelpers' => array('abc' => ''), 'usedFeature' => array('hbhelper' => 10), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0), 'elseif' => false, 'elselvl' => array()), array(array('abc'))

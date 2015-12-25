@@ -4,6 +4,7 @@
  */
 use LightnCandy\LightnCandy;
 use LightnCandy\Runtime;
+use LightnCandy\SafeString;
 
 require_once(__DIR__ . '/test_util.php');
 
@@ -97,51 +98,6 @@ class RuntimeTest extends PHPUnit_Framework_TestCase
         ))));
         $this->assertEquals(false, $method->invokeArgs(null, array_by_ref(array(
             array(), array('1')
-        ))));
-    }
-    /**
-     * @covers LightnCandy\Runtime::raw
-     */
-    public function testOn_raw() {
-        $method = new \ReflectionMethod('LightnCandy\Runtime', 'raw');
-        $this->assertEquals(true, $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('jstrue' => 0, 'mustlam' => 0, 'lambda' => 0)), true
-        ))));
-        $this->assertEquals('true', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('jstrue' => 1)), true
-        ))));
-        $this->assertEquals('', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('jstrue' => 0, 'mustlam' => 0, 'lambda' => 0)), false
-        ))));
-        $this->assertEquals('false', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('jstrue' => 1)), false
-        ))));
-        $this->assertEquals('false', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('jstrue' => 1)), false, true
-        ))));
-        $this->assertEquals('Array', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('jstrue' => 1, 'jsobj' => 0)), array('a', 'b')
-        ))));
-        $this->assertEquals('a,b', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'mustlam' => 0, 'lambda' => 0)), array('a', 'b')
-        ))));
-        $this->assertEquals('[object Object]', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('jstrue' => 1, 'jsobj' => 1)), array('a', 'c' => 'b')
-        ))));
-        $this->assertEquals('[object Object]', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('jstrue' => 1, 'jsobj' => 1)), array('c' => 'b')
-        ))));
-        $this->assertEquals('a,true', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'mustlam' => 0, 'lambda' => 0)), array('a', true)
-        ))));
-        $this->assertEquals('a,1', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('jstrue' => 0, 'jsobj' => 1, 'mustlam' => 0, 'lambda' => 0)), array('a',true)
-        ))));
-        $this->assertEquals('a,', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('jstrue' => 0, 'jsobj' => 1, 'mustlam' => 0, 'lambda' => 0)), array('a',false)
-        ))));
-        $this->assertEquals('a,false', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'mustlam' => 0, 'lambda' => 0)), array('a',false)
         ))));
     }
     /**
@@ -274,24 +230,6 @@ class RuntimeTest extends PHPUnit_Framework_TestCase
         ))));
     }
     /**
-     * @covers LightnCandy\Runtime::ch
-     */
-    public function testOn_ch() {
-        $method = new \ReflectionMethod('LightnCandy\Runtime', 'ch');
-        $this->assertEquals('---', $method->invokeArgs(null, array_by_ref(array(
-            array('helpers' => array('a' => function ($i) {return "-$i[0]-";})), 'a', array(array('-'),array()), 'raw'
-        ))));
-        $this->assertEquals('-&amp;-', $method->invokeArgs(null, array_by_ref(array(
-            array('helpers' => array('a' => function ($i) {return "-$i[0]-";})), 'a', array(array('&'),array()), 'enc'
-        ))));
-        $this->assertEquals('-&#x27;-', $method->invokeArgs(null, array_by_ref(array(
-            array('helpers' => array('a' => function ($i) {return "-$i[0]-";})), 'a', array(array('\''),array()), 'encq'
-        ))));
-        $this->assertEquals('-b-', $method->invokeArgs(null, array_by_ref(array(
-            array('helpers' => array('a' => function ($i,$j) {return "-{$j['a']}-";})), 'a', array(array(),array('a' => 'b')), 'raw'
-        ))));
-    }
-    /**
      * @covers LightnCandy\Runtime::chret
      */
     public function testOn_chret() {
@@ -305,38 +243,11 @@ class RuntimeTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('-&amp;&#x27;-', $method->invokeArgs(null, array_by_ref(array(
             '-&\'-', 'encq'
         ))));
-        $this->assertEquals('-&amp;&#039;-', $method->invokeArgs(null, array_by_ref(array(
-            array('-&\'-'), 'enc'
+        $this->assertEquals('-&-', $method->invokeArgs(null, array_by_ref(array(
+            new SafeString('-&-'), 'enc'
         ))));
         $this->assertEquals('-&amp;&#x27;-', $method->invokeArgs(null, array_by_ref(array(
-            array('-&\'-'), 'encq'
-        ))));
-        $this->assertEquals('-&amp;-', $method->invokeArgs(null, array_by_ref(array(
-            array('-&-', false), 'enc'
-        ))));
-        $this->assertEquals('-&-', $method->invokeArgs(null, array_by_ref(array(
-            array('-&-', false), 'raw'
-        ))));
-        $this->assertEquals('-&-', $method->invokeArgs(null, array_by_ref(array(
-            array('-&-', 'raw'), 'enc'
-        ))));
-        $this->assertEquals('-&amp;&#x27;-', $method->invokeArgs(null, array_by_ref(array(
-            array('-&\'-', 'encq'), 'raw'
-        ))));
-    }
-    /**
-     * @covers LightnCandy\Runtime::bch
-     */
-    public function testOn_bch() {
-        $method = new \ReflectionMethod('LightnCandy\Runtime', 'bch');
-        $this->assertEquals('4.2.3', $method->invokeArgs(null, array_by_ref(array(
-            array('blockhelpers' => array('a' => function ($cx) {return array($cx,2,3);})), 'a', array(0, 0), 4, false, function($cx, $i) {return implode('.', $i);}
-        ))));
-        $this->assertEquals('2.6.5', $method->invokeArgs(null, array_by_ref(array(
-            array('blockhelpers' => array('a' => function ($cx,$in) {return array($cx,$in[0],5);})), 'a', array('6', 0), 2, false, function($cx, $i) {return implode('.', $i);}
-        ))));
-        $this->assertEquals('', $method->invokeArgs(null, array_by_ref(array(
-            array('blockhelpers' => array('a' => function ($cx,$in) {})), 'a', array('6', 0), 2, false, function($cx, $i) {return implode('.', $i);}
+            new SafeString('-&\'-', 'encq'), 'raw'
         ))));
     }
 }

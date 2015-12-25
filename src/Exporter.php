@@ -56,15 +56,14 @@ class Exporter
     /**
      * Export required custom helper functions
      *
-     * @param string $tname   helper table name
      * @param array<string,array|string|integer> $context current compile context
      *
      * @return string
      */
-    public static function helpers($context, $tname = 'helpers') {
+    public static function helpers($context) {
         $ret = '';
-        foreach ($context[$tname] as $name => $func) {
-            if (!isset($context['usedCount'][$tname][$name])) {
+        foreach ($context['hbhelpers'] as $name => $func) {
+            if (!isset($context['usedCount']['hbhelpers'][$name])) {
                 continue;
             }
             if ((is_object($func) && ($func instanceof \Closure)) || ($context['flags']['exhlp'] == 0)) {
@@ -90,13 +89,14 @@ class Exporter
         }
 
         $class = new \ReflectionClass($context['runtime']);
-        $fname = $class->getFileName();
-        $lines = file_get_contents($fname);
-        $file = new \SplFileObject($fname);
         $methods = array();
         $ret = '';
 
         foreach ($class->getMethods() as $method) {
+            $C = $method->getDeclaringClass();
+            $fname = $C->getFileName();
+            $lines = file_get_contents($fname);
+            $file = new \SplFileObject($fname);
             $name = $method->getName();
             $file->seek($method->getStartLine() - 2);
             $spos = $file->ftell();
@@ -124,7 +124,7 @@ class Exporter
         }
 
         foreach ($exports as $export) {
-            $ret .= ($methods[$export][0] . "}\n");
+            $ret .= ($methods[$export][0] . " }\n");
         }
 
         return $ret;
@@ -174,6 +174,10 @@ class Exporter
 
         // replace the constants
         $code = preg_replace('/static::([A-Z0-9_]+)/', "\$cx['constants']['$1']", $code);
+
+        // compress space
+        $code = preg_replace('/    /', ' ', $code);
+
         return array($code, $child);
     }
 }

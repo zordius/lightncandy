@@ -34,8 +34,6 @@ class usageTest extends PHPUnit_Framework_TestCase
             'partial' => 0,
             'dynpartial' => 0,
             'inlpartial' => 0,
-            'helper' => 0,
-            'bhelper' => 0,
             'hbhelper' => 0,
             'delimiter' => 0,
             'subexp' => 0,

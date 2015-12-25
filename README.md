@@ -246,15 +246,13 @@ Custom Helper
 
 Custom helper can help you deal with common template tasks, for example: provide URL and text then generate a link. To know more about custom helper, you can read original handlebars.js document here: http://handlebarsjs.com/expressions.html . 
 
-**NOTICE**: custom helpers to handle single tag `{{xxx}}` or a section `{{#yyy}} ... {{/yyy}}` are absolutely different in LightnCandy. To know more about creating custom helpers to handle `{{#yyy}} ... {{/yyy}}`, please refer to <a href="#block-custom-helper">Block Custom Helper</a>.
-
-When `compile()`, LightnCandy will lookup helpers from generated custom helper name table. You can register custom helpers with `helpers` option (**NOTICE**: `FLAG_NAMEDARG` is required for named arguments, `FLAG_ADVARNAME` is required for string or subexpression arguments):
+When `compile()`, LightnCandy will lookup helpers from generated custom helper name table. You can register custom helpers with `hbhelpers` option (**NOTICE**: `FLAG_NAMEDARG` is required for named arguments, `FLAG_ADVARNAME` is required for string or subexpression arguments):
 
 ```php
 LightnCandy::compile($template, Array(
     // FLAG_NAMEDARG is required if you want to use named arguments
     'flags' => LightnCandy::FLAG_HANDLEBARS
-    'helpers' => Array(
+    'hbhelpers' => Array(
         // 1. You may pass your function name
         //    When the function is not exist, you get compile time error
         //    In this case, the helper name is same with function name
@@ -301,26 +299,15 @@ The input arguments are processed by LightnCandy automatically, you do not need 
                             // and processed {{{../name}}} as second parameter into the helper
 ```
 
-Your custom helper function will be executed with two arguments. The first one is noname arguments, the second one is named arguments:
-
-```php
-function myhelper ($args, $named) {
-    if (count($args)) {
-        // handle no name arguments....
-    }
-    // access foo=bar from $named['foo'] ...
-}
-```
-
 In your template:
 
 ```
-{{{helper name=value}}}        // This send processed {{{value}}} into $named['name']
-{{{helper name="value"}}}      // This send the string "value" into $named['name']
+{{{helper name=value}}}        // This send processed {{{value}}} into $options['hash']['name']
+{{{helper name="value"}}}      // This send the string "value" into $options['hash']['name']
 {{{helper [na me]="value"}}}   // You can still protect the name with [ ]
-                               // so you get $named['na me'] as the string 'value'
-{{{helper url name="value"}}}  // This send processed {{{url}}}  into $args[0]
-                               // and the string "value" into $named['name']
+                               // so you get $options['hash']['na me'] as the string 'value'
+{{{helper url name="value"}}}  // This send processed {{{url}}} into first argument
+                               // and the string "value" into $options['hash']['name']
 ```
 
 Custom Helper Escaping
@@ -328,7 +315,7 @@ Custom Helper Escaping
 
 The return value of your custom helper should be a string. When your custom helper be executed from {{ }} , the return value will be HTML escaped. You may execute your helper by {{{ }}} , then the original helper return value will be outputted directly.
 
-When you need to do different escaping logic, you can return extended information by Array($responseString, $escape_flag) , here are some custom helper return value cases:
+If you return a LightnCandy\SafeString object, it will not be html escaped.
 
 ```php
 // escaping is handled by lightncandy and decided by template
@@ -336,118 +323,21 @@ When you need to do different escaping logic, you can return extended informatio
 // if the helper is in {{{ }}} , you get 'The U&ME Helper is executed!'
 return 'The U&ME Helper is executed!';
 
-// Same as above because the escape_flag is DEFAULT
-// 0, false, null, undefined, or '' means DEFAULT
-return Array('The U&ME Helper is executed!');
-return Array('The U&ME Helper is executed!', false);
-return Array('The U&ME Helper is executed!', 0);
-
-// escaping is handled by the helper, lightncandy will do nothing
+// Do not escape anything.
 // No matter in {{ }} or {{{ }}} , you get 'Exact&Same output \' \" Ya!'
-return Array('Exact&Same output \' " Ya!', 'raw');
+return new LightnCandy\SafeString('Exact&Same output \' " Ya!');
 
-// force lightncandy escaping the helper result
+// Force to escape the result.
 // No matter in {{ }} or {{{ }}} , you get 'Not&amp;Same output &#039; &quot; Ya!'
-return Array('Not&Same output \' " Ya!', 'enc');
+return new LightnCandy\SafeString('Not&Same output \' " Ya!', true);
 
-// force lightncandy escaping the helper result in handlebars.js way
+// Force to escape the result in handlebars.js way
 // No matter in {{ }} or {{{ }}} , you get 'Not&amp;Same output &#x27; &quot; Ya!'
-return Array('Not&Same output \' " Ya!', 'encq');
+return new LightnCandy\SafeString('Not&Same output \' " Ya!', 'encq');
 ```
 
-In most case, a custom helper should always return a string. If you design a custom helper to be executed inside a subexpression, you can return an object or an array by this way:
-
-```php
-// return an object
-return Array($anObject, 'asis');
-
-// in another way
-return Array($anObject, 'raw');
-
-// return Array(1, 3, 5)
-return Array(Array(1, 3, 5), 'any_string_but_not_enc_nor_encq');
-```
-
-Block Custom Helper
--------------------
-
-Block custom helper must be used as a section, the section is started with `{{#helper_name ...}}` and ended with `{{/helper_name}}`.
-
-You may use block custom helper to:
-
-1. Provide advanced condition logic which is different from `{{#if ...}}` ... `{{/if}}` .
-2. Modify current context for the inner block.
-3. Provide different context to the inner block.
-
-You can register block custom helpers with `blockhelpers` option:
-
-```php
-LightnCandy::compile($template, Array(
-    'blockhelpers' => Array(    // The usage of blockhelpers option is similar with helpers option.
-        'my_helper_function',   // You can use function name, class name with static method,
-        ...                     // and choose preferred helper name by providing key name.
-    )
-));
-```
-
-Block Custom Helper Interface
------------------------------
-
-LightnCandy handled all input arguments for you, you will receive current context and parsed arguments. The return value of helper function will become new context then be passed into inner block. If you do not return any value, or return null, the inner block will not be rendered. For example:
-
-```php
-// Only render inner block when input > 5
-// {{#helper_iffivemore total_people}}More then 5 people, discount!{{/helper_iffivemore}}
-function helper_iffivemore($cx, $args, $named) {
-    return $args[0] > 5 ? $cx : null;
-}
-
-// You can use named arguments, too
-// {{#helper_if value=people logic="more" tovalue=5}}Yes the logic is true{{/helper_if}}
-function helper_if($cx, $args, $named) {
-    switch ($args['logic']) {
-    case 'more':
-        return $named['value'] > $named['tovalue'] ? $cx : null;
-    case 'less':
-        return $named['value'] < $named['tovalue'] ? $cx : null;
-    case 'eq':
-        return $named['value'] == $named['tovalue'] ? $cx : null;
-    }
-}
-
-// Provide default values for name and salary
-// {{#helper_defaultpeople}}Hello, {{name}} ....Your salary will be {{salary}}{{/helper_defaultpeople}}
-function helper_defaultpeople($cx, $args, $named) {
-    if (!isset($cx['name'])) {
-        $cx['name'] = 'Sir';
-    }
-    $cx['salary'] = isset($cx['salary']) ? '$' . $cx['salary'] : 'unknown';
-    return $cx;
-}
-
-// Provide specific context to innerblock
-// {{#helper_sample}}Preview Name:{{name}} , Salary:{{salary}}.{{/helper_sample}}
-function helper_sample($cx, $args) {
-    return Array('name' => 'Sample Name', 'salary' => 'Sample Salary');
-}
-```
-
-You cannot provide new rendered result, nor handle loop in your block custom helper. To provide different rendering result, you should use <a href="#custom-helper">custom helper</a>. To handle loop, you should use `{{#each}}` . For example:
-
-```php
-// Provide specific context to innerblock, then loop on it.
-// {{#helper_categories}}{{#each .}}<li><a href="?id={{id}}">{{name}}</a></li>{{/each}}{{/helper_categories}}
-function helper_categories($cx, $args) {
-    return getMyCategories(); // Array('category1', 'category2', ...)
-}
-```
-
-The mission of a block custom helper is only focus on providing different context or logic to inner block, nothing else. If you like to do things beyond these restrictions, please using `hbhelpers` and keep reading to next section.
-
-Handlebars.js' Custom Helper
-----------------------------
-
-You can implement helpers more like Handlebars.js way with `hbhelpers` option, all matched single custom helper and block custom helper will be handled. In Handlebars.js, a block custom helper can rendener child block by executing `options.fn`; or change context by send new context as first parameter. Here are some examples to explain the behavior of `hbhelpers` custom helper:
+Custom Helper Examples
+----------------------
 
 **#mywith (context change)**
 * LightnCandy

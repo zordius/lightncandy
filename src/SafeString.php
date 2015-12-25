@@ -20,14 +20,45 @@ Origin: https://github.com/zordius/lightncandy
 
 namespace LightnCandy;
 
+use \LightnCandy\Encoder;
+
 /**
  * LightnCandy SafeString class
  */
-class SafeString
+class SafeString extends Encoder
 {
     const EXTENDED_COMMENT_SEARCH = '/{{!--.*?--}}/s';
     const IS_SUBEXP_SEARCH = '/^\(.+\)$/s';
     const IS_BLOCKPARAM_SEARCH = '/^ +\|(.+)\|$/s';
+
+    private $string;
+
+    public static $jsContext = array(
+        'flags' => array(
+            'jstrue' => 1,
+            'jsobj' => 1,
+        )
+    );
+
+    /**
+     * Constructor
+     *
+     * @param string $str input string
+     * @param bool|string $escape false to not escape, true to escape, 'encq' to escape as handlebars.js
+     *
+     * @return string Stripped template
+     *
+     * @expect 'abc' when input 'abc'
+     * @expect 'abc{{!}}cde' when input 'abc{{!}}cde'
+     * @expect 'abc{{! }}cde' when input 'abc{{!----}}cde'
+     */
+    function __construct($str, $escape = false) {
+        $this->string = $escape ? (($escape === 'encq') ? static::encq(static::$jsContext, $str) : static::enc(static::$jsContext, $str)) : $str;
+    }
+
+    function __toString() {
+        return $this->string;
+    }
 
     /**
      * Strip extended comments {{!-- .... --}}

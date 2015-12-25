@@ -4,6 +4,7 @@
  */
 use LightnCandy\LightnCandy;
 use LightnCandy\Runtime;
+use LightnCandy\SafeString;
 
 require_once(__DIR__ . '/test_util.php');
 

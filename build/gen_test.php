@@ -7,6 +7,7 @@ use LightnCandy\LightnCandy;
 genTestForClass('Compiler');
 genTestForClass('Context');
 genTestForClass('Exporter');
+genTestForClass('Encoder');
 genTestForClass('Expression');
 genTestForClass('LightnCandy');
 genTestForClass('Parser');
@@ -26,6 +27,7 @@ function genTestForClass($classname) {
  */
 use LightnCandy\\LightnCandy;
 use LightnCandy\\Runtime;
+use LightnCandy\\SafeString;
 
 require_once(__DIR__ . '/test_util.php');
 
@@ -40,6 +42,15 @@ VAR
         if (strpos($method->getFileName(), $classname) === false) {
             continue;
         }
+
+        if ($method->name === '__construct') {
+            continue;
+        }
+
+        if ($method->name === '__toString') {
+            continue;
+        }
+
         if (preg_match_all('/@expect (.+) when input (.+)( after (.+))?/', $method->getDocComment(), $matched)) {
             echo <<<VAR
     /**

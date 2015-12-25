@@ -19,11 +19,13 @@ Origin: https://github.com/zordius/lightncandy
  */
 
 namespace LightnCandy;
+use \LightnCandy\Encoder;
+use \LightnCandy\SafeString;
 
 /**
  * LightnCandy class for compiled PHP runtime.
  */
-class Runtime
+class Runtime extends Encoder
 {
     const DEBUG_ERROR_LOG = 1;
     const DEBUG_ERROR_EXCEPTION = 2;
@@ -223,60 +225,6 @@ class Runtime
      */
     public static function isec($cx, $v) {
         return ($v === null) || ($v === false) || (is_array($v) && (count($v) === 0));
-    }
-
-    /**
-     * LightnCandy runtime method for {{{var}}} .
-     *
-     * @param array<string,array|string|integer> $cx render time context
-     * @param array<array|string|integer>|string|integer|null $v value to be output
-     *
-     * @return string The raw value of the specified variable
-     *
-     * @expect true when input array('flags' => array('jstrue' => 0, 'mustlam' => 0, 'lambda' => 0)), true
-     * @expect 'true' when input array('flags' => array('jstrue' => 1)), true
-     * @expect '' when input array('flags' => array('jstrue' => 0, 'mustlam' => 0, 'lambda' => 0)), false
-     * @expect 'false' when input array('flags' => array('jstrue' => 1)), false
-     * @expect 'false' when input array('flags' => array('jstrue' => 1)), false, true
-     * @expect 'Array' when input array('flags' => array('jstrue' => 1, 'jsobj' => 0)), array('a', 'b')
-     * @expect 'a,b' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'mustlam' => 0, 'lambda' => 0)), array('a', 'b')
-     * @expect '[object Object]' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1)), array('a', 'c' => 'b')
-     * @expect '[object Object]' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1)), array('c' => 'b')
-     * @expect 'a,true' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'mustlam' => 0, 'lambda' => 0)), array('a', true)
-     * @expect 'a,1' when input array('flags' => array('jstrue' => 0, 'jsobj' => 1, 'mustlam' => 0, 'lambda' => 0)), array('a',true)
-     * @expect 'a,' when input array('flags' => array('jstrue' => 0, 'jsobj' => 1, 'mustlam' => 0, 'lambda' => 0)), array('a',false)
-     * @expect 'a,false' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'mustlam' => 0, 'lambda' => 0)), array('a',false)
-     */
-    public static function raw($cx, $v) {
-        if ($v === true) {
-            if ($cx['flags']['jstrue']) {
-                return 'true';
-            }
-        }
-
-        if (($v === false)) {
-            if ($cx['flags']['jstrue']) {
-                return 'false';
-            }
-        }
-
-        if (is_array($v)) {
-            if ($cx['flags']['jsobj']) {
-                if (count(array_diff_key($v, array_keys(array_keys($v)))) > 0) {
-                    return '[object Object]';
-                } else {
-                    $ret = array();
-                    foreach ($v as $k => $vv) {
-                        $ret[] = static::raw($cx, $vv);
-                    }
-                    return join(',', $ret);
-                }
-            } else {
-                return 'Array';
-            }
-        }
-
-        return "$v";
     }
 
     /**
@@ -550,27 +498,9 @@ class Runtime
     }
 
     /**
-     * LightnCandy runtime method for custom helpers.
-     *
-     * @param array<string,array|string|integer> $cx render time context
-     * @param string $ch the name of custom helper to be executed
-     * @param array<array> $vars variables for the helper
-     * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
-     *
-     * @return string The rendered string of the token
-     *
-     * @expect '---' when input array('helpers' => array('a' => function ($i) {return "-$i[0]-";})), 'a', array(array('-'),array()), 'raw'
-     * @expect '-&amp;-' when input array('helpers' => array('a' => function ($i) {return "-$i[0]-";})), 'a', array(array('&'),array()), 'enc'
-     * @expect '-&#x27;-' when input array('helpers' => array('a' => function ($i) {return "-$i[0]-";})), 'a', array(array('\''),array()), 'encq'
-     * @expect '-b-' when input array('helpers' => array('a' => function ($i,$j) {return "-{$j['a']}-";})), 'a', array(array(),array('a' => 'b')), 'raw'
-     */
-    public static function ch($cx, $ch, $vars, $op) {
-        return static::chret(call_user_func_array($cx['helpers'][$ch], $vars), $op);
-    }
-
-    /**
      * LightnCandy runtime method to handle response of custom helpers.
      *
+     * @param array<string,array|string|integer> $cx render time context
      * @param string|array<string,array|string|integer> $ret return value from custom helper
      * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
      *
@@ -579,27 +509,21 @@ class Runtime
      * @expect '-&-' when input '-&-', 'raw'
      * @expect '-&amp;&#039;-' when input '-&\'-', 'enc'
      * @expect '-&amp;&#x27;-' when input '-&\'-', 'encq'
-     * @expect '-&amp;&#039;-' when input array('-&\'-'), 'enc'
-     * @expect '-&amp;&#x27;-' when input array('-&\'-'), 'encq'
-     * @expect '-&amp;-' when input array('-&-', false), 'enc'
-     * @expect '-&-' when input array('-&-', false), 'raw'
-     * @expect '-&-' when input array('-&-', 'raw'), 'enc'
-     * @expect '-&amp;&#x27;-' when input array('-&\'-', 'encq'), 'raw'
+     * @expect '-&-' when input new SafeString('-&-'), 'enc'
+     * @expect '-&amp;&#x27;-' when input new SafeString('-&\'-', 'encq'), 'raw'
      */
     public static function chret($ret, $op) {
-        if (is_array($ret)) {
-            if (isset($ret[1]) && $ret[1]) {
-                $op = $ret[1];
-            }
-            $ret = $ret[0];
+        if ($ret instanceof SafeString) {
+            $op = 'raw';
         }
 
         switch ($op) {
             case 'enc':
                 return htmlentities($ret, ENT_QUOTES, 'UTF-8');
             case 'encq':
-                return preg_replace('/=/', '&#x3D;', preg_replace('/`/', '&#x60;', preg_replace('/&#039;/', '&#x27;', htmlentities($ret, ENT_QUOTES, 'UTF-8'))));
+                return str_replace(array('=', '`', '&#039;'), array('&#x3D;', '&#x60;', '&#x27;'), htmlentities($ret, ENT_QUOTES, 'UTF-8'));
         }
+
         return $ret;
     }
 
@@ -713,51 +637,6 @@ class Runtime
         }
 
         return static::chret($r, $isBlock ? 'raw' : $op);
-    }
-
-    /**
-     * LightnCandy runtime method for block custom helpers.
-     *
-     * @param array<string,array|string|integer> $cx render time context
-     * @param string $ch the name of custom helper to be executed
-     * @param array<array|string|integer>|string|integer|null $vars variables for the helper
-     * @param array<array|string|integer>|string|integer|null $in input data with current scope
-     * @param boolean $inverted the logic will be inverted
-     * @param Closure $cb callback function to render child context
-     * @param Closure|null $else callback function to render child context when {{else}}
-     *
-     * @return string The rendered string of the token
-     *
-     * @expect '4.2.3' when input array('blockhelpers' => array('a' => function ($cx) {return array($cx,2,3);})), 'a', array(0, 0), 4, false, function($cx, $i) {return implode('.', $i);}
-     * @expect '2.6.5' when input array('blockhelpers' => array('a' => function ($cx,$in) {return array($cx,$in[0],5);})), 'a', array('6', 0), 2, false, function($cx, $i) {return implode('.', $i);}
-     * @expect '' when input array('blockhelpers' => array('a' => function ($cx,$in) {})), 'a', array('6', 0), 2, false, function($cx, $i) {return implode('.', $i);}
-     */
-    public static function bch($cx, $ch, $vars, $in, $inverted, $cb, $else = null) {
-        $r = call_user_func($cx['blockhelpers'][$ch], $in, $vars[0], $vars[1]);
-
-        // $invert the logic
-        if ($inverted) {
-            $tmp = $else;
-            $else = $cb;
-            $cb = $tmp;
-        }
-
-        $ret = '';
-        if ($r === null) {
-            if ($else) {
-                $cx['scopes'][] = $in;
-                $ret = $else($cx, $r);
-                array_pop($cx['scopes']);
-            }
-        } else {
-            if ($cb) {
-                $cx['scopes'][] = $in;
-                $ret = $cb($cx, $r);
-                array_pop($cx['scopes']);
-            }
-        }
-
-        return $ret;
     }
 }
 

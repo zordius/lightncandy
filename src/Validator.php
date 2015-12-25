@@ -159,7 +159,7 @@ class Validator {
      * @expect 6 when input '#', array('usedFeature' => array('with' => 5), 'level' => 0, 'flags' => array('nohbh' => 0, 'runpart' => 0, 'spvar' => 0), 'currentToken' => array(0,0,0,0,0,0,0,0), 'elseif' => false, 'elselvl' => array()), array(array('with'))
      * @expect 7 when input '#', array('usedFeature' => array('each' => 6), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0, 'nohbh' => 0), 'elseif' => false, 'elselvl' => array()), array(array('each'))
      * @expect 8 when input '#', array('usedFeature' => array('unless' => 7), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0, 'nohbh' => 0), 'elseif' => false, 'elselvl' => array()), array(array('unless'))
-     * @expect 9 when input '#', array('blockhelpers' => array('abc' => ''), 'usedFeature' => array('bhelper' => 8), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0), 'elseif' => false, 'elselvl' => array()), array(array('abc'))
+     * @expect 9 when input '#', array('hbhelpers' => array('abc' => ''), 'usedFeature' => array('hbhelper' => 8), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0), 'elseif' => false, 'elselvl' => array()), array(array('abc'))
      * @expect 11 when input '#', array('hbhelpers' => array('abc' => ''), 'usedFeature' => array('hbhelper' => 10), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0), 'elseif' => false, 'elselvl' => array()), array(array('abc'))
      * @expect true when input '>', array('basedir' => array('.'), 'fileext' => array('.tmpl'), 'usedFeature' => array('partial' => 7), 'level' => 0, 'flags' => array('skippartial' => 0, 'runpart' => 0, 'spvar' => 0), 'currentToken' => array(0,0,0,0,0,0,0,0), 'elseif' => false, 'elselvl' => array()), array('test')
      */
@@ -428,11 +428,6 @@ class Validator {
             // detect handlebars custom helpers.
             if (isset($context['hbhelpers'][$vars[0][0]])) {
                 return ++$context['usedFeature']['hbhelper'];
-            }
-
-            // detect block custom helpers.
-            if (isset($context['blockhelpers'][$vars[0][0]])) {
-                return ++$context['usedFeature']['bhelper'];
             }
         }
     }
@@ -729,11 +724,6 @@ class Validator {
             return true;
         }
 
-        if (isset($context['helpers'][$name])) {
-            $context['usedFeature']['helper']++;
-            return true;
-        }
-
         return false;
     }
 
@@ -750,7 +740,7 @@ class Validator {
             return;
         }
 
-        if (!isset($context['blockhelpers'][$vars[0][0]]) && !isset($context['hbhelpers'][$vars[0][0]])) {
+        if (!isset($context['hbhelpers'][$vars[0][0]])) {
             return;
         }
 

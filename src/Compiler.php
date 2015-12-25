@@ -97,9 +97,7 @@ class Compiler extends Validator
         $flagKnownHlp = Expression::boolString($context['flags']['knohlp']);
 
         $constants = Exporter::constants($context);
-        $helpers = Exporter::helpers($context);
-        $bhelpers = Exporter::helpers($context, 'blockhelpers');
-        $hbhelpers = Exporter::helpers($context, 'hbhelpers');
+        $hbhelpers = Exporter::helpers($context);
         $partials = implode(",\n", $context['partialCode']);
         $debug = Runtime::DEBUG_ERROR_LOG;
         $use = $context['flags']['standalone'] ? Exporter::runtime($context) : "use {$context['runtime']} as LR;";
@@ -122,8 +120,6 @@ class Compiler extends Validator
             'debug' => isset(\$options['debug']) ? \$options['debug'] : $debug,
         ),
         'constants' => $constants,
-        'helpers' => $helpers,
-        'blockhelpers' => $bhelpers,
         'hbhelpers' => isset(\$options['helpers']) ? array_merge($hbhelpers, \$options['helpers']) : $hbhelpers,
         'partials' => array($partials),
         'scopes' => array(),
@@ -202,16 +198,11 @@ class Compiler extends Validator
      * @return array<string> code representing passed expression
      */
     public static function compileSubExpression(&$context, $vars) {
-        $origSeperator = $context['ops']['seperator'];
-        $context['ops']['seperator'] = '';
-
-        $ret = static::customHelper($context, $vars, true);
+        $ret = static::customHelper($context, $vars, true, true);
 
         if (($ret === null) && $context['flags']['lambda']) {
-            $ret = static::compileVariable($context, $vars, true);
+            $ret = static::compileVariable($context, $vars, true, true);
         }
-
-        $context['ops']['seperator'] = $origSeperator;
 
         return array($ret ? $ret : '', 'FIXME: $subExpression');
     }
@@ -327,8 +318,8 @@ class Compiler extends Validator
         }
 
         if (isset($vars[0][0])) {
-            if ($ret = static::customHelper($context, $vars, $raw)) {
-                return $ret;
+            if ($ret = static::customHelper($context, $vars, $raw, true)) {
+                return static::compileOutput($context, $ret, 'FIXME: helper', $raw, false);
             }
             if ($vars[0][0] === 'else') {
                 return static::doElse($context, $vars);
@@ -341,7 +332,7 @@ class Compiler extends Validator
             }
         }
 
-        return static::compileVariable($context, $vars, $raw);
+        return static::compileVariable($context, $vars, $raw, false);
     }
 
     /**
@@ -419,15 +410,13 @@ class Compiler extends Validator
      * @return string Return compiled code segment for the token
      */
     protected static function blockCustomHelper(&$context, $vars, $inverted = false) {
-        $notHBCH = !isset($context['hbhelpers'][$vars[0][0]]);
-
         $bp = Parser::getBlockParams($vars);
         $ch = array_shift($vars);
         $inverted = $inverted ? 'true' : 'false';
-        static::addUsageCount($context, $notHBCH ? 'blockhelpers' : 'hbhelpers', $ch[0]);
+        static::addUsageCount($context, 'hbhelpers', $ch[0]);
         $v = static::getVariableNames($context, $vars, $bp);
 
-        return $context['ops']['seperator'] . static::getFuncName($context, $notHBCH ? 'bch' : 'hbch', ($inverted ? '^' : '#') . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, \$in, $inverted, function(\$cx, \$in) {{$context['ops']['f_start']}";
+        return $context['ops']['seperator'] . static::getFuncName($context, 'hbch', ($inverted ? '^' : '#') . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, \$in, $inverted, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
     /**
@@ -558,20 +547,22 @@ class Compiler extends Validator
      * @param array<string,array|string|integer> $context current compile context
      * @param array<boolean|integer|string|array> $vars parsed arguments list
      * @param boolean $raw is this {{{ token or not
+     * @param boolean $nosep true to compile without seperator
      *
      * @return string|null Return compiled code segment for the token when the token is custom helper
      */
-    protected static function customHelper(&$context, $vars, $raw) {
-        $notHH = !isset($context['hbhelpers'][$vars[0][0]]);
-        if (!isset($context['helpers'][$vars[0][0]]) && $notHH) {
+    protected static function customHelper(&$context, $vars, $raw, $nosep) {
+        if (!isset($context['hbhelpers'][$vars[0][0]])) {
             return;
         }
 
         $fn = $raw ? 'raw' : $context['ops']['enc'];
         $ch = array_shift($vars);
         $v = static::getVariableNames($context, $vars);
-        static::addUsageCount($context, $notHH ? 'helpers' : 'hbhelpers', $ch[0]);
-        return $context['ops']['seperator'] . static::getFuncName($context, $notHH ? 'ch' : 'hbch', "$ch[0] " . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, '$fn'" . ($notHH ? '' : ', $in') . "){$context['ops']['seperator']}";
+        static::addUsageCount($context, 'hbhelpers', $ch[0]);
+        $sep = $nosep ? '' : $context['ops']['seperator'];
+
+        return $sep . static::getFuncName($context, 'hbch', "$ch[0] " . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, '$fn', \$in)$sep";
     }
 
     /**
@@ -628,33 +619,50 @@ class Compiler extends Validator
     }
 
     /**
+     * Return compiled PHP code for template output
+     *
+     * @param array<string,array|string|integer> $context current compile context
+     * @param string $variable PHP code for the variable
+     * @param string $expression normalized handlebars expression
+     * @param boolean $raw is this {{{ token or not
+     * @param boolean $nosep true to compile without seperator
+     *
+     * @return string Return compiled code segment for the token
+     */
+    protected static function compileOutput(&$context, $variable, $expression, $raw, $nosep) {
+        $sep = $nosep ? '' : $context['ops']['seperator'];
+        if ($context['flags']['hbesc'] || $context['flags']['jsobj'] || $context['flags']['jstrue'] || $context['flags']['debug']) {
+            return $sep . static::getFuncName($context, $raw ? 'raw' : $context['ops']['enc'], $expression) . "\$cx, $variable)$sep";
+        } else {
+            return $raw ? "$sep$variable{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlentities((string)$variable, ENT_QUOTES, 'UTF-8')$sep";
+        }
+    }
+
+    /**
      * Return compiled PHP code for a handlebars variable token
      *
      * @param array<string,array|string|integer> $context current compile context
      * @param array<boolean|integer|string|array> $vars parsed arguments list
      * @param boolean $raw is this {{{ token or not
+     * @param boolean $nosep true to compile without seperator
      *
      * @return string Return compiled code segment for the token
      */
-    protected static function compileVariable(&$context, &$vars, $raw) {
+    protected static function compileVariable(&$context, &$vars, $raw, $nosep) {
         if ($context['flags']['lambda']) {
             $V = array_shift($vars);
             $v = static::getVariableName($context, $V, null, count($vars) ? static::getVariableNames($context, $vars) : array('0',array('')));
         } else {
             $v = static::getVariableName($context, $vars[0]);
         }
-        if ($context['flags']['hbesc'] || $context['flags']['jsobj'] || $context['flags']['jstrue'] || $context['flags']['debug']) {
-            return $context['ops']['seperator'] . static::getFuncName($context, $raw ? 'raw' : $context['ops']['enc'], $v[1]) . "\$cx, {$v[0]}){$context['ops']['seperator']}";
-        } else {
-            return $raw ? "{$context['ops']['seperator']}$v[0]{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlentities((string){$v[0]}, ENT_QUOTES, 'UTF-8'){$context['ops']['seperator']}";
-        }
+        return static::compileOutput($context, $v[0], $v[1], $raw, $nosep);
     }
 
     /**
      * Add usage count to context
      *
      * @param array<string,array|string|integer> $context current context
-     * @param string $category ctegory name, can be one of: 'var', 'helpers', 'blockhelpers'
+     * @param string $category category name, can be one of: 'var', 'hbhelpers', 'runtime'
      * @param string $name used name
      * @param integer $count increment
      *

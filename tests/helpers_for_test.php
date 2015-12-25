@@ -96,11 +96,11 @@ function	meetup_date_format4(){
 
 
 function test_array ($input) {
-   return is_array($input[0]) ? 'IS_ARRAY' : 'NOT_ARRAY';
+   return is_array($input) ? 'IS_ARRAY' : 'NOT_ARRAY';
 }
 
 function test_join ($input) {
-   return join('.', $input[0]);
+   return join('.', $input);
 }
 
 // Custom helpers for handlebars (should be used in hbhelpers)
