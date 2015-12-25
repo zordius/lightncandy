@@ -5,6 +5,12 @@ Upgrade Notice
 
 * Recompile your none standalone templates when you upgrade LightnCandy.
 
+Version v0.90
+-------------
+* Option FLAG_BARE removed.
+* Remove $option['helpers'] and $option['blockhelpers']
+* Rename $option['hbhelpers'] into $option['helpers']
+
 Version v0.89
 -------------
 * Option FLAG_MUSTACHESP removed.
