@@ -34,7 +34,7 @@ class usageTest extends PHPUnit_Framework_TestCase
             'partial' => 0,
             'dynpartial' => 0,
             'inlpartial' => 0,
-            'hbhelper' => 0,
+            'helper' => 0,
             'delimiter' => 0,
             'subexp' => 0,
             'rawblock' => 0,
@@ -158,7 +158,7 @@ class usageTest extends PHPUnit_Framework_TestCase
                  'template' => '{{&../../../OK}} {{../OK}}',
                  'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'mytest' => function ($context) {
                             return $context;
                         }
@@ -175,7 +175,7 @@ class usageTest extends PHPUnit_Framework_TestCase
                  'template' => '{{mytest ../../../OK}} {{../OK}}',
                  'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'mytest' => function ($context) {
                             return $context;
                         }
@@ -184,7 +184,7 @@ class usageTest extends PHPUnit_Framework_TestCase
                  'expected' => Array(
                      'parent' => 2,
                      'enc' => 2,
-                     'hbhelper' => 1,
+                     'helper' => 1,
                  ),
              ),
 
@@ -192,7 +192,7 @@ class usageTest extends PHPUnit_Framework_TestCase
                  'template' => '{{mytest . .}}',
                  'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'mytest' => function ($a, $b) {
                             return '';
                         }
@@ -202,7 +202,7 @@ class usageTest extends PHPUnit_Framework_TestCase
                      'rootthis' => 2,
                      'this' => 2,
                      'enc' => 1,
-                     'hbhelper' => 1,
+                     'helper' => 1,
                  ),
              ),
 
@@ -210,7 +210,7 @@ class usageTest extends PHPUnit_Framework_TestCase
                  'template' => '{{mytest (mytest ..)}}',
                  'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'mytest' => function ($context) {
                             return $context;
                         }
@@ -219,7 +219,7 @@ class usageTest extends PHPUnit_Framework_TestCase
                  'expected' => Array(
                      'parent' => 1,
                      'enc' => 1,
-                     'hbhelper' => 2,
+                     'helper' => 2,
                      'subexp' => 1,
                  ),
              ),
@@ -228,7 +228,7 @@ class usageTest extends PHPUnit_Framework_TestCase
                  'template' => '{{mytest (mytest ..) .}}',
                  'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'mytest' => function ($context) {
                             return $context;
                         }
@@ -239,7 +239,7 @@ class usageTest extends PHPUnit_Framework_TestCase
                      'rootthis' => 1,
                      'this' => 1,
                      'enc' => 1,
-                     'hbhelper' => 2,
+                     'helper' => 2,
                      'subexp' => 1,
                  ),
              ),
@@ -248,7 +248,7 @@ class usageTest extends PHPUnit_Framework_TestCase
                  'template' => '{{mytest (mytest (mytest ..)) .}}',
                  'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'mytest' => function ($context) {
                             return $context;
                         }
@@ -259,7 +259,7 @@ class usageTest extends PHPUnit_Framework_TestCase
                      'rootthis' => 1,
                      'this' => 1,
                      'enc' => 1,
-                     'hbhelper' => 3,
+                     'helper' => 3,
                      'subexp' => 2,
                  ),
              ),
@@ -269,7 +269,7 @@ class usageTest extends PHPUnit_Framework_TestCase
                  'template' => '{{#if 1}}{{keys (keys ../names)}}{{/if}}',
                  'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'keys' => function ($context) {
                             return $context;
                         }
@@ -279,7 +279,7 @@ class usageTest extends PHPUnit_Framework_TestCase
                      'parent' => 1,
                      'enc' => 1,
                      'if' => 1,
-                     'hbhelper' => 2,
+                     'helper' => 2,
                      'subexp' => 1,
                  ),
              ),

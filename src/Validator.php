@@ -159,8 +159,8 @@ class Validator {
      * @expect 6 when input '#', array('usedFeature' => array('with' => 5), 'level' => 0, 'flags' => array('nohbh' => 0, 'runpart' => 0, 'spvar' => 0), 'currentToken' => array(0,0,0,0,0,0,0,0), 'elseif' => false, 'elselvl' => array()), array(array('with'))
      * @expect 7 when input '#', array('usedFeature' => array('each' => 6), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0, 'nohbh' => 0), 'elseif' => false, 'elselvl' => array()), array(array('each'))
      * @expect 8 when input '#', array('usedFeature' => array('unless' => 7), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0, 'nohbh' => 0), 'elseif' => false, 'elselvl' => array()), array(array('unless'))
-     * @expect 9 when input '#', array('hbhelpers' => array('abc' => ''), 'usedFeature' => array('hbhelper' => 8), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0), 'elseif' => false, 'elselvl' => array()), array(array('abc'))
-     * @expect 11 when input '#', array('hbhelpers' => array('abc' => ''), 'usedFeature' => array('hbhelper' => 10), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0), 'elseif' => false, 'elselvl' => array()), array(array('abc'))
+     * @expect 9 when input '#', array('helpers' => array('abc' => ''), 'usedFeature' => array('helper' => 8), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0), 'elseif' => false, 'elselvl' => array()), array(array('abc'))
+     * @expect 11 when input '#', array('helpers' => array('abc' => ''), 'usedFeature' => array('helper' => 10), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0), 'elseif' => false, 'elselvl' => array()), array(array('abc'))
      * @expect true when input '>', array('basedir' => array('.'), 'fileext' => array('.tmpl'), 'usedFeature' => array('partial' => 7), 'level' => 0, 'flags' => array('skippartial' => 0, 'runpart' => 0, 'spvar' => 0), 'currentToken' => array(0,0,0,0,0,0,0,0), 'elseif' => false, 'elselvl' => array()), array('test')
      */
     protected static function operator($operator, &$context, &$vars) {
@@ -426,8 +426,8 @@ class Validator {
     protected static function blockCustomHelper(&$context, $vars, $inverted = false) {
         if (is_string($vars[0][0])) {
             // detect handlebars custom helpers.
-            if (isset($context['hbhelpers'][$vars[0][0]])) {
-                return ++$context['usedFeature']['hbhelper'];
+            if (isset($context['helpers'][$vars[0][0]])) {
+                return ++$context['usedFeature']['helper'];
             }
         }
     }
@@ -719,8 +719,8 @@ class Validator {
      * @return boolean Return true when it is custom helper
      */
     public static function helper(&$context, $name) {
-        if (isset($context['hbhelpers'][$name])) {
-            $context['usedFeature']['hbhelper']++;
+        if (isset($context['helpers'][$name])) {
+            $context['usedFeature']['helper']++;
             return true;
         }
 
@@ -740,7 +740,7 @@ class Validator {
             return;
         }
 
-        if (!isset($context['hbhelpers'][$vars[0][0]])) {
+        if (!isset($context['helpers'][$vars[0][0]])) {
             return;
         }
 

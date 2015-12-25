@@ -246,13 +246,13 @@ Custom Helper
 
 Custom helper can help you deal with common template tasks, for example: provide URL and text then generate a link. To know more about custom helper, you can read original handlebars.js document here: http://handlebarsjs.com/expressions.html . 
 
-When `compile()`, LightnCandy will lookup helpers from generated custom helper name table. You can register custom helpers with `hbhelpers` option (**NOTICE**: `FLAG_NAMEDARG` is required for named arguments, `FLAG_ADVARNAME` is required for string or subexpression arguments):
+When `compile()`, LightnCandy will lookup helpers from generated custom helper name table. You can register custom helpers with `helpers` option (**NOTICE**: `FLAG_NAMEDARG` is required for named arguments, `FLAG_ADVARNAME` is required for string or subexpression arguments):
 
 ```php
 LightnCandy::compile($template, Array(
     // FLAG_NAMEDARG is required if you want to use named arguments
     'flags' => LightnCandy::FLAG_HANDLEBARS
-    'hbhelpers' => Array(
+    'helpers' => Array(
         // 1. You may pass your function name
         //    When the function is not exist, you get compile time error
         //    In this case, the helper name is same with function name
@@ -345,7 +345,7 @@ Custom Helper Examples
 // LightnCandy sample, #mywith works same with #with
 $php = LightnCandy::compile($template, Array(
     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-    'hbhelpers' => Array(
+    'helpers' => Array(
         'mywith' => function ($context, $options) {
             return $options['fn']($context);
         }
@@ -367,7 +367,7 @@ Handlebars.registerHelper('mywith', function(context, options) {
 // LightnCandy sample, #myeach works same with #each
 $php = LightnCandy::compile($template, Array(
     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-    'hbhelpers' => Array(
+    'helpers' => Array(
         'myeach' => function ($context, $options) {
             $ret = '';
             foreach ($context as $cx) {
@@ -397,7 +397,7 @@ Handlebars.registerHelper('myeach', function(context, options) {
 // LightnCandy sample, #myif works same with #if
 $php = LightnCandy::compile($template, Array(
     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-    'hbhelpers' => Array(
+    'helpers' => Array(
         'myif' => function ($conditional, $options) {
             if ($conditional) {
                 return $options['fn']();
@@ -428,7 +428,7 @@ You can use `isset($options['fn'])` to detect your custom helper is a block or n
 ```php
 $php = LightnCandy::compile($template, Array(
     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-    'hbhelpers' => Array(
+    'helpers' => Array(
         'sample' => function ($arg1, $arg2, $options) {
             // All hashed arguments are in $options['hash']
         }
@@ -450,7 +450,7 @@ You can get special data variables from `$options['data']`. Using `$options['_th
 ```php
 $php = LightnCandy::compile($template, Array(
     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-    'hbhelpers' => Array(
+    'helpers' => Array(
         'getRoot' => function ($options) {
             print_r($options['_this']); // dump current context
             return $options['data']['root']; // same as {{@root}}
@@ -475,7 +475,7 @@ You can inject private variables into inner block when you execute child block w
 ```php
 $php = LightnCandy::compile($template, Array(
     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-    'hbhelpers' => Array(
+    'helpers' => Array(
         'list' => function ($context, $options) {
             $out = '';
             $data = $options['data'];

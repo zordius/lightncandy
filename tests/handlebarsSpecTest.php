@@ -248,7 +248,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
 
                 $php = LightnCandy::compile($spec['template'], Array(
                     'flags' => $f,
-                    'hbhelpers' => $helpers,
+                    'helpers' => $helpers,
                     'basedir' => $tmpdir,
                     'partials' => $partials,
                 ));

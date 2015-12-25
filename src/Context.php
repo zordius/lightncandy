@@ -114,7 +114,7 @@ class Context extends Flags
                 'partial' => 0,
                 'dynpartial' => 0,
                 'inlpartial' => 0,
-                'hbhelper' => 0,
+                'helper' => 0,
                 'delimiter' => 0,
                 'subexp' => 0,
                 'rawblock' => 0,
@@ -123,14 +123,14 @@ class Context extends Flags
             ),
             'usedCount' => array(
                 'var' => array(),
-                'hbhelpers' => array(),
+                'helpers' => array(),
                 'runtime' => array(),
             ),
             'parsed' => array(),
             'partials' => (isset($options['partials']) && is_array($options['partials'])) ? $options['partials'] : array(),
             'partialblock' => array(),
             'inlinepartial' => array(),
-            'hbhelpers' => array(),
+            'helpers' => array(),
             'renderex' => isset($options['renderex']) ? $options['renderex'] : '',
             'prepartial' => (isset($options['prepartial']) && is_callable($options['prepartial'])) ? $options['prepartial'] : false,
             'runtime' => isset($options['runtime']) ? $options['runtime'] : '\\LightnCandy\\Runtime',
@@ -165,8 +165,6 @@ class Context extends Flags
 
         $context['ops']['enc'] = $context['flags']['hbesc'] ? 'encq' : 'enc';
         static::updateHelperTable($context, $options);
-        static::updateHelperTable($context, $options, 'blockhelpers');
-        static::updateHelperTable($context, $options, 'hbhelpers');
 
         if ($context['flags']['partnc'] && ($context['flags']['runpart'] == 0)) {
             $context['error'][] = 'The FLAG_PARTIALNEWCONTEXT requires FLAG_RUNTIMEPARTIAL! Fix your compile options please';

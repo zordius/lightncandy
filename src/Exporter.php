@@ -62,8 +62,8 @@ class Exporter
      */
     public static function helpers($context) {
         $ret = '';
-        foreach ($context['hbhelpers'] as $name => $func) {
-            if (!isset($context['usedCount']['hbhelpers'][$name])) {
+        foreach ($context['helpers'] as $name => $func) {
+            if (!isset($context['usedCount']['helpers'][$name])) {
                 continue;
             }
             if ((is_object($func) && ($func instanceof \Closure)) || ($context['flags']['exhlp'] == 0)) {

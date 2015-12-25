@@ -42,7 +42,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'template' => '<div class="terms-text"> {{render "artists-terms"}} </div>',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_EXTHELPER,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'url',
                         'render' => function($view,$data = array()) {
                             return 'OK!';
@@ -77,7 +77,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'id' => 49,
                 'template' => '{{date_format}} 1, {{date_format2}} 2, {{date_format3}} 3, {{date_format4}} 4',
                 'options' => Array(
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'date_format' => 'meetup_date_format',
                         'date_format2' => 'meetup_date_format2',
                         'date_format3' => 'meetup_date_format3',
@@ -92,7 +92,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'id' => 52,
                 'template' => '{{{test_array tmp}}} should be happy!',
                 'options' => Array(
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'test_array',
                     )
                 ),
@@ -105,7 +105,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'template' => '{{{test_join @root.foo.bar}}} should be happy!',
                 'options' => Array(
                      'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_ERROR_EXCEPTION,
-                     'hbhelpers' => array('test_join')
+                     'helpers' => array('test_join')
                 ),
                 'data' => Array('foo' => Array('A', 'B', 'bar' => Array('C', 'D'))),
                 'expected' => 'C.D should be happy!',
@@ -154,7 +154,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'template' => '{{#myeach foo}} Test! {{this}} {{/myeach}}',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'myeach' => function ($context, $options) {
                             $ret = '';
                             foreach ($context as $cx) {
@@ -193,7 +193,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'template' => '{{helper 1 foo bar="q"}}',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'helper' => function ($arg1, $arg2, $options) {
                             return "ARG1:$arg1, ARG2:$arg2, HASH:{$options['hash']['bar']}";
                         }
@@ -246,7 +246,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'template' => 'ABC{{#block "YES!"}}DEF{{foo}}GHI{{/block}}JKL',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_BESTPERFORMANCE,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'block' => function ($name, $options) {
                             return "1-$name-2-" . $options['fn']() . '-3';
                         }
@@ -272,7 +272,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'template' => '{{^myeach .}}OK:{{.}},{{else}}NOT GOOD{{/myeach}}',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_BESTPERFORMANCE,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'myeach' => function ($context, $options) {
                             $ret = '';
                             foreach ($context as $cx) {
@@ -291,7 +291,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'template' => '{{list foo bar abc=(lt 10 3) def=(lt 3 10)}}',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'lt' => function ($a, $b) {
                             return ($a > $b) ? new SafeString("$a>$b") : '';
                         },
@@ -324,7 +324,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'template' => '{{#if (equal \'OK\' cde)}}YES!{{/if}}',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'equal' => function ($a, $b) {
                             return $a === $b;
                         }
@@ -339,7 +339,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'template' => '{{#if (equal true (equal \'OK\' cde))}}YES!{{/if}}',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'equal' => function ($a, $b) {
                             return $a === $b;
                         }
@@ -354,7 +354,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'template' => '{{#if (equal true ( equal \'OK\' cde))}}YES!{{/if}}',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'equal' => function ($a, $b) {
                             return $a === $b;
                         }
@@ -369,7 +369,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'template' => '{{#if (equal true (equal \' OK\' cde))}}YES!{{/if}}',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'equal' => function ($a, $b) {
                             return $a === $b;
                         }
@@ -384,7 +384,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'template' => '{{#if (equal true (equal \' ==\' cde))}}YES!{{/if}}',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'equal' => function ($a, $b) {
                             return $a === $b;
                         }
@@ -399,7 +399,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'template' => '{{#if (equal true (equal " ==" cde))}}YES!{{/if}}',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'equal' => function ($a, $b) {
                             return $a === $b;
                         }
@@ -414,7 +414,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'template' => '{{[ abc]}}',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'equal' => function ($a, $b) {
                             return $a === $b;
                         }
@@ -429,7 +429,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'template' => '{{list [ abc] " xyz" \' def\' "==" \'==\' "OK"}}',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'list' => function ($a, $b) {
                             $out = 'List:';
                             $args = func_get_args();
@@ -453,7 +453,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'data' => Array('name' => 'john', 'array' => Array(1,2,3)),
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array('myif', 'mywith'),
+                    'helpers' => Array('myif', 'mywith'),
                 ),
                 // PENDING ISSUE, check for https://github.com/wycats/handlebars.js/issues/1135
                 // 'expected' => '#--john-##==john=###~~john~#--john-##==john=###~~john~#--john-##==john=###~~john~',
@@ -476,7 +476,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'data' => Array('foo' => 'bar', 'test' => 'ok'),
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'keys' => function($arg) {
                             return array_keys($arg);
                          },
@@ -494,7 +494,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'data' => Array('foo' => 'bar', 'test' => 'ok'),
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'keys' => function($arg) {
                             return array_keys($arg);
                          },
@@ -512,7 +512,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'data' => Array('foo', 'bar', 'test'),
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'list' => function($arg) {
                             return join(',', $arg);
                          }
@@ -527,7 +527,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'data' => Array('names' => Array('foo' => 'bar', 'test' => 'ok')),
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'keys' => function($arg) {
                             return array_keys($arg);
                          },
@@ -545,7 +545,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'data' => Array('foo' => 'bar', 'test' => 'ok', 'Haha'),
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'keys' => function($arg) {
                             return array_keys($arg);
                          }
@@ -560,7 +560,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'data' => Array('ha', 'hey', 'ho'),
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'a.good.helper' => function($arg) {
                             return join(',', $arg);
                          }
@@ -575,7 +575,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'data' => Array('foo' => Array('bar' => 'Good!')),
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'getThis' => function($input, $options) {
                             return $input . '-' . $options['_this']['bar'];
                          }
@@ -590,7 +590,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'data' => Array('foo' => Array('bar' => 'Good!')),
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'getThis' => function($input, $options) {
                             return $input . '-' . $options['_this']['bar'];
                          }
@@ -605,7 +605,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'data' => Array('foo' => 'good!'),
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'testString' => function($arg, $options) {
                             return $arg . '-' . $options['hash']['bar'];
                          }
@@ -620,7 +620,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'data' => Array('foo' => 'good!'),
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'testString' => function($arg, $options) {
                             return $arg . '-' . $options['hash']['bar'];
                          }
@@ -635,7 +635,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'data' => Array('foo' => 'good!'),
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'testString' => function($arg, $options) {
                             return $arg . '-' . $options['hash']['bar'];
                          }
@@ -650,7 +650,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'data' => Array('foo' => 'good!'),
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'testString' => function($arg, $options) {
                             return $arg . '-' . $options['hash']['bar'];
                          }
@@ -665,7 +665,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'data' => Array('foo' => 'good!'),
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'testString' => function($arg1, $options) {
                             return $arg1 . '-' . $options['hash']['bar'];
                          }
@@ -713,7 +713,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'data' => null,
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'echo' => function ($in) {
                             return "-$in-";
                         }
@@ -728,7 +728,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'data' => null,
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'echo' => function ($in) {
                             return "-$in-";
                         }
@@ -753,7 +753,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'data' => null,
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'du_mp' => function ($a) {
                             return '>' . print_r(isset($a['hash']) ? $a['hash'] : $a, true);
                         }
@@ -817,7 +817,7 @@ VAREND
                 'data' => Array('a', 'b', 'c'),
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_ERROR_EXCEPTION,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'my_private_each'
                     )
                 ),
@@ -876,7 +876,7 @@ VAREND
                 'data' => 'test',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'testNull' => function($arg1, $arg2) {
                             return (($arg1 === null) && ($arg2 === null)) ? 'YES!' : 'no';
                          }
@@ -889,7 +889,7 @@ VAREND
                 'template' => '{{> (pname foo) bar}}',
                 'data' => Array('bar' => 'OK! SUBEXP+PARTIAL!', 'foo' => 'test/test3'),
                 'options' => Array(
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'pname' => function($arg) {
                             return $arg;
                          }
@@ -914,7 +914,7 @@ VAREND
                 'template' => '{{[helper]}}',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'helper' => function () {
                             return 'DEF';
                         }
@@ -928,7 +928,7 @@ VAREND
                 'template' => '{{#[helper3]}}ABC{{/[helper3]}}',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'helper3' => function () {
                             return 'DEF';
                         }
@@ -942,7 +942,7 @@ VAREND
                 'template' => '{{hash abc=["def=123"]}}',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_BESTPERFORMANCE,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'hash' => function ($options) {
                             $ret = '';
                             foreach ($options['hash'] as $k => $v) {
@@ -960,7 +960,7 @@ VAREND
                 'template' => '{{hash abc=[\'def=123\']}}',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_BESTPERFORMANCE,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'hash' => function ($options) {
                             $ret = '';
                             foreach ($options['hash'] as $k => $v) {
@@ -978,7 +978,7 @@ VAREND
                 'template' => 'ABC{{#block "YES!"}}DEF{{foo}}GHI{{else}}NO~{{/block}}JKL',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_BESTPERFORMANCE,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'block' => function ($name, $options) {
                             return "1-$name-2-" . $options['fn']() . '-3';
                         }
@@ -992,7 +992,7 @@ VAREND
                 'template' => '-{{getroot}}=',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_SPVARS,
-                    'hbhelpers' => Array('getroot'),
+                    'helpers' => Array('getroot'),
                 ),
                 'data' => 'ROOT!',
                 'expected' => '-ROOT!=',
@@ -1011,7 +1011,7 @@ VAREND
                 'template' => 'ABC{{#block "YES!"}}TRUE{{else}}DEF{{foo}}GHI{{/block}}JKL',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_BESTPERFORMANCE,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'block' => function ($name, $options) {
                             return "1-$name-2-" . $options['inverse']() . '-3';
                         }
@@ -1072,7 +1072,7 @@ VAREND
                 'template' => '{{good_helper}}',
                 'data' => null,
                 'options' => Array(
-                    'hbhelpers' => Array('good_helper' => 'foo::bar'),
+                    'helpers' => Array('good_helper' => 'foo::bar'),
                 ),
                 'expected' => 'OK!',
             ),
@@ -1141,7 +1141,7 @@ VAREND
                 'template' => '{{#myif foo}}YES{{else}}NO{{/myif}}',
                 'data' => null,
                 'options' => Array(
-                    'hbhelpers' => Array('myif'),
+                    'helpers' => Array('myif'),
                 ),
                 'expected' => 'NO',
             ),
@@ -1150,7 +1150,7 @@ VAREND
                 'template' => '{{#myif foo}}YES{{else}}NO{{/myif}}',
                 'data' => Array('foo' => 1),
                 'options' => Array(
-                    'hbhelpers' => Array('myif'),
+                    'helpers' => Array('myif'),
                 ),
                 'expected' => 'YES',
             ),
@@ -1159,7 +1159,7 @@ VAREND
                 'template' => '{{#mylogic 0 foo bar}}YES:{{.}}{{else}}NO:{{.}}{{/mylogic}}',
                 'data' => Array('foo' => 'FOO', 'bar' => 'BAR'),
                 'options' => Array(
-                    'hbhelpers' => Array('mylogic'),
+                    'helpers' => Array('mylogic'),
                 ),
                 'expected' => 'NO:BAR',
             ),
@@ -1168,7 +1168,7 @@ VAREND
                 'template' => '{{#mylogic true foo bar}}YES:{{.}}{{else}}NO:{{.}}{{/mylogic}}',
                 'data' => Array('foo' => 'FOO', 'bar' => 'BAR'),
                 'options' => Array(
-                    'hbhelpers' => Array('mylogic'),
+                    'helpers' => Array('mylogic'),
                 ),
                 'expected' => 'YES:FOO',
             ),
@@ -1177,7 +1177,7 @@ VAREND
                 'template' => '{{#mywith foo}}YA: {{name}}{{/mywith}}',
                 'data' => Array('name' => 'OK?', 'foo' => Array('name' => 'OK!')),
                 'options' => Array(
-                    'hbhelpers' => Array('mywith'),
+                    'helpers' => Array('mywith'),
                 ),
                 'expected' => 'YA: OK!',
             ),
@@ -1186,7 +1186,7 @@ VAREND
                 'template' => '{{mydash \'abc\' "dev"}}',
                 'data' => Array('a' => 'a', 'b' => 'b', 'c' => Array('c' => 'c'), 'd' => 'd', 'e' => 'e'),
                 'options' => Array(
-                    'hbhelpers' => Array('mydash'),
+                    'helpers' => Array('mydash'),
                 ),
                 'expected' => 'abc-dev',
             ),
@@ -1196,7 +1196,7 @@ VAREND
                 'data' => Array('a' => 'a', 'b' => 'b', 'c' => Array('c' => 'c'), 'd' => 'd', 'e' => 'e'),
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_ADVARNAME,
-                    'hbhelpers' => Array('mydash'),
+                    'helpers' => Array('mydash'),
                 ),
                 'expected' => 'a b c-d e f',
             ),
@@ -1206,7 +1206,7 @@ VAREND
                 'data' => Array('a' => 'a', 'b' => 'b', 'c' => Array('c' => 'c'), 'd' => 'd', 'e' => 'e'),
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_ADVARNAME,
-                    'hbhelpers' => Array('mydash', 'test_array'),
+                    'helpers' => Array('mydash', 'test_array'),
                 ),
                 'expected' => 'abc-NOT_ARRAY',
             ),
@@ -1216,7 +1216,7 @@ VAREND
                 'data' => Array('a' => 'a', 'b' => 'b', 'c' => Array('c' => 'c'), 'd' => 'd', 'e' => 'e'),
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_ADVARNAME,
-                    'hbhelpers' => Array('mydash', 'myjoin'),
+                    'helpers' => Array('mydash', 'myjoin'),
                 ),
                 'expected' => 'abc-ab',
             ),
@@ -1254,7 +1254,7 @@ VAREND
                 'data' => Array('name' => 'John', 'value' => 10000, 'url' => 'http://yahoo.com', 'text' => 'You&Me!'),
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'helper1',
                         'myClass::helper2',
                         'he' => 'helper1',
@@ -1431,7 +1431,7 @@ VAREND
                 'data' => null,
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'hbhelpers' => Array(
+                    'helpers' => Array(
                         'helper1',
                     )
                 ),

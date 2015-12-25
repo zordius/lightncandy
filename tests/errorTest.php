@@ -87,7 +87,7 @@ class errorTest extends PHPUnit_Framework_TestCase
              Array(
                  'template' => '{{foo}}',
                  'options' => Array(
-                     'hbhelpers' => Array(
+                     'helpers' => Array(
                          'foo' => function () {
                              return 1/0;
                          }
@@ -458,7 +458,7 @@ class errorTest extends PHPUnit_Framework_TestCase
                 'template' => '{{foo (foo (foo 1 2) 3))}}',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                     'hbhelpers' => Array(
+                     'helpers' => Array(
                          'foo' => function () {
                              return;
                          }

@@ -97,7 +97,7 @@ class Compiler extends Validator
         $flagKnownHlp = Expression::boolString($context['flags']['knohlp']);
 
         $constants = Exporter::constants($context);
-        $hbhelpers = Exporter::helpers($context);
+        $helpers = Exporter::helpers($context);
         $partials = implode(",\n", $context['partialCode']);
         $debug = Runtime::DEBUG_ERROR_LOG;
         $use = $context['flags']['standalone'] ? Exporter::runtime($context) : "use {$context['runtime']} as LR;";
@@ -120,7 +120,7 @@ class Compiler extends Validator
             'debug' => isset(\$options['debug']) ? \$options['debug'] : $debug,
         ),
         'constants' => $constants,
-        'hbhelpers' => isset(\$options['helpers']) ? array_merge($hbhelpers, \$options['helpers']) : $hbhelpers,
+        'helpers' => isset(\$options['helpers']) ? array_merge($helpers, \$options['helpers']) : $helpers,
         'partials' => array($partials),
         'scopes' => array(),
         'sp_vars' => isset(\$options['data']) ? array_merge(array('root' => \$in), \$options['data']) : array('root' => \$in),
@@ -413,7 +413,7 @@ class Compiler extends Validator
         $bp = Parser::getBlockParams($vars);
         $ch = array_shift($vars);
         $inverted = $inverted ? 'true' : 'false';
-        static::addUsageCount($context, 'hbhelpers', $ch[0]);
+        static::addUsageCount($context, 'helpers', $ch[0]);
         $v = static::getVariableNames($context, $vars, $bp);
 
         return $context['ops']['seperator'] . static::getFuncName($context, 'hbch', ($inverted ? '^' : '#') . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, \$in, $inverted, function(\$cx, \$in) {{$context['ops']['f_start']}";
@@ -552,14 +552,14 @@ class Compiler extends Validator
      * @return string|null Return compiled code segment for the token when the token is custom helper
      */
     protected static function customHelper(&$context, $vars, $raw, $nosep) {
-        if (!isset($context['hbhelpers'][$vars[0][0]])) {
+        if (!isset($context['helpers'][$vars[0][0]])) {
             return;
         }
 
         $fn = $raw ? 'raw' : $context['ops']['enc'];
         $ch = array_shift($vars);
         $v = static::getVariableNames($context, $vars);
-        static::addUsageCount($context, 'hbhelpers', $ch[0]);
+        static::addUsageCount($context, 'helpers', $ch[0]);
         $sep = $nosep ? '' : $context['ops']['seperator'];
 
         return $sep . static::getFuncName($context, 'hbch', "$ch[0] " . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, '$fn', \$in)$sep";
@@ -662,7 +662,7 @@ class Compiler extends Validator
      * Add usage count to context
      *
      * @param array<string,array|string|integer> $context current context
-     * @param string $category category name, can be one of: 'var', 'hbhelpers', 'runtime'
+     * @param string $category category name, can be one of: 'var', 'helpers', 'runtime'
      * @param string $name used name
      * @param integer $count increment
      *
