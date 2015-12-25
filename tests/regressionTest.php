@@ -887,7 +887,7 @@ VAREND
 
             Array(
                 'template' => '{{> (pname foo) bar}}',
-                'data' => Array('bar' => 'OK! SUBEXP+PARTIAL!', 'foo' => Array('test/test3')),
+                'data' => Array('bar' => 'OK! SUBEXP+PARTIAL!', 'foo' => 'test/test3'),
                 'options' => Array(
                     'hbhelpers' => Array(
                         'pname' => function($arg) {
