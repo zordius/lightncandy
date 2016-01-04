@@ -346,10 +346,6 @@ class Compiler extends Validator
      * @return string Return compiled code segment for the partial
      */
     public static function partial(&$context, $vars) {
-        // mustache spec: ignore missing partial
-        if (($context['usedFeature']['dynpartial'] === 0) && ($context['usedFeature']['inlpartial'] === 0) && !isset($context['usedPartial'][$vars[0][0]])) {
-            return $context['ops']['seperator'];
-        }
         Parser::getBlockParams($vars);
         $p = array_shift($vars);
         if ($context['flags']['runpart']) {
