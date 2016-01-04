@@ -104,6 +104,8 @@ class Compiler extends Validator
 
         // Return generated PHP code string.
         return "use {$context['safestring']} as SafeString;{$use}return function (\$in, \$options = null) {
+    \$helpers = $helpers;
+    \$partials = array($partials);
     \$cx = array(
         'flags' => array(
             'jstrue' => $flagJStrue,
@@ -120,8 +122,8 @@ class Compiler extends Validator
             'debug' => isset(\$options['debug']) ? \$options['debug'] : $debug,
         ),
         'constants' => $constants,
-        'helpers' => isset(\$options['helpers']) ? array_merge($helpers, \$options['helpers']) : $helpers,
-        'partials' => array($partials),
+        'helpers' => isset(\$options['helpers']) ? array_merge(\$helpers, \$options['helpers']) : \$helpers,
+        'partials' => isset(\$options['partials']) ? array_merge(\$partials, \$options['partials']) : \$partials,
         'scopes' => array(),
         'sp_vars' => isset(\$options['data']) ? array_merge(array('root' => \$in), \$options['data']) : array('root' => \$in),
         'blparam' => array(),
