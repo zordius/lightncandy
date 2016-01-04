@@ -22,6 +22,7 @@ namespace LightnCandy;
 
 use \LightnCandy\Context;
 use \LightnCandy\Compiler;
+use \LightnCandy\Partial;
 
 /**
  * LightnCandy major static class
@@ -56,6 +57,32 @@ class LightnCandy extends Flags
 
         // Or, return full PHP render codes as string
         return Compiler::composePHPRender($context, $code);
+    }
+
+    /**
+     * Compile handlebars partial into PHP function code.
+     *
+     * @param string $template handlebars template string
+     * @param array<string,array|string|integer> $options LightnCandy compile time and run time options, default is array('flags' => LightnCandy::FLAG_BESTPERFORMANCE)
+     *
+     * @return string|false Compiled PHP code when successed. If error happened and compile failed, return false.
+     */
+    public static function compilePartial($template, $options = array('flags' => self::FLAG_BESTPERFORMANCE)) {
+        $context = Context::create($options);
+
+        if (static::handleError($context)) {
+            return false;
+        }
+
+        $code = Partial::compile($context, $template);
+        static::$lastParsed = Compiler::$lastParsed;
+
+        // return false when fatal error
+        if (static::handleError($context)) {
+            return false;
+        }
+
+        return $code;
     }
 
     /**
