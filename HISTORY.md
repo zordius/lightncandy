@@ -11,6 +11,7 @@ v0.90 current master, not released
    * d5c32c4028 **BREAK CHANGE** remove option: helpers, blockhelpers.
    * dab79506cc support SafeString now.
    * dab79506cc **BREAK CHANGE** rename option: hbhelpers into helpers.
+   * a1f699efa7 support render time partial function.
 
 v0.89 https://github.com/zordius/lightncandy/tree/v0.89
    * align with handlebars.js 4.0.4
