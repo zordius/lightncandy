@@ -108,17 +108,17 @@ LightnCandy::compile($template, Array(
 
 Default is to compile the template as PHP, which can be run as fast as possible (flags = `FLAG_BESTPERFORMANCE`).
 
-* `FLAG_ERROR_LOG` : error_log() when found any template error
-* `FLAG_ERROR_EXCEPTION` : throw exception when found any template error
+* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_ERROR_LOG.html">FLAG_ERROR_LOG</a>
+* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_ERROR_EXCEPTION.html">FLAG_ERROR_EXCEPTION</a>
 * `FLAG_ERROR_SKIPPARTIAL` : skip 'partial not found' error/exception. Use this to align with mustache specification.
-* `FLAG_NOESCAPE` : do not do any HTML escape on {{var}}.
+* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_NOESCAPE.html">FLAG_NOESCAPE</a>
 * `FLAG_STANDALONEPHP` : generate stand-alone PHP codes, which can be execute without including LightnCandy.php. The compiled PHP code will contain scoped user function, somehow larger. And, the performance of the template will slow 1 ~ 10%.
-* `FLAG_JSTRUE` : generate 'true' or 'false' when value is true or false (JavaScript behavior). Otherwise, true/false will generate ''.
-* `FLAG_JSOBJECT` : generate '[object Object]' for associated array, generate ',' separated values for array (JavaScript behavior). Otherwise, all PHP array will generate '' or 'Array'.
+* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_JSTRUE.html">FLAG_JSTRUE</a>
+* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_JSOBJECT.html">FLAG_JSOBJECT</a>
 * `FLAG_THIS` : resolve `{{this}}` as `{{.}}` in template. Otherwise, `{{this}}` will be resolved as normal variable.
-* `FLAG_PARENT` : support `{{../var}}` in template. Otherwise, `{{../var}}` will cause template error.
-* `FLAG_HBESCAPE` : escape `'` to `&#x27;` , <code>&#x60;</code> to `&#x60;` , `=` to `&#x3D;`. Otherwise, `'` will be escaped to `&#039;` , <code>&#x60;</code> and `=` will not be touched.
-* `FLAG_ADVARNAME` : support `{{foo.[0].[#te#st].bar}}` style advanced variable naming in template. Use this flag if you wanna use `"some string"` or `(subexpresssion)` as argument.
+* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_PARENT.html">FLAG_PARENT</a>
+* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_HBESCAPE.html">FLAG_HBESCAPE</a>
+* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_ADVARNAME.html">FLAG_ADVARNAME</a>
 * `FLAG_NAMEDARG` : support named arguments for custom helper `{{helper name1=val1 nam2=val2 ...}}`.
 * `FLAG_EXTHELPER` : do not including custom helper codes into compiled PHP codes. This reduces the code size, but you need to take care of your helper functions when rendering. If you forget to include required functions when execute rendering function, `undefined function` runtime error will be triggered. NOTE: Anonymous functions will always be placed into generated codes.
 * `FLAG_RUNTIMEPARTIAL` : compile partial as runtime function, This enables recursive partials or context change for partials.
