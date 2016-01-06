@@ -477,6 +477,45 @@ class errorTest extends PHPUnit_Framework_TestCase
                     'Unclosed token {{{{foo}}}} !!',
                 )
             ),
+            Array(
+                'template' => '{{else}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_ELSE,
+                ),
+                'expected' => Array(
+                    '{{else}} only valid in if, unless, each, and #section context',
+                )
+            ),
+            Array(
+                'template' => '{{log}}',
+                'expected' => Array(
+                    'No argument after {{log}} !',
+                )
+            ),
+            Array(
+                'template' => '{{#*inline test}}{{/inline}}',
+                'expected' => Array(
+                    'Do not support {{#*inline test}}, you should do compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag',
+                )
+            ),
+            Array(
+                'template' => '{{#*help me}}{{/help}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
+                ),
+                'expected' => Array(
+                    'Do not support {{#*help me}}, now we only support {{#*inline "partialName"}}template...{{/inline}}'
+                )
+            ),
+            Array(
+                'template' => '{{#*inline}}{{/inline}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
+                ),
+                'expected' => Array(
+                    'Error in {{#*inline}}: inline require 1 argument for partial name!',
+                )
+            ),
         );
 
         return array_map(function($i) {

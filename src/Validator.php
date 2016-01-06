@@ -243,8 +243,10 @@ class Validator {
                     $c = $context['stack'][count($context['stack']) - 4];
                     $context['parsed'][0] = array_slice($context['parsed'][0], 0, $c + 1);
                     $P = &$context['parsed'][0][$c];
-                    $context['usedPartial'][$P[1][1][0]] = $tmpl;
-                    $P[1][0][0] = Partial::compileDynamic($context, $P[1][1][0]);
+                    if (isset($P[1][1][0])) {
+                        $context['usedPartial'][$P[1][1][0]] = $tmpl;
+                        $P[1][0][0] = Partial::compileDynamic($context, $P[1][1][0]);
+                    }
                     $ended = true;
                 }
             }
