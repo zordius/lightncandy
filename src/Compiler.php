@@ -58,13 +58,7 @@ class Compiler extends Validator
         foreach ($context['parsed'][0] as $info) {
             if (is_array($info)) {
                 $context['tokens']['current']++;
-                $tmpl = static::compileToken($context, $info);
-                if ($tmpl == $context['ops']['seperator']) {
-                    $tmpl = '';
-                } else {
-                    $tmpl = "'$tmpl'";
-                }
-                $code .= $tmpl;
+                $code .= "'" . static::compileToken($context, $info) . "'";
             } else {
                 $code .= $info;
             }
