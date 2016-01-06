@@ -97,7 +97,8 @@ class Compiler extends Validator
         $use = $context['flags']['standalone'] ? Exporter::runtime($context) : "use {$context['runtime']} as LR;";
 
         // Return generated PHP code string.
-        return "use {$context['safestring']} as SafeString;{$use}return function (\$in, \$options = null) {
+        return <<<VAREND
+use {$context['safestring']} as SafeString;{$use}return function (\$in, \$options = null) {
     \$helpers = $helpers;
     \$partials = array($partials);
     \$cx = array(
@@ -125,7 +126,9 @@ class Compiler extends Validator
     );
     {$context['renderex']}
     {$context['ops']['op_start']}'$code'{$context['ops']['op_end']}
-};";
+};
+VAREND
+        ;
     }
 
     /**
@@ -303,11 +306,6 @@ class Compiler extends Validator
 
         $context['tokens']['partialind'] = $indent;
         $context['currentToken'] = $token;
-
-        // Do not touch the tag, keep it as is.
-        if ($raw === -1) {
-            return ".'" . Token::toString($token) . "'.";
-        }
 
         if ($ret = static::operator($token[Token::POS_OP], $context, $vars)) {
             return $ret;
@@ -503,9 +501,6 @@ class Compiler extends Validator
             $bs = $bp ? ('array(' . Expression::listString($bp) . ')') : 'null';
             $be = $bp ? " as |$bp[0] $bp[1]|" : '';
             array_shift($vars);
-            if (!isset($vars[0])) {
-                $vars[0] = array(null);
-            }
         }
         if ($context['flags']['lambda'] && !$isEach) {
             $V = array_shift($vars);
