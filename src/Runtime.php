@@ -34,7 +34,7 @@ class Runtime extends Encoder
     const DEBUG_TAGS_HTML = 20;
 
     /**
-     * LightnCandy runtime method for output debug info.
+     * Output debug info.
      *
      * @param string $v expression
      * @param string $f runtime function name
@@ -75,7 +75,7 @@ class Runtime extends Encoder
     }
 
     /**
-     * LightnCandy runtime method for error
+     * Handle error by error_log or throw exception.
      *
      * @param array<string,array|string|integer> $cx render time context
      * @param string $err error message
@@ -93,7 +93,7 @@ class Runtime extends Encoder
     }
 
     /**
-     * LightnCandy runtime method for missing data error.
+     * Handle missing data error.
      *
      * @param array<string,array|string|integer> $cx render time context
      * @param string $v expression
@@ -103,7 +103,7 @@ class Runtime extends Encoder
     }
 
     /**
-     * LightnCandy runtime method for log.
+     * For {{log}} .
      *
      * @param array<string,array|string|integer> $cx render time context
      * @param string $v expression
@@ -114,7 +114,7 @@ class Runtime extends Encoder
     }
 
     /**
-     * LightnCandy runtime method for variable lookup. It is slower and only be used for instance property or method detection or lambdas.
+     * Resursive lookup variable and helpers. This is slow and will only be used for instance property or method detection or lambdas.
      *
      * @param array<string,array|string|integer> $cx render time context
      * @param array|string|boolean|integer|double|null $in current context
@@ -185,7 +185,7 @@ class Runtime extends Encoder
     }
 
     /**
-     * LightnCandy runtime method for {{#if var}}.
+     * For {{#if}} .
      *
      * @param array<string,array|string|integer> $cx render time context
      * @param array<array|string|integer>|string|integer|null $v value to be tested
@@ -209,7 +209,7 @@ class Runtime extends Encoder
     }
 
     /**
-     * LightnCandy runtime method for {{^var}} inverted section.
+     * For {{^var}} .
      *
      * @param array<string,array|string|integer> $cx render time context
      * @param array<array|string|integer>|string|integer|null $v value to be tested
@@ -228,7 +228,7 @@ class Runtime extends Encoder
     }
 
     /**
-     * LightnCandy runtime method for {{var}} .
+     * For {{var}} .
      *
      * @param array<string,array|string|integer> $cx render time context
      * @param array<array|string|integer>|string|integer|null $var value to be htmlencoded
@@ -248,7 +248,7 @@ class Runtime extends Encoder
     }
 
     /**
-     * LightnCandy runtime method for {{var}} , and deal with single quote to same as handlebars.js .
+     * For {{var}} , do html encode just like handlebars.js .
      *
      * @param array<string,array|string|integer> $cx render time context
      * @param array<array|string|integer>|string|integer|null $var value to be htmlencoded
@@ -269,7 +269,7 @@ class Runtime extends Encoder
     }
 
     /**
-     * LightnCandy runtime method for {{#var}} section.
+     * For {{#var}} or {{#each}} .
      *
      * @param array<string,array|string|integer> $cx render time context
      * @param array<array|string|integer>|string|integer|null $v value for the section
@@ -420,7 +420,7 @@ class Runtime extends Encoder
     }
 
     /**
-     * LightnCandy runtime method for {{#with var}} .
+     * For {{#with}} .
      *
      * @param array<string,array|string|integer> $cx render time context
      * @param array<array|string|integer>|string|integer|null $v value to be the new context
@@ -450,7 +450,7 @@ class Runtime extends Encoder
     }
 
     /**
-     * LightnCandy runtime method to get merged context
+     * Get merged context.
      *
      * @param array<string,array|string|integer> $cx render time context
      * @param array<array|string|integer>|string|integer|null $a the context to be merged
@@ -475,7 +475,7 @@ class Runtime extends Encoder
     }
 
     /**
-     * LightnCandy runtime method for {{> partial}} .
+     * For {{> partial}} .
      *
      * @param array<string,array|string|integer> $cx render time context
      * @param string $p partial name
@@ -494,7 +494,7 @@ class Runtime extends Encoder
     }
 
     /**
-     * LightnCandy runtime method for inline partial.
+     * For {{#* inlinepartial}} .
      *
      * @param array<string,array|string|integer> $cx render time context
      * @param string $p partial name
@@ -506,7 +506,7 @@ class Runtime extends Encoder
     }
 
     /**
-     * LightnCandy runtime method for Handlebars.js style custom helpers.
+     * For custom helpers.
      *
      * @param array<string,array|string|integer> $cx render time context
      * @param string $ch the name of custom helper to be executed

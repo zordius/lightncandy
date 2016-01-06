@@ -1,6 +1,9 @@
 HISTORY
 =======
 
+v0.91 current master, not released
+   * align with handlebars.js 4.0.5
+
 v0.90 https://github.com/zordius/lightncandy/tree/v0.90
    * align with handlebars.js 4.0.4
    * 47e1b28847 performance improvement: now `{{ ... }}` escaping only takes 70% time.
