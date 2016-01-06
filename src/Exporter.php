@@ -84,10 +84,6 @@ class Exporter
      * @return string
      */
     public static function runtime($context) {
-        if ($context['flags']['standalone'] == 0) {
-            return '';
-        }
-
         $class = new \ReflectionClass($context['runtime']);
         $methods = array();
         $ret = '';
