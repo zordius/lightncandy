@@ -3,6 +3,7 @@ HISTORY
 
 v0.91 current master, not released
    * align with handlebars.js 4.0.5
+   * 93323508ce now FLAG_BESTPERFORMANCE also includes FLAG_STANDALONEPHP.
 
 v0.90 https://github.com/zordius/lightncandy/tree/v0.90
    * align with handlebars.js 4.0.4
