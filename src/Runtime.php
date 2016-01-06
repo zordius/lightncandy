@@ -238,6 +238,7 @@ class Runtime extends Encoder
      * @expect 'a' when input array('flags' => array('mustlam' => 0, 'lambda' => 0)), 'a'
      * @expect 'a&amp;b' when input array('flags' => array('mustlam' => 0, 'lambda' => 0)), 'a&b'
      * @expect 'a&#039;b' when input array('flags' => array('mustlam' => 0, 'lambda' => 0)), 'a\'b'
+     * @expect 'a&b' when input null, new SafeString('a&b')
      */
     public static function enc($cx, $var) {
         if ($var instanceof SafeString) {
