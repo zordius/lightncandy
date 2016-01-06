@@ -49,6 +49,20 @@ class errorTest extends PHPUnit_Framework_TestCase
         }
     }
 
+    public function testLog()
+    {
+        $php = LightnCandy::compile('{{log foo}}');
+        $renderer = LightnCandy::prepare($php);
+        start_catch_error_log();
+        $renderer(array('foo' => 'OK!'));
+        $e = stop_catch_error_log();
+        if ($e) {
+            $this->assertEquals(Array('array (', "  0 => 'OK!',", ')'), $e);
+        } else {
+            $this->markTestIncomplete('skip HHVM');
+        }
+    }
+
     /**
      * @dataProvider renderErrorProvider
      */
