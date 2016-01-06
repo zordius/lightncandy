@@ -54,10 +54,15 @@ class errorTest extends PHPUnit_Framework_TestCase
      */
     public function testRenderingException($test)
     {
-        $this->setExpectedException('Exception', $test['expected']);
         $php = LightnCandy::compile($test['template'], $test['options']);
         $renderer = LightnCandy::prepare($php);
-        $renderer(null, array('debug' => Runtime::DEBUG_ERROR_EXCEPTION));
+        try {
+            $renderer(isset($test['data']) ? $test['data'] : null, array('debug' => Runtime::DEBUG_ERROR_EXCEPTION));
+        } catch (\Exception $E) {
+            $this->assertEquals($E->getMessage(), $test['expected']);
+            return;
+        }
+        $this->fail("Expected to throw exception: {$test['expected']} . CODE: $php");
     }
 
     /**

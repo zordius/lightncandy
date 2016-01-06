@@ -329,10 +329,6 @@ class Runtime extends Encoder
             $isObj = !$loop;
         }
 
-        if ($cx['flags']['mustlam'] && ($v instanceof \Closure)) {
-            static::err($cx, 'Do not support Section Lambdas!');
-        }
-
         if (($loop && $isAry) || $isTrav) {
             if ($each && !$isTrav) {
                 // Detect input type is object or not when never done once
