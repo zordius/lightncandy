@@ -121,7 +121,7 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_ADVARNAME.html">FLAG_ADVARNAME</a>
 * `FLAG_NAMEDARG` : support named arguments for custom helper `{{helper name1=val1 nam2=val2 ...}}`.
 * `FLAG_EXTHELPER` : do not including custom helper codes into compiled PHP codes. This reduces the code size, but you need to take care of your helper functions when rendering. If you forget to include required functions when execute rendering function, `undefined function` runtime error will be triggered. NOTE: Anonymous functions will always be placed into generated codes.
-* `FLAG_RUNTIMEPARTIAL` : compile partial as runtime function, This enables recursive partials or context change for partials.
+* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_RUNTIMEPARTIAL.html">FLAG_RUNTIMEPARTIAL</a>
 * `FLAG_PARTIALNEWCONTEXT` : create a new context for the partial, the behavior is same with handlebars.js explicitPartialContext compile time option.
 * `FLAG_SLASH` : Skip a delimiter when it behind `\` .
 * `FLAG_ELSE` : support `{{else}}` or `{{^}}` as handlebars specification. Otherwise, `{{else}}` will be resolved as normal variable , and {{^}} will cause template error.
