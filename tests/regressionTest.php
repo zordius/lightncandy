@@ -1508,6 +1508,16 @@ VAREND
                 'data' => null,
                 'expected' => 'inline\'partial',
             ),
+            Array(
+                'template' => '{{>foo}} and {{>bar}}',
+                'options' => Array(
+                    'partialresolver' => function ($context, $name) {
+                        return "PARTIAL: $name";
+                    }
+                ),
+                'data' => null,
+                'expected' => 'PARTIAL: foo and PARTIAL: bar',
+            ),
         );
 
         return array_map(function($i) {
