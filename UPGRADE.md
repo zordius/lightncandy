@@ -5,6 +5,11 @@ Upgrade Notice
 
 * Recompile your none standalone templates when you upgrade LightnCandy.
 
+Version v0.91
+-------------
+* Option basedir removed. Please use the new partialresolver option to handle partial files.
+* Option fileext removed. Please use the new partialresolver option to handle partial files.
+
 Version v0.90
 -------------
 * Option FLAG_BARE removed.
