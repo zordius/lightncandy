@@ -23,7 +23,7 @@ Features
    * Detail performance test reports can be found <a href="https://github.com/zordius/HandlebarsTest">here</a>, go http://zordius.github.io/HandlebarsTest/ to see charts.
 * **SMALL!** all PHP files in 192K
 * **ROBUST!**
-   * 100% support <a href="https://github.com/mustache/spec">mustache spec v1.1.2</a> (without lambda module)
+   * 100% supports <a href="https://github.com/mustache/spec">mustache spec v1.1.3</a>. For the optional lambda module, supports 4 of 10 specs.
    * Supports almost all <a href="https://github.com/jbboehr/handlebars-spec">handlebars.js spec</a>
    * Output <a href="https://github.com/zordius/HandlebarsTest/blob/master/FEATURES.md">SAME</a> with <a href="https://github.com/wycats/handlebars.js">handlebars.js</a>
 * **FLEXIBLE!**
