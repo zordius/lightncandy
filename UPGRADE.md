@@ -8,6 +8,7 @@ Upgrade Notice
 Version v0.90
 -------------
 * Option FLAG_BARE removed.
+* When you save your compiled PHP code into a file, you need to add `<?php ` and `?>` by yourself.
 * Remove $option['helpers'] and $option['blockhelpers']
 * Rename $option['hbhelpers'] into $option['helpers']
 
