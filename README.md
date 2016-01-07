@@ -161,42 +161,6 @@ LightnCandy::compile($template, Array(
 ));
 ```
 
-You can also provide partials by files. When `compile()`, LightnCandy will search template files from `basedir` in the option if you provided one or more. Default template file name is `*.tmpl`, you can change or add more template file extensions with `fileext` option. 
-
-```php
-// Loading partial from file system only when valid directory is provided by basedir option
-// '.' means getpwd()
-LightnCandy::compile($template, Array(
-    'basedir' => '.'
-));
-
-// Multiple basedir and fileext are supported
-LightnCandy::compile($template, Array(
-    'flags' => LightnCandy::FLAG_STANDALONEPHP,
-    'basedir' => Array(
-        '/usr/local/share/handlebars/templates',
-        '/usr/local/share/my_project/templates',
-        '/usr/local/share/my_project/partials',
-    ),
-    'fileext' => Array(
-        '.tmpl',
-        '.mustache',
-        '.handlebars',
-    )
-));
-```
-
-With this setting, when you include a partial by `{{> partial_name}}`, LightnCandy will search in this order:
-* /usr/local/share/handlebars/templates/partial_name.tmpl
-* /usr/local/share/handlebars/templates/partial_name.mustache
-* /usr/local/share/handlebars/templates/partial_name.handlebars
-* /usr/local/share/my_project/templates/partial_name.tmpl
-* /usr/local/share/my_project/templates/partial_name.mustache
-* /usr/local/share/my_project/templates/partial_name.handlebars
-* /usr/local/share/my_project/partials/partial_name.tmpl
-* /usr/local/share/my_project/partials/partial_name.mustache
-* /usr/local/share/my_project/partials/partial_name.handlebars
-
 By default, partial uses the same context with original template. If you want to change context for the partial, you may add one more argument after the partial name:
 
 ```
@@ -206,6 +170,16 @@ By default, partial uses the same context with original template. If you want to
 
 {{>partial_name .. key=bar}} // use {{..}} as new input context, FLAG_RUNTIMEPARTIAL required
                              // also merge key into new context.
+```
+
+You can use `partialresolver` option to create your own partial loader:
+
+```php
+LightnCandy::compile($template, Array(
+    'partialsresolver' => function ($context, $name) {
+        return MyPartialLoader($name); // Return partial content
+    }
+));
 ```
 
 Dynamic Partial

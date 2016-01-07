@@ -67,7 +67,7 @@ class Partial
         }
 
         if (!$context['flags']['skippartial']) {
-            $context['error'][] = "Can not find partial file for '$name', you should set correct basedir and fileext or provide partials in options";
+            $context['error'][] = "Can not find partial for '$name', you should provide partials or partialresolver in options";
         }
     }
 
@@ -88,7 +88,7 @@ class Partial
     }
 
     /**
-     * locate partial, return the partial content
+     * resolve partial, return the partial content
      *
      * @param array<string,array|string|integer> $context Current context of compiler progress.
      * @param string $name partial name
@@ -100,15 +100,22 @@ class Partial
             return static::prePartial($context, $context['partials'][$name], $name);
         }
 
-        foreach ($context['basedir'] as $dir) {
-            foreach ($context['fileext'] as $ext) {
-                $fn = "$dir/$name$ext";
-                if (file_exists($fn)) {
-                    return static::prePartial($context, file_get_contents($fn), $name);
-                }
-            }
+        return static::resolver($context, $name);
+    }
+
+    /**
+     * use partialresolver to resolve partial, return the partial content
+     *
+     * @param array<string,array|string|integer> $context Current context of compiler progress.
+     * @param string $name partial name
+     *
+     * @return string|null $content partial content
+     */
+    public static function resolver(&$context, &$name) {
+        if ($context['partialresolver']) {
+            $cnt = $context['partialresolver']($context, $name);
+            return static::prePartial($context, $cnt, $name);
         }
-        return null;
     }
 
     /**

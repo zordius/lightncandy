@@ -11,47 +11,6 @@ require_once(__DIR__ . '/test_util.php');
 class ContextTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @covers LightnCandy\Context::prepareFileExt
-     */
-    public function testOn_prepareFileExt() {
-        $method = new \ReflectionMethod('LightnCandy\Context', 'prepareFileExt');
-        $method->setAccessible(true);
-        $this->assertEquals(array('.tmpl'), $method->invokeArgs(null, array_by_ref(array(
-            array()
-        ))));
-        $this->assertEquals(array('test'), $method->invokeArgs(null, array_by_ref(array(
-            array('fileext' => 'test')
-        ))));
-        $this->assertEquals(array('test1'), $method->invokeArgs(null, array_by_ref(array(
-            array('fileext' => array('test1'))
-        ))));
-        $this->assertEquals(array('test2', 'test3'), $method->invokeArgs(null, array_by_ref(array(
-            array('fileext' => array('test2', 'test3'))
-        ))));
-    }
-    /**
-     * @covers LightnCandy\Context::prepareBaseDir
-     */
-    public function testOn_prepareBaseDir() {
-        $method = new \ReflectionMethod('LightnCandy\Context', 'prepareBaseDir');
-        $method->setAccessible(true);
-        $this->assertEquals(array(), $method->invokeArgs(null, array_by_ref(array(
-            array()
-        ))));
-        $this->assertEquals(array(), $method->invokeArgs(null, array_by_ref(array(
-            array('basedir' => array())
-        ))));
-        $this->assertEquals(array('src'), $method->invokeArgs(null, array_by_ref(array(
-            array('basedir' => array('src'))
-        ))));
-        $this->assertEquals(array('src'), $method->invokeArgs(null, array_by_ref(array(
-            array('basedir' => array('src', 'dir_not_found'))
-        ))));
-        $this->assertEquals(array('src', 'tests'), $method->invokeArgs(null, array_by_ref(array(
-            array('basedir' => array('src', 'tests'))
-        ))));
-    }
-    /**
      * @covers LightnCandy\Context::updateHelperTable
      */
     public function testOn_updateHelperTable() {

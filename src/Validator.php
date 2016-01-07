@@ -161,7 +161,7 @@ class Validator {
      * @expect 8 when input '#', array('usedFeature' => array('unless' => 7), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0, 'nohbh' => 0), 'elseif' => false, 'elselvl' => array()), array(array('unless'))
      * @expect 9 when input '#', array('helpers' => array('abc' => ''), 'usedFeature' => array('helper' => 8), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0), 'elseif' => false, 'elselvl' => array()), array(array('abc'))
      * @expect 11 when input '#', array('helpers' => array('abc' => ''), 'usedFeature' => array('helper' => 10), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0), 'elseif' => false, 'elselvl' => array()), array(array('abc'))
-     * @expect true when input '>', array('basedir' => array('.'), 'fileext' => array('.tmpl'), 'usedFeature' => array('partial' => 7), 'level' => 0, 'flags' => array('skippartial' => 0, 'runpart' => 0, 'spvar' => 0), 'currentToken' => array(0,0,0,0,0,0,0,0), 'elseif' => false, 'elselvl' => array()), array('test')
+     * @expect true when input '>', array('partialresolver' => false, 'usedFeature' => array('partial' => 7), 'level' => 0, 'flags' => array('skippartial' => 0, 'runpart' => 0, 'spvar' => 0), 'currentToken' => array(0,0,0,0,0,0,0,0), 'elseif' => false, 'elselvl' => array()), array('test')
      */
     protected static function operator($operator, &$context, &$vars) {
         switch ($operator) {

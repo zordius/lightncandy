@@ -116,7 +116,10 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'template' => '{{#each foo}} Test! {{this}} {{/each}}{{> test1}} ! >>> {{>recursive}}',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_RUNTIMEPARTIAL,                      
-                    'basedir' => 'tests',
+                    'partials' => Array(
+                        'test1' => "123\n",
+                        'recursive' => "{{#if foo}}{{bar}} -> {{#with foo}}{{>recursive}}{{/with}}{{else}}END!{{/if}}\n",
+                    ),
                 ),
                 'data' => Array(
                  'bar' => 1,
@@ -182,7 +185,9 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'id' => 83,
                 'template' => '{{> tests/test1}}',
                 'options' => Array(
-                    'basedir' => '.',
+                    'partials' => Array(
+                        'tests/test1' => "123\n",
+                    ),
                 ),
                 'data' => null,
                 'expected' => "123\n"
@@ -208,7 +213,10 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'template' => '{{>test2}}',
                 'options' => Array(
                     'flags' => 0,
-                    'basedir' => 'tests',
+                    'partials' => Array(
+                        'test2' => "a{{> test1}}b\n",
+                        'test1' => "123\n",
+                    ),
                 ),
                 'data' => null,
                 'expected' => "a123\nb\n",
@@ -1035,9 +1043,11 @@ VAREND
                 'data' => Array('a', 'b', 'c'),
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'basedir' => '.',
+                    'partials' => Array(
+                        'tests/test3' => 'New context:{{.}}'
+                    ),
                 ),
-                'expected' => "->New context:a\n->New context:b\n->New context:c\n",
+                'expected' => "->New context:a->New context:b->New context:c",
             ),
 
             Array(
@@ -1045,9 +1055,11 @@ VAREND
                 'data' => Array('a', 'foo' => Array('d', 'e', 'f')),
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_RUNTIMEPARTIAL,
-                    'basedir' => '.',
+                    'partials' => Array(
+                        'tests/test3' => 'New context:{{.}}'
+                    ),
                 ),
-                'expected' => "->New context:d,e,f\n->New context:d,e,f\n",
+                'expected' => "->New context:d,e,f->New context:d,e,f",
             ),
 
             Array(

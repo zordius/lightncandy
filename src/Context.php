@@ -85,8 +85,6 @@ class Context extends Flags
             'error' => array(),
             'elselvl' => array(),
             'elseif' => false,
-            'basedir' => static::prepareBasedir($options),
-            'fileext' => static::prepareFileext($options),
             'tokens' => array(
                 'standalone' => true,
                 'ahead' => false,
@@ -133,6 +131,7 @@ class Context extends Flags
             'helpers' => array(),
             'renderex' => isset($options['renderex']) ? $options['renderex'] : '',
             'prepartial' => (isset($options['prepartial']) && is_callable($options['prepartial'])) ? $options['prepartial'] : false,
+            'partialresolver' => (isset($options['partialresolver']) && is_callable($options['partialresolver'])) ? $options['partialresolver'] : false,
             'runtime' => isset($options['runtime']) ? $options['runtime'] : '\\LightnCandy\\Runtime',
             'safestring' => '\\LightnCandy\\SafeString',
             'rawblock' => false,
@@ -171,50 +170,6 @@ class Context extends Flags
         }
 
         return $context;
-    }
-
-    /**
-     * prepare list of template file extensions from options
-     *
-     * @param array<string,array|string|integer> $options current compile option
-     *
-     * @return array<string> file extensions
-     *
-     * @expect array('.tmpl') when input array()
-     * @expect array('test') when input array('fileext' => 'test')
-     * @expect array('test1') when input array('fileext' => array('test1'))
-     * @expect array('test2', 'test3') when input array('fileext' => array('test2', 'test3'))
-     */
-    protected static function prepareFileExt($options) {
-        $exts = isset($options['fileext']) ? $options['fileext'] : '.tmpl';
-        return is_array($exts) ? $exts : array($exts);
-    }
-
-    /**
-     * prepare list of base directory from options
-     *
-     * @param array<string,array|string|integer> $options current compile option
-     *
-     * @return array<string> base directories
-     *
-     * @expect array() when input array()
-     * @expect array() when input array('basedir' => array())
-     * @expect array('src') when input array('basedir' => array('src'))
-     * @expect array('src') when input array('basedir' => array('src', 'dir_not_found'))
-     * @expect array('src', 'tests') when input array('basedir' => array('src', 'tests'))
-     */
-    protected static function prepareBaseDir($options) {
-        $dirs = isset($options['basedir']) ? $options['basedir'] : 0;
-        $dirs = is_array($dirs) ? $dirs : array($dirs);
-        $ret = array();
-
-        foreach ($dirs as $dir) {
-            if (is_string($dir) && is_dir($dir)) {
-                $ret[] = $dir;
-            }
-        }
-
-        return $ret;
     }
 
     /**

@@ -383,11 +383,11 @@ class errorTest extends PHPUnit_Framework_TestCase
             ),
             Array(
                 'template' => '{{>not_found}}',
-                'expected' => "Can not find partial file for 'not_found', you should set correct basedir and fileext or provide partials in options",
+                'expected' => "Can not find partial for 'not_found', you should provide partials or partialresolver in options",
             ),
             Array(
                 'template' => '{{>tests/test1 foo}}',
-                'options' => Array('basedir' => '.'),
+                'options' => Array('partials' => Array('tests/test1' => '')),
                 'expected' => 'Do not support {{>tests/test1 foo}}, you should do compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag',
             ),
             Array(
@@ -421,7 +421,7 @@ class errorTest extends PHPUnit_Framework_TestCase
             ),
             Array(
                 'template' => '{{>recursive}}',
-                'options' => Array('basedir' => 'tests'),
+                'options' => Array('partials' => Array('recursive' => '{{>recursive}}')),
                 'expected' => Array(
                     'I found recursive partial includes as the path: recursive -> recursive! You should fix your template or compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag.',
                 )
@@ -446,7 +446,6 @@ class errorTest extends PHPUnit_Framework_TestCase
                 'template' => '{{> (foo) bar}}',
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'basedir' => '.',
                 ),
                 'expected' => Array(
                     "Can not find custom helper function defination foo() !",
