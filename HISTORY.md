@@ -4,6 +4,8 @@ HISTORY
 v0.91 current master, not released
    * align with handlebars.js 4.0.5
    * 93323508ce now FLAG_BESTPERFORMANCE also includes FLAG_STANDALONEPHP.
+   * 4deffaf89d prevent warning message when FLAG_ERROR_SKIPPARTIAL used.
+   * ecf4a8dcab refine partial not found error message.
 
 v0.90 https://github.com/zordius/lightncandy/tree/v0.90
    * align with handlebars.js 4.0.4
