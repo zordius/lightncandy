@@ -383,7 +383,7 @@ class errorTest extends PHPUnit_Framework_TestCase
             ),
             Array(
                 'template' => '{{>not_found}}',
-                'expected' => "Can not find partial file for 'not_found', you should set correct basedir and fileext in options",
+                'expected' => "Can not find partial file for 'not_found', you should set correct basedir and fileext or provide partials in options",
             ),
             Array(
                 'template' => '{{>tests/test1 foo}}',

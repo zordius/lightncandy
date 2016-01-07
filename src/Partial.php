@@ -67,7 +67,7 @@ class Partial
         }
 
         if (!$context['flags']['skippartial']) {
-            $context['error'][] = "Can not find partial file for '$name', you should set correct basedir and fileext in options";
+            $context['error'][] = "Can not find partial file for '$name', you should set correct basedir and fileext or provide partials in options";
         }
     }
 
