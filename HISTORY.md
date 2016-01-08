@@ -5,7 +5,8 @@ v0.91 current master, not released
    * align with handlebars.js 4.0.5
    * 93323508ce now FLAG_BESTPERFORMANCE also includes FLAG_STANDALONEPHP.
    * 4deffaf89d prevent warning message when FLAG_ERROR_SKIPPARTIAL used.
-   * fbc04f065b remove `basedir` and `fileext` option. Add `partialresolver` option.
+   * fbc04f065b **BREAK CHANGE** remove `basedir` and `fileext` option.
+   * 5c7c651985 new `partialresolver` option.
 
 v0.90 https://github.com/zordius/lightncandy/tree/v0.90
    * align with handlebars.js 4.0.4

@@ -119,7 +119,7 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_PARENT.html">FLAG_PARENT</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_HBESCAPE.html">FLAG_HBESCAPE</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_ADVARNAME.html">FLAG_ADVARNAME</a>
-* `FLAG_NAMEDARG` : support named arguments for custom helper `{{helper name1=val1 nam2=val2 ...}}`.
+* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_NAMEDARG.html">FLAG_NAMEDARG</a>
 * `FLAG_EXTHELPER` : do not including custom helper codes into compiled PHP codes. This reduces the code size, but you need to take care of your helper functions when rendering. If you forget to include required functions when execute rendering function, `undefined function` runtime error will be triggered. NOTE: Anonymous functions will always be placed into generated codes.
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_RUNTIMEPARTIAL.html">FLAG_RUNTIMEPARTIAL</a>
 * `FLAG_PARTIALNEWCONTEXT` : create a new context for the partial, the behavior is same with handlebars.js explicitPartialContext compile time option.
@@ -151,26 +151,8 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 Partial Support
 ---------------
 
-LightnCandy supports partial when compile time. You can provide partials by `partials` option when `compile()`:
-
-```php
-LightnCandy::compile($template, Array(
-    'partials' => Array(
-        'name' => 'template: {{name}}',
-    ),
-));
-```
-
-By default, partial uses the same context with original template. If you want to change context for the partial, you may add one more argument after the partial name:
-
-```
-{{>partial_name .}} // Same as {{>partial_name}}
-{{>partial_name foo}} // Change input context to foo, FLAG_RUNTIMEPARTIAL required
-{{>partial_name ..}} // use {{..}} as new input context, FLAG_RUNTIMEPARTIAL required
-
-{{>partial_name .. key=bar}} // use {{..}} as new input context, FLAG_RUNTIMEPARTIAL required
-                             // also merge key into new context.
-```
+* <a href="https://zordius.github.io/HandlebarsCookbook/0011-partial.html">Example of compile time partial</a>
+* <a href="https://zordius.github.io/HandlebarsCookbook/0024-partialcontext.html">Example of partial context changing</a>
 
 You can use `partialresolver` option to create your own partial loader:
 
