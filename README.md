@@ -35,7 +35,7 @@ Features
       * Find out missing data when rendering template.
       * Generate visually debug template.
 * Standalone Template
-   * The compiled PHP code can run without any PHP library. You do not need to include LightnCandy when execute rendering function.
+   * The compiled PHP code can run without any PHP library. You do not need to include LightnCandy when execute rendering function. (But may need SafeString class, check <a href="https://github.com/zordius/lightncandy/issues/198">this issue</a>)
 
 Installation
 ------------
