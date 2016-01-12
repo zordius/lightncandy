@@ -7,6 +7,7 @@ v0.91 current master, not released
    * 4deffaf89d prevent warning message when FLAG_ERROR_SKIPPARTIAL used.
    * fbc04f065b **BREAK CHANGE** remove `basedir` and `fileext` option.
    * 5c7c651985 new `partialresolver` option.
+   * 771eedfda4 fix compile error when `{{#if}}..{{else if}}..no_else_here..{{/if}}`
 
 v0.90 https://github.com/zordius/lightncandy/tree/v0.90
    * align with handlebars.js 4.0.4
