@@ -8,6 +8,7 @@ v0.91 current master, not released
    * fbc04f065b **BREAK CHANGE** remove `basedir` and `fileext` option.
    * 5c7c651985 new `partialresolver` option.
    * 771eedfda4 fix compile error when `{{#if}}..{{else if}}..no_else_here..{{/if}}`
+   * 68134c627c do not use SafeString when no Runtime::enc() included
 
 v0.90 https://github.com/zordius/lightncandy/tree/v0.90
    * align with handlebars.js 4.0.4
