@@ -429,7 +429,7 @@ VAREND
                     return "$elsifend{$context['ops']['cnd_end']}";
                 }
                 if (!$context['flags']['nohbh']) {
-                    return "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
+                    return "{$context['ops']['cnd_else']}''$elsifend{$context['ops']['cnd_end']}";
                 }
                 break;
             case 'with':

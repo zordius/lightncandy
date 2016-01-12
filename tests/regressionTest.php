@@ -882,6 +882,7 @@ VAREND
             Array(
                 'id' => 199,
                 'template' => '{{#if foo}}1{{else if bar}}2{{else}}3{{/if}}',
+                'data' => null,
                 'expected' => '3',
             ),
 
