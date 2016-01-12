@@ -880,6 +880,19 @@ VAREND
             ),
 
             Array(
+                'id' => 199,
+                'template' => '{{#if foo}}1{{else if bar}}2{{else}}3{{/if}}',
+                'expected' => '3',
+            ),
+
+            Array(
+                'id' => 199,
+                'template' => '{{#if foo}}1{{else if bar}}2{{/if}}',
+                'data' => Array('bar' => true),
+                'expected' => '2',
+            ),
+
+            Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
                 'options' => Array(
