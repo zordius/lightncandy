@@ -97,7 +97,7 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * `FLAG_SPVARS` : support special variables include @root, @index, @key, @first, @last. Otherwise, compile these variable names with default parsing logic.
 * `FLAG_HANDLEBARSLAMBDA` : support lambda logic as handlebars.js specification. And, the rendering performance will be worse.
 * `FLAG_JS` : simulate all JavaScript string conversion behavior, same with `FLAG_JSTRUE` + `FLAG_JSOBJECT`.
-* `FLAG_HANDLEBARS` : support most handlebars extensions and also keep performance good, same with `FLAG_THIS` + `FLAG_WITH` + `FLAG_PARENT` + `FLAG_HBESCAPE` + `FLAG_ADVARNAME` + `FLAG_NAMEDARG` + `FLAG_SLASH` + `FLAG_ELSE` + `FLAG_RAWBLOCK`.
+* `FLAG_HANDLEBARS` : support most handlebars extensions and also keep performance good, same with `FLAG_THIS` + `FLAG_PARENT` + `FLAG_HBESCAPE` + `FLAG_ADVARNAME` + `FLAG_SPACECTL` + `FLAG_NAMEDARG` + `FLAG_SPVARS` + `FLAG_SLASH` + `FLAG_ELSE` + `FLAG_RAWBLOCK`.
 * `FLAG_HANDLEBARSJS` : support most handlebars.js + javascript behaviors and also keep performance good, same with `FLAG_JS` + `FLAG_HANDLEBARS`.
 * `FLAG_HANDLEBARSJS_FULL` : enable all supported handlebars.js behaviors but performance drop, same with `FLAG_HANDLEBARSJS` + `FLAG_INSTANCE` + `FLAG_RUNTIMEPARTIAL` + `FLAG_MUSTACHELOOKUP` + `FLAG_HANDLEBARSLAMBDA`.
 * `FLAG_MUSTACHELOOKUP` : align recursive lookup up behaviors with mustache specification. And, the rendering performance will be worse.
@@ -614,10 +614,12 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{#each}}` : each loop on {{.}}
 * `{{/each}}` : end loop
 * `{{#if var}}` : run if logic with original scope (null, false, empty Array and '' will skip this block)
+* `{{#if foo includeZero=true}}` : result as true when foo === 0 (require `FLAG_NAMEDARG`)
 * `{{/if}}` : end if
 * `{{else}}` or `{{^}}` : run else logic, should between `{{#if var}}` and `{{/if}}` ; or between `{{#unless var}}` and `{{/unless}}`; or between `{{#foo}}` and `{{/foo}}`; or between `{{#each var}}` and `{{/each}}`; or between `{{#with var}}` and `{{/with}}`. (require `FLAG_ELSE`)
 * `{{#unless var}}` : run unless logic with original scope (null, false, empty Array and '' will render this block)
-* `{{#with var}}` : change context scope. If the var is false, skip included section. (require `FLAG_WITH`)
+* `{{#with var}}` : change context scope. If the var is false, skip included section.
+* `{{#with bar as |foo|}}` : change context to bar and set the value as foo. (require `FLAG_ADVARNAME`)
 * `{{lookup foo bar}}` : lookup foo by value of bar as key.
 * `{{../var}}` : parent template scope. (require `FLAG_PARENT`)
 * `{{>file}}` : partial; include another template inside a template.
