@@ -617,7 +617,10 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{#if foo includeZero=true}}` : result as true when foo === 0 (require `FLAG_NAMEDARG`)
 * `{{/if}}` : end if
 * `{{else}}` or `{{^}}` : run else logic, should between `{{#if var}}` and `{{/if}}` ; or between `{{#unless var}}` and `{{/unless}}`; or between `{{#foo}}` and `{{/foo}}`; or between `{{#each var}}` and `{{/each}}`; or between `{{#with var}}` and `{{/with}}`. (require `FLAG_ELSE`)
+* `{{#if foo}} ... {{else if bar}} ... {{/if}}` : chained if else blocks
 * `{{#unless var}}` : run unless logic with original scope (null, false, empty Array and '' will render this block)
+* `{{#unless foo}} ... {{else if bar}} ... {{/unless}}` : chained unless else blocks
+* `{{#unless foo}} ... {{else unless bar}} ... {{/unless}}` : chained unless else blocks
 * `{{#with var}}` : change context scope. If the var is false, skip included section.
 * `{{#with bar as |foo|}}` : change context to bar and set the value as foo. (require `FLAG_ADVARNAME`)
 * `{{lookup foo bar}}` : lookup foo by value of bar as key.
@@ -645,6 +648,10 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{#helper ...}}...{{/helper}}` : Execute block custom helper
 * `{{helper (helper2 foo) bar}}` : Execute custom helpers as subexpression (require `FLAG_ADVARNAME`)
 * `{{{{raw_block}}}} {{will_not_parsed}} {{{{/raw_block}}}}` : Raw block (require FLAG_RAWBLOCK`)
+* `{{#> foo}}block{{/foo}}` : Partial block, provide local default `foo` partial content
+* `{{#> @partial-block}}` : access partial block content inside a partial
+* `{{#*inline "partial_name"}}...{{/inline}}` : Inline partial, provide a partial and overwrite the original one.
+* `{{log foo}}` : output value to stderr for debug.
 
 *TODO*
 
