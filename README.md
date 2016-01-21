@@ -119,7 +119,7 @@ You can use `partialresolver` option to create your own partial loader:
 
 ```php
 LightnCandy::compile($template, Array(
-    'partialsresolver' => function ($context, $name) {
+    'partialresolver' => function ($context, $name) {
         return MyPartialLoader($name); // Return partial content
     }
 ));
