@@ -161,46 +161,7 @@ When you using dynamic partial, LightnCandy will compile all partials inside the
 Custom Helper
 -------------
 
-Custom helper can help you deal with common template tasks, for example: provide URL and text then generate a link. To know more about custom helper, you can read original handlebars.js document here: http://handlebarsjs.com/expressions.html . 
-
-When `compile()`, LightnCandy will lookup helpers from generated custom helper name table. You can register custom helpers with `helpers` option (**NOTICE**: `FLAG_NAMEDARG` is required for named arguments, `FLAG_ADVARNAME` is required for string or subexpression arguments):
-
-```php
-LightnCandy::compile($template, Array(
-    // FLAG_NAMEDARG is required if you want to use named arguments
-    'flags' => LightnCandy::FLAG_HANDLEBARS
-    'helpers' => Array(
-        // 1. You may pass your function name
-        //    When the function is not exist, you get compile time error
-        //    In this case, the helper name is same with function name
-        //    Template: {{my_helper_functoin ....}}
-        'my_helper_function',
-
-        // 2. You may also provide a static call from a class
-        //    In this case, the helper name is same with provided full name
-        //    **DEPRECATED** It is not valid in handlebars.js 
-        //    Template: {{myClass::myStaticMethod ....}}
-        'myClass::myStaticMethod',
-
-        // 3. You may also provide an alias name for helper function
-        //    This help you to mapping different function to a preferred helper name
-        //    Template: {{helper_name ....}}
-        'helper_name' => 'my_other_helper',
-
-        // 4. Alias also works well for static call of a class
-        //    This help you to mapping different function to a preferred helper name
-        //    Template: {{helper_name2 ....}}
-        'helper_name2' => 'myClass::func',
-
-        // 5. Anonymous function should be provided with alias
-        //    The function will be included in generaed code always
-        //    Template: {{helper_name3 ....}}
-        'helper_name3' => function ($arg1, $arg2) {
-            return "<a href=\"{$arg1}\">{$arg2}</a>";
-        }
-    )
-));
-```
+<a href="https://zordius.github.io/HandlebarsCookbook/9001-customhelper.html">Use `helpers` to provide custom helpers</a>
 
 Custom Helper Interface
 -----------------------
