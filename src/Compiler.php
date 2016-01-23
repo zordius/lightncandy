@@ -99,7 +99,7 @@ class Compiler extends Validator
 
         // Return generated PHP code string.
         return <<<VAREND
-$safeString{$use}return function (\$in, \$options = null) {
+$safeString{$use}return function (\$in = null, \$options = null) {
     \$helpers = $helpers;
     \$partials = array($partials);
     \$cx = array(
