@@ -161,23 +161,9 @@ When you using dynamic partial, LightnCandy will compile all partials inside the
 Custom Helper
 -------------
 
-<a href="https://zordius.github.io/HandlebarsCookbook/9001-customhelper.html">Use `helpers` to provide custom helpers</a>
+<a href="https://zordius.github.io/HandlebarsCookbook/9001-customhelper.html">Custom Helpers in LighnCandy</a>
 
-Custom Helper Interface
------------------------
-
-The input arguments are processed by LightnCandy automatically, you do not need to worry about variable name processing or current context. You can also use double quoted string as input:
-
-```
-{{{helper name}}}           // This send processed {{{name}}} into the helper
-{{{helper ../name}}}        // This send processed {{{../name}}} into the helper
-{{{helper "Test"}}}         // This send the string "Test" into the helper (FLAG_ADVARNAME is required)
-{{helper "Test"}}           // This send the string "Test" into the helper and escape the helper result
-{{{helper "Test" ../name}}} // This send string "Test" as first parameter,
-                            // and processed {{{../name}}} as second parameter into the helper
-```
-
-In your template:
+Named arguments:
 
 ```
 {{{helper name=value}}}        // This send processed {{{value}}} into $options['hash']['name']
