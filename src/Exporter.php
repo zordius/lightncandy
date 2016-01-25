@@ -28,14 +28,15 @@ class Exporter
     /**
      * Get PHP code string from a closure of function as string
      *
+     * @param array<string,array|string|integer> $context current compile context
      * @param object $closure Closure object
      *
      * @return string
      *
-     * @expect 'function($a) {return;}' when input function ($a) {return;}
-     * @expect 'function($a) {return;}' when input    function ($a) {return;}
+     * @expect 'function($a) {return;}' when input array('flags' => array('standalone' => 0)),  function ($a) {return;}
+     * @expect 'function($a) {return;}' when input array('flags' => array('standalone' => 0)),   function ($a) {return;}
      */
-    protected static function closure($closure) {
+    protected static function closure($context, $closure) {
         if (is_string($closure) && preg_match('/(.+)::(.+)/', $closure, $matched)) {
             $ref = new \ReflectionMethod($matched[1], $matched[2]);
         } else {
@@ -50,7 +51,7 @@ class Exporter
         $file->seek($ref->getEndLine() - 1);
         $epos = $file->ftell();
 
-        return preg_replace('/^.*?function(\s+[^\s\\(]+?)?\s*?\\((.+?)\\}[,\\s]*;?$/s', 'function($2}', substr($lines, $spos, $epos - $spos));
+        return preg_replace('/^.*?function(\s+[^\s\\(]+?)?\s*?\\((.+?)\\}[,\\s]*;?$/s', 'function($2}', static::replaceSafeString($context, substr($lines, $spos, $epos - $spos)));
     }
 
     /**
@@ -67,7 +68,7 @@ class Exporter
                 continue;
             }
             if ((is_object($func) && ($func instanceof \Closure)) || ($context['flags']['exhlp'] == 0)) {
-                $ret .= ("            '$name' => " . static::closure($func) . ",\n");
+                $ret .= ("            '$name' => " . static::closure($context, $func) . ",\n");
                 continue;
             }
             $ret .= "            '$name' => '$func',\n";
@@ -76,6 +77,25 @@ class Exporter
         return "array($ret)";
     }
 
+    /**
+     * Replace SafeString class with alias class name
+     *
+     * @param array<string,array|string|integer> $context current compile context
+     * @param string $str the PHP code to be replaced
+     *
+     * @return string
+     */
+    protected static function replaceSafeString($context, $str) {
+        return $context['flags']['standalone'] ? str_replace($context['safestring'], $context['safestringalias'], $str) : $str;
+    }
+
+    /**
+     * Export SafeString class as string
+     *
+     * @param array<string,array|string|integer> $context current compile context
+     *
+     * @return string
+     */
     public static function safestring($context) {
         $class = new \ReflectionClass($context['safestring']);
         $methods = array();
@@ -199,7 +219,7 @@ class Exporter
         // compress space
         $code = preg_replace('/    /', ' ', $code);
 
-        return array($code, $child);
+        return array(static::replaceSafeString($context, $code), $child);
     }
 }
 

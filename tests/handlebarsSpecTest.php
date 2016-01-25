@@ -6,6 +6,7 @@ use LightnCandy\Runtime;
 $tmpdir = sys_get_temp_dir();
 $hb_test_flag = LightnCandy::FLAG_HANDLEBARSJS_FULL | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_EXTHELPER;
 $tested = 0;
+$standalone = false;
 $test_flags = array($hb_test_flag | LightnCandy::FLAG_STANDALONEPHP);
 if (!version_compare(phpversion(), '5.4.0', '<')) {
     $test_flags[] = $hb_test_flag;
@@ -23,8 +24,10 @@ function recursive_unset(&$array, $unwanted_key) {
 }
 
 function patch_safestring($code) {
-    $code = preg_replace('/new \\\\Handlebars\\\\SafeString\((.+?)\);/', 'new \\LightnCandy\\SafeString($1);', $code);
-    return preg_replace('/new SafeString\((.+?)\);/', 'new \\LightnCandy\\SafeString($1);', $code);
+    global $standalone;
+    $classname = $standalone ? 'LS' : '\\LightnCandy\\SafeString';
+    $code = preg_replace('/ \\\\Handlebars\\\\SafeString(\s*\(.*?\))?/', ' ' . $classname . '$1', $code);
+    return preg_replace('/ SafeString(\s*\(.*?\))?/', ' ' . $classname . '$1', $code);
 }
 
 function patch_this($code) {
@@ -69,6 +72,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
         global $tmpdir;
         global $tested;
         global $test_flags;
+        global $standalone;
 
         recursive_unset($spec, '!sparsearray');
         recursive_lambda_fix($spec['data']);
@@ -190,6 +194,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                 }
                 $hname = preg_replace('/\\.|\\//', '_', "custom_helper_{$spec['no']}_{$tested}_$name");
                 $helpers[$name] = $hname;
+                $standalone = $f & LightnCandy::FLAG_STANDALONEPHP;
                 $helper = preg_replace('/\\$options->(\\w+)/', '$options[\'$1\']',
                         patch_this(
                             preg_replace('/\\$block\\/\\*\\[\'(.+?)\'\\]\\*\\/->(.+?)\\(/', '$block[\'$2\'](',

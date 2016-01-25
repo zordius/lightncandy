@@ -115,7 +115,7 @@ class RuntimeTest extends PHPUnit_Framework_TestCase
             array('flags' => array('mustlam' => 0, 'lambda' => 0)), 'a\'b'
         ))));
         $this->assertEquals('a&b', $method->invokeArgs(null, array_by_ref(array(
-            null, new SafeString('a&b')
+            null, new \LightnCandy\SafeString('a&b')
         ))));
     }
     /**

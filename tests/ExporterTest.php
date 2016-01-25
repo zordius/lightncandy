@@ -17,10 +17,10 @@ class ExporterTest extends PHPUnit_Framework_TestCase
         $method = new \ReflectionMethod('LightnCandy\Exporter', 'closure');
         $method->setAccessible(true);
         $this->assertEquals('function($a) {return;}', $method->invokeArgs(null, array_by_ref(array(
-            function ($a) {return;}
+            array('flags' => array('standalone' => 0)),  function ($a) {return;}
         ))));
         $this->assertEquals('function($a) {return;}', $method->invokeArgs(null, array_by_ref(array(
-               function ($a) {return;}
+            array('flags' => array('standalone' => 0)),   function ($a) {return;}
         ))));
     }
 }
