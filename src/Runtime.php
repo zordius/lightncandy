@@ -20,7 +20,6 @@ Origin: https://github.com/zordius/lightncandy
 
 namespace LightnCandy;
 use \LightnCandy\Encoder;
-use \LightnCandy\SafeString;
 
 /**
  * LightnCandy class for compiled PHP runtime.
@@ -238,10 +237,10 @@ class Runtime extends Encoder
      * @expect 'a' when input array('flags' => array('mustlam' => 0, 'lambda' => 0)), 'a'
      * @expect 'a&amp;b' when input array('flags' => array('mustlam' => 0, 'lambda' => 0)), 'a&b'
      * @expect 'a&#039;b' when input array('flags' => array('mustlam' => 0, 'lambda' => 0)), 'a\'b'
-     * @expect 'a&b' when input null, new SafeString('a&b')
+     * @expect 'a&b' when input null, new \LightnCandy\SafeString('a&b')
      */
     public static function enc($cx, $var) {
-        if ($var instanceof SafeString) {
+        if ($var instanceof \LightnCandy\SafeString) {
             return (string)$var;
         }
 
@@ -262,7 +261,7 @@ class Runtime extends Encoder
      * @expect '&#x60;a&#x27;b' when input array('flags' => array('mustlam' => 0, 'lambda' => 0)), '`a\'b'
      */
     public static function encq($cx, $var) {
-        if ($var instanceof SafeString) {
+        if ($var instanceof \LightnCandy\SafeString) {
             return (string)$var;
         }
 
