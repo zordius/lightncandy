@@ -76,6 +76,31 @@ class Exporter
         return "array($ret)";
     }
 
+    public static function safestring($context) {
+        $class = new \ReflectionClass($context['safestring']);
+        $methods = array();
+        $ret = "class SafeString {\n";
+
+        foreach ($class->getMethods() as $method) {
+            $C = $method->getDeclaringClass();
+            $fname = $C->getFileName();
+            $lines = file_get_contents($fname);
+            $file = new \SplFileObject($fname);
+            $name = $method->getName();
+            if ($name === 'stripExtendedComments') {
+                continue;
+            }
+            $file->seek($method->getStartLine() - 2);
+            $spos = $file->ftell();
+            $file->seek($method->getEndLine() - 1);
+            $epos = $file->ftell();
+            $ret .= substr($lines, $spos, $epos - $spos);
+        }
+        unset($file);
+
+        return "$ret}\n";
+    }
+
     /**
      * Export required standalone Runtime methods
      *

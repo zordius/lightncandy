@@ -95,7 +95,7 @@ class Compiler extends Validator
         $partials = implode(",\n", $context['partialCode']);
         $debug = Runtime::DEBUG_ERROR_LOG;
         $use = $context['flags']['standalone'] ? Exporter::runtime($context) : "use {$context['runtime']} as LR;";
-        $safeString = ($context['usedFeature']['enc'] > 0) ? "use {$context['safestring']} as SafeString;" : '';
+        $safeString = (($context['usedFeature']['enc'] > 0) && ($context['flags']['standalone'] === 0)) ? "use {$context['safestring']} as SafeString;" : '';
 
         // Return generated PHP code string.
         return <<<VAREND
