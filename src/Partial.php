@@ -29,7 +29,7 @@ use \LightnCandy\Context;
  */
 class Partial
 {
-    public static $TMP_JS_FUNCTION_STR = "!!\aFuNcTiOn\a!!";                                            
+    public static $TMP_JS_FUNCTION_STR = "!!\aFuNcTiOn\a!!";
 
     /**
      * Include all partials when using dynamic partials

@@ -79,7 +79,7 @@ class Exporter
     public static function safestring($context) {
         $class = new \ReflectionClass($context['safestring']);
         $methods = array();
-        $ret = "class SafeString {\n";
+        $ret = "if (!class_exists(\"" . addslashes($context['safestring']) . "\") && !class_exists('SafeString')) {\nclass SafeString {\n";
 
         foreach ($class->getMethods() as $method) {
             $C = $method->getDeclaringClass();
@@ -98,7 +98,7 @@ class Exporter
         }
         unset($file);
 
-        return "$ret}\n";
+        return "$ret}\n}\n";
     }
 
     /**

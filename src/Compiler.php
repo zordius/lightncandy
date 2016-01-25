@@ -94,12 +94,13 @@ class Compiler extends Validator
         $helpers = Exporter::helpers($context);
         $partials = implode(",\n", $context['partialCode']);
         $debug = Runtime::DEBUG_ERROR_LOG;
-        $use = $context['flags']['standalone'] ? Exporter::runtime($context) : "use {$context['runtime']} as LR;";
+        $use = $context['flags']['standalone'] ? Exporter::runtime($context) : "use {$context['runtime']} as {$context['runtimealias']};";
         $safeString = (($context['usedFeature']['enc'] > 0) && ($context['flags']['standalone'] === 0)) ? "use {$context['safestring']} as SafeString;" : '';
+        $exportSafeString = (($context['usedFeature']['enc'] > 0) && ($context['flags']['standalone'] >0)) ? Exporter::safestring($context) : '';
 
         // Return generated PHP code string.
         return <<<VAREND
-$safeString{$use}return function (\$in = null, \$options = null) {
+$safeString{$use}{$exportSafeString}return function (\$in = null, \$options = null) {
     \$helpers = $helpers;
     \$partials = array($partials);
     \$cx = array(
@@ -141,10 +142,10 @@ VAREND
      *
      * @return string compiled Function name
      *
-     * @expect 'LR::test(' when input array('flags' => array('standalone' => 0, 'debug' => 0), 'runtime' => 'Runtime'), 'test', ''
-     * @expect 'LR::test2(' when input array('flags' => array('standalone' => 0, 'debug' => 0), 'runtime' => 'Runtime'), 'test2', ''
-     * @expect "lala_abctest3(" when input array('flags' => array('standalone' => 1, 'debug' => 0), 'runtime' => 'Runtime', 'funcprefix' => 'lala_abc'), 'test3', ''
-     * @expect 'LR::debug(\'abc\', \'test\', ' when input array('flags' => array('standalone' => 0, 'debug' => 1), 'runtime' => 'Runtime', 'funcprefix' => 'haha456'), 'test', 'abc'
+     * @expect 'LR::test(' when input array('flags' => array('standalone' => 0, 'debug' => 0), 'runtime' => 'Runtime', 'runtimealias' => 'LR'), 'test', ''
+     * @expect 'LL::test2(' when input array('flags' => array('standalone' => 0, 'debug' => 0), 'runtime' => 'Runtime', 'runtimealias' => 'LL'), 'test2', ''
+     * @expect "lala_abctest3(" when input array('flags' => array('standalone' => 1, 'debug' => 0), 'runtime' => 'Runtime', 'runtimealias' => 0, 'funcprefix' => 'lala_abc'), 'test3', ''
+     * @expect 'RR::debug(\'abc\', \'test\', ' when input array('flags' => array('standalone' => 0, 'debug' => 1), 'runtime' => 'Runtime', 'runtimealias' => 'RR', 'funcprefix' => 'haha456'), 'test', 'abc'
      */
     protected static function getFuncName(&$context, $name, $tag) {
         static::addUsageCount($context, 'runtime', $name);
@@ -157,7 +158,7 @@ VAREND
             $dbg = '';
         }
 
-        return $context['flags']['standalone'] ? "{$context['funcprefix']}$name($dbg" : "LR::$name($dbg";
+        return $context['flags']['standalone'] ? "{$context['funcprefix']}$name($dbg" : "{$context['runtimealias']}::$name($dbg";
     }
 
     /**
@@ -246,7 +247,7 @@ VAREND
      * @expect array('((isset($cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\']) && is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)', '../[a]') when input array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0)), array(1,'a')
      * @expect array('((isset($cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\']) && is_array($cx[\'scopes\'][count($cx[\'scopes\'])-3])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)', '../../../[a]') when input array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0)), array(3,'a')
      * @expect array('((isset($in[\'id\']) && is_array($in)) ? $in[\'id\'] : null)', 'this.[id]') when input array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0)), array(null, 'id')
-     * @expect array('LR::v($cx, $in, isset($in) ? $in : null, array(\'id\'))', 'this.[id]') when input array('flags'=>array('prop'=>true,'spvar'=>true,'debug'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0,'standalone'=>0), 'runtime' => 'Runtime'), array(null, 'id')
+     * @expect array('LR::v($cx, $in, isset($in) ? $in : null, array(\'id\'))', 'this.[id]') when input array('flags'=>array('prop'=>true,'spvar'=>true,'debug'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0,'standalone'=>0), 'runtime' => 'Runtime', 'runtimealias' => 'LR'), array(null, 'id')
      */
     protected static function getVariableName(&$context, $var, $lookup = null, $args = null) {
         if (isset($var[0]) && ($var[0] === Parser::LITERAL)) {

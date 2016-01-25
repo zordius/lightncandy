@@ -17,16 +17,16 @@ class CompilerTest extends PHPUnit_Framework_TestCase
         $method = new \ReflectionMethod('LightnCandy\Compiler', 'getFuncName');
         $method->setAccessible(true);
         $this->assertEquals('LR::test(', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('standalone' => 0, 'debug' => 0), 'runtime' => 'Runtime'), 'test', ''
+            array('flags' => array('standalone' => 0, 'debug' => 0), 'runtime' => 'Runtime', 'runtimealias' => 'LR'), 'test', ''
         ))));
-        $this->assertEquals('LR::test2(', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('standalone' => 0, 'debug' => 0), 'runtime' => 'Runtime'), 'test2', ''
+        $this->assertEquals('LL::test2(', $method->invokeArgs(null, array_by_ref(array(
+            array('flags' => array('standalone' => 0, 'debug' => 0), 'runtime' => 'Runtime', 'runtimealias' => 'LL'), 'test2', ''
         ))));
         $this->assertEquals("lala_abctest3(", $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('standalone' => 1, 'debug' => 0), 'runtime' => 'Runtime', 'funcprefix' => 'lala_abc'), 'test3', ''
+            array('flags' => array('standalone' => 1, 'debug' => 0), 'runtime' => 'Runtime', 'runtimealias' => 0, 'funcprefix' => 'lala_abc'), 'test3', ''
         ))));
-        $this->assertEquals('LR::debug(\'abc\', \'test\', ', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('standalone' => 0, 'debug' => 1), 'runtime' => 'Runtime', 'funcprefix' => 'haha456'), 'test', 'abc'
+        $this->assertEquals('RR::debug(\'abc\', \'test\', ', $method->invokeArgs(null, array_by_ref(array(
+            array('flags' => array('standalone' => 0, 'debug' => 1), 'runtime' => 'Runtime', 'runtimealias' => 'RR', 'funcprefix' => 'haha456'), 'test', 'abc'
         ))));
     }
     /**
@@ -106,7 +106,7 @@ class CompilerTest extends PHPUnit_Framework_TestCase
             array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0)), array(null, 'id')
         ))));
         $this->assertEquals(array('LR::v($cx, $in, isset($in) ? $in : null, array(\'id\'))', 'this.[id]'), $method->invokeArgs(null, array_by_ref(array(
-            array('flags'=>array('prop'=>true,'spvar'=>true,'debug'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0,'standalone'=>0), 'runtime' => 'Runtime'), array(null, 'id')
+            array('flags'=>array('prop'=>true,'spvar'=>true,'debug'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0,'standalone'=>0), 'runtime' => 'Runtime', 'runtimealias' => 'LR'), array(null, 'id')
         ))));
     }
     /**
