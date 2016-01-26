@@ -357,6 +357,7 @@ class Parser extends Token
      * @expect array('foo', "'bar'") when input "foo 'bar'", array('flags' => array('advar' => 1))
      * @expect array('[fo o]', '"bar"') when input '[fo o] "bar"', array('flags' => array('advar' => 1))
      * @expect array('fo=123', 'bar="456"') when input 'fo=123 bar="456"', array('flags' => array('advar' => 1))
+     * @expect array('[fo o]=123') when input '[fo o]=123', array('flags' => array('advar' => 1))
      * @expect array('[fo o]=123', 'bar="456"') when input '[fo o]=123 bar="456"', array('flags' => array('advar' => 1))
      */
     protected static function analyze($token, &$context) {
@@ -376,7 +377,7 @@ class Parser extends Token
                         $stack++;
                     }
                     // end an argument when end with expected charactor
-                    if (substr($t, -1, 1) === $expect) {
+                    if (substr($t, -1, 1) === $expect || (($expect == ']') && (strpos($t, $expect) !== false))) {
                         if ($stack > 0) {
                             preg_match('/(\\)+)$/', $t, $matchedq);
                             $stack -= isset($matchedq[0]) ? strlen($matchedq[0]) : 1;
@@ -456,6 +457,12 @@ class Parser extends Token
 
                 $vars[] = $t;
             }
+
+            if ($expect) {
+                error_log("Error in '$token': expect '$expect' but the token ended!!");
+                //$context['error'][] = "Error in '$token': expect '$expect' but the token ended!!";
+            }
+
             return $vars;
         }
         return ($count > 0) ? $matchedall[2] : explode(' ', $token);
