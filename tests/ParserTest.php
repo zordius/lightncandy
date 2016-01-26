@@ -155,5 +155,27 @@ class ParserTest extends PHPUnit_Framework_TestCase
             array(0,0,0,0,0,0,'>','\\\'foo\\\''), array('flags' => array('strpar' => 0, 'advar' => 1, 'this' => 1, 'namev' => 1, 'noesc' => 0, 'exhlp' => 0, 'lambda' => 0), 'usedFeature' => array('subexp' => 0), 'ops' => array('seperator' => 0), 'rawblock' => false)
         ))));
     }
+    /**
+     * @covers LightnCandy\Parser::analyze
+     */
+    public function testOn_analyze() {
+        $method = new \ReflectionMethod('LightnCandy\Parser', 'analyze');
+        $method->setAccessible(true);
+        $this->assertEquals(array('foo', 'bar'), $method->invokeArgs(null, array_by_ref(array(
+            'foo bar', array('flags' => array('advar' => 1))
+        ))));
+        $this->assertEquals(array('foo', "'bar'"), $method->invokeArgs(null, array_by_ref(array(
+            "foo 'bar'", array('flags' => array('advar' => 1))
+        ))));
+        $this->assertEquals(array('[fo o]', '"bar"'), $method->invokeArgs(null, array_by_ref(array(
+            '[fo o] "bar"', array('flags' => array('advar' => 1))
+        ))));
+        $this->assertEquals(array('fo=123', 'bar="456"'), $method->invokeArgs(null, array_by_ref(array(
+            'fo=123 bar="456"', array('flags' => array('advar' => 1))
+        ))));
+        $this->assertEquals(array('[fo o]=123', 'bar="456"'), $method->invokeArgs(null, array_by_ref(array(
+            '[fo o]=123 bar="456"', array('flags' => array('advar' => 1))
+        ))));
+    }
 }
 ?>

@@ -353,6 +353,11 @@ class Parser extends Token
      *
      * @return array<boolean|integer|array> Return parsed result
      *
+     * @expect array('foo', 'bar') when input 'foo bar', array('flags' => array('advar' => 1))
+     * @expect array('foo', "'bar'") when input "foo 'bar'", array('flags' => array('advar' => 1))
+     * @expect array('[fo o]', '"bar"') when input '[fo o] "bar"', array('flags' => array('advar' => 1))
+     * @expect array('fo=123', 'bar="456"') when input 'fo=123 bar="456"', array('flags' => array('advar' => 1))
+     * @expect array('[fo o]=123', 'bar="456"') when input '[fo o]=123 bar="456"', array('flags' => array('advar' => 1))
      */
     protected static function analyze($token, &$context) {
         $count = preg_match_all('/(\s*)([^\s]+)/', $token, $matchedall);
