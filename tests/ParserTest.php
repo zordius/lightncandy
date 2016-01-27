@@ -156,6 +156,30 @@ class ParserTest extends PHPUnit_Framework_TestCase
         ))));
     }
     /**
+     * @covers LightnCandy\Parser::isSubExp
+     */
+    public function testOn_isSubExp() {
+        $method = new \ReflectionMethod('LightnCandy\Parser', 'isSubExp');
+        $this->assertEquals(false, $method->invokeArgs(null, array_by_ref(array(
+            0
+        ))));
+        $this->assertEquals(false, $method->invokeArgs(null, array_by_ref(array(
+            array()
+        ))));
+        $this->assertEquals(false, $method->invokeArgs(null, array_by_ref(array(
+            array(\LightnCandy\Parser::SUBEXP, 0)
+        ))));
+        $this->assertEquals(false, $method->invokeArgs(null, array_by_ref(array(
+            array(\LightnCandy\Parser::SUBEXP, 0, 0)
+        ))));
+        $this->assertEquals(false, $method->invokeArgs(null, array_by_ref(array(
+            array(\LightnCandy\Parser::SUBEXP, 0, '', 0)
+        ))));
+        $this->assertEquals(true, $method->invokeArgs(null, array_by_ref(array(
+            array(\LightnCandy\Parser::SUBEXP, 0, '')
+        ))));
+    }
+    /**
      * @covers LightnCandy\Parser::analyze
      */
     public function testOn_analyze() {

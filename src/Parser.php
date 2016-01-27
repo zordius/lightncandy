@@ -265,6 +265,13 @@ class Parser extends Token
      * @param array<string|integer|array> $var
      *
      * @return boolean return true when input is a subexpression
+     *
+     * @expect false when input 0
+     * @expect false when input array()
+     * @expect false when input array(\LightnCandy\Parser::SUBEXP, 0)
+     * @expect false when input array(\LightnCandy\Parser::SUBEXP, 0, 0)
+     * @expect false when input array(\LightnCandy\Parser::SUBEXP, 0, '', 0)
+     * @expect true when input array(\LightnCandy\Parser::SUBEXP, 0, '')
      */
     public static function isSubExp($var) {
         return is_array($var) && (count($var) === 3) && ($var[0] === static::SUBEXP) && is_string($var[2]);
