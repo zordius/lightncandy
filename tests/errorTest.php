@@ -175,7 +175,10 @@ class errorTest extends PHPUnit_Framework_TestCase
             Array(
                 'template' => '{{win[ner.test1}}',
                 'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
-                'expected' => 'Wrong variable naming in {{win[ner.test1}}',
+                'expected' => Array(
+                    "Error in 'win[ner.test1': expect ']' but the token ended!!",
+                    'Wrong variable naming in {{win[ner.test1}}',
+                ),
             ),
             Array(
                 'template' => '{{win]ner.test2}}',
@@ -217,12 +220,18 @@ class errorTest extends PHPUnit_Framework_TestCase
             Array(
                 'template' => '{{testA[}}',
                 'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
-                'expected' => 'Wrong variable naming in {{testA[}}',
+                'expected' => Array(
+                    "Error in 'testA[': expect ']' but the token ended!!",
+                    'Wrong variable naming in {{testA[}}',
+                ),
             ),
             Array(
                 'template' => '{{[testB}}',
                 'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
-                'expected' => 'Wrong variable naming in {{[testB}}',
+                'expected' => Array(
+                    "Error in '[testB': expect ']' but the token ended!!",
+                    'Wrong variable naming in {{[testB}}',
+                ),
             ),
             Array(
                 'template' => '{{]testC}}',
@@ -241,12 +250,18 @@ class errorTest extends PHPUnit_Framework_TestCase
             Array(
                 'template' => '{{tee[stF}}',
                 'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
-                'expected' => 'Wrong variable naming in {{tee[stF}}',
+                'expected' => Array(
+                    "Error in 'tee[stF': expect ']' but the token ended!!",
+                    'Wrong variable naming in {{tee[stF}}',
+                )
             ),
             Array(
                 'template' => '{{te.e[stG}}',
                 'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
-                'expected' => 'Wrong variable naming in {{te.e[stG}}',
+                'expected' => Array(
+                    "Error in 'te.e[stG': expect ']' but the token ended!!",
+                    'Wrong variable naming in {{te.e[stG}}',
+                ),
             ),
             Array(
                 'template' => '{{te.e]stH}}',
@@ -256,7 +271,10 @@ class errorTest extends PHPUnit_Framework_TestCase
             Array(
                 'template' => '{{te.e[st.endI}}',
                 'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
-                'expected' => 'Wrong variable naming in {{te.e[st.endI}}',
+                'expected' => Array(
+                    "Error in 'te.e[st.endI': expect ']' but the token ended!!",
+                    'Wrong variable naming in {{te.e[st.endI}}',
+                ),
             ),
             Array(
                 'template' => '{{te.e]st.endJ}}',

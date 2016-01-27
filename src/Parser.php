@@ -386,6 +386,7 @@ class Parser extends Token
                             }
                             if ($stack < 0) {
                                 $context['error'][] = "Unexcepted ')' in expression '$token' !!";
+                                $expect = 0;
                                 break;
                             }
                         }
@@ -459,8 +460,7 @@ class Parser extends Token
             }
 
             if ($expect) {
-                error_log("Error in '$token': expect '$expect' but the token ended!!");
-                //$context['error'][] = "Error in '$token': expect '$expect' but the token ended!!";
+                $context['error'][] = "Error in '$token': expect '$expect' but the token ended!!";
             }
 
             return $vars;

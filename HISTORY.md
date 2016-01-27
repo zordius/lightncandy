@@ -9,6 +9,8 @@ v0.91 current master, not released
    * 5c7c651985 new `partialresolver` option.
    * 771eedfda4 fix compile error when `{{#if}}..{{else if}}..no_else_here..{{/if}}`
    * 68134c627c do not use SafeString when no Runtime::enc() included
+   * 6cda56c552 Now FLAG_STANDALONEPHP do not require \LightnCandy\SafeString class
+   * 2dd671592e fix the [fo o]=123 parsing bug
 
 v0.90 https://github.com/zordius/lightncandy/tree/v0.90
    * align with handlebars.js 4.0.4
