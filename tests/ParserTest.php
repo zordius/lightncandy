@@ -156,6 +156,15 @@ class ParserTest extends PHPUnit_Framework_TestCase
         ))));
     }
     /**
+     * @covers LightnCandy\Parser::subexpression
+     */
+    public function testOn_subexpression() {
+        $method = new \ReflectionMethod('LightnCandy\Parser', 'subexpression');
+        $this->assertEquals(array(\LightnCandy\Parser::SUBEXP, array(array('a'), array('b')), '(a b)'), $method->invokeArgs(null, array_by_ref(array(
+            '(a b)', array('usedFeature' => array('subexp' => 0), 'flags' => array('advar' => 0, 'namev' => 0, 'this' => 0, 'exhlp' => 1, 'strpar' => 0))
+        ))));
+    }
+    /**
      * @covers LightnCandy\Parser::isSubExp
      */
     public function testOn_isSubExp() {

@@ -224,12 +224,12 @@ class Parser extends Token
     }
 
     /**
-     * Get block params and fix the variable list
+     * Get partial name from "foo" or [foo] or 'foo'
      *
      * @param array<boolean|integer|array> $vars parsed token
      * @param integer $pos position of partial name
      *
-     * @return array<string>|null Return list of block params or null
+     * @return array<string>|null Return one element partial name array
      *
      */
     public static function getPartialName(&$vars, $pos = 0) {
@@ -246,6 +246,8 @@ class Parser extends Token
      * @param array<string,array|string|integer> $context current compile context
      *
      * @return array<boolean|integer|array> Return parsed result
+     *
+     * @expect array(\LightnCandy\Parser::SUBEXP, array(array('a'), array('b')), '(a b)') when input '(a b)', array('usedFeature' => array('subexp' => 0), 'flags' => array('advar' => 0, 'namev' => 0, 'this' => 0, 'exhlp' => 1, 'strpar' => 0))
      */
     public static function subexpression($expression, &$context) {
         $context['usedFeature']['subexp']++;
