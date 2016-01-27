@@ -224,13 +224,19 @@ class Parser extends Token
     }
 
     /**
-     * Get partial name from "foo" or [foo] or 'foo'
+     * Get partial name from "foo" or [foo] or \'foo\'
      *
      * @param array<boolean|integer|array> $vars parsed token
      * @param integer $pos position of partial name
      *
      * @return array<string>|null Return one element partial name array
      *
+     * @expect null when input array()
+     * @expect array('foo') when input array('foo')
+     * @expect array('foo') when input array('"foo"')
+     * @expect array('foo') when input array('[foo]')
+     * @expect array('foo') when input array("\\'foo\\'")
+     * @expect array('foo') when input array(0, 'foo'), 1
      */
     public static function getPartialName(&$vars, $pos = 0) {
         if (!isset($vars[$pos])) {

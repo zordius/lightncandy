@@ -156,6 +156,30 @@ class ParserTest extends PHPUnit_Framework_TestCase
         ))));
     }
     /**
+     * @covers LightnCandy\Parser::getPartialName
+     */
+    public function testOn_getPartialName() {
+        $method = new \ReflectionMethod('LightnCandy\Parser', 'getPartialName');
+        $this->assertEquals(null, $method->invokeArgs(null, array_by_ref(array(
+            array()
+        ))));
+        $this->assertEquals(array('foo'), $method->invokeArgs(null, array_by_ref(array(
+            array('foo')
+        ))));
+        $this->assertEquals(array('foo'), $method->invokeArgs(null, array_by_ref(array(
+            array('"foo"')
+        ))));
+        $this->assertEquals(array('foo'), $method->invokeArgs(null, array_by_ref(array(
+            array('[foo]')
+        ))));
+        $this->assertEquals(array('foo'), $method->invokeArgs(null, array_by_ref(array(
+            array("\\'foo\\'")
+        ))));
+        $this->assertEquals(array('foo'), $method->invokeArgs(null, array_by_ref(array(
+            array(0, 'foo'), 1
+        ))));
+    }
+    /**
      * @covers LightnCandy\Parser::subexpression
      */
     public function testOn_subexpression() {
