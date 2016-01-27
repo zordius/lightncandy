@@ -294,6 +294,7 @@ class Parser extends Token
      *
      * @return array<boolean|integer|array> Return parsed result
      *
+     * @expect array(array('this')) when input array('this'), array('flags' => array('advar' => 1, 'namev' => 1, 'this' => 0,)), 0
      * @expect array(array('a')) when input array('a'), array('flags' => array('advar' => 1, 'namev' => 1, 'this' => 0, 'strpar' => 0)), 0
      * @expect array(array('a'), array('b')) when input array('a', 'b'), array('flags' => array('advar' => 1, 'namev' => 1, 'this' => 0, 'strpar' => 0)), 0
      * @expect array('a' => array('b')) when input array('a=b'), array('flags' => array('advar' => 1, 'namev' => 1, 'this' => 0, 'strpar' => 0)), 0
