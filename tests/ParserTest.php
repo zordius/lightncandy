@@ -218,6 +218,12 @@ class ParserTest extends PHPUnit_Framework_TestCase
     public function testOn_advancedVariable() {
         $method = new \ReflectionMethod('LightnCandy\Parser', 'advancedVariable');
         $method->setAccessible(true);
+        $this->assertEquals(array(array('this')), $method->invokeArgs(null, array_by_ref(array(
+            array('this'), array('flags' => array('advar' => 1, 'namev' => 1, 'this' => 0,)), 0
+        ))));
+        $this->assertEquals(array(array()), $method->invokeArgs(null, array_by_ref(array(
+            array('this'), array('flags' => array('advar' => 1, 'namev' => 1, 'this' => 1)), 0
+        ))));
         $this->assertEquals(array(array('a')), $method->invokeArgs(null, array_by_ref(array(
             array('a'), array('flags' => array('advar' => 1, 'namev' => 1, 'this' => 0, 'strpar' => 0)), 0
         ))));
