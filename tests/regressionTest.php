@@ -894,6 +894,19 @@ VAREND
             ),
 
             Array(
+                'id' => 204,
+                'template' => '{{#> test name="A"}}B{{/test}}{{#> test name="C"}}D{{/test}}',
+                'data' => Array('bar' => true),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_RUNTIMEPARTIAL,
+                    'partials' => array(
+                        'test' => '{{name}}:{{> @partial-block}},',
+                    )
+                ),
+                'expected' => 'A:B,C:D,',
+            ),
+
+            Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
                 'options' => Array(
