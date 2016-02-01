@@ -175,6 +175,7 @@ class Validator {
             case '#>':
                 static::pushLeft($context);
                 $context['stack'][] = count($context['parsed'][0]);
+                $vars[Parser::PARTIALBLOCK] = ++$context['usedFeature']['pblock'];
                 static::pushStack($context, '#>', $vars);
                 array_unshift($context['partialblock'], '');
                 return static::partial($context, $vars);
@@ -277,7 +278,10 @@ class Validator {
                 if (static::blockEnd($context, $vars, '#>') !== null) {
                     $c = $context['stack'][count($context['stack']) - 4];
                     $found = Partial::resolve($context, $vars[0][0]) !== null;
-                    $v = $found ? '@partial-block' : $vars[0][0];
+                    $v = $found ? "@partial-block{$context['usedFeature']['pblock']}" : "{$vars[0][0]}";
+                    if ($found) {
+                        $context['partials'][$v] = $context['partialblock'][0];
+                    }
                     $context['usedPartial'][$v] = $context['partialblock'][0];
                     Partial::compileDynamic($context, $v);
                     if ($found) {

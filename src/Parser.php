@@ -30,8 +30,26 @@ class Parser extends Token
 {
     // Compile time error handling flags
     const BLOCKPARAM = 9999;
+    const PARTIALBLOCK = 9998;
     const LITERAL = -1;
     const SUBEXP = -2;
+
+    /**
+     * Get partial block id and fix the variable list
+     *
+     * @param array<boolean|integer|array> $vars parsed token
+     *
+     * @return integer Return partial block id
+     *
+     */
+    public static function getPartialBlock(&$vars) {
+        if (isset($vars[static::PARTIALBLOCK])) {
+            $id = $vars[static::PARTIALBLOCK];
+            unset($vars[static::PARTIALBLOCK]);
+            return $id;
+        }
+        return 0;
+    }
 
     /**
      * Get block params and fix the variable list

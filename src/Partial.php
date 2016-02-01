@@ -96,6 +96,9 @@ class Partial
      * @return string|null $content partial content
      */
     public static function resolve(&$context, &$name) {
+        if ($name === '@partial-block') {
+            $name = "@partial-block{$context['usedFeature']['pblock']}";
+        }
         if (isset($context['partials'][$name])) {
             return static::prePartial($context, $context['partials'][$name], $name);
         }

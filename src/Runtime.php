@@ -480,11 +480,17 @@ class Runtime extends Encoder
      * @return string The rendered string of the partial
      *
      */
-    public static function p($cx, $p, $v, $sp = '') {
+    public static function p($cx, $p, $v, $pid, $sp = '') {
+        if ($p === '@partial-block') {
+            $p = "$p" . ($pid || $cx['partialid']);
+        }
+
         if (!isset($cx['partials'][$p])) {
             static::err($cx, "Can not find partial named as '$p' !!");
             return '';
         }
+
+        $cx['partialid'] = $pid;
 
         return call_user_func($cx['partials'][$p], $cx, static::m($cx, $v[0][0], $v[1]), $sp);
     }

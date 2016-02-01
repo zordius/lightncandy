@@ -124,6 +124,7 @@ $safeString{$use}{$exportSafeString}return function (\$in = null, \$options = nu
         'scopes' => array(),
         'sp_vars' => isset(\$options['data']) ? array_merge(array('root' => \$in), \$options['data']) : array('root' => \$in),
         'blparam' => array(),
+        'partialid' => 0,
         'runtime' => '{$context['runtime']}',
     );
     {$context['renderex']}
@@ -341,6 +342,7 @@ VAREND
      */
     public static function partial(&$context, $vars) {
         Parser::getBlockParams($vars);
+        $pid = Parser::getPartialBlock($vars);
         $p = array_shift($vars);
         if ($context['flags']['runpart']) {
             if (!isset($vars[0])) {
@@ -354,7 +356,7 @@ VAREND
                 $p = "'$p[0]'";
             }
             $sp = $context['tokens']['partialind'] ? ", '{$context['tokens']['partialind']}'" : '';
-            return $context['ops']['seperator'] . static::getFuncName($context, 'p', $tag) . "\$cx, $p, $v[0]$sp){$context['ops']['seperator']}";
+            return $context['ops']['seperator'] . static::getFuncName($context, 'p', $tag) . "\$cx, $p, $v[0],$pid$sp){$context['ops']['seperator']}";
         }
         return isset($context['usedPartial'][$p[0]]) ? "{$context['ops']['seperator']}'" . Partial::compileStatic($context, $p[0]) . "'{$context['ops']['seperator']}" : $context['ops']['seperator'];
     }

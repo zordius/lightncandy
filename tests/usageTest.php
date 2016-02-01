@@ -38,6 +38,7 @@ class usageTest extends PHPUnit_Framework_TestCase
             'delimiter' => 0,
             'subexp' => 0,
             'rawblock' => 0,
+            'pblock' => 0,
             'lookup' => 0,
             'log' => 0,
         );

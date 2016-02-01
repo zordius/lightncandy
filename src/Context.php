@@ -116,6 +116,7 @@ class Context extends Flags
                 'delimiter' => 0,
                 'subexp' => 0,
                 'rawblock' => 0,
+                'pblock' => 0,
                 'lookup' => 0,
                 'log' => 0,
             ),
@@ -217,6 +218,7 @@ class Context extends Flags
      */
     public static function merge(&$context, $tmp) {
         $context['error'] = $tmp['error'];
+        $context['partials'] = $tmp['partials'];
         $context['partialCode'] = $tmp['partialCode'];
         $context['partialStack'] = $tmp['partialStack'];
         $context['usedCount'] = $tmp['usedCount'];
