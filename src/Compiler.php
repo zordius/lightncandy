@@ -48,12 +48,14 @@ class Compiler extends Validator
             return;
         }
 
-        // Do PHP code generation.
         Parser::setDelimiter($context);
+
+        $context['compile'] = true;
 
         // Handle dynamic partials
         Partial::handleDynamic($context);
 
+        // Do PHP code generation.
         $code = '';
         foreach ($context['parsed'][0] as $info) {
             if (is_array($info)) {

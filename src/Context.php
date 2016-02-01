@@ -125,6 +125,7 @@ class Context extends Flags
                 'helpers' => array(),
                 'runtime' => array(),
             ),
+            'compile' => false,
             'parsed' => array(),
             'partials' => (isset($options['partials']) && is_array($options['partials'])) ? $options['partials'] : array(),
             'partialblock' => array(),

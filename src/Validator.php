@@ -166,18 +166,22 @@ class Validator {
     protected static function operator($operator, &$context, &$vars) {
         switch ($operator) {
             case '#*':
-                static::pushLeft($context);
-                $context['stack'][] = count($context['parsed'][0]);
-                static::pushStack($context, '#*', $vars);
-                array_unshift($context['inlinepartial'], '');
+                if (!$context['compile']) {
+                    static::pushLeft($context);
+                    $context['stack'][] = count($context['parsed'][0]);
+                    static::pushStack($context, '#*', $vars);
+                    array_unshift($context['inlinepartial'], '');
+                }
                 return static::inline($context, $vars);
 
             case '#>':
-                static::pushLeft($context);
-                $context['stack'][] = count($context['parsed'][0]);
-                $vars[Parser::PARTIALBLOCK] = ++$context['usedFeature']['pblock'];
-                static::pushStack($context, '#>', $vars);
-                array_unshift($context['partialblock'], '');
+                if (!$context['compile']) {
+                    static::pushLeft($context);
+                    $context['stack'][] = count($context['parsed'][0]);
+                    $vars[Parser::PARTIALBLOCK] = ++$context['usedFeature']['pblock'];
+                    static::pushStack($context, '#>', $vars);
+                    array_unshift($context['partialblock'], '');
+                }
                 return static::partial($context, $vars);
 
             case '>':
