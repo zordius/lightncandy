@@ -482,7 +482,7 @@ class Runtime extends Encoder
      */
     public static function p($cx, $p, $v, $pid, $sp = '') {
         if ($p === '@partial-block') {
-            $p = "$p" . ($pid || $cx['partialid']);
+            $p = "$p" . ($pid > 0 ? $pid : $cx['partialid']);
         }
 
         if (!isset($cx['partials'][$p])) {
