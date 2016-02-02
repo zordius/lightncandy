@@ -895,10 +895,25 @@ VAREND
 
             Array(
                 'id' => 201,
+                'template' => '{{foo "world"}}',
+                'data' => null,
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARS,
+                    'helperresolver' => function ($cx, $name) {
+                        return function ($name, $option) {
+                            return "Hello, $name";
+                        };
+                    }
+                ),
+                'expected' => 'Hello, world',
+            ),
+
+            Array(
+                'id' => 201,
                 'template' => '{{#foo "test"}}World{{/foo}}',
                 'data' => null,
                 'options' => Array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_RUNTIMEPARTIAL,
+                    'flags' => LightnCandy::FLAG_HANDLEBARS,
                     'helperresolver' => function ($cx, $name) {
                         return function ($name, $option) {
                             return "$name = " . $option['fn']();
