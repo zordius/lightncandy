@@ -894,6 +894,21 @@ VAREND
             ),
 
             Array(
+                'id' => 201,
+                'template' => '{{#foo "test"}}World{{/foo}}',
+                'data' => null,
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_RUNTIMEPARTIAL,
+                    'helperresolver' => function ($cx, $name) {
+                        return function ($name, $option) {
+                            return "$name = " . $option['fn']();
+                        };
+                    }
+                ),
+                'expected' => 'test = World',
+            ),
+
+            Array(
                 'id' => 204,
                 'template' => '{{#> test name="A"}}B{{/test}}{{#> test name="C"}}D{{/test}}',
                 'data' => Array('bar' => true),
