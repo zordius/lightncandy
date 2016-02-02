@@ -734,6 +734,26 @@ class Validator {
             return true;
         }
 
+        return static::resolveHelper($context, $name);
+    }
+
+    /**
+     * use helperresolver to resolve helper, return true when helper founded
+     *
+     * @param array<string,array|string|integer> $context Current context of compiler progress.
+     * @param string $name helper name
+     *
+     * @return string|null $content helper function name or callable
+     */
+    public static function resolveHelper(&$context, &$name) {
+        if ($context['helperresolver']) {
+            $helper = $context['helperresolver']($context, $name);
+            if ($helper) {
+                $context['helpers'][$name] = $helper;
+                $context['usedFeature']['helper']++;
+                return true;
+            }
+        }
         return false;
     }
 

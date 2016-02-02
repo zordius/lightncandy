@@ -133,6 +133,7 @@ class Context extends Flags
             'helpers' => array(),
             'renderex' => isset($options['renderex']) ? $options['renderex'] : '',
             'prepartial' => (isset($options['prepartial']) && is_callable($options['prepartial'])) ? $options['prepartial'] : false,
+            'helperresolver' => (isset($options['helperresolver']) && is_callable($options['helperresolver'])) ? $options['helperresolver'] : false,
             'partialresolver' => (isset($options['partialresolver']) && is_callable($options['partialresolver'])) ? $options['partialresolver'] : false,
             'runtime' => isset($options['runtime']) ? $options['runtime'] : '\\LightnCandy\\Runtime',
             'runtimealias' => 'LR',
