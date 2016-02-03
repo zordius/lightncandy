@@ -1,7 +1,7 @@
 HISTORY
 =======
 
-v0.91 current master, not released
+v0.91 https://github.com/zordius/lightncandy/tree/v0.91
    * align with handlebars.js 4.0.5
    * 93323508ce now FLAG_BESTPERFORMANCE also includes FLAG_STANDALONEPHP.
    * 4deffaf89d prevent warning message when FLAG_ERROR_SKIPPARTIAL used.
