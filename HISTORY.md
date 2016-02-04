@@ -1,6 +1,10 @@
 HISTORY
 =======
 
+v0.92 current master, not released
+   * align with handlebars.js 4.0.5
+   * c9811d9c3a Detect `{{..foo}}` syntax error
+
 v0.91 https://github.com/zordius/lightncandy/tree/v0.91
    * align with handlebars.js 4.0.5
    * 93323508ce now FLAG_BESTPERFORMANCE also includes FLAG_STANDALONEPHP.
