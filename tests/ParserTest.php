@@ -273,6 +273,9 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(array('[fo o]=123', 'bar="456"'), $method->invokeArgs(null, array_by_ref(array(
             '[fo o]=123 bar="456"', array('flags' => array('advar' => 1))
         ))));
+        $this->assertEquals(array('[fo o]="1 2 3"'), $method->invokeArgs(null, array_by_ref(array(
+            '[fo o]="1 2 3"', array('flags' => array('advar' => 1))
+        ))));
     }
 }
 ?>
