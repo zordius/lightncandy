@@ -59,6 +59,18 @@ class ExpressionTest extends PHPUnit_Framework_TestCase
         ))));
     }
     /**
+     * @covers LightnCandy\Expression::analyze
+     */
+    public function testOn_analyze() {
+        $method = new \ReflectionMethod('LightnCandy\Expression', 'analyze');
+        $this->assertEquals(array(0, false, array('foo')), $method->invokeArgs(null, array_by_ref(array(
+            array('flags' => array('spvar' => 0)), array(0, 'foo')
+        ))));
+        $this->assertEquals(array(1, false, array('foo')), $method->invokeArgs(null, array_by_ref(array(
+            array('flags' => array('spvar' => 0)), array(1, 'foo')
+        ))));
+    }
+    /**
      * @covers LightnCandy\Expression::toString
      */
     public function testOn_toString() {

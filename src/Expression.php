@@ -86,6 +86,8 @@ class Expression
      *
      * @return array<integer|boolean|array> analyzed result
      *
+     * @expect array(0, false, array('foo')) when input array('flags' => array('spvar' => 0)), array(0, 'foo')
+     * @expect array(1, false, array('foo')) when input array('flags' => array('spvar' => 0)), array(1, 'foo')
      */
     public static function analyze($context, $var) {
         $levels = 0;

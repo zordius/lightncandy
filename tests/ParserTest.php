@@ -23,6 +23,12 @@ class ParserTest extends PHPUnit_Framework_TestCase
             'this', array('flags' => array('strpar' => 0, 'advar' => 0, 'this' => 1)), 0
         ))));
         $this->assertEquals(array(1), $method->invokeArgs(null, array_by_ref(array(
+            '..', array('flags' => array('strpar' => 0, 'advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
+        ))));
+        $this->assertEquals(array('..foo'), $method->invokeArgs(null, array_by_ref(array(
+            '..foo', array('flags' => array('strpar' => 0, 'advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
+        ))));
+        $this->assertEquals(array(1), $method->invokeArgs(null, array_by_ref(array(
             '../', array('flags' => array('strpar' => 0, 'advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
         ))));
         $this->assertEquals(array(1), $method->invokeArgs(null, array_by_ref(array(

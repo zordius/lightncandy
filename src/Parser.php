@@ -92,6 +92,7 @@ class Parser extends Token
      *
      * @expect array('this') when input 'this', array('flags' => array('strpar' => 0, 'advar' => 0, 'this' => 0)), 0
      * @expect array() when input 'this', array('flags' => array('strpar' => 0, 'advar' => 0, 'this' => 1)), 0
+     * @expect array(1) when input '..', array('flags' => array('strpar' => 0, 'advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
      * @expect array(1) when input '../', array('flags' => array('strpar' => 0, 'advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
      * @expect array(1) when input '../.', array('flags' => array('strpar' => 0, 'advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
      * @expect array(1) when input '../this', array('flags' => array('strpar' => 0, 'advar' => 0, 'this' => 1, 'parent' => 1), 'usedFeature' => array('parent' => 0)), 0
@@ -159,6 +160,13 @@ class Parser extends Token
             preg_match_all(static::VARNAME_SEARCH, $v, $matchedall);
         } else {
             preg_match_all('/([^\\.\\/]+)/', $v, $matchedall);
+        }
+
+        if ($v !== '.') {
+            $vv = implode('.', $matchedall[1]);
+            if (strlen($v) !== strlen($vv)) {
+                $context['error'][] = "Unexpected charactor in '$v' ! (should it be '$vv' ?)";
+            }
         }
 
         foreach ($matchedall[1] as $m) {

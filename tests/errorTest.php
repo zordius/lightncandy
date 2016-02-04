@@ -188,17 +188,26 @@ class errorTest extends PHPUnit_Framework_TestCase
             Array(
                 'template' => '{{wi[n]ner.test3}}',
                 'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
-                'expected' => 'Wrong variable naming as \'wi[n]ner.test3\' in {{wi[n]ner.test3}} !',
+                'expected' => Array(
+                    'Wrong variable naming as \'wi[n]ner.test3\' in {{wi[n]ner.test3}} !',
+                    "Unexpected charactor in 'wi[n]ner.test3' ! (should it be 'wi.[n].ner.test3' ?)",
+                ),
             ),
             Array(
                 'template' => '{{winner].[test4]}}',
                 'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
-                'expected' => 'Wrong variable naming as \'winner].[test4]\' in {{winner].[test4]}} !',
+                'expected' => Array(
+                    'Wrong variable naming as \'winner].[test4]\' in {{winner].[test4]}} !',
+                    "Unexpected charactor in 'winner].[test4]' ! (should it be 'winner.[test4]' ?)",
+                ),
             ),
             Array(
                 'template' => '{{winner[.test5]}}',
                 'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
-                'expected' => 'Wrong variable naming as \'winner[.test5]\' in {{winner[.test5]}} !',
+                'expected' => Array(
+                    'Wrong variable naming as \'winner[.test5]\' in {{winner[.test5]}} !',
+                    "Unexpected charactor in 'winner[.test5]' ! (should it be 'winner.[.test5]' ?)",
+                ),
             ),
             Array(
                 'template' => '{{winner.[.test6]}}',
@@ -215,7 +224,10 @@ class errorTest extends PHPUnit_Framework_TestCase
             Array(
                 'template' => '{{test9]}}',
                 'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
-                'expected' => 'Wrong variable naming as \'test9]\' in {{test9]}} !',
+                'expected' => Array(
+                    'Wrong variable naming as \'test9]\' in {{test9]}} !',
+                    "Unexpected charactor in 'test9]' ! (should it be 'test9' ?)",
+                ),
             ),
             Array(
                 'template' => '{{testA[}}',
@@ -236,7 +248,10 @@ class errorTest extends PHPUnit_Framework_TestCase
             Array(
                 'template' => '{{]testC}}',
                 'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
-                'expected' => 'Wrong variable naming as \']testC\' in {{]testC}} !',
+                'expected' => Array(
+                    'Wrong variable naming as \']testC\' in {{]testC}} !',
+                    "Unexpected charactor in ']testC' ! (should it be 'testC' ?)",
+                )
             ),
             Array(
                 'template' => '{{[testD]}}',
@@ -288,17 +303,26 @@ class errorTest extends PHPUnit_Framework_TestCase
             Array(
                 'template' => '{{te.t[est].endL}}',
                 'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
-                'expected' => 'Wrong variable naming as \'te.t[est].endL\' in {{te.t[est].endL}} !',
+                'expected' => Array(
+                    'Wrong variable naming as \'te.t[est].endL\' in {{te.t[est].endL}} !',
+                    "Unexpected charactor in 'te.t[est].endL' ! (should it be 'te.t.[est].endL' ?)",
+                ),
             ),
             Array(
                 'template' => '{{te.t[est]o.endM}}',
                 'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
-                'expected' => 'Wrong variable naming as \'te.t[est]o.endM\' in {{te.t[est]o.endM}} !',
+                'expected' => Array(
+                    'Wrong variable naming as \'te.t[est]o.endM\' in {{te.t[est]o.endM}} !',
+                    "Unexpected charactor in 'te.t[est]o.endM' ! (should it be 'te.t.[est].o.endM' ?)"
+                ),
             ),
             Array(
                 'template' => '{{te.[est]o.endN}}',
                 'options' => Array('flags' => LightnCandy::FLAG_ADVARNAME),
-                'expected' => 'Wrong variable naming as \'te.[est]o.endN\' in {{te.[est]o.endN}} !',
+                'expected' => Array(
+                    'Wrong variable naming as \'te.[est]o.endN\' in {{te.[est]o.endN}} !',
+                    "Unexpected charactor in 'te.[est]o.endN' ! (should it be 'te.[est].o.endN' ?)",
+                ),
             ),
             Array(
                 'template' => '{{te.[e.st].endO}}',
