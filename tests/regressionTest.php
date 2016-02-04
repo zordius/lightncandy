@@ -937,6 +937,16 @@ VAREND
             ),
 
             Array(
+                'id' => 206,
+                'template' => '{{#with bar}}{{#../foo}}YES!{{/../foo}}{{/with}}',
+                'data' => Array('foo' => 999, 'bar' => true),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARS,
+                ),
+                'expected' => 'YES!',
+            ),
+
+            Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
                 'options' => Array(
