@@ -161,18 +161,8 @@ When you using dynamic partial, LightnCandy will compile all partials inside the
 Custom Helper
 -------------
 
-<a href="https://zordius.github.io/HandlebarsCookbook/9001-customhelper.html">Custom Helpers in LighnCandy</a>
-
-Named arguments:
-
-```
-{{{helper name=value}}}        // This send processed {{{value}}} into $options['hash']['name']
-{{{helper name="value"}}}      // This send the string "value" into $options['hash']['name']
-{{{helper [na me]="value"}}}   // You can still protect the name with [ ]
-                               // so you get $options['hash']['na me'] as the string 'value'
-{{{helper url name="value"}}}  // This send processed {{{url}}} into first argument
-                               // and the string "value" into $options['hash']['name']
-```
+* <a href="https://zordius.github.io/HandlebarsCookbook/9001-customhelper.html">Custom Helpers in LighnCandy</a>
+* <a href="https://zordius.github.io/HandlebarsCookbook/9002-helperoptions.html">The $options Object</a>
 
 Custom Helper Escaping
 ----------------------
