@@ -4,6 +4,7 @@ HISTORY
 v0.92 current master, not released
    * align with handlebars.js 4.0.5
    * c9811d9c3a Detect `{{..foo}}` syntax error
+   * 2e77514841 fix `[fo o]="1 2 3"` parsing bug
 
 v0.91 https://github.com/zordius/lightncandy/tree/v0.91
    * align with handlebars.js 4.0.5
