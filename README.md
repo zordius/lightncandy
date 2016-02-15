@@ -114,6 +114,7 @@ Partial Support
 
 * <a href="https://zordius.github.io/HandlebarsCookbook/0011-partial.html">Example of compile time partial</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/0024-partialcontext.html">Example of partial context changing</a>
+* <a href="https://zordius.github.io/HandlebarsCookbook/0028-dynamicpartial.html">use dynamic partial</a>
 
 You can use `partialresolver` option to create your own partial loader:
 
@@ -124,39 +125,6 @@ LightnCandy::compile($template, Array(
     }
 ));
 ```
-
-Dynamic Partial
----------------
-
-You can use dynamic partial name by passing a custom helper as subexpression syntax, for example: `{{> (foo)}}` . the return value of custom helper `foo` will be the partial name.
-
-```php
-$php = LightnCandy::compile('{{> (partial_name_helper obj_type)}}', Array(
-    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_RUNTIMEPARTIAL,
-    'helpers' => Array(
-        'partial_name_helper' => function ($args) {
-            switch ($args[0]) {
-                ....
-            }
-        }
-    ),
-    'partials' => Array(
-        'people' => 'This is {{name}}, he is {{age}} years old.',
-        'animal' => 'This is {{name}}, it is {{age}} years old.',
-    )
-));
-
-$renderer = LightnCandy::prepare($php);
-
-// Will use people partial and output: 'This is John, he is 15 years old.'
-echo $renderer(Array(
-   'obj_type' => 'people',
-   'name' => 'John',
-   'age' => '15',
-));
-```
-
-When you using dynamic partial, LightnCandy will compile all partials inside the `partials` option into template. This makes the generated code larger, but this can make sure all partials are included for rendering. (TODO: add an example to show how to provide partials across templates to reduce size)
 
 Custom Helper
 -------------
