@@ -131,32 +131,7 @@ Custom Helper
 
 * <a href="https://zordius.github.io/HandlebarsCookbook/9001-customhelper.html">Custom Helpers in LighnCandy</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/9002-helperoptions.html">The $options Object</a>
-
-Custom Helper Escaping
-----------------------
-
-The return value of your custom helper should be a string. When your custom helper be executed from {{ }} , the return value will be HTML escaped. You may execute your helper by {{{ }}} , then the original helper return value will be outputted directly.
-
-If you return a LightnCandy\SafeString object, it will not be html escaped.
-
-```php
-// escaping is handled by lightncandy and decided by template
-// if the helper is in {{ }} , you get 'The U&amp;ME Helper is ececuted!'
-// if the helper is in {{{ }}} , you get 'The U&ME Helper is executed!'
-return 'The U&ME Helper is executed!';
-
-// Do not escape anything.
-// No matter in {{ }} or {{{ }}} , you get 'Exact&Same output \' \" Ya!'
-return new LightnCandy\SafeString('Exact&Same output \' " Ya!');
-
-// Force to escape the result.
-// No matter in {{ }} or {{{ }}} , you get 'Not&amp;Same output &#039; &quot; Ya!'
-return new LightnCandy\SafeString('Not&Same output \' " Ya!', true);
-
-// Force to escape the result in handlebars.js way
-// No matter in {{ }} or {{{ }}} , you get 'Not&amp;Same output &#x27; &quot; Ya!'
-return new LightnCandy\SafeString('Not&Same output \' " Ya!', 'encq');
-```
+* <a href="https://zordius.github.io/HandlebarsCookbook/9003-helperescaping.html">Use SafeString</a>
 
 Custom Helper Examples
 ----------------------

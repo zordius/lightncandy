@@ -45,10 +45,6 @@ class SafeString extends Encoder
      *
      * @param string $str input string
      * @param bool|string $escape false to not escape, true to escape, 'encq' to escape as handlebars.js
-     *
-     * @expect 'abc' when input 'abc'
-     * @expect 'abc{{!}}cde' when input 'abc{{!}}cde'
-     * @expect 'abc{{! }}cde' when input 'abc{{!----}}cde'
      */
     public function __construct($str, $escape = false) {
         $this->string = $escape ? (($escape === 'encq') ? static::encq(static::$jsContext, $str) : static::enc(static::$jsContext, $str)) : $str;
