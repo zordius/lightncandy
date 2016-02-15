@@ -220,26 +220,6 @@ Handlebars.registerHelper('myif', function(conditional, options) {
 
 You can use `isset($options['fn'])` to detect your custom helper is a block or not; you can also use `isset($options['inverse'])` to detect the existence of `{{else}}`.
 
-**Hashed arguments**
-* LightnCandy
-```php
-$php = LightnCandy::compile($template, Array(
-    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-    'helpers' => Array(
-        'sample' => function ($arg1, $arg2, $options) {
-            // All hashed arguments are in $options['hash']
-        }
-    )
-));
-```
-
-* Handlebars.js
-```javascript
-Handlebars.registerHelper('sample', function(arg1, arg2, options) {
-    // All hashed arguments are in options.hash
-});
-```
-
 **Data variables and context**
 
 You can get special data variables from `$options['data']`. Using `$options['_this']` to receive current context.
