@@ -81,7 +81,7 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_HBESCAPE.html">FLAG_HBESCAPE</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_ADVARNAME.html">FLAG_ADVARNAME</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_NAMEDARG.html">FLAG_NAMEDARG</a>
-* `FLAG_EXTHELPER` : do not including custom helper codes into compiled PHP codes. This reduces the code size, but you need to take care of your helper functions when rendering. If you forget to include required functions when execute rendering function, `undefined function` runtime error will be triggered. NOTE: Anonymous functions will always be placed into generated codes.
+* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_EXTHELPER.html">FLAG_EXTHELPER</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_RUNTIMEPARTIAL.html">FLAG_RUNTIMEPARTIAL</a>
 * `FLAG_PARTIALNEWCONTEXT` : create a new context for the partial, the behavior is same with handlebars.js explicitPartialContext compile time option.
 * `FLAG_SLASH` : Skip a delimiter when it behind `\` .
