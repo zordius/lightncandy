@@ -115,16 +115,7 @@ Partial Support
 * <a href="https://zordius.github.io/HandlebarsCookbook/0011-partial.html">Example of compile time partial</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/0024-partialcontext.html">Example of partial context changing</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/0028-dynamicpartial.html">use dynamic partial</a>
-
-You can use `partialresolver` option to create your own partial loader:
-
-```php
-LightnCandy::compile($template, Array(
-    'partialresolver' => function ($context, $name) {
-        return MyPartialLoader($name); // Return partial content
-    }
-));
-```
+* <a href="https://zordius.github.io/HandlebarsCookbook/9902-lcop-partialresolver.html">The partialresolver option</a>
 
 Custom Helper
 -------------
@@ -132,6 +123,7 @@ Custom Helper
 * <a href="https://zordius.github.io/HandlebarsCookbook/9001-customhelper.html">Custom Helpers in LighnCandy</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/9002-helperoptions.html">The $options Object</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/9003-helperescaping.html">Use SafeString</a>
+* <a href="https://zordius.github.io/HandlebarsCookbook/9901-lcop-helperresolver.html">The helperresolver option</a>
 
 Custom Helper Examples
 ----------------------
