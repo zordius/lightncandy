@@ -199,6 +199,7 @@ class Validator {
 
                 if (static::isBlockHelper($context, $vars)) {
                     static::pushStack($context, '#', $vars);
+                    array_unshift($context['elselvl'], 0);
                     return static::blockCustomHelper($context, $vars, true);
                 }
 
@@ -215,6 +216,7 @@ class Validator {
             case '#':
                 if (static::isBlockHelper($context, $vars)) {
                     static::pushStack($context, '#', $vars);
+                    array_unshift($context['elselvl'], 0);
                     return static::blockCustomHelper($context, $vars);
                 }
 
