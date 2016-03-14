@@ -947,6 +947,21 @@ VAREND
             ),
 
             Array(
+                'id' => 213,
+                'template' => '{{#if foo}}foo{{else if bar}}{{#moo moo}}moo{{/moo}}{{/if}}',
+                'data' => Array('foo' => true),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARS,
+                    'helpers' => Array(
+                        'moo' => function($arg1) {
+                            return ($arg1 === null);
+                         }
+                    )
+                ),
+                'expected' => 'foo',
+            ),
+
+            Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
                 'options' => Array(
