@@ -6,6 +6,7 @@ v0.92 current master, not released
    * c9811d9c3a Detect `{{..foo}}` syntax error
    * 2e77514841 fix `[fo o]="1 2 3"` parsing bug
    * 52b072e246 fix compiler error when a block customhelper inside `{{else if}}`
+   * e30edc4302 fix `{{#with .}}` logic when input is an empty array
 
 v0.91 https://github.com/zordius/lightncandy/tree/v0.91
    * align with handlebars.js 4.0.5
