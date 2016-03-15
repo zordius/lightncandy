@@ -469,7 +469,7 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{#unless var}}` : run unless logic with original scope (null, false, empty Array and '' will render this block)
 * `{{#unless foo}} ... {{else if bar}} ... {{/unless}}` : chained unless else blocks
 * `{{#unless foo}} ... {{else unless bar}} ... {{/unless}}` : chained unless else blocks
-* `{{#with var}}` : change context scope. If the var is false, skip included section.
+* `{{#with var}}` : change context scope. If the var is false or an empty array, skip included section.
 * `{{#with bar as |foo|}}` : change context to bar and set the value as foo. (require `FLAG_ADVARNAME`)
 * `{{lookup foo bar}}` : lookup foo by value of bar as key.
 * `{{../var}}` : parent template scope. (require `FLAG_PARENT`)
