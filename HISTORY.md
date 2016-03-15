@@ -1,7 +1,9 @@
 HISTORY
 =======
 
-v0.92 current master, not released
+v0.93 current master, not released
+
+v0.92 https://github.com/zordius/lightncandy/tree/v0.92
    * align with handlebars.js 4.0.5
    * c9811d9c3a Detect `{{..foo}}` syntax error
    * 2e77514841 fix `[fo o]="1 2 3"` parsing bug
