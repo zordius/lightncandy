@@ -436,7 +436,7 @@ class Runtime extends Encoder
         if (isset($bp[0])) {
             $v = static::m($cx, $v, array($bp[0] => $v));
         }
-        if (($v === false) || ($v === null)) {
+        if (($v === false) || ($v === null) || (is_array($v) && (count($v) === 0))) {
             return $else ? $else($cx, $in) : '';
         }
         $cx['scopes'][] = $in;

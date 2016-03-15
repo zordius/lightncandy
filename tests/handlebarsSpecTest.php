@@ -80,6 +80,15 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
             recursive_lambda_fix($spec['options']['data']);
         }
 
+        // Fix {} for these test cases
+        if (
+               ($spec['it'] === 'should override template partials') ||
+               ($spec['it'] === 'should override partials down the entire stack') ||
+               ($spec['it'] === 'should define inline partials for block')
+           ) {
+            $spec['data'] = new stdClass;
+        }
+
         //// Skip bad specs
         // 1. No expected nor exception in spec
         if (!isset($spec['expected']) && !isset($spec['exception'])) {

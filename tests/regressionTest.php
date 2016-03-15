@@ -962,6 +962,16 @@ VAREND
             ),
 
             Array(
+                'id' => 213,
+                'template' => '{{#with .}}bad{{else}}Good!{{/with}}',
+                'data' => Array(),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARS,
+                ),
+                'expected' => 'Good!',
+            ),
+
+            Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
                 'options' => Array(
