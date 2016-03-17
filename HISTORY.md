@@ -2,6 +2,8 @@ HISTORY
 =======
 
 v0.93 current master, not released
+   * align with handlebars.js 4.0.5
+   * a9fb08c3e8 speed up `{{@var}}` lookup, check parent type when `{{../var}}`
 
 v0.92 https://github.com/zordius/lightncandy/tree/v0.92
    * align with handlebars.js 4.0.5
