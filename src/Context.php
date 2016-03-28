@@ -50,6 +50,7 @@ class Context extends Flags
                 'noesc' => $flags & static::FLAG_NOESCAPE,
                 'jstrue' => $flags & static::FLAG_JSTRUE,
                 'jsobj' => $flags & static::FLAG_JSOBJECT,
+                'jslen' => $flags & static::FLAG_JSLENGTH,
                 'hbesc' => $flags & static::FLAG_HBESCAPE,
                 'this' => $flags & static::FLAG_THIS,
                 'nohbh' => $flags & static::FLAG_NOHBHELPERS,

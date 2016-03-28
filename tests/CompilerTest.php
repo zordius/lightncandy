@@ -55,10 +55,10 @@ class CompilerTest extends PHPUnit_Framework_TestCase
             array('flags'=>array('spvar'=>true,'debug'=>0)), array(null)
         ))));
         $this->assertEquals(array('((is_array($in) && isset($in[\'true\'])) ? $in[\'true\'] : null)', '[true]'), $method->invokeArgs(null, array_by_ref(array(
-            array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0)), array('true')
+            array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0,'lambda'=>0,'jslen'=>0)), array('true')
         ))));
         $this->assertEquals(array('((is_array($in) && isset($in[\'false\'])) ? $in[\'false\'] : null)', '[false]'), $method->invokeArgs(null, array_by_ref(array(
-            array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0)), array('false')
+            array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0,'lambda'=>0,'jslen'=>0)), array('false')
         ))));
         $this->assertEquals(array('true', 'true'), $method->invokeArgs(null, array_by_ref(array(
             array('flags'=>array('spvar'=>true,'debug'=>0)), array(-1, 'true')
@@ -67,46 +67,46 @@ class CompilerTest extends PHPUnit_Framework_TestCase
             array('flags'=>array('spvar'=>true,'debug'=>0)), array(-1, 'false')
         ))));
         $this->assertEquals(array('((is_array($in) && isset($in[\'2\'])) ? $in[\'2\'] : null)', '[2]'), $method->invokeArgs(null, array_by_ref(array(
-            array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0)), array('2')
+            array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0,'lambda'=>0,'jslen'=>0)), array('2')
         ))));
         $this->assertEquals(array('2', '2'), $method->invokeArgs(null, array_by_ref(array(
             array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0)), array(-1, '2')
         ))));
         $this->assertEquals(array('((is_array($in) && isset($in[\'@index\'])) ? $in[\'@index\'] : null)', '[@index]'), $method->invokeArgs(null, array_by_ref(array(
-            array('flags'=>array('spvar'=>false,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0)), array('@index')
+            array('flags'=>array('spvar'=>false,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0,'lambda'=>0,'jslen'=>0)), array('@index')
         ))));
         $this->assertEquals(array("(isset(\$cx['sp_vars']['index']) ? \$cx['sp_vars']['index'] : null)", '@[index]'), $method->invokeArgs(null, array_by_ref(array(
-            array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0)), array('@index')
+            array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0,'lambda'=>0,'jslen'=>0)), array('@index')
         ))));
         $this->assertEquals(array("(isset(\$cx['sp_vars']['key']) ? \$cx['sp_vars']['key'] : null)", '@[key]'), $method->invokeArgs(null, array_by_ref(array(
-            array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0)), array('@key')
+            array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0,'lambda'=>0,'jslen'=>0)), array('@key')
         ))));
         $this->assertEquals(array("(isset(\$cx['sp_vars']['first']) ? \$cx['sp_vars']['first'] : null)", '@[first]'), $method->invokeArgs(null, array_by_ref(array(
-            array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0)), array('@first')
+            array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0,'lambda'=>0,'jslen'=>0)), array('@first')
         ))));
         $this->assertEquals(array("(isset(\$cx['sp_vars']['last']) ? \$cx['sp_vars']['last'] : null)", '@[last]'), $method->invokeArgs(null, array_by_ref(array(
-            array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0)), array('@last')
+            array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0,'lambda'=>0,'jslen'=>0)), array('@last')
         ))));
         $this->assertEquals(array('((is_array($in) && isset($in[\'"a"\'])) ? $in[\'"a"\'] : null)', '["a"]'), $method->invokeArgs(null, array_by_ref(array(
-            array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0)), array('"a"')
+            array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0,'lambda'=>0,'jslen'=>0)), array('"a"')
         ))));
         $this->assertEquals(array('"a"', '"a"'), $method->invokeArgs(null, array_by_ref(array(
             array('flags'=>array('spvar'=>true,'debug'=>0)), array(-1, '"a"')
         ))));
         $this->assertEquals(array('((is_array($in) && isset($in[\'a\'])) ? $in[\'a\'] : null)', '[a]'), $method->invokeArgs(null, array_by_ref(array(
-            array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0)), array('a')
+            array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0,'lambda'=>0,'jslen'=>0)), array('a')
         ))));
         $this->assertEquals(array('((isset($cx[\'scopes\'][count($cx[\'scopes\'])-1]) && is_array($cx[\'scopes\'][count($cx[\'scopes\'])-1]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-1][\'a\'] : null)', '../[a]'), $method->invokeArgs(null, array_by_ref(array(
-            array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0)), array(1,'a')
+            array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0,'lambda'=>0,'jslen'=>0)), array(1,'a')
         ))));
         $this->assertEquals(array('((isset($cx[\'scopes\'][count($cx[\'scopes\'])-3]) && is_array($cx[\'scopes\'][count($cx[\'scopes\'])-3]) && isset($cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'])) ? $cx[\'scopes\'][count($cx[\'scopes\'])-3][\'a\'] : null)', '../../../[a]'), $method->invokeArgs(null, array_by_ref(array(
-            array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0)), array(3,'a')
+            array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0,'lambda'=>0,'jslen'=>0)), array(3,'a')
         ))));
         $this->assertEquals(array('((is_array($in) && isset($in[\'id\'])) ? $in[\'id\'] : null)', 'this.[id]'), $method->invokeArgs(null, array_by_ref(array(
-            array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0)), array(null, 'id')
+            array('flags'=>array('spvar'=>true,'debug'=>0,'prop'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0,'lambda'=>0,'jslen'=>0)), array(null, 'id')
         ))));
         $this->assertEquals(array('LR::v($cx, $in, isset($in) ? $in : null, array(\'id\'))', 'this.[id]'), $method->invokeArgs(null, array_by_ref(array(
-            array('flags'=>array('prop'=>true,'spvar'=>true,'debug'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0, 'lambda'=>0,'standalone'=>0), 'runtime' => 'Runtime', 'runtimealias' => 'LR'), array(null, 'id')
+            array('flags'=>array('prop'=>true,'spvar'=>true,'debug'=>0,'method'=>0,'mustlok'=>0,'mustlam'=>0,'lambda'=>0,'jslen'=>0,'standalone'=>0), 'runtime' => 'Runtime', 'runtimealias' => 'LR'), array(null, 'id')
         ))));
     }
     /**
