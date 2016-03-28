@@ -4,6 +4,10 @@ HISTORY
 v0.93 current master, not released
    * align with handlebars.js 4.0.5
    * a9fb08c3e8 speed up `{{@var}}` lookup, check parent type when `{{../var}}`
+   * c7040ecc76 **BREAK CHANGE**
+      * new FLAG_JSLENGTH to support {{array.length}} lookup
+      * now FLAG_JS includes FLAG_JSLENGTH
+      * now FLAG_HANDLEBARSJS includes FLAG_JSLENGTH
 
 v0.92 https://github.com/zordius/lightncandy/tree/v0.92
    * align with handlebars.js 4.0.5
