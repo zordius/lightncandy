@@ -310,11 +310,8 @@ VAREND
         $lenEnd = '';
 
         if ($context['flags']['jslen']) {
-            array_pop($checks);
-            if ($lookup && ($lookup[0] === 'length')) {
-                $lenStart = '(' . ((count($checks) > 1) ? '(' : '') . implode(' && ', $checks) . ((count($checks) > 1) ? ')' : '') . " ? count($base$n) : ";
-                $lenEnd = ')';
-            } else if ($k === 'length') {
+            if (($lookup === null) && ($k === 'length')) {
+                array_pop($checks);
                 $lenStart = '(' . ((count($checks) > 1) ? '(' : '') . implode(' && ', $checks) . ((count($checks) > 1) ? ')' : '') . " ? count($base" . Expression::arrayString($var) . ') : ';
                 $lenEnd = ')';
             }
