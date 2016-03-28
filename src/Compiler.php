@@ -292,7 +292,7 @@ VAREND
         }
 
         $n = Expression::arrayString($var);
-        array_pop($var);
+        $k = array_pop($var);
         $L = $lookup ? "[{$lookup[0]}]" : '';
         $p = $lookup ? $n : (count($var) ? Expression::arrayString($var) : '');
 
@@ -312,10 +312,10 @@ VAREND
         if ($context['flags']['jslen']) {
             array_pop($checks);
             if ($lookup && ($lookup[0] === 'length')) {
-                $lenStart = '(' . ((count($checks) > 1) ? '(' : '') . implode(' && ', $checks) . ((count($checks) > 1) ? ')' : '') . ' ? count($base$n$L) : ';
+                $lenStart = '(' . ((count($checks) > 1) ? '(' : '') . implode(' && ', $checks) . ((count($checks) > 1) ? ')' : '') . " ? count($base$n) : ";
                 $lenEnd = ')';
-            } else if ($n === "['length']") {
-                $lenStart = '(' . ((count($checks) > 1) ? '(' : '') . implode(' && ', $checks) . ((count($checks) > 1) ? ')' : '') . ' ? count($base$n$L) : ';
+            } else if ($k === 'length') {
+                $lenStart = '(' . ((count($checks) > 1) ? '(' : '') . implode(' && ', $checks) . ((count($checks) > 1) ? ')' : '') . " ? count($base" . Expression::arrayString($var) . ') : ';
                 $lenEnd = ')';
             }
         }
