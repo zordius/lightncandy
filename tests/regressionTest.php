@@ -972,6 +972,26 @@ VAREND
             ),
 
             Array(
+                'id' => 216,
+                'template' => '{{foo.length}}',
+                'data' => Array('foo' => Array()),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARS,
+                ),
+                'expected' => '',
+            ),
+
+            Array(
+                'id' => 216,
+                'template' => '{{foo.length}}',
+                'data' => Array('foo' => Array()),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                ),
+                'expected' => '0',
+            ),
+
+            Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
                 'options' => Array(
