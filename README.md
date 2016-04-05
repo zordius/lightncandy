@@ -83,8 +83,8 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_NAMEDARG.html">FLAG_NAMEDARG</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_EXTHELPER.html">FLAG_EXTHELPER</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_RUNTIMEPARTIAL.html">FLAG_RUNTIMEPARTIAL</a>
+* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_SLASH.html">FLAG_SLASH</a>
 * `FLAG_PARTIALNEWCONTEXT` : create a new context for the partial, the behavior is same with handlebars.js explicitPartialContext compile time option.
-* `FLAG_SLASH` : Skip a delimiter when it behind `\` .
 * `FLAG_ELSE` : support `{{else}}` or `{{^}}` as handlebars specification. Otherwise, `{{else}}` will be resolved as normal variable , and {{^}} will cause template error.
 * `FLAG_RAWBLOCK`: support `{{{{raw_block}}}} any char or {{foo}} as none parsed raw string {{{{/raw_block}}}}`.
 * `FLAG_PROPERTY` : support object instance attribute access. You MUST apply this if your data contains object. And, the rendering performance will be worse.
