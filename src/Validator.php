@@ -643,7 +643,7 @@ class Validator {
             return array($raw, $vars);
         }
 
-        if ($vars[0][0] === 'else') {
+        if (($vars[0][0] === 'else') && $context['flags']['else']) {
             static::doElse($context, $vars);
             return array($raw, $vars);
         }
