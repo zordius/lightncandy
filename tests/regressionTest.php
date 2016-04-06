@@ -1298,6 +1298,15 @@ VAREND
             ),
 
             Array(
+                'template' => '{{#mylogic 0 foo bar}}YES:{{.}}{{else}}NO:{{.}}{{/mylogic}}',
+                'data' => Array('foo' => 'FOO', 'bar' => 'BAR'),
+                'options' => Array(
+                    'helpers' => Array('mylogic'),
+                ),
+                'expected' => '',
+            ),
+
+            Array(
                 'template' => '{{#mylogic true foo bar}}YES:{{.}}{{else}}NO:{{.}}{{/mylogic}}',
                 'data' => Array('foo' => 'FOO', 'bar' => 'BAR'),
                 'options' => Array(

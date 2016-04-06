@@ -596,6 +596,10 @@ class Runtime extends Encoder
                 }
                 return $cx['flags']['echo'] ? ob_get_clean() : $ret;
             };
+        } else {
+            $options['inverse'] = function () {
+                return '';
+            };
         }
 
         if ($cx['flags']['spvar']) {
