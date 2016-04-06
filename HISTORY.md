@@ -8,6 +8,7 @@ v0.93 current master, not released
       * new FLAG_JSLENGTH to support {{array.length}} lookup
       * now FLAG_JS includes FLAG_JSLENGTH
       * now FLAG_HANDLEBARSJS includes FLAG_JSLENGTH
+   * 8f88c409c9 fix compiler bug for none FLAG_ELSE cases
 
 v0.92 https://github.com/zordius/lightncandy/tree/v0.92
    * align with handlebars.js 4.0.5
