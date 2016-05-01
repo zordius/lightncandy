@@ -69,7 +69,7 @@ class Validator {
             array_pop($context['stack']);
             array_pop($context['stack']);
             $token = array_pop($context['stack']);
-            $context['error'][] = 'Unclosed token ' . ($context['rawblock'] ? "{{{{{$token}}}}}" : "{{#{$token}}}") . ' !!';
+            $context['error'][] = 'Unclosed token ' . ($context['rawblock'] ? "{{{{{$token}}}}}" : ( $context['partialblock'] ? "{{#>{$token}}}" : "{{#{$token}}}")) . ' !!';
         }
     }
 

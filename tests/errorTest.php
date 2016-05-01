@@ -576,6 +576,15 @@ class errorTest extends PHPUnit_Framework_TestCase
                     'Error in {{#*inline}}: inline require 1 argument for partial name!',
                 )
             ),
+            Array(
+                'template' => '{{#>foo}}bar',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
+                ),
+                'expected' => Array(
+                    'Unclosed token {{#>foo}} !!',
+                )
+            ),
         );
 
         return array_map(function($i) {
