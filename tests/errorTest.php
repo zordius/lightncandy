@@ -585,6 +585,15 @@ class errorTest extends PHPUnit_Framework_TestCase
                     'Unclosed token {{#>foo}} !!',
                 )
             ),
+            Array(
+                'template' => '{{ #2 }}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_BESTPERFORMANCE,
+                ),
+                'expected' => Array(
+                    'Unclosed token {{#2}} !!',
+                )
+            ),
         );
 
         return array_map(function($i) {
