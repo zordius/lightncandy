@@ -11,6 +11,7 @@ v0.93 current master, not released
    * 8f88c409c9 fix compiler bug for none FLAG_ELSE cases
    * a7617d9ff1 now default options.inverse provided even when no `{{else}}` in template
    * 45e0b600f7 refine unclosed partial block error message
+   * 73ac95e882 allow spacing between `{{` and `#` now
 
 v0.92 https://github.com/zordius/lightncandy/tree/v0.92
    * align with handlebars.js 4.0.5
