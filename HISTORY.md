@@ -1,7 +1,9 @@
 HISTORY
 =======
 
-v0.93 current master, not released
+v0.94 current master, not released
+
+v0.93 https://github.com/zordius/lightncandy/tree/v0.93
    * align with handlebars.js 4.0.5
    * a9fb08c3e8 speed up `{{@var}}` lookup, check parent type when `{{../var}}`
    * c7040ecc76 **BREAK CHANGE**
