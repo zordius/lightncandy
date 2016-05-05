@@ -68,7 +68,7 @@ class Token
         $left = preg_quote($left);
         $right = preg_quote($right);
 
-        $context['tokens']['search'] = "/^(.*?)(\\s*)($left)(~?)(\\{{$rawcount})([\\^#\\/!&>\\*]{0,2})(.*?)(\\}{$rawcount})(~?)($right)(\\s*)(.*)\$/s";
+        $context['tokens']['search'] = "/^(.*?)(\\s*)($left)(~?)(\\{{$rawcount})\\s*([\\^#\\/!&>\\*]{0,2})(.*?)\\s*(\\}{$rawcount})(~?)($right)(\\s*)(.*)\$/s";
     }
 
     /**
