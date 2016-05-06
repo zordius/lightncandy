@@ -1028,6 +1028,17 @@ VAREND
             ),
 
             Array(
+                'id' => 221,
+                'template' => 'a{{ouch}}b',
+                'data' => null,
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'helpers' => $test_helpers3
+                ),
+                'expected' => 'awa!b',
+            ),
+
+            Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
                 'options' => Array(

@@ -23,6 +23,7 @@ namespace LightnCandy;
 use \LightnCandy\Context;
 use \LightnCandy\Compiler;
 use \LightnCandy\Partial;
+use \LightnCandy\Exporter;
 
 /**
  * LightnCandy major static class
