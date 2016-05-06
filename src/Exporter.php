@@ -51,7 +51,7 @@ class Exporter
         $file->seek($ref->getEndLine() - 1);
         $epos = $file->ftell();
 
-        return preg_replace('/^.*?function(\s+[^\s\\(]+?)?\s*?\\((.+?)\\}[,\\s]*;?$/s', 'function($2}', static::replaceSafeString($context, substr($lines, $spos, $epos - $spos)));
+        return preg_replace('/^.*?function(\s+[^\s\\(]+?)?\s*\\((.+)\\}.*?\s*$/s', 'function($2}', static::replaceSafeString($context, substr($lines, $spos, $epos - $spos)));
     }
 
     /**

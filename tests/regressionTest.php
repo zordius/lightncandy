@@ -28,6 +28,14 @@ class regressionTest extends PHPUnit_Framework_TestCase
 
     public function issueProvider()
     {
+        $test_helpers = array('ouch' =>function() {
+            return 'ok';
+        });
+
+        $test_helpers2 = array('ouch' =>function() {return 'wa!';});
+
+        $test_helpers3 = array('ouch' =>function() {return 'wa!';}, 'god' => function () {return 'yo';});
+
         $issues = Array(
             Array(
                 'id' => 39,
@@ -995,6 +1003,28 @@ VAREND
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                 ),
                 'expected' => '0',
+            ),
+
+            Array(
+                'id' => 221,
+                'template' => 'a{{ouch}}b',
+                'data' => null,
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'helpers' => $test_helpers
+                ),
+                'expected' => 'aokb',
+            ),
+
+            Array(
+                'id' => 221,
+                'template' => 'a{{ouch}}b',
+                'data' => null,
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'helpers' => $test_helpers2
+                ),
+                'expected' => 'awa!b',
             ),
 
             Array(
