@@ -2,6 +2,8 @@ HISTORY
 =======
 
 v0.94 current master, not released
+   * align with handlebars.js 4.0.5
+   * 7082bd3276 refine helper function exporter
 
 v0.93 https://github.com/zordius/lightncandy/tree/v0.93
    * align with handlebars.js 4.0.5
