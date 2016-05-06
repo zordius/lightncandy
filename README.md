@@ -69,23 +69,33 @@ LightnCandy::compile($template, Array(
 
 Default is to compile the template as PHP, which can be run as fast as possible (flags = `FLAG_BESTPERFORMANCE`).
 
+**Error Handling**
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_ERROR_LOG.html">FLAG_ERROR_LOG</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_ERROR_EXCEPTION.html">FLAG_ERROR_EXCEPTION</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_ERROR_SKIPPARTIAL.html">FLAG_ERROR_SKIPPARTIAL</a>
-* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_NOESCAPE.html">FLAG_NOESCAPE</a>
-* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_STANDALONEPHP.html">FLAG_STANDALONEPHP</a>
+
+**JavaScript Compatibility**
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_JSTRUE.html">FLAG_JSTRUE</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_JSOBJECT.html">FLAG_JSOBJECT</a>
+
+**Handlebars Compatibility**
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_THIS.html">FLAG_THIS</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_PARENT.html">FLAG_PARENT</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_HBESCAPE.html">FLAG_HBESCAPE</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_ADVARNAME.html">FLAG_ADVARNAME</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_NAMEDARG.html">FLAG_NAMEDARG</a>
+* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_SLASH.html">FLAG_SLASH</a>
+* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_ELSE.html">FLAG_ELSE</a>
+
+**Handlebars Options**
+* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_NOESCAPE.html">FLAG_NOESCAPE</a>
+* `FLAG_PARTIALNEWCONTEXT` : create a new context for the partial, the behavior is same with handlebars.js explicitPartialContext compile time option.
+
+**PHP**
+* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_STANDALONEPHP.html">FLAG_STANDALONEPHP</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_EXTHELPER.html">FLAG_EXTHELPER</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_RUNTIMEPARTIAL.html">FLAG_RUNTIMEPARTIAL</a>
-* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_SLASH.html">FLAG_SLASH</a>
-* `FLAG_PARTIALNEWCONTEXT` : create a new context for the partial, the behavior is same with handlebars.js explicitPartialContext compile time option.
-* `FLAG_ELSE` : support `{{else}}` or `{{^}}` as handlebars specification. Otherwise, `{{else}}` will be resolved as normal variable , and {{^}} will cause template error.
+
 * `FLAG_RAWBLOCK`: support `{{{{raw_block}}}} any char or {{foo}} as none parsed raw string {{{{/raw_block}}}}`.
 * `FLAG_PROPERTY` : support object instance attribute access. You MUST apply this if your data contains object. And, the rendering performance will be worse.
 * `FLAG_METHOD` : support object instance method access. You MUST apply this if your data contains object. And, the rendering performance will be worse.
