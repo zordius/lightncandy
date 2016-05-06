@@ -1039,6 +1039,28 @@ VAREND
             ),
 
             Array(
+                'id' => 224,
+                'template' => '{{#> foo bar}}a,b,{{.}},{{!-- comment --}},d{{/foo}}',
+                'data' => Array('bar' => 'BA!'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_THIS | LightnCandy::FLAG_SPVARS | LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_ERROR_SKIPPARTIAL | LightnCandy::FLAG_PARENT,
+                    'partials' => Array('foo' => 'hello, {{> @partial-block}}')
+                ),
+                'expected' => 'hello, a,b,BA!,d',
+            ),
+
+            Array(
+                'id' => 224,
+                'template' => '{{#> foo bar}}{{#if .}}OK! {{.}}{{else}}no bar{{/if}}{{/foo}}',
+                'data' => Array('bar' => 'BA!'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_THIS | LightnCandy::FLAG_SPVARS | LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_ERROR_SKIPPARTIAL | LightnCandy::FLAG_PARENT,
+                    'partials' => Array('foo' => 'hello, {{> @partial-block}}')
+                ),
+                'expected' => 'hello, OK! BA!no bar',
+            ),
+
+            Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
                 'options' => Array(
