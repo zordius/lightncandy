@@ -36,8 +36,13 @@ $data = array(
   'qoo' => 'moo'
 );
 
-$render = LightnCandy::prepare($php);
-echo "Result:\n" . $render($data);
+// Save the compiled PHP code into a php file
+file_put_contents('render.php', '<?php ' . $phpStr . '?>');
+
+// Get the render function from the php file
+$renderer = include('render.php');
+
+echo "Result:\n" . $renderer($data);
 ```
 
 The Issue:
