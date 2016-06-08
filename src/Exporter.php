@@ -71,7 +71,7 @@ class Exporter
                 $ret .= ("            '$name' => " . static::closure($context, $func) . ",\n");
                 continue;
             }
-            if (is_callable($func) && ($context['flags']['exhlp'] == LightnCandy::FLAG_EXTHELPER)) {
+            if (($context['flags']['exhlp'] == LightnCandy::FLAG_EXTHELPER) && is_array($func) && is_callable($func)) {
                 continue;
             }
             $ret .= "            '$name' => '$func',\n";
