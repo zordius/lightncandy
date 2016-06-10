@@ -188,7 +188,7 @@ class Context extends Flags
      * @return array<string,array|string|integer> context with generated helper table
      *
      * @expect array() when input array(), array()
-     * @expect array('flags' => array('exhlp' => 1)) when input array('flags' => array('exhlp' => 1)), array('helpers' => array('abc'))
+     * @expect array('flags' => array('exhlp' => 1), 'helpers' => array('abc' => 1)) when input array('flags' => array('exhlp' => 1)), array('helpers' => array('abc'))
      * @expect array('error' => array('You provide a custom helper named as \'abc\' in options[\'helpers\'], but the function abc() is not defined!'), 'flags' => array('exhlp' => 0)) when input array('error' => array(), 'flags' => array('exhlp' => 0)), array('helpers' => array('abc'))
      * @expect array('flags' => array('exhlp' => 1), 'helpers' => array('\\LightnCandy\\Runtime::raw' => '\\LightnCandy\\Runtime::raw')) when input array('flags' => array('exhlp' => 1), 'helpers' => array()), array('helpers' => array('\\LightnCandy\\Runtime::raw'))
      * @expect array('flags' => array('exhlp' => 1), 'helpers' => array('test' => '\\LightnCandy\\Runtime::raw')) when input array('flags' => array('exhlp' => 1), 'helpers' => array()), array('helpers' => array('test' => '\\LightnCandy\\Runtime::raw'))
@@ -203,7 +203,10 @@ class Context extends Flags
                     if (is_array($func)) {
                         $context['error'][] = "I found an array in $tname with key as $name, please fix it.";
                     } else {
-                        if (!$context['flags']['exhlp']) {
+                        if ($context['flags']['exhlp']) {
+                            // Regist helper names only
+                            $context[$tname][$tn] = 1;
+                        } else {
                             $context['error'][] = "You provide a custom helper named as '$tn' in options['$tname'], but the function $func() is not defined!";
                         }
                     }
