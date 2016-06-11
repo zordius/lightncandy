@@ -85,7 +85,7 @@ class Context extends Flags
             'currentToken' => null,
             'error' => array(),
             'elselvl' => array(),
-            'elseif' => false,
+            'elsechain' => false,
             'tokens' => array(
                 'standalone' => true,
                 'ahead' => false,
