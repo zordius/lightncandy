@@ -4,6 +4,8 @@ HISTORY
 v0.94 current master, not released
    * align with handlebars.js 4.0.5
    * 7082bd3276 refine helper function exporter
+   * dcda1202cf now can compile custom helpers without implementation when FLAG_EXTHELPER is on
+   * 2eb2ae8e8d supports `{{else with foo}}` , `{{else each bar}}`, `{{else myHelper}}` now
 
 v0.93 https://github.com/zordius/lightncandy/tree/v0.93
    * align with handlebars.js 4.0.5
