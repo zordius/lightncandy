@@ -667,7 +667,7 @@ class Validator {
 
         if (isset($vars[1][0])) {
             $token = $context['currentToken'];
-            $context['currentToken'][Token::POS_RSPACE] = '{{#' . $vars[1][0] . ' ' . preg_replace('/^\\s*else\\s+' . $vars[1][0] . '\\s+/', '', $token[Token::POS_INNERTAG]) . '}}' . $context['currentToken'][Token::POS_RSPACE];
+            $context['currentToken'][Token::POS_RSPACE] = "{{#{$vars[1][0]} " . preg_replace('/^\\s*else\\s+' . $vars[1][0] . '\\s*/', '', $token[Token::POS_INNERTAG]) . '}}' . $context['currentToken'][Token::POS_RSPACE];
             array_unshift($context['elselvl'][0], $vars[1][0]);
             $context['elsechain'] = true;
         }
