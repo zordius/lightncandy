@@ -1087,6 +1087,26 @@ VAREND
             ),
 
             Array(
+                'id' => 227,
+                'template' => '{{#if moo}}A{{else if bar}}B{{else with foo}}C{{.}}{{/if}}',
+                'data' => array('foo' => 'D'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_ERROR_EXCEPTION
+                ),
+                'expected' => 'CD'
+            ),
+
+            Array(
+                'id' => 227,
+                'template' => '{{#if moo}}A{{else if bar}}B{{else each foo}}C{{.}}{{/if}}',
+                'data' => array('foo' => array(1, 3, 5)),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_ERROR_EXCEPTION
+                ),
+                'expected' => 'C1C3C5'
+            ),
+
+            Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
                 'options' => Array(
