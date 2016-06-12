@@ -264,7 +264,6 @@ VAREND
         list($levels, $spvar, $var) = Expression::analyze($context, $var);
         $exp = Expression::toString($levels, $spvar, $var);
         $base = $spvar ? "\$cx['sp_vars']" : '$in';
-        $is_array_check = $spvar ? false : true;
 
         // change base when trace to parent
         if ($levels > 0) {
@@ -301,7 +300,10 @@ VAREND
         if ($levels > 0) {
             $checks[] = "isset($base)";
         }
-        if ($is_array_check) {
+        if (!$spvar) {
+            if (($levels === 0) && $p) {
+                $checks[] = "isset($base$p)";
+            }
             $checks[] = "is_array($base$p)";
         }
         $checks[] = "isset($base$n$L)";
