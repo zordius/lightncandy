@@ -43,6 +43,7 @@ class Compiler extends Validator
     public static function compileTemplate(&$context, $template) {
         array_unshift($context['parsed'], array());
         Validator::verify($context, $template);
+        static::$lastParsed = $context['parsed'];
 
         if (count($context['error'])) {
             return;
@@ -66,7 +67,7 @@ class Compiler extends Validator
             }
         }
 
-        static::$lastParsed = array_shift($context['parsed']);
+        array_shift($context['parsed']);
 
         return $code;
     }
@@ -448,38 +449,33 @@ VAREND
      */
     protected static function blockEnd(&$context, &$vars, $matchop = NULL) {
         $pop = $context['stack'][count($context['stack']) - 1];
-        $elsifend = isset($vars[0][-1]) ? str_repeat($context['ops']['cnd_nend'], $vars[0][-1]) : '';
         switch ($context['currentToken'][Token::POS_INNERTAG]) {
             case 'if':
             case 'unless':
                 if ($pop === ':') {
                     array_pop($context['stack']);
-                    return "$elsifend{$context['ops']['cnd_end']}";
+                    return "{$context['ops']['cnd_end']}";
                 }
                 if (!$context['flags']['nohbh']) {
-                    return "{$context['ops']['cnd_else']}''$elsifend{$context['ops']['cnd_end']}";
+                    return "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
                 }
                 break;
             case 'with':
                 if (!$context['flags']['nohbh']) {
-                    return "$elsifend{$context['ops']['f_end']}}){$context['ops']['seperator']}";
+                    return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
                 }
         }
 
         if ($pop === ':') {
             array_pop($context['stack']);
-            return "$elsifend{$context['ops']['f_end']}}){$context['ops']['seperator']}";
-        }
-
-        if ($elsifend !== '') {
-            $elsifend = "{$context['ops']['cnd_else']}''$elsifend";
+            return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
         }
 
         switch($pop) {
             case '#':
-                return "$elsifend{$context['ops']['f_end']}}){$context['ops']['seperator']}";
+                return "{$context['ops']['f_end']}}){$context['ops']['seperator']}";
             case '^':
-                return "$elsifend{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
+                return "{$context['ops']['cnd_else']}''{$context['ops']['cnd_end']}";
         }
     }
 

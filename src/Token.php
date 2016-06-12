@@ -41,6 +41,7 @@ class Token
     const POS_ENDTAG = 10;
     const POS_RSPACE = 11;
     const POS_ROTHER = 12;
+    const POS_BACKFILL = 13;
 
     /**
      * Setup delimiter by default or provided string

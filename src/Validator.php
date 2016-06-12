@@ -152,7 +152,7 @@ class Validator {
      * @return boolean|integer|null Return true when invalid or detected
      *
      * @expect null when input '', array(), array()
-     * @expect 2 when input '^', array('usedFeature' => array('isec' => 1), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0), 'helperresolver' => 0), array(array('foo'))
+     * @expect 2 when input '^', array('usedFeature' => array('isec' => 1), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'elselvl' => array(), 'flags' => array('spvar' => 0), 'elsechain' => false, 'helperresolver' => 0), array(array('foo'))
      * @expect true when input '/', array('stack' => array('[with]', '#'), 'level' => 1, 'currentToken' => array(0,0,0,0,0,0,0,'with'), 'flags' => array('nohbh' => 0)), array(array())
      * @expect 4 when input '#', array('usedFeature' => array('sec' => 3), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0), 'elsechain' => false, 'elselvl' => array(), 'helperresolver' => 0), array(array('x'))
      * @expect 5 when input '#', array('usedFeature' => array('if' => 4), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0, 'nohbh' => 0), 'elsechain' => false, 'elselvl' => array(), 'helperresolver' => 0), array(array('if'))
@@ -197,9 +197,10 @@ class Validator {
                     }
                 }
 
+                static::doElseChain($context);
+
                 if (static::isBlockHelper($context, $vars)) {
                     static::pushStack($context, '#', $vars);
-                    array_unshift($context['elselvl'], 0);
                     return static::blockCustomHelper($context, $vars, true);
                 }
 
@@ -208,20 +209,19 @@ class Validator {
 
             case '/':
                 $r = static::blockEnd($context, $vars);
-                array_pop($context['stack']);
-                array_pop($context['stack']);
-                array_pop($context['stack']);
+                if ($r !== Token::POS_BACKFILL) {
+                    array_pop($context['stack']);
+                    array_pop($context['stack']);
+                    array_pop($context['stack']);
+                }
                 return $r;
 
             case '#':
-                if (static::isBlockHelper($context, $vars)) {
-                    static::pushStack($context, '#', $vars);
-                    array_unshift($context['elselvl'], 0);
-                    return static::blockCustomHelper($context, $vars);
-                }
+                static::doElseChain($context);
+                static::pushStack($context, '#', $vars);
 
-                if (!$context['elsechain']) {
-                    static::pushStack($context, '#', $vars);
+                if (static::isBlockHelper($context, $vars)) {
+                    return static::blockCustomHelper($context, $vars);
                 }
 
                 return static::blockBegin($context, $vars);
@@ -307,15 +307,15 @@ class Validator {
     }
 
     /**
-     * handle else if
+     * handle else chain
      *
      * @param array<string,array|string|integer> $context current compile context
      */
-    protected static function doElseIf(&$context) {
+    protected static function doElseChain(&$context) {
         if ($context['elsechain']) {
             $context['elsechain'] = false;
         } else {
-            array_unshift($context['elselvl'], 0);
+            array_unshift($context['elselvl'], array());
         }
     }
 
@@ -330,17 +330,14 @@ class Validator {
     protected static function blockBegin(&$context, $vars) {
         switch ((isset($vars[0][0]) && is_string($vars[0][0])) ? $vars[0][0] : null) {
             case 'with':
-                array_unshift($context['elselvl'], 0);
                 return static::with($context, $vars);
             case 'each':
-                array_unshift($context['elselvl'], 0);
                 return static::section($context, $vars, true);
             case 'unless':
                 return static::unless($context, $vars);
             case 'if':
                 return static::doIf($context, $vars);
             default:
-                array_unshift($context['elselvl'], 0);
                 return static::section($context, $vars);
         }
     }
@@ -407,7 +404,6 @@ class Validator {
      * @return boolean Return true always
      */
     protected static function unless(&$context, $vars) {
-        static::doElseIf($context);
         static::builtin($context, $vars);
         return true;
     }
@@ -421,7 +417,6 @@ class Validator {
      * @return boolean Return true always
      */
     protected static function doIf(&$context, $vars) {
-        static::doElseIf($context);
         static::builtin($context, $vars);
         return true;
     }
@@ -484,19 +479,20 @@ class Validator {
         }
 
         switch($pop) {
-            case '#>':
-            case '#*':
             case '#':
             case '^':
+                $elsechain = array_shift($context['elselvl']);
+                if (isset($elsechain[0])) {
+                    $context['currentToken'][Token::POS_RSPACE] = $context['currentToken'][Token::POS_BACKFILL] = '{{/' . implode('}}{{/', $elsechain) . '}}' . Token::toString($context['currentToken']) . $context['currentToken'][Token::POS_RSPACE];
+                    return Token::POS_BACKFILL;
+                }
+            case '#>':
+            case '#*':
                 list($levels, $spvar, $var) = Expression::analyze($context, $vars[0]);
                 $v = Expression::toString($levels, $spvar, $var);
                 if ($pop2 !== $v) {
                     $context['error'][] = 'Unexpect token ' . Token::toString($context['currentToken']) . " ! Previous token {{{$pop}$pop2}} is not closed";
                     return;
-                }
-                if (count($context['elselvl']) > 0) {
-                    $vars[0][-1] = $context['elselvl'][0];
-                    array_shift($context['elselvl']);
                 }
                 return true;
             default:
@@ -617,7 +613,7 @@ class Validator {
         static::spacing($token, $context, (($token[Token::POS_OP] === '') || ($token[Token::POS_OP] === '&')) && (!$context['flags']['else'] || !isset($vars[0][0]) || ($vars[0][0] !== 'else')) || ($context['flags']['nostd'] > 0));
 
         if (static::operator($token[Token::POS_OP], $context, $vars)) {
-            return array($raw, $vars);
+            return isset($token[Token::POS_BACKFILL]) ? null : array($raw, $vars);
         }
 
         if (count($vars) == 0) {
@@ -669,11 +665,11 @@ class Validator {
             $context['error'][] = '{{else}} only valid in if, unless, each, and #section context';
         }
 
-        if (isset($vars[1][0]) && (($vars[1][0] === 'if') || ($vars[1][0] === 'unless'))) {
+        if (isset($vars[1][0])) {
             $token = $context['currentToken'];
             $context['currentToken'][Token::POS_RSPACE] = '{{#' . $vars[1][0] . ' ' . preg_replace('/^\\s*else\\s+' . $vars[1][0] . '\\s+/', '', $token[Token::POS_INNERTAG]) . '}}' . $context['currentToken'][Token::POS_RSPACE];
+            array_unshift($context['elselvl'][0], $vars[1][0]);
             $context['elsechain'] = true;
-            $context['elselvl'][0]++;
         }
 
         return ++$context['usedFeature']['else'];
