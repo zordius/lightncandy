@@ -22,14 +22,14 @@ $partials = array(
     'bar' => 'Yes, partial',
 );
 
-$php = LightnCandy::compile($template, array(
+$phpStr = LightnCandy::compile($template, array(
   // Used compile flags
   'flags' => LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_HANDLEBARS,
   'helpers' => $helpers,
   'partials' => $partials,
 ));
 
-echo "Generated PHP Code:\n$php\n";
+echo "Generated PHP Code:\n$phpStr\n";
 
 // Input Data:
 $data = array(
