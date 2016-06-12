@@ -1107,6 +1107,16 @@ VAREND
             ),
 
             Array(
+                'id' => 229,
+                'template' => '{{#if foo.bar.moo}}TRUE{{else}}FALSE{{/if}}',
+                'data' => array(),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_ERROR_EXCEPTION
+                ),
+                'expected' => 'FALSE'
+            ),
+
+            Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
                 'options' => Array(
