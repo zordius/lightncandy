@@ -6,6 +6,8 @@ v0.94 current master, not released
    * 7082bd3276 refine helper function exporter
    * dcda1202cf now can compile custom helpers without implementation when FLAG_EXTHELPER is on
    * 2eb2ae8e8d supports `{{else with foo}}` , `{{else each bar}}`, `{{else myHelper}}` now
+   * cd8d96befa fix {{foo.bar}} lookup PHP warning
+   * 0effc46896 fix compile bug when override built-in helpers
 
 v0.93 https://github.com/zordius/lightncandy/tree/v0.93
    * align with handlebars.js 4.0.5
