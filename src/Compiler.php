@@ -451,7 +451,8 @@ VAREND
      */
     protected static function blockEnd(&$context, &$vars, $matchop = NULL) {
         $pop = $context['stack'][count($context['stack']) - 1];
-        switch ($context['currentToken'][Token::POS_INNERTAG]) {
+
+        switch (isset($context['helpers'][$context['currentToken'][Token::POS_INNERTAG]]) ? 'skip' : $context['currentToken'][Token::POS_INNERTAG]) {
             case 'if':
             case 'unless':
                 if ($pop === ':') {
@@ -587,14 +588,15 @@ VAREND
      * @return string Return compiled code segment for the token when the token is else
      */
     protected static function doElse(&$context, $vars) {
-        switch ($context['stack'][count($context['stack']) - 2]) {
-            case '[if]':
-            case '[unless]':
-                $context['stack'][] = ':';
-                return "{$context['ops']['cnd_else']}";
-            default:
-                return "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}";
+        $v = $context['stack'][count($context['stack']) - 2];
+
+        if ((($v === '[if]') && !isset($context['helpers']['if'])) ||
+           (($v === '[unless]') && !isset($context['helpers']['unless']))) {
+           $context['stack'][] = ':';
+           return "{$context['ops']['cnd_else']}";
         }
+
+        return "{$context['ops']['f_end']}}, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
     /**
