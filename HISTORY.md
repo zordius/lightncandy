@@ -1,7 +1,9 @@
 HISTORY
 =======
 
-v0.94 current master, not released
+v0.95 current master, not released
+
+v0.94 https://github.com/zordius/lightncandy/tree/v0.94
    * align with handlebars.js 4.0.5
    * 7082bd3276 refine helper function exporter
    * dcda1202cf now can compile custom helpers without implementation when FLAG_EXTHELPER is on
