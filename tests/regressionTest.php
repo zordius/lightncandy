@@ -1117,6 +1117,21 @@ VAREND
             ),
 
             Array(
+                'id' => 233,
+                'template' => '{{#if foo}}FOO{{else}}BAR{{/if}}',
+                'data' => array(),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARS,
+                    'helpers' => Array(
+                        'if' => function($arg, $options) {
+                            return $options['fn']();
+                         }
+                    )
+                ),
+                'expected' => 'FOO'
+            ),
+
+            Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
                 'options' => Array(
