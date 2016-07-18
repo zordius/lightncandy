@@ -722,13 +722,25 @@ class Validator {
      *
      * @param array<string,array|string|integer> $context current compile context
      * @param string $name token name
+     * @param boolean $checkSubexp true when check for subexpression
      *
      * @return boolean Return true when it is custom helper
      */
-    public static function helper(&$context, $name) {
+    public static function helper(&$context, $name, $checkSubexp = false) {
         if (static::resolveHelper($context, $name)) {
             $context['usedFeature']['helper']++;
             return true;
+        }
+
+        if ($checkSubexp) {
+            switch ($name) {
+            case 'if':
+            case 'unless':
+            case 'with':
+            case 'each':
+            case 'lookup':
+                return $context['flags']['nohbh'] ? false : true;
+            }
         }
 
         return false;

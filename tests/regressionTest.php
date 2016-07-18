@@ -1135,13 +1135,13 @@ VAREND
                 'id' => 234,
                 'template' => '{{> (lookup foo 2)}}',
                 'data' => array('foo' => array('a', 'b', 'c')),
-                'partials' => Array(
-                    'a' => '1st',
-                    'b' => '2nd',
-                    'c' => '3rd'
-                ),
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_RUNTIMEPARTIAL,
+                    'partials' => Array(
+                        'a' => '1st',
+                        'b' => '2nd',
+                        'c' => '3rd'
+                    )
                 ),
                 'expected' => '3rd'
             ),

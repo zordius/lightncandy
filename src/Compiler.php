@@ -203,7 +203,7 @@ VAREND
      * @return array<string> code representing passed expression
      */
     public static function compileSubExpression(&$context, $vars) {
-        $ret = static::customHelper($context, $vars, true, true);
+        $ret = static::customHelper($context, $vars, true, true, true);
 
         if (($ret === null) && $context['flags']['lambda']) {
             $ret = static::compileVariable($context, $vars, true, true);
@@ -562,11 +562,17 @@ VAREND
      * @param array<boolean|integer|string|array> $vars parsed arguments list
      * @param boolean $raw is this {{{ token or not
      * @param boolean $nosep true to compile without seperator
+     * @param boolean $subExp true when compile for subexpression
      *
      * @return string|null Return compiled code segment for the token when the token is custom helper
      */
-    protected static function customHelper(&$context, $vars, $raw, $nosep) {
+    protected static function customHelper(&$context, $vars, $raw, $nosep, $subExp = false) {
         if (!isset($context['helpers'][$vars[0][0]])) {
+            if ($subExp) {
+                if ($vars[0][0] == 'lookup') {
+                    return static::compileLookup($context, $vars, $raw, true);
+                }
+            }
             return;
         }
 
@@ -620,16 +626,19 @@ VAREND
      * @param array<string,array|string|integer> $context current compile context
      * @param array<boolean|integer|string|array> $vars parsed arguments list
      * @param boolean $raw is this {{{ token or not
+     * @param boolean $nosep true to compile without seperator
      *
      * @return string Return compiled code segment for the token
      */
-    protected static function compileLookup(&$context, &$vars, $raw) {
+    protected static function compileLookup(&$context, &$vars, $raw, $nosep = false) {
         $v2 = static::getVariableName($context, $vars[2]);
         $v = static::getVariableName($context, $vars[1], $v2);
+        $sep = $nosep ? '' : $context['ops']['seperator'];
+
         if ($context['flags']['hbesc'] || $context['flags']['jsobj'] || $context['flags']['jstrue'] || $context['flags']['debug']) {
-            return $context['ops']['seperator'] . static::getFuncName($context, $raw ? 'raw' : $context['ops']['enc'], $v[1]) . "\$cx, {$v[0]}){$context['ops']['seperator']}";
+            return $sep . static::getFuncName($context, $raw ? 'raw' : $context['ops']['enc'], $v[1]) . "\$cx, {$v[0]}){$sep}";
         } else {
-            return $raw ? "{$context['ops']['seperator']}$v[0]{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlentities((string){$v[0]}, ENT_QUOTES, 'UTF-8'){$context['ops']['seperator']}";
+            return $raw ? "{$sep}$v[0]{$sep}" : "{$sep}htmlentities((string){$v[0]}, ENT_QUOTES, 'UTF-8'){$sep}";
         }
     }
 
