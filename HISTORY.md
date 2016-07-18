@@ -2,6 +2,7 @@ HISTORY
 =======
 
 v0.95 current master, not released
+   * 71abc9853e fix `{{> (lookup foo bar)}}` issue (allow builtin helpers in subexpression)
 
 v0.94 https://github.com/zordius/lightncandy/tree/v0.94
    * align with handlebars.js 4.0.5
