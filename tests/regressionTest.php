@@ -1132,6 +1132,21 @@ VAREND
             ),
 
             Array(
+                'id' => 234,
+                'template' => '{{> (lookup foo 2)}}',
+                'data' => array('foo' => array('a', 'b', 'c')),
+                'partials' => Array(
+                    'a' => '1st',
+                    'b' => '2nd',
+                    'c' => '3rd'
+                ),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_RUNTIMEPARTIAL,
+                ),
+                'expected' => '3rd'
+            ),
+
+            Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
                 'options' => Array(
