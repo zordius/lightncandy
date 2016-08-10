@@ -20,5 +20,10 @@
         "psr-4": {
             "LightnCandy\\": "src"
         }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "v0.95-dev"
+        }
     }
 }
