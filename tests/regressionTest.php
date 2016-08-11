@@ -1046,7 +1046,7 @@ VAREND
                     'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_THIS | LightnCandy::FLAG_SPVARS | LightnCandy::FLAG_ERROR_LOG | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_ERROR_SKIPPARTIAL | LightnCandy::FLAG_PARENT,
                     'partials' => Array('foo' => 'hello, {{> @partial-block}}')
                 ),
-                'expected' => 'hello, a,b,BA!,d',
+                'expected' => 'hello, a,b,BA!,,d',
             ),
 
             Array(
