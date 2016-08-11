@@ -79,7 +79,21 @@ class Validator {
      * @param array<string,array|string|integer> $context Current context
      */
     protected static function pushLeft(&$context) {
-        static::pushToken($context, $context['currentToken'][Token::POS_LOTHER] . $context['currentToken'][Token::POS_LSPACE]);
+        $L = $context['currentToken'][Token::POS_LOTHER] . $context['currentToken'][Token::POS_LSPACE];
+
+        if ($context['currentToken'][Token::POS_OP] === '!') {
+            $appender = function (&$pb) use ($context, $L) {
+                $pb .= $L;
+            };
+            if (count($context['partialblock']) > 0) {
+                array_walk($context['partialblock'], $appender);
+            }
+            if (count($context['inlinepartial']) > 0) {
+                array_walk($context['inlinepartial'], $appender);
+            }
+        }
+
+        static::pushToken($context, $L);
         $context['currentToken'][Token::POS_LOTHER] = $context['currentToken'][Token::POS_LSPACE] = '';
     }
 
