@@ -298,7 +298,7 @@ class Validator {
                 if (static::blockEnd($context, $vars, '#>') !== null) {
                     $c = $context['stack'][count($context['stack']) - 4];
                     $found = Partial::resolve($context, $vars[0][0]) !== null;
-                    $v = $found ? "@partial-block{$context['usedFeature']['pblock']}" : "{$vars[0][0]}";
+                    $v = $found ? "@partial-block{$context['parsed'][0][$c][1][Parser::PARTIALBLOCK]}" : "{$vars[0][0]}";
                     if ($found) {
                         $context['partials'][$v] = $context['partialblock'][0];
                     }
