@@ -514,10 +514,6 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{#*inline "partial_name"}}...{{/inline}}` : Inline partial, provide a partial and overwrite the original one.
 * `{{log foo}}` : output value to stderr for debug.
 
-*TODO*
-
-* https://github.com/wycats/handlebars.js/issues/1092
-
 Framework Integration
 ---------------------
 

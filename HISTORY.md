@@ -2,6 +2,7 @@ HISTORY
 =======
 
 v0.95 current master, not released
+   * align with handlebars.js 4.0.5
    * 71abc9853e fix `{{> (lookup foo bar)}}` issue (allow builtin helpers in subexpression)
    * c321e477b2 fix comment inside partial block issue
    * 6e98a13a55 fix `@partial-block` id generation issue
