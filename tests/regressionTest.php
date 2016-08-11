@@ -1147,6 +1147,21 @@ VAREND
             ),
 
             Array(
+                'id' => 236,
+                'template' => 'A{{#> foo}}B{{#> bar}}C{{>moo}}D{{/bar}}E{{/foo}}F',
+                'data' => null,
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_HANDLEBARS,
+                    'partials' => Array(
+                        'foo' => 'FOO>{{> @partial-block}}<FOO',
+                        'bar' => 'bar>{{> @partial-block}}<bar',
+                        'moo' => 'MOO!',
+                    )
+                ),
+                'expected' => 'AFOO>Bbar>CMOO!D<barE<FOOF'
+            ),
+
+            Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
                 'options' => Array(
