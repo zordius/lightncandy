@@ -78,8 +78,8 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 **JavaScript Compatibility**
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_JSTRUE.html">FLAG_JSTRUE</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_JSOBJECT.html">FLAG_JSOBJECT</a>
-* `FLAG_JSLENGTH` : support {{foo.length}} when foo is an array (simulate JavaScript Array.proto.length behavior)
-* `FLAG_JS` : simulate all supported JavaScript behavior, same with `FLAG_JSTRUE` + `FLAG_JSOBJECT` + `FLAG_JSLENGTH`.
+* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_JSLENGTH.html">FLAG_JSLENGTH</a>
+* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_JS.html">FLAG_JS</a>
 
 **Mustache Compatibility**
 * `FLAG_MUSTACHELOOKUP` : align recursive lookup up behaviors with mustache specification. And, the rendering performance will be worse.
