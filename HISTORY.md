@@ -1,7 +1,7 @@
 HISTORY
 =======
 
-v0.95 current master, not released
+v0.95 https://github.com/zordius/lightncandy/tree/v0.95
    * align with handlebars.js 4.0.5
    * 71abc9853e fix `{{> (lookup foo bar)}}` issue (allow builtin helpers in subexpression)
    * c321e477b2 fix comment inside partial block issue
