@@ -67,7 +67,7 @@ LightnCandy::compile($template, Array(
 ));
 ```
 
-Default is to compile the template as PHP, which can be run as fast as possible (flags = `FLAG_BESTPERFORMANCE`).
+Default is to compile the template as PHP, which can be run as fast as possible (flags = <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_BESTPERFORMANCE.html">FLAG_BESTPERFORMANCE</a>).
 
 **Error Handling**
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_ERROR_LOG.html">FLAG_ERROR_LOG</a>
