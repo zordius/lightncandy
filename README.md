@@ -118,8 +118,8 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_PROPERTY.html">FLAG_PROPERTY</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_METHOD.html">FLAG_METHOD</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_INSTANCE.html">FLAG_INSTANCE</a>
-* `FLAG_ECHO` : compile to `echo 'a', $b, 'c';` to improve performance. This will slow down rendering when the template and data are simple, but will improve 5% ~ 10% when the data is big and looping in the template.
-* `FLAG_BESTPERFORMANCE` : same with `FLAG_ECHO` + `FLAG_STANDALONEPHP` now. This flag may be changed base on performance testing result in the future.
+* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_ECHO.html">FLAG_ECHO</a>
+* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_BESTPERFORMANCE.html">FLAG_BESTPERFORMANCE</a>
 
 Partial Support
 ---------------
