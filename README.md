@@ -420,10 +420,10 @@ $php = LightnCandy::compile($template, Array(
 
 Please make sure `MyRunTime` exists when compile() or rendering based on your `FLAG_STANDALONEPHP` .
 
-Unsupported Feature (so far)
-----------------------------
+Unsupported Feature
+-------------------
 
-* [NEVER] `{{foo/bar}}` style variable name, it is deprecated in official handlebars.js document, please use this style: `{{foo.bar}}`.
+* `{{foo/bar}}` style variable name, it is deprecated in official handlebars.js document, please use this style: `{{foo.bar}}`.
 
 Suggested Handlebars Template Practices
 ---------------------------------------
