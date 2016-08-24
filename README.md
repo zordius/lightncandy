@@ -105,7 +105,7 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 
 **Handlebars Options**
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_NOESCAPE.html">FLAG_NOESCAPE</a>
-* `FLAG_PARTIALNEWCONTEXT` : create a new context for the partial, the behavior is same with handlebars.js explicitPartialContext compile time option.
+* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_PARTIALNEWCONTEXT.html">FLAG_PARTIALNEWCONTEXT</a>
 * `FLAG_IGNORESTANDALONE` : prevent standalone detection on `{{#foo}}`, `{{/foo}}` or `{{^}}`, the behavior is same with handlebars.js ignoreStandalone compile time option.
 * `FLAG_STRINGPARAMS` : pass variable name as string to helpers, the behavior is same with handlebars.js stringParams compile time option.
 * `FLAG_KNOWNHELPERSONLY`: Only pass current context to lambda, the behavior is same with handlebars.js knownHelpersOnly compile time option.
