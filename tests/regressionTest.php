@@ -1172,7 +1172,7 @@ VAREND
                         'moo' => 'oh'
                     )
                 ),
-                'expected' => 'lala?'
+                'expected' => 'AGOOD!>1>3>5B'
             ),
 
             Array(
