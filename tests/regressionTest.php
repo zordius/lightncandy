@@ -1162,6 +1162,20 @@ VAREND
             ),
 
             Array(
+                'id' => 241,
+                'template' => '{{#>foo}}{{#*inline "bar"}}GOOD!{{#each .}}>{{.}}{{/each}}{{/inline}}{{/foo}}',
+                'data' => Array('1', '3', '5'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL,
+                    'partials' => Array(
+                        'foo' => 'A{{#>bar}}BAD{{/bar}}B',
+                        'moo' => 'oh'
+                    )
+                ),
+                'expected' => 'lala?'
+            ),
+
+            Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
                 'options' => Array(
