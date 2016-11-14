@@ -274,11 +274,11 @@ VAREND
             }
         }
 
-        if ((count($var) == 0) || (($var[0] === null) && (count($var) == 1))) {
+        if (((count($var) == 0) || (($var[0] === null) && (count($var) == 1))) && ($lookup === null)) {
             return array($base, $exp);
         }
 
-        if ($var[0] === null) {
+        if ((count($var) > 0) && ($var[0] === null)) {
             array_shift($var);
         }
 

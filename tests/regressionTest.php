@@ -1176,6 +1176,14 @@ VAREND
             ),
 
             Array(
+                'id' => 243,
+                'template' => '{{lookup . 3}}',
+                'data' => Array('3' => 'OK'),
+                'flags' => LightnCandy::FLAG_HANDLEBARS,
+                'expected' => 'OK'
+            ),
+
+            Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
                 'options' => Array(
