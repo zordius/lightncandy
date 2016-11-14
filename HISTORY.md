@@ -4,6 +4,7 @@ HISTORY
 1.0.0 current master, not released
    * align with handlebars.js 4.0.5
    * b2d9eab03a fix generated PHP code error when FLAG_RUNTIMEPARTIAL is on
+   * 510b4611bb fix `{{lookup . foo}}` issue
 
 v0.95 https://github.com/zordius/lightncandy/tree/v0.95
    * align with handlebars.js 4.0.5
