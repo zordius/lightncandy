@@ -2,7 +2,7 @@ HISTORY
 =======
 
 1.0.0 current master, not released
-   * align with handlebars.js 4.0.5
+   * align with handlebars.js 4.0.6
    * b2d9eab03a fix generated PHP code error when FLAG_RUNTIMEPARTIAL is on
    * 510b4611bb fix `{{lookup . foo}}` issue
 
