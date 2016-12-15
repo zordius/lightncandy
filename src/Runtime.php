@@ -244,7 +244,7 @@ class Runtime extends Encoder
             return (string)$var;
         }
 
-        return htmlentities(static::raw($cx, $var), ENT_QUOTES, 'UTF-8');
+        return htmlspecialchars(static::raw($cx, $var), ENT_QUOTES, 'UTF-8');
     }
 
     /**
@@ -265,7 +265,7 @@ class Runtime extends Encoder
             return (string)$var;
         }
 
-        return str_replace(array('=', '`', '&#039;'), array('&#x3D;', '&#x60;', '&#x27;'), htmlentities(static::raw($cx, $var), ENT_QUOTES, 'UTF-8'));
+        return str_replace(array('=', '`', '&#039;'), array('&#x3D;', '&#x60;', '&#x27;'), htmlspecialchars(static::raw($cx, $var), ENT_QUOTES, 'UTF-8'));
     }
 
     /**
