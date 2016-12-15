@@ -92,7 +92,7 @@ class Encoder
      * @expect 'a&#039;b' when input array('flags' => array('mustlam' => 0, 'lambda' => 0)), 'a\'b'
      */
     public static function enc($cx, $var) {
-        return htmlentities(static::raw($cx, $var), ENT_QUOTES, 'UTF-8');
+        return htmlspecialchars(static::raw($cx, $var), ENT_QUOTES, 'UTF-8');
     }
 
     /**
@@ -109,7 +109,7 @@ class Encoder
      * @expect '&#x60;a&#x27;b' when input array('flags' => array('mustlam' => 0, 'lambda' => 0)), '`a\'b'
      */
     public static function encq($cx, $var) {
-        return str_replace(array('=', '`', '&#039;'), array('&#x3D;', '&#x60;', '&#x27;'), htmlentities(static::raw($cx, $var), ENT_QUOTES, 'UTF-8'));
+        return str_replace(array('=', '`', '&#039;'), array('&#x3D;', '&#x60;', '&#x27;'), htmlspecialchars(static::raw($cx, $var), ENT_QUOTES, 'UTF-8'));
     }
 }
 

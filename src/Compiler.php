@@ -638,7 +638,7 @@ VAREND
         if ($context['flags']['hbesc'] || $context['flags']['jsobj'] || $context['flags']['jstrue'] || $context['flags']['debug']) {
             return $sep . static::getFuncName($context, $raw ? 'raw' : $context['ops']['enc'], $v[1]) . "\$cx, {$v[0]}){$sep}";
         } else {
-            return $raw ? "{$sep}$v[0]{$sep}" : "{$sep}htmlentities((string){$v[0]}, ENT_QUOTES, 'UTF-8'){$sep}";
+            return $raw ? "{$sep}$v[0]{$sep}" : "{$sep}htmlspecialchars((string){$v[0]}, ENT_QUOTES, 'UTF-8'){$sep}";
         }
     }
 
@@ -658,7 +658,7 @@ VAREND
         if ($context['flags']['hbesc'] || $context['flags']['jsobj'] || $context['flags']['jstrue'] || $context['flags']['debug'] || $nosep) {
             return $sep . static::getFuncName($context, $raw ? 'raw' : $context['ops']['enc'], $expression) . "\$cx, $variable)$sep";
         } else {
-            return $raw ? "$sep$variable{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlentities((string)$variable, ENT_QUOTES, 'UTF-8')$sep";
+            return $raw ? "$sep$variable{$context['ops']['seperator']}" : "{$context['ops']['seperator']}htmlspecialchars((string)$variable, ENT_QUOTES, 'UTF-8')$sep";
         }
     }
 
