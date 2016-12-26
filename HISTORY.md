@@ -5,6 +5,7 @@ HISTORY
    * align with handlebars.js 4.0.6
    * b2d9eab03a fix generated PHP code error when FLAG_RUNTIMEPARTIAL is on
    * 510b4611bb fix `{{lookup . foo}}` issue
+   * e629941f8f fix `Cannot use lexical variable $sp as a parameter name` issue in PHP 7.1
 
 v0.95 https://github.com/zordius/lightncandy/tree/v0.95
    * align with handlebars.js 4.0.5
