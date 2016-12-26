@@ -514,6 +514,11 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{#*inline "partial_name"}}...{{/inline}}` : Inline partial, provide a partial and overwrite the original one.
 * `{{log foo}}` : output value to stderr for debug.
 
+Developer Notes
+---------------
+
+Please read <a href=".github/CONTRIBUTING.md">CONTRIBUTING.md</a> for develop environment setup.
+
 Framework Integration
 ---------------------
 

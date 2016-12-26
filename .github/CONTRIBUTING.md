@@ -13,6 +13,7 @@ Pull request is another good way. Before you submit your patch, please ensure yo
 ```sh
 git submodule init
 git submodule update
+composer install
 build/runphp build/gen_test.php
 phpunit
 ```
