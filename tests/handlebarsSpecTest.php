@@ -165,6 +165,9 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                // helper for raw block
                ($spec['it'] === 'helper for raw block gets parameters') ||
 
+               // lambda function in data
+               ($spec['it'] === 'Functions are bound to the context in knownHelpers only mode') ||
+
                // !!!! Never support
                ($spec['template'] === '{{foo}')
            ) {
