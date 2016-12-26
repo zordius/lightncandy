@@ -156,6 +156,12 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
                // Decorators: https://github.com/wycats/handlebars.js/blob/master/docs/decorators-api.md
                ($spec['description'] === 'decorators') ||
 
+               // strict mode
+               ($spec['description'] === 'strict mode') ||
+
+               // assume objects
+               ($spec['description'] === 'assume objects') ||
+
                // helper for raw block
                ($spec['it'] === 'helper for raw block gets parameters') ||
 
