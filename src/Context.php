@@ -138,8 +138,8 @@ class Context extends Flags
             'partialresolver' => (isset($options['partialresolver']) && is_callable($options['partialresolver'])) ? $options['partialresolver'] : false,
             'runtime' => isset($options['runtime']) ? $options['runtime'] : '\\LightnCandy\\Runtime',
             'runtimealias' => 'LR',
-            'safestring' => isset($options['safestring']) ? $options['safestring'] : '\\LightnCandy\\SafeString',
-            'safestringalias' => 'LS',
+            'safestring' => '\\LightnCandy\\SafeString',
+            'safestringalias' => isset($options['safestring']) ? $options['safestring'] : 'LS',
             'rawblock' => false,
             'funcprefix' => uniqid('lcr'),
         );
