@@ -155,7 +155,7 @@ class Exporter
         $class = new \ReflectionClass($context['safestring']);
 
         return array_reduce(static::getClassMethods($context, $class), function ($in, $cur) {
-            return $in . $cur[0];
+            return $in . $cur[2];
         }, "if (!class_exists(\"" . addslashes($context['safestringalias']) . "\")) {\nclass {$context['safestringalias']} {\n" . static::getClassStatics($class)) . "}\n}\n";
     }
 
@@ -243,7 +243,7 @@ class Exporter
         // compress space
         $code = preg_replace('/    /', ' ', $code);
 
-        return array(static::replaceSafeString($context, $code), $child);
+        return array(static::replaceSafeString($context, $code), $child, $code);
     }
 }
 
