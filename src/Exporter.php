@@ -42,17 +42,9 @@ class Exporter
         } else {
             $ref = new \ReflectionFunction($closure);
         }
-        $fname = $ref->getFileName();
+        $meta = static::getMeta($ref);
 
-        $lines = file_get_contents($fname);
-        $file = new \SplFileObject($fname);
-        $file->seek($ref->getStartLine() - 2);
-        $spos = $file->ftell();
-        $file->seek($ref->getEndLine() - 1);
-        $epos = $file->ftell();
-        unset($file);
-
-        return preg_replace('/^.*?function(\s+[^\s\\(]+?)?\s*\\((.+)\\}.*?\s*$/s', 'function($2}', static::replaceSafeString($context, substr($lines, $spos, $epos - $spos)));
+        return preg_replace('/^.*?function(\s+[^\s\\(]+?)?\s*\\((.+)\\}.*?\s*$/s', 'function($2}', static::replaceSafeString($context, $meta['code']));
     }
 
     /**
