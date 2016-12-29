@@ -1179,7 +1179,9 @@ VAREND
                 'id' => 243,
                 'template' => '{{lookup . 3}}',
                 'data' => Array('3' => 'OK'),
-                'flags' => LightnCandy::FLAG_HANDLEBARS,
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARS,
+                ),
                 'expected' => 'OK'
             ),
 
@@ -1187,8 +1189,23 @@ VAREND
                 'id' => 243,
                 'template' => '{{lookup . "test"}}',
                 'data' => Array('test' => 'OK'),
-                'flags' => LightnCandy::FLAG_HANDLEBARS,
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARS,
+                ),
                 'expected' => 'OK'
+            ),
+
+            Array(
+                'id' => 245,
+                'template' => '{{#each foo}}{{#with .}}{{bar}}-{{../../name}}{{/with}}{{/each}}',
+                'data' => Array('name' => 'bad', 'foo' => Array(
+                    Array('bar' => 1),
+                    Array('bar' => 2),
+                )),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARS,
+                ),
+                'expected' => '1-2-'
             ),
 
             Array(

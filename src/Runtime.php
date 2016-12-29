@@ -439,9 +439,13 @@ class Runtime extends Encoder
         if (($v === false) || ($v === null) || (is_array($v) && (count($v) === 0))) {
             return $else ? $else($cx, $in) : '';
         }
-        $cx['scopes'][] = $in;
-        $ret = $cb($cx, $v);
-        array_pop($cx['scopes']);
+        if ($v === $in) {
+            $ret = $cb($cx, $v);
+        } else {
+            $cx['scopes'][] = $in;
+            $ret = $cb($cx, $v);
+            array_pop($cx['scopes']);
+        }
         return $ret;
     }
 
