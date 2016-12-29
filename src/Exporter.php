@@ -50,6 +50,7 @@ class Exporter
         $spos = $file->ftell();
         $file->seek($ref->getEndLine() - 1);
         $epos = $file->ftell();
+        unset($file);
 
         return preg_replace('/^.*?function(\s+[^\s\\(]+?)?\s*\\((.+)\\}.*?\s*$/s', 'function($2}', static::replaceSafeString($context, substr($lines, $spos, $epos - $spos)));
     }
@@ -90,6 +91,49 @@ class Exporter
     }
 
     /**
+     * Get methods from ReflectionClass
+     *
+     * @param array<string,array|string|integer> $context current compile context
+     * @param object $class instance of the ReflectionClass
+     *
+     * @return array
+     */
+    public static function getClassMethods($context, $class) {
+        $methods = array();
+
+        foreach ($class->getMethods() as $method) {
+            $meta = static::getMeta($class, $method);
+            $methods[$meta['name']] = static::scanDependency($context, preg_replace('/public static function (.+)\\(/', "function {$context['funcprefix']}\$1(", $meta['code']));
+        }
+
+        return $methods;
+    }
+
+    /**
+     * Get metadata from ReflectionObject
+     *
+     * @param object $class instance of the base ReflectionClass
+     * @param object $refobj instance of the ReflectionObject
+     *
+     * @return array
+     */
+    public static function getMeta($class, $refobj) {
+        $class = $refobj->getDeclaringClass();
+        $fname = $class->getFileName();
+        $lines = file_get_contents($fname);
+        $file = new \SplFileObject($fname);
+        $file->seek($refobj->getStartLine() - 2);
+        $spos = $file->ftell();
+        $file->seek($refobj->getEndLine() - 1);
+        $epos = $file->ftell();
+        unset($file);
+        return array(
+            'name' => $refobj->getName(),
+            'code' => substr($lines, $spos, $epos - $spos)
+        );
+    }
+
+    /**
      * Export SafeString class as string
      *
      * @param array<string,array|string|integer> $context current compile context
@@ -98,27 +142,9 @@ class Exporter
      */
     public static function safestring($context) {
         $class = new \ReflectionClass($context['safestring']);
-        $methods = array();
-        $ret = "if (!class_exists(\"" . addslashes($context['safestringalias']) . "\")) {\nclass {$context['safestringalias']} {\n";
-
-        foreach ($class->getMethods() as $method) {
-            $C = $method->getDeclaringClass();
-            $fname = $C->getFileName();
-            $lines = file_get_contents($fname);
-            $file = new \SplFileObject($fname);
-            $name = $method->getName();
-            if ($name === 'stripExtendedComments') {
-                continue;
-            }
-            $file->seek($method->getStartLine() - 2);
-            $spos = $file->ftell();
-            $file->seek($method->getEndLine() - 1);
-            $epos = $file->ftell();
-            $ret .= substr($lines, $spos, $epos - $spos);
-        }
-        unset($file);
-
-        return "$ret}\n}\n";
+        return array_reduce(static::getClassMethods($context, $class), function ($in, $cur) {
+            return $in . $cur[0];
+        }, "if (!class_exists(\"" . addslashes($context['safestringalias']) . "\")) {\nclass {$context['safestringalias']} {\n") . "}\n}\n";
     }
 
     /**
@@ -130,22 +156,8 @@ class Exporter
      */
     public static function runtime($context) {
         $class = new \ReflectionClass($context['runtime']);
-        $methods = array();
         $ret = '';
-
-        foreach ($class->getMethods() as $method) {
-            $C = $method->getDeclaringClass();
-            $fname = $C->getFileName();
-            $lines = file_get_contents($fname);
-            $file = new \SplFileObject($fname);
-            $name = $method->getName();
-            $file->seek($method->getStartLine() - 2);
-            $spos = $file->ftell();
-            $file->seek($method->getEndLine() - 2);
-            $epos = $file->ftell();
-            $methods[$name] = static::scanDependency($context, preg_replace('/public static function (.+)\\(/', "function {$context['funcprefix']}\$1(", substr($lines, $spos, $epos - $spos)));
-        }
-        unset($file);
+        $methods = static::getClassMethods($context, $class);
 
         $exports = array_keys($context['usedCount']['runtime']);
 
@@ -165,7 +177,7 @@ class Exporter
         }
 
         foreach ($exports as $export) {
-            $ret .= ($methods[$export][0] . " }\n");
+            $ret .= ($methods[$export][0] . "\n");
         }
 
         return $ret;
