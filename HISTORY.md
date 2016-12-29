@@ -7,6 +7,9 @@ HISTORY
    * 510b4611bb fix `{{lookup . foo}}` issue
    * e629941f8f fix `Cannot use lexical variable $sp as a parameter name` issue in PHP 7.1
    * 84c94665d8 export SafeString static properties when FLAG_STANDALONEPHP is enabled
+   * 5e9f6d0bc7 fix FLAG_STANDALONEPHP mode LS Class bug
+   * 7ec3dac944 refine safestring compile option
+   * 1f10501c01 fix {{#with .}} context behavior
 
 v0.95 https://github.com/zordius/lightncandy/tree/v0.95
    * align with handlebars.js 4.0.5
