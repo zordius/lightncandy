@@ -102,6 +102,27 @@ class Exporter
     }
 
     /**
+     * Get statics code from ReflectionClass
+     *
+     * @param object $class instance of the ReflectionClass
+     *
+     * @return string
+     */
+    public static function getClassStatics($class) {
+        $ret = '';
+
+        foreach ($class->getStaticProperties() as $name => $value) {
+            $ret .= " public static \${$name} = " . var_export($value, true) . ";\n";
+        }
+
+        return $ret;
+    }
+
+
+
+
+
+    /**
      * Get metadata from ReflectionObject
      *
      * @param object $refobj instance of the ReflectionObject
@@ -132,9 +153,10 @@ class Exporter
      */
     public static function safestring($context) {
         $class = new \ReflectionClass($context['safestring']);
+
         return array_reduce(static::getClassMethods($context, $class), function ($in, $cur) {
             return $in . $cur[0];
-        }, "if (!class_exists(\"" . addslashes($context['safestringalias']) . "\")) {\nclass {$context['safestringalias']} {\n") . "}\n}\n";
+        }, "if (!class_exists(\"" . addslashes($context['safestringalias']) . "\")) {\nclass {$context['safestringalias']} {\n" . static::getClassStatics($class)) . "}\n}\n";
     }
 
     /**
