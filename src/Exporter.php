@@ -86,7 +86,7 @@ class Exporter
      * Get methods from ReflectionClass
      *
      * @param array<string,array|string|integer> $context current compile context
-     * @param object $class instance of the ReflectionClass
+     * @param \ReflectionClass $class instance of the ReflectionClass
      *
      * @return array
      */
@@ -104,7 +104,7 @@ class Exporter
     /**
      * Get statics code from ReflectionClass
      *
-     * @param object $class instance of the ReflectionClass
+     * @param \ReflectionClass $class instance of the ReflectionClass
      *
      * @return string
      */
