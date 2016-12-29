@@ -102,7 +102,7 @@ class Exporter
         $methods = array();
 
         foreach ($class->getMethods() as $method) {
-            $meta = static::getMeta($class, $method);
+            $meta = static::getMeta($method);
             $methods[$meta['name']] = static::scanDependency($context, preg_replace('/public static function (.+)\\(/', "function {$context['funcprefix']}\$1(", $meta['code']));
         }
 
@@ -112,14 +112,12 @@ class Exporter
     /**
      * Get metadata from ReflectionObject
      *
-     * @param object $class instance of the base ReflectionClass
      * @param object $refobj instance of the ReflectionObject
      *
      * @return array
      */
-    public static function getMeta($class, $refobj) {
-        $class = $refobj->getDeclaringClass();
-        $fname = $class->getFileName();
+    public static function getMeta($refobj) {
+        $fname = $refobj->getFileName();
         $lines = file_get_contents($fname);
         $file = new \SplFileObject($fname);
         $file->seek($refobj->getStartLine() - 2);
