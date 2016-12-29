@@ -95,7 +95,7 @@ class Exporter
 
         foreach ($class->getMethods() as $method) {
             $meta = static::getMeta($method);
-            $methods[$meta['name']] = static::scanDependency($context, preg_replace('/public static function (.+)\\(/', "function {$context['funcprefix']}\$1(", $meta['code']));
+            $methods[$meta['name']] = static::scanDependency($context, preg_replace('/public static function (.+)\\(/', "function {$context['funcprefix']}\$1(", $meta['code']), $meta['code']);
         }
 
         return $methods;
@@ -221,11 +221,12 @@ class Exporter
      * Scan for required standalone functions
      *
      * @param array<string,array|string|integer> $context current compile context
-     * @param string $code PHP code string of the method
+     * @param string $code patched PHP code string of the method
+     * @param string $ocode original PHP code string of the method
      *
      * @return array<string|array> list of converted code and children array
      */
-    protected static function scanDependency($context, $code) {
+    protected static function scanDependency($context, $code, $ocode) {
         $child = array();
 
         $code = preg_replace_callback('/static::(\w+?)\s*\(/', function ($matches) use ($context, &$child) {
@@ -243,7 +244,7 @@ class Exporter
         // compress space
         $code = preg_replace('/    /', ' ', $code);
 
-        return array(static::replaceSafeString($context, $code), $child, $code);
+        return array(static::replaceSafeString($context, $code), $child, $ocode);
     }
 }
 
