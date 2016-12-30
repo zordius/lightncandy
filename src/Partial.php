@@ -176,7 +176,7 @@ class Partial
      *
      * @param array<string,array|string|integer> $context Current context of compiler progress.
      * @param string $template template string
-     * @param string,integer $name partial name or 0
+     * @param string|integer $name partial name or 0
      *
      * @return string $code compiled PHP code
      */
