@@ -1147,6 +1147,20 @@ VAREND
             ),
 
             Array(
+                'id' => 235,
+                'template' => '{{#> "myPartial"}}{{#> myOtherPartial}}{{ @root.foo}}{{/myOtherPartial}}{{/"myPartial"}}',
+                'data' => Array('foo' => 'hello!'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_RUNTIMEPARTIAL,
+                    'partials' => Array(
+                        'myPartial' => '<div>outer {{> @partial-block}}</div>',
+                        'myOtherPartial' => '<div>inner {{> @partial-block}}</div>'
+                    )
+                ),
+                'expected' => '<div>outer <div>inner hello!</div></div>',
+            ),
+
+            Array(
                 'id' => 236,
                 'template' => 'A{{#> foo}}B{{#> bar}}C{{>moo}}D{{/bar}}E{{/foo}}F',
                 'data' => null,
