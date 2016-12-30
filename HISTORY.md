@@ -10,6 +10,7 @@ HISTORY
    * 5e9f6d0bc7 fix FLAG_STANDALONEPHP mode LS Class bug
    * 7ec3dac944 refine safestring compile option
    * 1f10501c01 fix {{#with .}} context behavior
+   * 426291d7ad support recursive {{@partial-block}}
 
 v0.95 https://github.com/zordius/lightncandy/tree/v0.95
    * align with handlebars.js 4.0.5
