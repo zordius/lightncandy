@@ -1196,6 +1196,20 @@ VAREND
             ),
 
             Array(
+                'id' => 244,
+                'template' => '{{#>outer}}content{{/outer}}',
+                'data' => Array('test' => 'OK'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_RUNTIMEPARTIAL,
+                    'partials' => Array(
+                        'outer' => 'outer+{{#>nested}}~{{>@partial-block}}~{{/nested}}+outer-end',
+                        'nested' => 'nested={{>@partial-block}}=nested-end'
+                    )
+                ),
+                'expected' => 'outer+nested=~content~=nested-end+outer-end'
+            ),
+
+            Array(
                 'id' => 245,
                 'template' => '{{#each foo}}{{#with .}}{{bar}}-{{../../name}}{{/with}}{{/each}}',
                 'data' => Array('name' => 'bad', 'foo' => Array(

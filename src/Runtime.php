@@ -485,18 +485,16 @@ class Runtime extends Encoder
      *
      */
     public static function p($cx, $p, $v, $pid, $sp = '') {
-        if ($p === '@partial-block') {
-            $p = "$p" . ($pid > 0 ? $pid : $cx['partialid']);
-        }
+        $pp = ($p === '@partial-block') ? "$p" . ($pid > 0 ? $pid : $cx['partialid']) : $p;
 
-        if (!isset($cx['partials'][$p])) {
-            static::err($cx, "Can not find partial named as '$p' !!");
+        if (!isset($cx['partials'][$pp])) {
+            static::err($cx, "Can not find partial named as '$pp' !!");
             return '';
         }
 
-        $cx['partialid'] = $pid;
+        $cx['partialid'] = ($p === '@partial-block') ? (($pid > 0) ? $pid : (($cx['partialid'] > 0) ? $cx['partialid'] - 1 : 0)) : $pid;
 
-        return call_user_func($cx['partials'][$p], $cx, static::m($cx, $v[0][0], $v[1]), $sp);
+        return call_user_func($cx['partials'][$pp], $cx, static::m($cx, $v[0][0], $v[1]), $sp);
     }
 
     /**
