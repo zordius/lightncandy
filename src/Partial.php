@@ -53,6 +53,7 @@ class Partial
      * @return string|null $code compiled PHP code when success
      */
     public static function read(&$context, $name) {
+        $isPB = ($name === '@partial-block');
         $context['usedFeature']['partial']++;
 
         if (isset($context['usedPartial'][$name])) {
@@ -66,7 +67,7 @@ class Partial
             return static::compileDynamic($context, $name);
         }
 
-        if (!$context['flags']['skippartial']) {
+        if (!$context['flags']['skippartial'] && !$isPB) {
             $context['error'][] = "Can not find partial for '$name', you should provide partials or partialresolver in options";
         }
     }
@@ -161,9 +162,9 @@ class Partial
             return;
         }
 
-        $func = static::compile($context, $context['usedPartial'][$name]);
+        $func = static::compile($context, $context['usedPartial'][$name], $name);
 
-        if (!isset($context['partialCode'][$name])) {
+        if (!isset($context['partialCode'][$name]) && $func) {
             $context['partialCode'][$name] = "'$name' => $func";
         }
 
@@ -175,13 +176,23 @@ class Partial
      *
      * @param array<string,array|string|integer> $context Current context of compiler progress.
      * @param string $template template string
+     * @param string,integer $name partial name or 0
      *
      * @return string $code compiled PHP code
      */
-    public static function compile(&$context, $template) {
+    public static function compile(&$context, $template, $name = 0) {
+        if ((end($context['partialStack']) === $name) && (substr($name, 0, 14) === '@partial-block')) {
+            return;
+        }
+
         $tmpContext = $context;
         $tmpContext['inlinepartial'] = array();
         $tmpContext['partialblock'] = array();
+
+        if ($name !== 0) {
+            $tmpContext['partialStack'][] = $name;
+        }
+
         $code = Compiler::compileTemplate($tmpContext, str_replace('function', static::$TMP_JS_FUNCTION_STR, $template));
         Context::merge($context, $tmpContext);
         if (!$context['flags']['noind']) {
