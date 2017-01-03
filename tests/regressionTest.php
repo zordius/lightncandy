@@ -1237,6 +1237,22 @@ VAREND
             ),
 
             Array(
+                'id' => 251,
+                'template' => '{{>foo}}',
+                'data' => Array('bar' => 'BAD'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_EXTHELPER,
+                    'partials' => Array('foo' => '{{bar}}'),
+                    'helperresolver' => function ($cx, $name) {
+                        return function () {
+                            return "OK!";
+                        };
+                    }
+                ),
+                'expected' => 'OK!'
+            ),
+
+            Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
                 'options' => Array(
