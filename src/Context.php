@@ -224,6 +224,7 @@ class Context extends Flags
      */
     public static function merge(&$context, $tmp) {
         $context['error'] = $tmp['error'];
+        $context['helpers'] = $tmp['helpers'];
         $context['partials'] = $tmp['partials'];
         $context['partialCode'] = $tmp['partialCode'];
         $context['partialStack'] = $tmp['partialStack'];
