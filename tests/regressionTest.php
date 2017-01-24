@@ -1253,6 +1253,24 @@ VAREND
             ),
 
             Array(
+                'id' => 252,
+                'template' => '{{foo (lookup bar 1)}}',
+                'data' => Array('bar' => Array(
+                    'nil',
+                    Array(3, 5)
+                )),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARS,
+                    'helpers' => Array(
+                        'foo' => function($arg1) {
+                            return is_array($arg1) ? 'OK' : 'bad';
+                         }
+                    )
+                ),
+                'expected' => 'OK'
+            ),
+
+            Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
                 'options' => Array(
