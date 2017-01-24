@@ -30,8 +30,9 @@ class Encoder
      *
      * @param array<string,array|string|integer> $cx render time context
      * @param array<array|string|integer>|string|integer|null $v value to be output
+     * @param integer $ex 1 to return untouched value, default is 0
      *
-     * @return string The raw value of the specified variable
+     * @return array<array|string|integer>|string|integer|null The raw value of the specified variable
      *
      * @expect true when input array('flags' => array('jstrue' => 0, 'mustlam' => 0, 'lambda' => 0)), true
      * @expect 'true' when input array('flags' => array('jstrue' => 1)), true
