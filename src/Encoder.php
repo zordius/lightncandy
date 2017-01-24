@@ -37,7 +37,7 @@ class Encoder
      * @expect 'true' when input array('flags' => array('jstrue' => 1)), true
      * @expect '' when input array('flags' => array('jstrue' => 0, 'mustlam' => 0, 'lambda' => 0)), false
      * @expect 'false' when input array('flags' => array('jstrue' => 1)), false
-     * @expect 'false' when input array('flags' => array('jstrue' => 1)), false, true
+     * @expect false when input array('flags' => array('jstrue' => 1)), false, true
      * @expect 'Array' when input array('flags' => array('jstrue' => 1, 'jsobj' => 0)), array('a', 'b')
      * @expect 'a,b' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'mustlam' => 0, 'lambda' => 0)), array('a', 'b')
      * @expect '[object Object]' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1)), array('a', 'c' => 'b')
@@ -47,7 +47,11 @@ class Encoder
      * @expect 'a,' when input array('flags' => array('jstrue' => 0, 'jsobj' => 1, 'mustlam' => 0, 'lambda' => 0)), array('a',false)
      * @expect 'a,false' when input array('flags' => array('jstrue' => 1, 'jsobj' => 1, 'mustlam' => 0, 'lambda' => 0)), array('a',false)
      */
-    public static function raw($cx, $v) {
+    public static function raw($cx, $v, $ex = 0) {
+        if ($ex) {
+            return $v;
+        }
+
         if ($v === true) {
             if ($cx['flags']['jstrue']) {
                 return 'true';

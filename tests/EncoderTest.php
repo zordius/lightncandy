@@ -27,7 +27,7 @@ class EncoderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('false', $method->invokeArgs(null, array_by_ref(array(
             array('flags' => array('jstrue' => 1)), false
         ))));
-        $this->assertEquals('false', $method->invokeArgs(null, array_by_ref(array(
+        $this->assertEquals(false, $method->invokeArgs(null, array_by_ref(array(
             array('flags' => array('jstrue' => 1)), false, true
         ))));
         $this->assertEquals('Array', $method->invokeArgs(null, array_by_ref(array(
