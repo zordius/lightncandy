@@ -567,6 +567,10 @@ VAREND
      * @return string|null Return compiled code segment for the token when the token is custom helper
      */
     protected static function customHelper(&$context, $vars, $raw, $nosep, $subExp = false) {
+        if (count($vars[0]) > 1) {
+            return;
+        }
+
         if (!isset($context['helpers'][$vars[0][0]])) {
             if ($subExp) {
                 if ($vars[0][0] == 'lookup') {

@@ -446,7 +446,7 @@ class Validator {
      */
     protected static function blockCustomHelper(&$context, $vars, $inverted = false) {
         if (is_string($vars[0][0])) {
-            if (static::resolveHelper($context, $vars[0][0])) {
+            if (static::resolveHelper($context, $vars)) {
                 return ++$context['usedFeature']['helper'];
             }
         }
@@ -658,7 +658,7 @@ class Validator {
             return array($raw, $vars);
         }
 
-        if (!static::helper($context, $vars[0][0])) {
+        if (!static::helper($context, $vars)) {
             static::lookup($context, $vars);
             static::log($context, $vars);
         }
@@ -735,19 +735,19 @@ class Validator {
      * Return true when the name is listed in helper table
      *
      * @param array<string,array|string|integer> $context current compile context
-     * @param string $name token name
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
      * @param boolean $checkSubexp true when check for subexpression
      *
      * @return boolean Return true when it is custom helper
      */
-    public static function helper(&$context, $name, $checkSubexp = false) {
-        if (static::resolveHelper($context, $name)) {
+    public static function helper(&$context, $vars, $checkSubexp = false) {
+        if (static::resolveHelper($context, $vars)) {
             $context['usedFeature']['helper']++;
             return true;
         }
 
         if ($checkSubexp) {
-            switch ($name) {
+            switch ($vars[0][0]) {
             case 'if':
             case 'unless':
             case 'with':
@@ -764,22 +764,27 @@ class Validator {
      * use helperresolver to resolve helper, return true when helper founded
      *
      * @param array<string,array|string|integer> $context Current context of compiler progress.
-     * @param string $name helper name
+     * @param array<boolean|integer|string|array> $vars parsed arguments list
      *
-     * @return string|null $content helper function name or callable
+     * @return boolean $found helper exists or not
      */
-    public static function resolveHelper(&$context, &$name) {
-        if (isset($context['helpers'][$name])) {
+    public static function resolveHelper(&$context, &$vars) {
+        if (count($vars[0]) !== 1) {
+            return false;
+        }
+        if (isset($context['helpers'][$vars[0][0]])) {
             return true;
         }
 
         if ($context['helperresolver']) {
-            $helper = $context['helperresolver']($context, $name);
+            $helper = $context['helperresolver']($context, $vars[0][0]);
             if ($helper) {
-                $context['helpers'][$name] = $helper;
+                $context['helpers'][$vars[0][0]] = $helper;
                 return true;
             }
         }
+
+        return false;
     }
 
     /**
@@ -795,7 +800,7 @@ class Validator {
             return;
         }
 
-        if (!static::resolveHelper($context, $vars[0][0])) {
+        if (!static::resolveHelper($context, $vars)) {
             return;
         }
 

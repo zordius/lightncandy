@@ -1273,9 +1273,7 @@ VAREND
             Array(
                 'id' => 253,
                 'template' => '{{foo.bar}}',
-                'data' => Array('foo' => Array(
-                    Array('bar' => 'OK!')
-                )),
+                'data' => Array('foo' => Array('bar' => 'OK!')),
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARS,
                     'helpers' => Array(
