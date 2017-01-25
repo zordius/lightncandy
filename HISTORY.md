@@ -1,7 +1,10 @@
 HISTORY
 =======
 
-1.0.1 current master, not released
+1.0.2 current master, not released
+   * align with handlebars.js 4.0.6
+
+1.0.1 https://github.com/zordius/lightncandy/tree/v1.0.1
    * align with handlebars.js 4.0.6
    * cb94f98149 fix helpers in partial are not collected bug
    * bcbadd785d lookup inside subexpression returns untouched value now
