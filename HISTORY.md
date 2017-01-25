@@ -5,6 +5,7 @@ HISTORY
    * align with handlebars.js 4.0.6
    * cb94f98149 fix helpers in partial are not collected bug
    * bcbadd785d lookup inside subexpression returns untouched value now
+   * 18e114a683 {{foo.bar}} will never be resolved as custom helper now
 
 1.0.0 https://github.com/zordius/lightncandy/tree/v1.0.0
    * align with handlebars.js 4.0.6
