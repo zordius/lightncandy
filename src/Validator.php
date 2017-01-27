@@ -497,6 +497,7 @@ class Validator {
             case '^':
                 $elsechain = array_shift($context['elselvl']);
                 if (isset($elsechain[0])) {
+                    $context['level']++;
                     $context['currentToken'][Token::POS_RSPACE] = $context['currentToken'][Token::POS_BACKFILL] = '{{/' . implode('}}{{/', $elsechain) . '}}' . Token::toString($context['currentToken']) . $context['currentToken'][Token::POS_RSPACE];
                     return Token::POS_BACKFILL;
                 }

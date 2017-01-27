@@ -1286,6 +1286,16 @@ VAREND
             ),
 
             Array(
+                'id' => 254,
+                'template' => '{{#if a}}a{{else if b}}b{{else}}c{{/if}}{{#if a}}a{{else if b}}b{{/if}}',
+                'data' => Array('b' => 1),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARS
+                ),
+                'expected' => 'bb'
+            ),
+
+            Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
                 'options' => Array(
