@@ -3,6 +3,7 @@ HISTORY
 
 1.0.2 current master, not released
    * align with handlebars.js 4.0.6
+   * e9108cdb52 {{#if}}{{else if}}{{/if}} will not cause next {{else}} validation error now
 
 1.0.1 https://github.com/zordius/lightncandy/tree/v1.0.1
    * align with handlebars.js 4.0.6
