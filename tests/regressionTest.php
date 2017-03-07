@@ -1306,6 +1306,16 @@ VAREND
             ),
 
             Array(
+                'id' => 256,
+                'template' => '{{lookup . "foo"}}',
+                'data' => Array('foo' => 'ok'),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSLAMBDA
+                ),
+                'expected' => 'ok'
+            ),
+
+            Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
                 'options' => Array(
