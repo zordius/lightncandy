@@ -37,7 +37,7 @@ class Parser extends Token
     /**
      * Get partial block id and fix the variable list
      *
-     * @param array<boolean|integer|array> $vars parsed token
+     * @param array<boolean|integer|string|array> $vars parsed token
      *
      * @return integer Return partial block id
      *
