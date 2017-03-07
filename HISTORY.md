@@ -1,8 +1,12 @@
 HISTORY
 =======
 
-1.0.3 current master, not released
+1.0.4 current master, not released
    * align with handlebars.js 4.0.6
+
+1.0.3 https://github.com/zordius/lightncandy/tree/v1.0.3
+   * align with handlebars.js 4.0.6
+   * b25ea6b1de support FLAG_JSLENGTH when FLAG_METHOD
 
 1.0.2 https://github.com/zordius/lightncandy/tree/v1.0.2
    * align with handlebars.js 4.0.6
