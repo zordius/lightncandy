@@ -287,10 +287,15 @@ VAREND
         // To support recursive context lookup, instance properties + methods and lambdas
         // the only way is using slower rendering time variable resolver.
         if ($context['flags']['prop'] || $context['flags']['method'] || $context['flags']['mustlok'] || $context['flags']['mustlam'] || $context['flags']['lambda']) {
-            $L = $lookup ? ", $lookup[0]" : '';
+            $L = Expression::listString($var);
+            $L = ($L === '') ? array() : array($L);
+            if ($lookup) {
+                $L[] = $lookup[0];
+            }
             $A = $args ? ",$args[0]" : '';
             $E = $args ? ' ' . implode(' ', $args[1]) : '';
-            return array(static::getFuncName($context, 'v', $exp) . "\$cx, \$in, isset($base) ? $base : null, array(" . Expression::listString($var) . "$L)$A)", $lookup ? "lookup $exp $lookup[1]" : "$exp$E");
+            $V = Expression::listString($var);
+            return array(static::getFuncName($context, 'v', $exp) . "\$cx, \$in, isset($base) ? $base : null, array(" . implode($L, ',') . ")$A)", $lookup ? "lookup $exp $lookup[1]" : "$exp$E");
         }
 
         $n = Expression::arrayString($var);
