@@ -11,6 +11,15 @@ require_once(__DIR__ . '/test_util.php');
 class LightnCandyTest extends PHPUnit_Framework_TestCase
 {
     /**
+     * @covers LightnCandy\LightnCandy::compilePartial
+     */
+    public function testOn_compilePartial() {
+        $method = new \ReflectionMethod('LightnCandy\LightnCandy', 'compilePartial');
+        $this->assertEquals(false, $method->invokeArgs(null, array_by_ref(array(
+            '{{"}}', array('flags' => LightnCandy::FLAG_HANDLEBARS)
+        ))));
+    }
+    /**
      * @covers LightnCandy\LightnCandy::handleError
      */
     public function testOn_handleError() {

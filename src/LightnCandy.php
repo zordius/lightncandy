@@ -67,6 +67,8 @@ class LightnCandy extends Flags
      * @param array<string,array|string|integer> $options LightnCandy compile time and run time options, default is array('flags' => LightnCandy::FLAG_BESTPERFORMANCE)
      *
      * @return string|false Compiled PHP code when successed. If error happened and compile failed, return false.
+     *
+     * @expect false when input '{{"}}', array('flags' => LightnCandy::FLAG_HANDLEBARS)
      */
     public static function compilePartial($template, $options = array('flags' => self::FLAG_BESTPERFORMANCE)) {
         $context = Context::create($options);
