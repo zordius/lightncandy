@@ -1296,6 +1296,16 @@ VAREND
             ),
 
             Array(
+                'id' => 255,
+                'template' => '{{foo.length}}',
+                'data' => Array('foo' => Array(1, 2)),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_JSLENGTH | LightnCandy::FLAG_METHOD
+                ),
+                'expected' => '2'
+            ),
+
+            Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
                 'options' => Array(
