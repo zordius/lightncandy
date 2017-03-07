@@ -54,7 +54,7 @@ class Parser extends Token
     /**
      * Get block params and fix the variable list
      *
-     * @param array<boolean|integer|array> $vars parsed token
+     * @param array<boolean|integer|string|array> $vars parsed token
      *
      * @return array<string>|null Return list of block params or null
      *
