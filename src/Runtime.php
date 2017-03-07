@@ -130,12 +130,18 @@ class Runtime extends Encoder
      */
     public static function v($cx, $in, $base, $path, $args = null) {
         $count = count($cx['scopes']);
+        $plen = count($path);
         while ($base) {
             $v = $base;
-            foreach ($path as $name) {
-                if (is_array($v) && isset($v[$name])) {
-                    $v = $v[$name];
-                    continue;
+            foreach ($path as $i => $name) {
+                if (is_array($v)) {
+                    if (isset($v[$name])) {
+                        $v = $v[$name];
+                        continue;
+                    }
+                    if (($i === $plen - 1) && ($name === 'length')) {
+                        return count($v);
+                    }
                 }
                 if (is_object($v)) {
                     if ($cx['flags']['prop'] && !($v instanceof \Closure) && isset($v->$name)) {

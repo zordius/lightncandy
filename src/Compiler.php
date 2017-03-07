@@ -83,6 +83,7 @@ class Compiler extends Validator
     public static function composePHPRender($context, $code) {
         $flagJStrue = Expression::boolString($context['flags']['jstrue']);
         $flagJSObj = Expression::boolString($context['flags']['jsobj']);
+        $flagJSLen = Expression::boolString($context['flags']['jslen']);
         $flagSPVar = Expression::boolString($context['flags']['spvar']);
         $flagProp = Expression::boolString($context['flags']['prop']);
         $flagMethod = Expression::boolString($context['flags']['method']);
@@ -110,6 +111,7 @@ $safeString{$use}{$exportSafeString}return function (\$in = null, \$options = nu
         'flags' => array(
             'jstrue' => $flagJStrue,
             'jsobj' => $flagJSObj,
+            'jslen' => $flagJSLen,
             'spvar' => $flagSPVar,
             'prop' => $flagProp,
             'method' => $flagMethod,
