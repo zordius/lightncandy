@@ -101,7 +101,7 @@ class errorTest extends PHPUnit_Framework_TestCase
         $errorCases = Array(
              Array(
                  'template' => '{{{foo}}}',
-                 'expected' => 'Runtime: [foo] is not exist',
+                 'expected' => 'Runtime: [foo] does not exist',
              ),
              Array(
                  'template' => '{{foo}}',
