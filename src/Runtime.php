@@ -98,7 +98,7 @@ class Runtime extends Encoder
      * @param string $v expression
      */
     public static function miss($cx, $v) {
-        static::err($cx, "Runtime: $v is not exist");
+        static::err($cx, "Runtime: $v does not exist");
     }
 
     /**
