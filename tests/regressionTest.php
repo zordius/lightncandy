@@ -1329,6 +1329,17 @@ VAREND
                 ),
                 'expected' => 'ok'
             ),
+
+            Array(
+                'id' => 261,
+                'template' => '{{#each foo as |bar|}}?{{bar.0}}{{/each}}',
+                'data' => Array('foo' => Array(array('a'), array('b'))),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARS
+                ),
+                'expected' => '?a?b'
+            ),
+
             Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
