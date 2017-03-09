@@ -1316,6 +1316,20 @@ VAREND
             ),
 
             Array(
+                'id' => 257,
+                'template' => '{{foo a=(foo a=(foo a="ok"))}}',
+                'data' => null,
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSLAMBDA,
+                    'helpers' => Array(
+                        'foo' => function($opt) {
+                            return $opt['hash']['a'];
+                        }
+                    )
+                ),
+                'expected' => 'ok'
+            ),
+            Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
                 'options' => Array(
@@ -1323,7 +1337,7 @@ VAREND
                     'helpers' => Array(
                         'testNull' => function($arg1, $arg2) {
                             return (($arg1 === null) && ($arg2 === null)) ? 'YES!' : 'no';
-                         }
+                        }
                     )
                 ),
                 'expected' => 'YES!'
