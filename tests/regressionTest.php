@@ -1320,7 +1320,7 @@ VAREND
                 'template' => '{{foo a=(foo a=(foo a="ok"))}}',
                 'data' => null,
                 'options' => Array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARSLAMBDA,
+                    'flags' => LightnCandy::FLAG_HANDLEBARS,
                     'helpers' => Array(
                         'foo' => function($opt) {
                             return $opt['hash']['a'];

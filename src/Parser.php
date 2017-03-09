@@ -410,6 +410,7 @@ class Parser extends Token
      * @expect array('[fo o]=123') when input '[fo o]=123', array('flags' => array('advar' => 1))
      * @expect array('[fo o]=123', 'bar="456"') when input '[fo o]=123 bar="456"', array('flags' => array('advar' => 1))
      * @expect array('[fo o]="1 2 3"') when input '[fo o]="1 2 3"', array('flags' => array('advar' => 1))
+     * @expect array('foo', 'a=(foo a=(foo a="ok"))') when input 'foo a=(foo a=(foo a="ok"))', array('flags' => array('advar' => 1))
      */
     protected static function analyze($token, &$context) {
         $count = preg_match_all('/(\s*)([^\s]+)/', $token, $matchedall);
@@ -424,8 +425,8 @@ class Parser extends Token
                 // continue from previous match when expect something
                 if ($expect) {
                     $prev .= "{$matchedall[1][$index]}$t";
-                    if (($stack > 0) && (substr($t, 0, 1) === '(')) {
-                        $stack++;
+                    if (($stack > 0) && preg_match('/(.+=)*(\\(+)/', $t, $m)) {
+                        $stack += strlen($m[2]);
                     }
                     // end an argument when end with expected charactor
                     if (substr($t, -1, 1) === $expect) {
@@ -497,10 +498,10 @@ class Parser extends Token
                 }
 
                 // continue to next match when =( exists without ending )
-                if (preg_match('/.+\([^\)]*$/', $t)) {
+                if (preg_match('/.+(\(+)[^\)]*$/', $t, $m)) {
                     $prev = $t;
                     $expect = ')';
-                    $stack=1;
+                    $stack=strlen($m[1]);
                     continue;
                 }
 
