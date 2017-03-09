@@ -3,6 +3,8 @@ HISTORY
 
 1.0.4 current master, not released
    * align with handlebars.js 4.0.6
+   * 0557429c07 fix {{lookup . "foo"}} parsing issue
+   * 6939eebef8 fix {{foo a=(foo a=(bar))}} parsing issue
 
 1.0.3 https://github.com/zordius/lightncandy/tree/v1.0.3
    * align with handlebars.js 4.0.6
