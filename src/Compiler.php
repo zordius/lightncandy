@@ -443,7 +443,7 @@ VAREND
         static::addUsageCount($context, 'helpers', $ch[0]);
         $v = static::getVariableNames($context, $vars, $bp);
 
-        return $context['ops']['seperator'] . static::getFuncName($context, 'hbch', ($inverted ? '^' : '#') . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, \$in, $inverted, function(\$cx, \$in) {{$context['ops']['f_start']}";
+        return $context['ops']['seperator'] . static::getFuncName($context, 'hbbch', ($inverted ? '^' : '#') . implode(' ', $v[1])) . "\$cx, '$ch[0]', {$v[0]}, \$in, $inverted, function(\$cx, \$in) {{$context['ops']['f_start']}";
     }
 
     /**

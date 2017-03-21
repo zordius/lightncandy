@@ -37,7 +37,7 @@ class Runtime extends Encoder
      *
      * @param string $v expression
      * @param string $f runtime function name
-     * @param array<string,array|string|integer> $cx render time context
+     * @param array<string,array|string|integer> $cx render time context for lightncandy
      *
      * @expect '{{123}}' when input '123', 'miss', array('flags' => array('debug' => Runtime::DEBUG_TAGS), 'runtime' => 'LightnCandy\\Runtime'), ''
      * @expect '<!--MISSED((-->{{#123}}<!--))--><!--SKIPPED--><!--MISSED((-->{{/123}}<!--))-->' when input '123', 'wi', array('flags' => array('debug' => Runtime::DEBUG_TAGS_HTML), 'runtime' => 'LightnCandy\\Runtime'), false, null, false, function () {return 'A';}
@@ -76,7 +76,7 @@ class Runtime extends Encoder
     /**
      * Handle error by error_log or throw exception.
      *
-     * @param array<string,array|string|integer> $cx render time context
+     * @param array<string,array|string|integer> $cx render time context for lightncandy
      * @param string $err error message
      *
      * @throws \Exception
@@ -94,7 +94,7 @@ class Runtime extends Encoder
     /**
      * Handle missing data error.
      *
-     * @param array<string,array|string|integer> $cx render time context
+     * @param array<string,array|string|integer> $cx render time context for lightncandy
      * @param string $v expression
      */
     public static function miss($cx, $v) {
@@ -104,7 +104,7 @@ class Runtime extends Encoder
     /**
      * For {{log}} .
      *
-     * @param array<string,array|string|integer> $cx render time context
+     * @param array<string,array|string|integer> $cx render time context for lightncandy
      * @param string $v expression
      */
     public static function lo($cx, $v) {
@@ -115,7 +115,7 @@ class Runtime extends Encoder
     /**
      * Resursive lookup variable and helpers. This is slow and will only be used for instance property or method detection or lambdas.
      *
-     * @param array<string,array|string|integer> $cx render time context
+     * @param array<string,array|string|integer> $cx render time context for lightncandy
      * @param array|string|boolean|integer|double|null $in current context
      * @param array<array|string|integer> $base current variable context
      * @param array<string|integer> $path array of names for path
@@ -192,7 +192,7 @@ class Runtime extends Encoder
     /**
      * For {{#if}} .
      *
-     * @param array<string,array|string|integer> $cx render time context
+     * @param array<string,array|string|integer> $cx render time context for lightncandy
      * @param array<array|string|integer>|string|integer|null $v value to be tested
      * @param boolean $zero include zero as true
      *
@@ -216,7 +216,7 @@ class Runtime extends Encoder
     /**
      * For {{^var}} .
      *
-     * @param array<string,array|string|integer> $cx render time context
+     * @param array<string,array|string|integer> $cx render time context for lightncandy
      * @param array<array|string|integer>|string|integer|null $v value to be tested
      *
      * @return boolean Return true when the value is not null nor false.
@@ -235,7 +235,7 @@ class Runtime extends Encoder
     /**
      * For {{var}} .
      *
-     * @param array<string,array|string|integer> $cx render time context
+     * @param array<string,array|string|integer> $cx render time context for lightncandy
      * @param array<array|string|integer>|string|integer|null $var value to be htmlencoded
      *
      * @return string The htmlencoded value of the specified variable
@@ -256,7 +256,7 @@ class Runtime extends Encoder
     /**
      * For {{var}} , do html encode just like handlebars.js .
      *
-     * @param array<string,array|string|integer> $cx render time context
+     * @param array<string,array|string|integer> $cx render time context for lightncandy
      * @param array<array|string|integer>|string|integer|null $var value to be htmlencoded
      *
      * @return string The htmlencoded value of the specified variable
@@ -277,7 +277,7 @@ class Runtime extends Encoder
     /**
      * For {{#var}} or {{#each}} .
      *
-     * @param array<string,array|string|integer> $cx render time context
+     * @param array<string,array|string|integer> $cx render time context for lightncandy
      * @param array<array|string|integer>|string|integer|null $v value for the section
      * @param array<string>|null $bp block parameters
      * @param array<array|string|integer>|string|integer|null $in input data with current scope
@@ -424,7 +424,7 @@ class Runtime extends Encoder
     /**
      * For {{#with}} .
      *
-     * @param array<string,array|string|integer> $cx render time context
+     * @param array<string,array|string|integer> $cx render time context for lightncandy
      * @param array<array|string|integer>|string|integer|null $v value to be the new context
      * @param array<array|string|integer>|string|integer|null $in input data with current scope
      * @param array<string>|null $bp block parameters
@@ -458,7 +458,7 @@ class Runtime extends Encoder
     /**
      * Get merged context.
      *
-     * @param array<string,array|string|integer> $cx render time context
+     * @param array<string,array|string|integer> $cx render time context for lightncandy
      * @param array<array|string|integer>|string|integer|null $a the context to be merged
      * @param array<array|string|integer>|string|integer|null $b the new context to overwrite
      *
@@ -483,7 +483,7 @@ class Runtime extends Encoder
     /**
      * For {{> partial}} .
      *
-     * @param array<string,array|string|integer> $cx render time context
+     * @param array<string,array|string|integer> $cx render time context for lightncandy
      * @param string $p partial name
      * @param array<array|string|integer>|string|integer|null $v value to be the new context
      *
@@ -506,7 +506,7 @@ class Runtime extends Encoder
     /**
      * For {{#* inlinepartial}} .
      *
-     * @param array<string,array|string|integer> $cx render time context
+     * @param array<string,array|string|integer> $cx render time context for lightncandy
      * @param string $p partial name
      * @param Closure $code the compiled partial code
      *
@@ -515,26 +515,17 @@ class Runtime extends Encoder
         $cx['partials'][$p] = $code;
     }
 
-    /**
-     * For custom helpers.
+    /* For single custom helpers.
      *
-     * @param array<string,array|string|integer> $cx render time context
+     * @param array<string,array|string|integer> $cx render time context for lightncandy
      * @param string $ch the name of custom helper to be executed
      * @param array<array|string|integer>|string|integer|null $vars variables for the helper
      * @param string $op the name of variable resolver. should be one of: 'raw', 'enc', or 'encq'.
-     * @param boolean $inverted the logic will be inverted
-     * @param Closure|null $cb callback function to render child context
-     * @param Closure|null $else callback function to render child context when {{else}}
+     * @param array<string,array|string|integer> $_this current rendering context for the helper
      *
      * @return string The rendered string of the token
      */
-    public static function hbch($cx, $ch, $vars, $op, $inverted, $cb = null, $else = null) {
-        $isBlock = (is_object($cb) && ($cb instanceof \Closure));
-
-        if (isset($cx['blparam'][0][$ch])) {
-            return $cx['blparam'][0][$ch];
-        }
-
+    public static function hbch($cx, $ch, $vars, $op, &$_this) {
         $args = $vars[0];
         $options = array(
             'name' => $ch,
@@ -543,11 +534,54 @@ class Runtime extends Encoder
             'fn.blockParams' => 0,
         );
 
-        if ($isBlock) {
-            $options['_this'] = &$op;
-        } else {
-            $options['_this'] = &$inverted;
+        $options['_this'] = &$_this;
+
+        if ($cx['flags']['spvar']) {
+            $options['data'] = $cx['sp_vars'];
         }
+
+        $args[] = $options;
+        $e = null;
+        $r = true;
+
+        try {
+            $r = call_user_func_array($cx['helpers'][$ch], $args);
+        } catch (\Exception $E) {
+            $e = "Runtime: call custom helper '$ch' error: " . $E->getMessage();
+        }
+
+        if($e !== null) {
+            static::err($cx, $e);
+        }
+
+        return $r;
+    }
+
+    /**
+     * For block custom helpers.
+     *
+     * @param array<string,array|string|integer> $cx render time context for lightncandy
+     * @param string $ch the name of custom helper to be executed
+     * @param array<array|string|integer>|string|integer|null $vars variables for the helper
+     * @param array<string,array|string|integer> $_this current rendering context for the helper
+     * @param boolean $inverted the logic will be inverted
+     * @param Closure|null $cb callback function to render child context
+     * @param Closure|null $else callback function to render child context when {{else}}
+     *
+     * @return string The rendered string of the token
+     */
+    public static function hbbch($cx, $ch, $vars, &$_this, $inverted, $cb, $else = null) {
+        if (isset($cx['blparam'][0][$ch])) {
+            return $cx['blparam'][0][$ch];
+        }
+
+        $options = array(
+            'name' => $ch,
+            'hash' => $vars[1],
+            'contexts' => count($cx['scopes']) ? $cx['scopes'] : array(null),
+            'fn.blockParams' => 0,
+            '_this' => &$_this,
+        );
 
         if (isset($vars[2])) {
             $options['fn.blockParams'] = count($vars[2]);
@@ -560,45 +594,43 @@ class Runtime extends Encoder
             $cb = $tmp;
         }
 
-        if ($isBlock) {
-            $options['fn'] = function ($context = '_NO_INPUT_HERE_', $data = null) use ($cx, &$op, $cb, $options, $vars) {
-                if ($cx['flags']['echo']) {
-                    ob_start();
-                }
-                if (isset($data['data'])) {
-                    $old_spvar = $cx['sp_vars'];
-                    $cx['sp_vars'] = array_merge(array('root' => $old_spvar['root']), $data['data'], array('_parent' => $old_spvar));
-                }
-                $ex = false;
-                if (isset($data['blockParams']) && isset($vars[2])) {
-                    $ex = array_combine($vars[2], array_slice($data['blockParams'], 0, count($vars[2])));
-                    array_unshift($cx['blparam'], $ex);
-                } else if (isset($cx['blparam'][0])) {
-                    $ex = $cx['blparam'][0];
-                }
-                if (($context === '_NO_INPUT_HERE_') || ($context === $op)) {
-                    $ret = $cb($cx, is_array($ex) ? static::m($cx, $op, $ex) : $op);
-                } else {
-                    $cx['scopes'][] = $op;
-                    $ret = $cb($cx, is_array($ex) ? static::m($cx, $context, $ex) : $context);
-                    array_pop($cx['scopes']);
-                }
-                if (isset($data['data'])) {
-                    $cx['sp_vars'] = $old_spvar;
-                }
-                return $cx['flags']['echo'] ? ob_get_clean() : $ret;
-            };
-        }
+        $options['fn'] = function ($context = '_NO_INPUT_HERE_', $data = null) use ($cx, &$_this, $cb, $options, $vars) {
+            if ($cx['flags']['echo']) {
+                ob_start();
+            }
+            if (isset($data['data'])) {
+                $old_spvar = $cx['sp_vars'];
+                $cx['sp_vars'] = array_merge(array('root' => $old_spvar['root']), $data['data'], array('_parent' => $old_spvar));
+            }
+            $ex = false;
+            if (isset($data['blockParams']) && isset($vars[2])) {
+                $ex = array_combine($vars[2], array_slice($data['blockParams'], 0, count($vars[2])));
+                array_unshift($cx['blparam'], $ex);
+            } else if (isset($cx['blparam'][0])) {
+                $ex = $cx['blparam'][0];
+            }
+            if (($context === '_NO_INPUT_HERE_') || ($context === $_this)) {
+                $ret = $cb($cx, is_array($ex) ? static::m($cx, $_this, $ex) : $_this);
+            } else {
+                $cx['scopes'][] = $_this;
+                $ret = $cb($cx, is_array($ex) ? static::m($cx, $context, $ex) : $context);
+                array_pop($cx['scopes']);
+            }
+            if (isset($data['data'])) {
+                $cx['sp_vars'] = $old_spvar;
+            }
+            return $cx['flags']['echo'] ? ob_get_clean() : $ret;
+        };
 
         if ($else) {
-            $options['inverse'] = function ($context = '_NO_INPUT_HERE_') use ($cx, $op, $else) {
+            $options['inverse'] = function ($context = '_NO_INPUT_HERE_') use ($cx, $_this, $else) {
                 if ($cx['flags']['echo']) {
                     ob_start();
                 }
                 if ($context === '_NO_INPUT_HERE_') {
-                    $ret = $else($cx, $op);
+                    $ret = $else($cx, $_this);
                 } else {
-                    $cx['scopes'][] = $op;
+                    $cx['scopes'][] = $_this;
                     $ret = $else($cx, $context);
                     array_pop($cx['scopes']);
                 }
@@ -614,6 +646,7 @@ class Runtime extends Encoder
             $options['data'] = $cx['sp_vars'];
         }
 
+        $args = $vars[0];
         $args[] = $options;
         $e = null;
         $r = true;
