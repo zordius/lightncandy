@@ -1348,10 +1348,10 @@ VAREND
                     'flags' => LightnCandy::FLAG_HANDLEBARS,
                     'helpers' => Array(
                         'foo' => function($opt) {
-                            $opt['change'] = true;
+                            $opt['_this']['change'] = true;
                         },
                         'bar' => function($opt) {
-                            return $opt['change'] ? 'ok' : 'bad';
+                            return $opt['_this']['change'] ? 'ok' : 'bad';
                         }
                     )
                 ),
