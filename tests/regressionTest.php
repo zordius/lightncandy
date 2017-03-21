@@ -1341,6 +1341,24 @@ VAREND
             ),
 
             Array(
+                'id' => 266,
+                'template' => '{{foo}}{{bar}}',
+                'data' => null,
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARS,
+                    'helpers' => Array(
+                        'foo' => function($opt) {
+                            $opt['change'] = true;
+                        },
+                        'bar' => function($opt) {
+                            return $opt['change'] ? 'ok' : 'bad';
+                        }
+                    )
+                ),
+                'expected' => 'ok'
+            ),
+
+            Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
                 'options' => Array(
