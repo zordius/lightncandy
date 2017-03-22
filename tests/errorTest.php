@@ -71,7 +71,8 @@ class errorTest extends PHPUnit_Framework_TestCase
         $php = LightnCandy::compile($test['template'], $test['options']);
         $renderer = LightnCandy::prepare($php);
         try {
-            $renderer(isset($test['data']) ? $test['data'] : null, array('debug' => Runtime::DEBUG_ERROR_EXCEPTION));
+            $input = isset($test['data']) ? $test['data'] : null;
+            $renderer($input, array('debug' => Runtime::DEBUG_ERROR_EXCEPTION));
         } catch (\Exception $E) {
             $this->assertEquals($test['expected'], $E->getMessage());
             return;
@@ -87,7 +88,12 @@ class errorTest extends PHPUnit_Framework_TestCase
         start_catch_error_log();
         $php = LightnCandy::compile($test['template'], $test['options']);
         $renderer = LightnCandy::prepare($php);
-        $renderer(null, array('debug' => Runtime::DEBUG_ERROR_LOG));
+        try {
+            $in = array('dummy' => 'reference');
+            $renderer($in, array('debug' => Runtime::DEBUG_ERROR_LOG));
+        } catch (\Exception $E) {
+            $this->fail("Unexpected render exception: " . $E->getMessage() . ", CODE: $php");
+        }
         $e = stop_catch_error_log();
         if ($e) {
             $this->assertEquals(Array($test['expected']), $e);

@@ -43,7 +43,12 @@ class Runtime extends Encoder
      * @expect '<!--MISSED((-->{{#123}}<!--))--><!--SKIPPED--><!--MISSED((-->{{/123}}<!--))-->' when input '123', 'wi', array('flags' => array('debug' => Runtime::DEBUG_TAGS_HTML), 'runtime' => 'LightnCandy\\Runtime'), false, null, false, function () {return 'A';}
      */
     public static function debug($v, $f, $cx) {
-        $params = array_slice(func_get_args(), 2);
+        // Build array of reference for call_user_func_array
+        $P = func_get_args();
+        $params = array();
+        for ($i=2;$i<count($P);$i++) {
+            $params[] = &$P[$i];
+        }
         $r = call_user_func_array((isset($cx['funcs'][$f]) ? $cx['funcs'][$f] : "{$cx['runtime']}::$f"), $params);
 
         if ($cx['flags']['debug'] & static::DEBUG_TAGS) {
