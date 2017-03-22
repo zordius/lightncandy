@@ -547,22 +547,7 @@ class Runtime extends Encoder
             $options['data'] = $cx['sp_vars'];
         }
 
-        $args = $vars[0];
-        $args[] = $options;
-        $e = null;
-        $r = true;
-
-        try {
-            $r = call_user_func_array($cx['helpers'][$ch], $args);
-        } catch (\Exception $E) {
-            $e = "Runtime: call custom helper '$ch' error: " . $E->getMessage();
-        }
-
-        if($e !== null) {
-            static::err($cx, $e);
-        }
-
-        return $r;
+        return static::exch($cx, $ch, $vars, $options);
     }
 
     /**
@@ -650,7 +635,20 @@ class Runtime extends Encoder
             };
         }
 
+        return static::exch($cx, $ch, $vars, $options);
+    }
 
+    /**
+     * Execute custom helper with prepared options
+     *
+     * @param array<string,array|string|integer> $cx render time context for lightncandy
+     * @param string $ch the name of custom helper to be executed
+     * @param array<array|string|integer>|string|integer|null $vars variables for the helper
+     * @param array<string,array|string|integer> $option the options object
+     *
+     * @return string The rendered string of the token
+     */
+    public static function exch($cx, $ch, $vars, &$options) {
         $args = $vars[0];
         $args[] = $options;
         $e = null;
@@ -669,4 +667,3 @@ class Runtime extends Encoder
         return $r;
     }
 }
-
