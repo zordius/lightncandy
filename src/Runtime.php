@@ -535,20 +535,19 @@ class Runtime extends Encoder
             return $cx['blparam'][0][$ch];
         }
 
-        $args = $vars[0];
         $options = array(
             'name' => $ch,
             'hash' => $vars[1],
             'contexts' => count($cx['scopes']) ? $cx['scopes'] : array(null),
             'fn.blockParams' => 0,
+            '_this' => &$_this
         );
-
-        $options['_this'] = &$_this;
 
         if ($cx['flags']['spvar']) {
             $options['data'] = $cx['sp_vars'];
         }
 
+        $args = $vars[0];
         $args[] = $options;
         $e = null;
         $r = true;
@@ -587,6 +586,10 @@ class Runtime extends Encoder
             'fn.blockParams' => 0,
             '_this' => &$_this,
         );
+
+        if ($cx['flags']['spvar']) {
+            $options['data'] = $cx['sp_vars'];
+        }
 
         if (isset($vars[2])) {
             $options['fn.blockParams'] = count($vars[2]);
@@ -647,9 +650,6 @@ class Runtime extends Encoder
             };
         }
 
-        if ($cx['flags']['spvar']) {
-            $options['data'] = $cx['sp_vars'];
-        }
 
         $args = $vars[0];
         $args[] = $options;
