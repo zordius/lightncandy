@@ -644,7 +644,7 @@ class Runtime extends Encoder
      * @param array<string,array|string|integer> $cx render time context for lightncandy
      * @param string $ch the name of custom helper to be executed
      * @param array<array|string|integer>|string|integer|null $vars variables for the helper
-     * @param array<string,array|string|integer> $option the options object
+     * @param array<string,array|string|integer> $options the options object
      *
      * @return string The rendered string of the token
      */
