@@ -531,6 +531,10 @@ class Runtime extends Encoder
      * @return string The rendered string of the token
      */
     public static function hbch($cx, $ch, $vars, $op, &$_this) {
+        if (isset($cx['blparam'][0][$ch])) {
+            return $cx['blparam'][0][$ch];
+        }
+
         $args = $vars[0];
         $options = array(
             'name' => $ch,
@@ -576,10 +580,6 @@ class Runtime extends Encoder
      * @return string The rendered string of the token
      */
     public static function hbbch($cx, $ch, $vars, &$_this, $inverted, $cb, $else = null) {
-        if (isset($cx['blparam'][0][$ch])) {
-            return $cx['blparam'][0][$ch];
-        }
-
         $options = array(
             'name' => $ch,
             'hash' => $vars[1],
