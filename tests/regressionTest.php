@@ -1341,7 +1341,7 @@ VAREND
             ),
 
             Array(
-                'id' => 266,
+                'id' => 268,
                 'template' => '{{foo}}{{bar}}',
                 'data' => null,
                 'options' => Array(
