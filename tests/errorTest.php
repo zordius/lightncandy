@@ -73,7 +73,7 @@ class errorTest extends PHPUnit_Framework_TestCase
         try {
             $renderer(isset($test['data']) ? $test['data'] : null, array('debug' => Runtime::DEBUG_ERROR_EXCEPTION));
         } catch (\Exception $E) {
-            $this->assertEquals($E->getMessage(), $test['expected']);
+            $this->assertEquals($test['expected'], $E->getMessage());
             return;
         }
         $this->fail("Expected to throw exception: {$test['expected']} . CODE: $php");
