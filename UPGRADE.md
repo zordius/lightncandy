@@ -5,6 +5,10 @@ Upgrade Notice
 
 * Recompile your none standalone templates when you upgrade LightnCandy.
 
+Version v1.0.0
+--------------
+* Support PHP 7.1
+
 Version v0.91
 -------------
 * Option basedir removed. Please use the new partialresolver option to handle partial files.
