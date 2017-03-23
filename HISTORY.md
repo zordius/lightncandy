@@ -8,7 +8,7 @@ HISTORY
    * align with handlebars.js 4.0.6
    * 0557429c07 fix {{lookup . "foo"}} parsing issue
    * 6939eebef8 fix {{foo a=(foo a=(bar))}} parsing issue
-   * 59eba28d8a fix error message when compile {{eacho foo as |bar|}}
+   * 59eba28d8a fix error message when compile {{each foo as |bar|}}
    * 3164c82047 **BREAK CHANGE** block custom helper is compiled as `hbbch()` now
 
 1.0.3 https://github.com/zordius/lightncandy/tree/v1.0.3
