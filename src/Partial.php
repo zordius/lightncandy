@@ -205,7 +205,7 @@ class Partial
             $sp = '';
         }
         $code = str_replace(static::$TMP_JS_FUNCTION_STR, 'function', $code);
-        return "function (\$cx, \$in{$sp}) {{$context['ops']['op_start']}'$code'{$context['ops']['op_end']}}";
+        return "function (\$cx, \$in{$sp}) {{$context['ops']['array_check']}{$context['ops']['op_start']}'$code'{$context['ops']['op_end']}}";
     }
 }
 

@@ -169,6 +169,7 @@ class Context extends Flags
         );
 
         $context['ops']['enc'] = $context['flags']['hbesc'] ? 'encq' : 'enc';
+        $context['ops']['array_check'] = '$inary=is_array($in);';
         static::updateHelperTable($context, $options);
 
         if ($context['flags']['partnc'] && ($context['flags']['runpart'] == 0)) {
