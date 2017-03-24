@@ -3,6 +3,7 @@ HISTORY
 
 1.1.1 current master, not released
    * align with handlebars.js 4.0.6
+   * 046de72460 reduce is_array() check when context is not changed
 
 1.1.0 https://github.com/zordius/lightncandy/tree/v1.1.0
    * align with handlebars.js 4.0.6
