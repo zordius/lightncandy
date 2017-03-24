@@ -231,7 +231,7 @@ v0.15 https://github.com/zordius/lightncandy/tree/v0.15
    * 876bd44d9c escape &#x60; to &amp;#x60; ( require FLAG_JSQUOTE )
    * f1f388ed79 support `{{^}}` as `{{else}}` ( require FLAG_ELSE )
    * d5e17204b6 support `{{#each}}` == `{{#each .}}` now
-   * 742126b440 fix `{{>foo/bar}} partial not found bug
+   * 742126b440 fix `{{>foo/bar}}` partial not found bug
    * d62c261ff9 support numbers as helper input `{{helper 0.1 -1.2}}`
    * d40c76b84f support escape in string arguments `{{helper "test \" double quote"}}`
    * ecb57a2348 fix for missing partial in partial bug
