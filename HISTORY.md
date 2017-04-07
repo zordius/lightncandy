@@ -312,6 +312,7 @@ v0.10 https://github.com/zordius/lightncandy/tree/v0.10
 
 v0.9 https://github.com/zordius/lightncandy/tree/v0.9
    * align with handlebars.js 1.3
+   * **STOP PHP 5.3.x testing and support**
    * a55f2dd067 support both `{{@index}}` and `{{@key}}` when `{{#each an_object}}`
    * e59f931ea7 add FLAG_JSQUOTE support
    * 92b3cf58af report more than 1 error when compile()
