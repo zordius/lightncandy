@@ -82,7 +82,7 @@ class Validator {
         $L = $context['currentToken'][Token::POS_LOTHER] . $context['currentToken'][Token::POS_LSPACE];
 
         if ($context['currentToken'][Token::POS_OP] === '!') {
-            $appender = function (&$pb) use ($context, $L) {
+            $appender = function (&$pb) use ($L) {
                 $pb .= $L;
             };
             if (count($context['partialblock']) > 0) {
