@@ -370,7 +370,7 @@ class Runtime extends Encoder
                     $i++;
                 }
                 if (isset($bp[0])) {
-                    $raw = static::m($cx, $raw, array($bp[0] => $raw));
+                    $raw = static::m($cx, $raw, array($bp[0] => $raw), true);
                 }
                 if (isset($bp[1])) {
                     $raw = static::m($cx, $raw, array($bp[1] => $cx['sp_vars']['index']));
@@ -466,11 +466,16 @@ class Runtime extends Encoder
      * @param array<string,array|string|integer> $cx render time context for lightncandy
      * @param array<array|string|integer>|string|integer|null $a the context to be merged
      * @param array<array|string|integer>|string|integer|null $b the new context to overwrite
+     * @param boolean $c convert a non array/object to an array first
      *
      * @return array<array|string|integer>|string|integer the merged context object
      *
      */
-    public static function m($cx, $a, $b) {
+    public static function m($cx, $a, $b, $c = false) {
+        if ($c && !is_array($a) && !is_object($a)) {
+            $a = array($a);
+        }
+
         if (is_array($b)) {
             if ($a === null) {
                 return $b;
