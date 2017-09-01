@@ -65,6 +65,7 @@ class Context extends Flags
                 'lambda' => $flags & static::FLAG_HANDLEBARSLAMBDA,
                 'mustlok' => $flags & static::FLAG_MUSTACHELOOKUP,
                 'mustlam' => $flags & static::FLAG_MUSTACHELAMBDA,
+                'mustsec' => $flags & static::FLAG_MUSTACHESECTION,
                 'noind' => $flags & static::FLAG_PREVENTINDENT,
                 'debug' => $flags & static::FLAG_RENDER_DEBUG,
                 'prop' => $flags & static::FLAG_PROPERTY,
