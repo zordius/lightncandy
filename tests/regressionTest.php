@@ -1359,6 +1359,41 @@ VAREND
             ),
 
             Array(
+                'id' => 278,
+                'template' => '{{#foo}}-{{#bar}}={{moo}}{{/bar}}{{/foo}}',
+                'data' => Array(
+                    'foo' => Array(
+                         Array('bar' => 0, 'moo' => 'A'),
+                         Array('bar' => 1, 'moo' => 'B'),
+                         Array('bar' => false, 'moo' => 'C'),
+                         Array('bar' => true, 'moo' => 'D'),
+                    )
+                ),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARS,
+                ),
+                'expected' => '-=-=--=D'
+            ),
+
+            Array(
+                'id' => 278,
+                'template' => '{{#foo}}-{{#bar}}={{moo}}{{/bar}}{{/foo}}',
+                'data' => Array(
+                    'foo' => Array(
+                         Array('bar' => 0, 'moo' => 'A'),
+                         Array('bar' => 1, 'moo' => 'B'),
+                         Array('bar' => false, 'moo' => 'C'),
+                         Array('bar' => true, 'moo' => 'D'),
+                    )
+                ),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_MUSTACHE,
+                ),
+                'expected' => '--=B--=D'
+            ),
+
+
+            Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
                 'options' => Array(
