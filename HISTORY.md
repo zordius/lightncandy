@@ -1,9 +1,16 @@
 HISTORY
 =======
 
-1.1.1 current master, not released
-   * align with handlebars.js 4.0.6
+1.2.1 current master, not released
+   * align with handlebars.js 4.0.10
+
+1.2.0 https://github.com/zordius/lightncandy/tree/v1.2.0
+   * align with handlebars.js 4.0.10
    * 046de72460 reduce is_array() check when context is not changed
+   * d217900d5b **BREAK CHANGE**
+      * fix {{#sec}} context switch behavior for mustache.js compatibility
+      * new `FLAG_MUSTACHESECTION` to align {{#sec}} context switch behavior with mustache.js
+      * now `FLAG_MUSTACHE` includes `FLAG_MUSTACHESECTION`
 
 1.1.0 https://github.com/zordius/lightncandy/tree/v1.1.0
    * align with handlebars.js 4.0.6
