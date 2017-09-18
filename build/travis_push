@@ -17,7 +17,7 @@ php ocular.phar code-coverage:upload --format=php-clover coverage.clover
 
 # Set for all push in this script.
 git config --global user.name "Travis-CI"
-git config --global user.email "zordius@yahoo-inc.com"
+git config --global user.email "zordius@users.noreply.gihub.com"
 
 # Generate ANSI sample
 git clone https://github.com/fcambus/ansilove
