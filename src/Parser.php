@@ -394,6 +394,50 @@ class Parser extends Token
     }
 
     /**
+     * Detect quote charactors
+     *
+     * @param string $string the string to be detect the quote charactors
+     *
+     * @return array<string,integer>|null Expected ending string when quote charactor be detected
+     */
+    protected static function detectQuote($string) {
+        // begin with '(' without ending ')'
+        if (preg_match('/^\([^\)]*$/', $string)) {
+            return array(')', 1);
+        }
+
+        // begin with '"' without ending '"'
+        if (preg_match('/^"[^"]*$/', $string)) {
+            return array('"', 0);
+        }
+
+        // begin with \' without ending '
+        if (preg_match('/^\\\\\'[^\']*$/', $string)) {
+            return array('\'', 0);
+        }
+
+        // '="' exists without ending '"'
+        if (preg_match('/^[^"]*="[^"]*$/', $string)) {
+            return array('"', 0);
+        }
+
+        // '[' exists without ending ']'
+        if (preg_match('/^([^"\'].+)?\\[[^\\]]*$/', $string)) {
+            return array(']', 0);
+        }
+
+        // =\' exists without ending '
+        if (preg_match('/^[^\']*=\\\\\'[^\']*$/', $string)) {
+            return array('\'', 0);
+        }
+
+        // continue to next match when =( exists without ending )
+        if (preg_match('/.+(\(+)[^\)]*$/', $string, $m)) {
+            return array(')', strlen($m[1]));
+        }
+    }
+
+    /**
      * Analyze a token string and return parsed result.
      *
      * @param string $token preg_match results
@@ -419,13 +463,25 @@ class Parser extends Token
             $vars = array();
             $prev = '';
             $expect = 0;
+            $quote = 0;
             $stack = 0;
 
             foreach ($matchedall[2] as $index => $t) {
+                $detected = static::detectQuote($t);
+
+                if ($expect === ')') {
+                    if ($detected && ($detected[0] !== ')')) {
+                        $quote = $detected[0];
+                    }
+                    if (substr($t, -1, 1) === $quote) {
+                        $quote = 0;
+                    }
+                }
+
                 // continue from previous match when expect something
                 if ($expect) {
                     $prev .= "{$matchedall[1][$index]}$t";
-                    if (($stack > 0) && preg_match('/(.+=)*(\\(+)/', $t, $m)) {
+                    if (($quote === 0) && ($stack > 0) && preg_match('/(.+=)*(\\(+)/', $t, $m)) {
                         $stack += strlen($m[2]);
                     }
                     // end an argument when end with expected charactor
@@ -448,60 +504,18 @@ class Parser extends Token
                         continue;
                     } else if (($expect == ']') && (strpos($t, $expect) !== false)) {
                         $t = $prev;
+                        $detected = static::detectQuote($t);
                         $expect = 0;
                     } else {
                         continue;
                     }
                 }
 
-                // continue to next match when begin with '(' without ending ')'
-                if (preg_match('/^\([^\)]*$/', $t)) {
-                    $prev = $t;
-                    $expect = ')';
-                    $stack=1;
-                    continue;
-                }
 
-                // continue to next match when begin with '"' without ending '"'
-                if (preg_match('/^"[^"]*$/', $t)) {
+                if ($detected) {
                     $prev = $t;
-                    $expect = '"';
-                    continue;
-                }
-
-                // continue to next match when begin with \' without ending '
-                if (preg_match('/^\\\\\'[^\']*$/', $t)) {
-                    $prev = $t;
-                    $expect = '\'';
-                    continue;
-                }
-
-                // continue to next match when '="' exists without ending '"'
-                if (preg_match('/^[^"]*="[^"]*$/', $t)) {
-                    $prev = $t;
-                    $expect = '"';
-                    continue;
-                }
-
-                // continue to next match when '[' exists without ending ']'
-                if (preg_match('/^([^"\'].+)?\\[[^\\]]*$/', $t)) {
-                    $prev = $t;
-                    $expect = ']';
-                    continue;
-                }
-
-                // continue to next match when =\' exists without ending '
-                if (preg_match('/^[^\']*=\\\\\'[^\']*$/', $t)) {
-                    $prev = $t;
-                    $expect = '\'';
-                    continue;
-                }
-
-                // continue to next match when =( exists without ending )
-                if (preg_match('/.+(\(+)[^\)]*$/', $t, $m)) {
-                    $prev = $t;
-                    $expect = ')';
-                    $stack=strlen($m[1]);
+                    $expect = $detected[0];
+                    $stack = $detected[1];
                     continue;
                 }
 

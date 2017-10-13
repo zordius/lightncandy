@@ -1404,7 +1404,7 @@ VAREND
                         }
                     )
                 ),
-                'expected' => ''
+                'expected' => 'ECHO: ECHO: foo bar (moo).'
             ),
 
             Array(
