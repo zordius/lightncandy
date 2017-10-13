@@ -1,6 +1,6 @@
 MIT License
 
-Copyright 2013-2017 Yahoo! Inc. All Rights Reserved.
+Copyright 2013-2017 Zordius Chen. All Rights Reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
