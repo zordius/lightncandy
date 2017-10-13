@@ -4,7 +4,7 @@ HISTORY
 1.2.2 current master, not released
    * align with handlebars.js 4.0.10
 
-1.2.1 current master, not released
+1.2.1 https://github.com/zordius/lightncandy/tree/v1.2.1
    * align with handlebars.js 4.0.10
    * 15201d7300 fix `{{foo (bar "moo (1 2)")}}` parsing issue
 
