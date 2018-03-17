@@ -1408,6 +1408,31 @@ VAREND
             ),
 
             Array(
+                'id' => 284,
+                'template' => '{{> foo}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_RUNTIMEPARTIAL,
+                    'partials' => Array('foo' => "12'34")
+                ),
+                'expected' => "12'34"
+            ),
+
+            Array(
+                'id' => 284,
+                'template' => '{{> (lookup foo 2)}}',
+                'data' => array('foo' => array('a', 'b', 'c')),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_RUNTIMEPARTIAL,
+                    'partials' => Array(
+                        'a' => '1st',
+                        'b' => '2nd',
+                        'c' => "3'r'd"
+                    )
+                ),
+                'expected' => "3'r'd"
+            ),
+
+            Array(
                 'id' => 290,
                 'template' => '{{foo}} }} OK',
                 'data' => Array(
