@@ -11,7 +11,7 @@ php:
 
 before_script:
   - composer self-update || true
-  - composer --prefer-source --dev install
+  - composer --prefer-source install
 
 script:
   - build/runphp build/gen_test.php
