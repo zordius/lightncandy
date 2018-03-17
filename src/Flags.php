@@ -38,7 +38,6 @@ class Flags
     const FLAG_PARENT = 128;
     const FLAG_HBESCAPE = 256;
     const FLAG_ADVARNAME = 512;
-    const FLAG_SPACECTL = 1024;
     const FLAG_NAMEDARG = 2048;
     const FLAG_SPVARS = 4096;
     const FLAG_PREVENTINDENT = 131072;
