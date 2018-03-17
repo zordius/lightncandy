@@ -618,6 +618,7 @@ class Validator {
 
         if ($partials) {
             $context['stack'] = array_slice($context['stack'], 0, -4);
+            static::spacing($token, $context);
             $context['currentToken'][Token::POS_LOTHER] = '';
             $context['currentToken'][Token::POS_LSPACE] = '';
             return;
