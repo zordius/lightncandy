@@ -375,7 +375,11 @@ class Parser extends Token
                     // Scan for invalid charactors which not be protected by [ ]
                     // now make ( and ) pass, later fix
                     if (preg_match('/[!"#%\'*+,;<=>{|}~]/', $name)) {
-                        $context['error'][] = "Wrong variable naming as '$var' in $token ! You should wrap ! \" # % & ' * + , ; < = > { | } ~ into [ ]";
+                        if (!$context['flags']['namev'] && preg_match('/.+=.+/', $name)) {
+                            $context['error'][] = "Wrong variable naming as '$var' in $token ! If you try to use foo=bar param, you should enable LightnCandy::FLAG_NAMEDARG !";
+                        } else {
+                            $context['error'][] = "Wrong variable naming as '$var' in $token ! You should wrap ! \" # % & ' * + , ; < = > { | } ~ into [ ]";
+                        }
                     }
                 }
             }

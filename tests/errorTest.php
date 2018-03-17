@@ -600,6 +600,15 @@ class errorTest extends PHPUnit_Framework_TestCase
                     'Unclosed token {{#2}} !!',
                 )
             ),
+            Array(
+                'template' => '{{foo a=b}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_ADVARNAME,
+                ),
+                'expected' => Array(
+                    "Wrong variable naming as 'a=b' in {{foo a=b}} ! If you try to use foo=bar param, you should enable LightnCandy::FLAG_NAMEDARG !",
+                )
+            ),
         );
 
         return array_map(function($i) {
