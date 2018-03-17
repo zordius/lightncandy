@@ -1408,6 +1408,51 @@ VAREND
             ),
 
             Array(
+                'id' => 290,
+                'template' => '{{foo}} }} OK',
+                'data' => Array(
+                  'foo' => 'YES',
+                ),
+                'expected' => 'YES }} OK'
+            ),
+
+            Array(
+                'id' => 290,
+                'template' => '{{foo}}{{#with "}"}}{{.}}{{/with}}OK',
+                'data' => Array(
+                  'foo' => 'YES',
+                ),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                ),
+                'expected' => 'YES}OK'
+            ),
+
+            Array(
+                'id' => 290,
+                'template' => '{ {{foo}}',
+                'data' => Array(
+                  'foo' => 'YES',
+                ),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                ),
+                'expected' => '{ YES'
+            ),
+
+            Array(
+                'id' => 290,
+                'template' => '{{#with "{{"}}{{.}}{{/with}}{{foo}}{{#with "{{"}}{{.}}{{/with}}',
+                'data' => Array(
+                  'foo' => 'YES',
+                ),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                ),
+                'expected' => '{{YES{{'
+            ),
+
+            Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
                 'options' => Array(

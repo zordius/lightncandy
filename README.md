@@ -431,10 +431,14 @@ Suggested Handlebars Template Practices
 
 * Prevent to use `{{#with}}` . I think `{{path.to.val}}` is more readable then `{{#with path.to}}{{val}}{{/with}}`; when using `{{#with}}` you will confusing on scope changing. `{{#with}}` only save you very little time when you access many variables under same path, but cost you a lot time when you need to understand then maintain a template.
 * use `{{{val}}}` when you do not require HTML escaped output on the value. It is better performance, too.
-* If you wanna display `{{`, use this: `{{#with "{{"}}{{.}}{{/with}}`.
 * Prevent to use custom helper if you want to reuse your template in different language. Or, you may need to implement different versions of helper in different languages.
 * For best performance, you should only use 'compile on demand' pattern when you are in development stage. Before you go to production, you can `LightnCandy::compile()` on all your templates, save all generated PHP codes, and deploy these generated files (You may need to maintain a build process for this) . **DO NOT COMPILE ON PRODUCTION** , it also a best practice for security. Adding cache for 'compile on demand' is not the best solution. If you want to build some library or framework based on LightnCandy, think about this scenario.
 * Recompile your templates when you upgrade LightnCandy every time.
+* Persistant ESCAPING practice of `{` or `}` for both handlebars and lightncandy:
+  * If you want to display atomic `}}` , you can just use it without any trick.  EX: `{{foo}}   }}`
+  * If you want to display `}` just after any handlebars token, you can use this: `{{#with "}"}}{{.}}{{/with}}` .  EX: `{{foo}}{{#with "}"}}{{.}}{{/with}}`
+  * If you want to display atomic `{` , you can just use it without any trick. EX: `{ and {{foo}}`.
+  * If you want to display `{{` , you can use `{{#with "{{"}}{{.}}{{/with}}`. EX: `{{#with "{{"}}{{.}}{{/with}}{{foo}}`
 
 Detail Feature list
 -------------------
