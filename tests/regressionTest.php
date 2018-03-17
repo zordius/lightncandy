@@ -1469,6 +1469,24 @@ VAREND
             ),
 
             Array(
+                'id' => 289,
+                'template' => "1\n2\n\n{{#>test}}\n3TEST\n{{/test}}\n4",
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL
+                ),
+                'expected' => "1\n2\n\n3TEST\n4"
+            ),
+
+            Array(
+                'id' => 289,
+                'template' => "1\n2\n\n{{#>test~}}\n\n3TEST\n{{/test}}\n4",
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL
+                ),
+                'expected' => "1\n2\n\n3TEST\n4"
+            ),
+
+            Array(
                 'id' => 290,
                 'template' => '{{foo}} }} OK',
                 'data' => Array(
