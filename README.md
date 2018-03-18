@@ -73,7 +73,7 @@ Default is to compile the template as PHP, which can be run as fast as possible 
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_ERROR_LOG.html">FLAG_ERROR_LOG</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_ERROR_EXCEPTION.html">FLAG_ERROR_EXCEPTION</a>
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_ERROR_SKIPPARTIAL.html">FLAG_ERROR_SKIPPARTIAL</a>
-* `FLAG_RENDER_DEBUG` : generate debug template to show error when rendering. With this flag, the performance of rendering may be slowed.
+* <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_RENDER_DEBUG.html">FLAG_RENDER_DEBUG</a>
 
 **JavaScript Compatibility**
 * <a href="https://zordius.github.io/HandlebarsCookbook/LC-FLAG_JSTRUE.html">FLAG_JSTRUE</a>
