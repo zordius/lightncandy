@@ -874,6 +874,30 @@ VAREND
             ),
 
             Array(
+                'id' => 177,
+                'template' => '{{{{a}}}} {{{{b}}}} {{{{/b}}}} {{{{/a}}}}',
+                'data' => Array('a' => true),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                    'helpers' => Array(
+                        'a' => function($options) {
+                            return $options['fn']();
+                        }
+                    )
+                ),
+                'expected' => ' {{{{b}}}} {{{{/b}}}} ',
+            ),
+
+            Array(
+                'id' => 177,
+                'template' => '{{{{a}}}} {{{{b}}}} {{{{/b}}}} {{{{/a}}}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS
+                ),
+                'expected' => ''
+            ),
+
+            Array(
                 'id' => 191,
                 'template' => '<% foo %> is good <%> bar %>',
                 'data' => Array('foo' => 'world'),

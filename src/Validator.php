@@ -253,7 +253,7 @@ class Validator {
         if (count($context['inlinepartial']) > 0) {
             $ended = false;
             $append = $context['currentToken'][Token::POS_LOTHER] . $context['currentToken'][Token::POS_LSPACE];
-            array_walk($context['inlinepartial'], function (&$pb) use ($context, $append) {
+            array_walk($context['inlinepartial'], function (&$pb) use ($append) {
                 $pb .= $append;
             });
             if ($context['currentToken'][Token::POS_OP] === '/') {
@@ -290,7 +290,7 @@ class Validator {
         if (count($context['partialblock']) > 0) {
             $ended = false;
             $append = $context['currentToken'][Token::POS_LOTHER] . $context['currentToken'][Token::POS_LSPACE];
-            array_walk($context['partialblock'], function (&$pb) use ($context, $append) {
+            array_walk($context['partialblock'], function (&$pb) use ($append) {
                 $pb .= $append;
             });
             if ($context['currentToken'][Token::POS_OP] === '/') {
