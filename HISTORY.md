@@ -3,6 +3,7 @@ HISTORY
 
 1.2.3 current master, not released
    * align with handlebars.js 4.0.11
+   * f429712406 fix partial block standalone tag detection issue
 
 1.2.2 current master, not released
    * align with handlebars.js 4.0.11
