@@ -613,19 +613,18 @@ class Validator {
 
         list($raw, $vars) = Parser::parse($token, $context);
 
+        // Handle spacing (standalone tags, partial indent)
+        static::spacing($token, $context, (($token[Token::POS_OP] === '') || ($token[Token::POS_OP] === '&')) && (!$context['flags']['else'] || !isset($vars[0][0]) || ($vars[0][0] !== 'else')) || ($context['flags']['nostd'] > 0));
+
         $partials = static::partialBlock($context, $vars);
         $partials = static::inlinePartial($context, $vars) || $partials;
 
         if ($partials) {
             $context['stack'] = array_slice($context['stack'], 0, -4);
-            static::spacing($token, $context);
             $context['currentToken'][Token::POS_LOTHER] = '';
             $context['currentToken'][Token::POS_LSPACE] = '';
             return;
         }
-
-        // Handle spacing (standalone tags, partial indent)
-        static::spacing($token, $context, (($token[Token::POS_OP] === '') || ($token[Token::POS_OP] === '&')) && (!$context['flags']['else'] || !isset($vars[0][0]) || ($vars[0][0] !== 'else')) || ($context['flags']['nostd'] > 0));
 
         if (static::operator($token[Token::POS_OP], $context, $vars)) {
             return isset($token[Token::POS_BACKFILL]) ? null : array($raw, $vars);

@@ -40,7 +40,6 @@ class regressionTest extends PHPUnit_Framework_TestCase
             Array(
                 'id' => 39,
                 'template' => '{{{tt}}}',
-                'options' => null,
                 'data' => Array('tt' => 'bla bla bla'),
                 'expected' => 'bla bla bla'
             ),
@@ -92,7 +91,6 @@ class regressionTest extends PHPUnit_Framework_TestCase
                         'date_format4' => 'meetup_date_format4'
                     )
                 ),
-                'data' => null,
                 'expected' => 'OKOK~1 1, OKOK~2 2, OKOK~3 3, OKOK~4 4'
             ),
 
@@ -197,7 +195,6 @@ class regressionTest extends PHPUnit_Framework_TestCase
                         'tests/test1' => "123\n",
                     ),
                 ),
-                'data' => null,
                 'expected' => "123\n"
             ),
 
@@ -226,7 +223,6 @@ class regressionTest extends PHPUnit_Framework_TestCase
                         'test1' => "123\n",
                     ),
                 ),
-                'data' => null,
                 'expected' => "a123\nb\n",
             ),
 
@@ -253,7 +249,6 @@ class regressionTest extends PHPUnit_Framework_TestCase
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_NOESCAPE,
                 ),
-                'data' => null,
                 'expected' => 'it\'s great!',
             ),
 
@@ -726,7 +721,6 @@ class regressionTest extends PHPUnit_Framework_TestCase
             Array(
                 'id' => 153,
                 'template' => '{{echo "test[]"}}',
-                'data' => null,
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                     'helpers' => Array(
@@ -741,7 +735,6 @@ class regressionTest extends PHPUnit_Framework_TestCase
             Array(
                 'id' => 153,
                 'template' => '{{echo \'test[]\'}}',
-                'data' => null,
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                     'helpers' => Array(
@@ -756,7 +749,6 @@ class regressionTest extends PHPUnit_Framework_TestCase
             Array(
                 'id' => 154,
                 'template' => 'O{{! this is comment ! ... }}K!',
-                'data' => null,
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                 ),
@@ -766,7 +758,6 @@ class regressionTest extends PHPUnit_Framework_TestCase
             Array(
                 'id' => 157,
                 'template' => '{{{du_mp text=(du_mp "123")}}}',
-                'data' => null,
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                     'helpers' => Array(
@@ -787,7 +778,6 @@ VAREND
             Array(
                 'id' => 157,
                 'template' => '{{>test_js_partial}}',
-                'data' => null,
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_RUNTIMEPARTIAL,
                     'partials' => Array(
@@ -843,7 +833,6 @@ VAREND
             Array(
                 'id' => 175,
                 'template' => 'a{{!-- {{each}} haha {{/each}} --}}b',
-                'data' => null,
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                 ),
@@ -853,7 +842,6 @@ VAREND
             Array(
                 'id' => 175,
                 'template' => 'c{{>test}}d',
-                'data' => null,
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                     'partials' => Array(
@@ -917,7 +905,6 @@ VAREND
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_ELSE,
                 ),
-                'data' => null,
                 'expected' => '3',
             ),
 
@@ -934,7 +921,6 @@ VAREND
             Array(
                 'id' => 201,
                 'template' => '{{foo "world"}}',
-                'data' => null,
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARS,
                     'helperresolver' => function ($cx, $name) {
@@ -949,7 +935,6 @@ VAREND
             Array(
                 'id' => 201,
                 'template' => '{{#foo "test"}}World{{/foo}}',
-                'data' => null,
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARS,
                     'helperresolver' => function ($cx, $name) {
@@ -1032,7 +1017,6 @@ VAREND
             Array(
                 'id' => 221,
                 'template' => 'a{{ouch}}b',
-                'data' => null,
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                     'helpers' => $test_helpers
@@ -1043,7 +1027,6 @@ VAREND
             Array(
                 'id' => 221,
                 'template' => 'a{{ouch}}b',
-                'data' => null,
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                     'helpers' => $test_helpers2
@@ -1054,7 +1037,6 @@ VAREND
             Array(
                 'id' => 221,
                 'template' => 'a{{ouch}}b',
-                'data' => null,
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                     'helpers' => $test_helpers3
@@ -1098,7 +1080,6 @@ VAREND
             Array(
                 'id' => 227,
                 'template' => '{{#if moo}}A{{else if bar}}B{{else foo}}C{{/if}}',
-                'data' => null,
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_ERROR_EXCEPTION,
                     'helpers' => Array(
@@ -1187,7 +1168,6 @@ VAREND
             Array(
                 'id' => 236,
                 'template' => 'A{{#> foo}}B{{#> bar}}C{{>moo}}D{{/bar}}E{{/foo}}F',
-                'data' => null,
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_HANDLEBARS,
                     'partials' => Array(
@@ -1342,7 +1322,6 @@ VAREND
             Array(
                 'id' => 257,
                 'template' => '{{foo a=(foo a=(foo a="ok"))}}',
-                'data' => null,
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARS,
                     'helpers' => Array(
@@ -1367,7 +1346,6 @@ VAREND
             Array(
                 'id' => 268,
                 'template' => '{{foo}}{{bar}}',
-                'data' => null,
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARS,
                     'helpers' => Array(
@@ -1419,7 +1397,6 @@ VAREND
             Array(
                 'id' => 281,
                 'template' => '{{echo (echo "foo bar (moo).")}}',
-                'data' => null,
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARS,
                     'helpers' => Array(
@@ -1752,13 +1729,11 @@ VAREND
 
             Array(
                 'template' => '{{#with "{{"}}{{.}}{{/with}}',
-                'data' => null,
                 'expected' => '{{',
             ),
 
             Array(
                 'template' => '{{good_helper}}',
-                'data' => null,
                 'options' => Array(
                     'helpers' => Array('good_helper' => 'foo::bar'),
                 ),
@@ -1805,7 +1780,6 @@ VAREND
                 'template' => '{{foo}}',
                 'options' => Array('flags' => LightnCandy::FLAG_RENDER_DEBUG),
                 'debug' => Runtime::DEBUG_TAGS_HTML,
-                'data' => null,
                 'expected' => '<!--MISSED((-->{{[foo]}}<!--))-->',
             ),
 
@@ -1813,7 +1787,6 @@ VAREND
                 'template' => '{{#foo}}OK{{/foo}}',
                 'options' => Array('flags' => LightnCandy::FLAG_RENDER_DEBUG),
                 'debug' => Runtime::DEBUG_TAGS_HTML,
-                'data' => null,
                 'expected' => '<!--MISSED((-->{{#[foo]}}<!--))--><!--SKIPPED--><!--MISSED((-->{{/[foo]}}<!--))-->',
             ),
 
@@ -1821,13 +1794,11 @@ VAREND
                 'template' => '{{#foo}}OK{{/foo}}',
                 'options' => Array('flags' => LightnCandy::FLAG_RENDER_DEBUG),
                 'debug' => Runtime::DEBUG_TAGS_ANSI,
-                'data' => null,
                 'expected' => pack('H*', '1b5b303b33316d7b7b235b666f6f5d7d7d1b5b306d1b5b303b33336d534b49505045441b5b306d1b5b303b33316d7b7b2f5b666f6f5d7d7d1b5b306d'),
             ),
 
             Array(
                 'template' => '{{#myif foo}}YES{{else}}NO{{/myif}}',
-                'data' => null,
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_ELSE,
                     'helpers' => Array('myif'),
@@ -2043,7 +2014,6 @@ VAREND
 
             Array(
                 'template' => "   {{#if foo}}\nYES\n{{else}}\nNO\n{{/if}}\n",
-                'data' => null,
                 'options' => Array('flags' => LightnCandy::FLAG_HANDLEBARS),
                 'expected' => "NO\n",
             ),
@@ -2057,7 +2027,6 @@ VAREND
 
             Array(
                 'template' => "{{>test1}}\n  {{>test1}}\nDONE\n",
-                'data' => null,
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_MUSTACHE,
                     'partials' => Array('test1' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n"),
@@ -2067,7 +2036,6 @@ VAREND
 
             Array(
                 'template' => "{{>test1}}\n  {{>test1}}\nDONE\n",
-                'data' => null,
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_MUSTACHE | LightnCandy::FLAG_PREVENTINDENT,
                     'partials' => Array('test1' => "1:A\n 2:B\n  3:C\n 4:D\n5:E\n"),
@@ -2135,7 +2103,6 @@ VAREND
 
             Array(
                 'template' => ">{{helper1 \"===\"}}<",
-                'data' => null,
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                     'helpers' => Array(
@@ -2155,7 +2122,6 @@ VAREND
             Array(
                 'template' => "{{foo}}",
                 'data' => Array('foo' => 'A&B " \' ='),
-                'options' => null,
                 'expected' => "A&amp;B &quot; &#039; =",
             ),
 
@@ -2200,9 +2166,9 @@ VAREND
                 'options' => Array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS_FULL,
                 ),
-                'data' => null,
                 'expected' => 'inline\'partial',
             ),
+
             Array(
                 'template' => '{{>foo}} and {{>bar}}',
                 'options' => Array(
@@ -2210,8 +2176,15 @@ VAREND
                         return "PARTIAL: $name";
                     }
                 ),
-                'data' => null,
                 'expected' => 'PARTIAL: foo and PARTIAL: bar',
+            ),
+
+            Array(
+                'template' => "{{#> testPartial}}\n ERROR: testPartial is not found!\n  {{#> innerPartial}}\n   ERROR: innerPartial is not found!\n   ERROR: innerPartial is not found!\n  {{/innerPartial}}\n ERROR: testPartial is not found!\n {{/testPartial}}",
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_RUNTIMEPARTIAL,
+                ),
+                'expected' => " ERROR: testPartial is not found!\n   ERROR: innerPartial is not found!\n   ERROR: innerPartial is not found!\n ERROR: testPartial is not found!\n",
             ),
         );
 
