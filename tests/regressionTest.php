@@ -1533,6 +1533,15 @@ VAREND
             ),
 
             Array(
+                'id' => 291,
+                'template' => 'a{{> @partial-block}}b',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARSJS,
+                ),
+                'expected' => 'ab'
+            ),
+
+            Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
                 'options' => Array(

@@ -502,7 +502,7 @@ class Runtime extends Encoder
         $pp = ($p === '@partial-block') ? "$p" . ($pid > 0 ? $pid : $cx['partialid']) : $p;
 
         if (!isset($cx['partials'][$pp])) {
-            static::err($cx, "Can not find partial named as '$pp' !!");
+            static::err($cx, "Can not find partial named as '$p' !!");
             return '';
         }
 
