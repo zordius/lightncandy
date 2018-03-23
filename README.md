@@ -477,6 +477,8 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 * `{{#each var}}` : each loop
 * `{{#each}}` : each loop on {{.}}
 * `{{/each}}` : end loop
+* `{{#each bar as |foo|}}` : echo loop on bar and set the value as foo. (require `FLAG_ADVARNAME`)
+* `{{#each bar as |foo moo|}}` : echo loop on bar, set the value as foo, set the index as moo. (require `FLAG_ADVARNAME`)
 * `{{#if var}}` : run if logic with original scope (null, false, empty Array and '' will skip this block)
 * `{{#if foo includeZero=true}}` : result as true when foo === 0 (require `FLAG_NAMEDARG`)
 * `{{/if}}` : end if
