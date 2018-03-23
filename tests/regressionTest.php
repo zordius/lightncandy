@@ -1348,7 +1348,7 @@ VAREND
                 'template' => '{{#each . as |v k|}}#{{k}}>{{v}}|{{.}}{{/each}}',
                 'data' => Array('a' => 'b', 'c' => 'd'),
                 'options' => Array(
-                    'flags' => LightnCandy::FLAG_HANDLEBARS
+                    'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_PROPERTY,
                 ),
                 'expected' => '#a>b|b#c>d|d'
             ),

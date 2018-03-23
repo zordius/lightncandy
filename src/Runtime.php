@@ -21,6 +21,22 @@ namespace LightnCandy;
 use \LightnCandy\Encoder;
 
 /**
+ * LightnCandy class for Object property access on a string.
+ */
+class StringObject
+{
+     protected $string;
+
+    public function __construct($string) {
+        $this->string = $string;
+    }
+
+    public function __toString() {
+        return strval($this->string);
+    }
+}
+
+/**
  * LightnCandy class for compiled PHP runtime.
  */
 class Runtime extends Encoder
@@ -479,7 +495,10 @@ class Runtime extends Encoder
                 return $b;
             } else if (is_array($a)) {
                 return array_merge($a, $b);
-            } else if (($cx['flags']['method'] || $cx['flags']['prop']) && is_object($a)) {
+            } else if ($cx['flags']['method'] || $cx['flags']['prop']) {
+                if (!is_object($a)) {
+                    $a = new StringObject($a);
+                }
                 foreach ($b as $i => $v) {
                     $a->$i = $v;
                 }
