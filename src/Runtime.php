@@ -372,7 +372,7 @@ class Runtime extends Encoder
                     $raw = static::m($cx, $raw, array($bp[0] => $raw));
                 }
                 if (isset($bp[1])) {
-                    $raw = static::m($cx, $raw, array($bp[1] => $cx['sp_vars']['index']));
+                    $raw = static::m($cx, $raw, array($bp[1] => $index));
                 }
                 $ret[] = $cb($cx, $raw);
             }

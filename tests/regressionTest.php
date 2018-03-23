@@ -1542,6 +1542,15 @@ VAREND
             ),
 
             Array(
+                'template' => '{{#each . as |v k|}}#{{k}}{{/each}}',
+                'data' => Array('a' => Array(), 'c' => Array()),
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARS
+                ),
+                'expected' => '#a#c'
+            ),
+
+            Array(
                 'template' => '{{testNull null undefined 1}}',
                 'data' => 'test',
                 'options' => Array(
