@@ -298,13 +298,15 @@ class Validator {
                     $c = $context['stack'][count($context['stack']) - 4];
                     $found = Partial::resolve($context, $vars[0][0]) !== null;
                     $v = $found ? "@partial-block{$context['parsed'][0][$c][1][Parser::PARTIALBLOCK]}" : "{$vars[0][0]}";
-                    if ($found) {
-                        $context['partials'][$v] = $context['partialblock'][0];
-                    }
-                    $context['usedPartial'][$v] = $context['partialblock'][0];
-                    Partial::compileDynamic($context, $v);
-                    if ($found) {
-                        Partial::read($context, $vars[0][0]);
+                    if (count($context['partialblock']) == 1) {
+                        if ($found) {
+                            $context['partials'][$v] = $context['partialblock'][0];
+                        }
+                        $context['usedPartial'][$v] = $context['partialblock'][0];
+                        Partial::compileDynamic($context, $v);
+                        if ($found) {
+                            Partial::read($context, $vars[0][0]);
+                        }
                     }
                     array_shift($context['partialblock']);
                     $context['parsed'][0] = array_slice($context['parsed'][0], 0, $c + 1);
