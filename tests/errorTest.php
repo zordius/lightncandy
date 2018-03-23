@@ -106,6 +106,17 @@ class errorTest extends PHPUnit_Framework_TestCase
     {
         $errorCases = Array(
              Array(
+                 'template' => "{{#> testPartial}}\n  {{#> innerPartial}}\n   {{> @partial-block}}\n  {{/innerPartial}}\n{{/testPartial}}",
+                 'options' => Array(
+                   'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_ERROR_SKIPPARTIAL,
+                   'partials' => Array(
+                     'testPartial' => 'testPartial => {{> @partial-block}} <=',
+                     'innerPartial' => 'innerPartial -> {{> @partial-block}} <-',
+                   ),
+                 ),
+                 'expected' => "Can not find partial named as '@partial-block' !!",
+             ),
+             Array(
                  'template' => '{{> abc}}',
                  'options' => Array(
                    'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_ERROR_SKIPPARTIAL,
