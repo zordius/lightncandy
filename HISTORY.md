@@ -4,6 +4,7 @@ HISTORY
 1.2.3 current master, not released
    * align with handlebars.js 4.0.11
    * f429712406 fix partial block standalone tag detection issue
+   * 4f1ca85a08 fix for {{#each foo as |bar|}} when the value is not an array
 
 1.2.2 current master, not released
    * align with handlebars.js 4.0.11
