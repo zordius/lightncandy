@@ -15,5 +15,5 @@ git submodule init
 git submodule update
 composer install
 build/runphp build/gen_test.php
-phpunit
+build/test
 ```

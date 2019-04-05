@@ -2,11 +2,13 @@
 
 use LightnCandy\LightnCandy;
 use LightnCandy\Runtime;
+use PHPUnit\Framework\TestCase;
+
 require_once('tests/helpers_for_test.php');
 
 $tmpdir = sys_get_temp_dir();
 
-class regressionTest extends PHPUnit_Framework_TestCase
+class regressionTest extends TestCase
 {
     /**
      * @dataProvider issueProvider

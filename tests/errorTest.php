@@ -2,6 +2,8 @@
 
 use LightnCandy\LightnCandy;
 use LightnCandy\Runtime;
+use PHPUnit\Framework\TestCase;
+
 require_once('tests/helpers_for_test.php');
 
 $tmpdir = sys_get_temp_dir();
@@ -29,7 +31,7 @@ function stop_catch_error_log() {
     }, file($errlog_fn));
 }
 
-class errorTest extends PHPUnit_Framework_TestCase
+class errorTest extends TestCase
 {
     public function testException()
     {

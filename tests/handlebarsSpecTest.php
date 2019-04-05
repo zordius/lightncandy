@@ -2,6 +2,7 @@
 
 use LightnCandy\LightnCandy;
 use LightnCandy\Runtime;
+use PHPUnit\Framework\TestCase;
 
 $tmpdir = sys_get_temp_dir();
 $hb_test_flag = LightnCandy::FLAG_HANDLEBARSJS_FULL | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_EXTHELPER;
@@ -62,7 +63,7 @@ class Utils {
     }
 }
 
-class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
+class HandlebarsSpecTest extends TestCase
 {
     /**
      * @dataProvider jsonSpecProvider
