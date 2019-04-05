@@ -25,7 +25,7 @@ class regressionTest extends TestCase
         }
         $renderer = LightnCandy::prepare($php);
 
-        $this->assertEquals($issue['expected'], $renderer($issue['data'], array('debug' => $issue['debug'])), "PHP CODE:\n$php\n$parsed");
+        $this->assertEquals($issue['expected'], $renderer(isset($issue['data']) ? $issue['data'] : null, array('debug' => $issue['debug'])), "PHP CODE:\n$php\n$parsed");
     }
 
     public function issueProvider()

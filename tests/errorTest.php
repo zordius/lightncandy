@@ -35,8 +35,11 @@ class errorTest extends TestCase
 {
     public function testException()
     {
-        $this->setExpectedException('Exception', 'Bad token {{{foo}} ! Do you mean {{foo}} or {{{foo}}}?');
-        $php = LightnCandy::compile('{{{foo}}', Array('flags' => LightnCandy::FLAG_ERROR_EXCEPTION));
+        try {
+          $php = LightnCandy::compile('{{{foo}}', Array('flags' => LightnCandy::FLAG_ERROR_EXCEPTION));
+        } catch (\Exception $E) {
+            $this->assertEquals('Bad token {{{foo}} ! Do you mean {{foo}} or {{{foo}}}?', $E->getMessage());
+        }
     }
 
     public function testErrorLog()
@@ -172,6 +175,7 @@ class errorTest extends TestCase
 
         // This case should be compiled without error
         if (!isset($test['expected'])) {
+            $this->assertEquals(true, true);
             return;
         }
 
