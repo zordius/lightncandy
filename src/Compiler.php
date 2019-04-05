@@ -278,7 +278,7 @@ VAREND
             }
         }
 
-        if (((count($var) == 0) || (($var[0] === null) && (count($var) == 1))) && ($lookup === null)) {
+        if ((empty($var) || (count($var) == 0) || (($var[0] === null) && (count($var) == 1))) && ($lookup === null)) {
             return array($base, $exp);
         }
 
