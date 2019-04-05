@@ -25,7 +25,7 @@ use \LightnCandy\Encoder;
  */
 class StringObject
 {
-     protected $string;
+    protected $string;
 
     public function __construct($string) {
         $this->string = $string;
