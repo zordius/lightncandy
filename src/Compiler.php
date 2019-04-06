@@ -99,12 +99,12 @@ class Compiler extends Validator
         $partials = implode(",\n", $context['partialCode']);
         $debug = Runtime::DEBUG_ERROR_LOG;
         $use = $context['flags']['standalone'] ? Exporter::runtime($context) : "use {$context['runtime']} as {$context['runtimealias']};";
+        $stringObject = $context['flags']['method'] || $context['flags']['prop'] ? Exporter::stringobject($context) : '';
         $safeString = (($context['usedFeature']['enc'] > 0) && ($context['flags']['standalone'] === 0)) ? "use {$context['safestring']} as SafeString;" : '';
         $exportSafeString = (($context['usedFeature']['enc'] > 0) && ($context['flags']['standalone'] >0)) ? Exporter::safestring($context) : '';
-
         // Return generated PHP code string.
         return <<<VAREND
-$safeString{$use}{$exportSafeString}return function (\$in = null, \$options = null) {
+$stringObject{$safeString}{$use}{$exportSafeString}return function (\$in = null, \$options = null) {
     \$helpers = $helpers;
     \$partials = array($partials);
     \$cx = array(
@@ -278,7 +278,7 @@ VAREND
             }
         }
 
-        if (((count($var) == 0) || (($var[0] === null) && (count($var) == 1))) && ($lookup === null)) {
+        if ((empty($var) || (count($var) == 0) || (($var[0] === null) && (count($var) == 1))) && ($lookup === null)) {
             return array($base, $exp);
         }
 

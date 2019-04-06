@@ -2,11 +2,13 @@
 
 use LightnCandy\LightnCandy;
 use LightnCandy\Runtime;
+use PHPUnit\Framework\TestCase;
+
 require_once('tests/helpers_for_test.php');
 
 $tmpdir = sys_get_temp_dir();
 
-class regressionTest extends PHPUnit_Framework_TestCase
+class regressionTest extends TestCase
 {
     /**
      * @dataProvider issueProvider
@@ -23,7 +25,7 @@ class regressionTest extends PHPUnit_Framework_TestCase
         }
         $renderer = LightnCandy::prepare($php);
 
-        $this->assertEquals($issue['expected'], $renderer($issue['data'], array('debug' => $issue['debug'])), "PHP CODE:\n$php\n$parsed");
+        $this->assertEquals($issue['expected'], $renderer(isset($issue['data']) ? $issue['data'] : null, array('debug' => $issue['debug'])), "PHP CODE:\n$php\n$parsed");
     }
 
     public function issueProvider()

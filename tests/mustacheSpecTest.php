@@ -1,6 +1,7 @@
 <?php
 
 use LightnCandy\LightnCandy;
+use PHPUnit\Framework\TestCase;
 
 $tmpdir = sys_get_temp_dir();
 
@@ -9,7 +10,7 @@ function getFunctionCode($func) {
     return $v;
 }
 
-class MustacheSpecTest extends PHPUnit_Framework_TestCase
+class MustacheSpecTest extends TestCase
 {
     /**
      * @dataProvider jsonSpecProvider
