@@ -159,6 +159,23 @@ class Exporter
     }
 
     /**
+     * Export StringObject class as string
+     *
+     * @param array<string,array|string|integer> $context current compile context
+     *
+     * @return string
+     */
+    public static function stringobject($context) {
+      if ($context['flags']['standalone'] == 0) {
+        return 'use \\LightnCandy\\StringObject as StringObject;';
+      }
+      $class = new \ReflectionClass('\\LightnCandy\\StringObject');
+      $meta = static::getMeta($class);
+      $methods = array();
+      return "if (!class_exists(\"StringObject\")) {\n{$meta['code']}}\n";
+    }
+
+    /**
      * Export required standalone Runtime methods
      *
      * @param array<string,array|string|integer> $context current compile context

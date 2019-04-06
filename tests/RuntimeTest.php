@@ -166,8 +166,8 @@ class RuntimeTest extends TestCase
         $this->assertEquals('-b=', $method->invokeArgs(null, array_by_ref(array(
             array('scopes' => array(), 'flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), array('a' => 'b'), null, array('a' => 'b'), true, function ($c, $i) {return "-$i=";}
         ))));
-        $this->assertEquals('1', $method->invokeArgs(null, array_by_ref(array(
-            array('flags' => array('spvar' => 0, 'mustlam' => 0, 'mustsec' => 0, 'lambda' => 0)), 'b', null, 'b', false, function ($c, $i) {return count($i);}
+        $this->assertEquals('b', $method->invokeArgs(null, array_by_ref(array(
+            array('flags' => array('spvar' => 0, 'mustlam' => 0, 'mustsec' => 0, 'lambda' => 0)), 'b', null, 'b', false, function ($c, $i) {return print_r($i, true);}
         ))));
         $this->assertEquals('1', $method->invokeArgs(null, array_by_ref(array(
             array('flags' => array('spvar' => 0, 'mustlam' => 0, 'mustsec' => 0, 'lambda' => 0)), 1, null, 1, false, function ($c, $i) {return print_r($i, true);}
