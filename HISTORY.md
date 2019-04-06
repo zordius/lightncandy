@@ -1,12 +1,15 @@
 HISTORY
 =======
 
-1.2.3 current master, not released
+1.2.4 current master, not released
+
+1.2.3 https://github.com/zordius/lightncandy/tree/v1.2.3
    * align with handlebars.js 4.0.11
    * f429712406 fix partial block standalone tag detection issue
    * 4f1ca85a08 fix for {{#each foo as |bar|}} when the value is not an array
+   * ca892c4514 fix for PHP 7.2 count(null) issue and StringObject not found issue
 
-1.2.2 current master, not released
+1.2.2 https://github.com/zordius/lightncandy/tree/v1.2.2
    * align with handlebars.js 4.0.11
    * 6ef2efd8d9 fix LightnCandy::compilePartial() error when there is `'` in the partial
    * 658244f864 better error message when a=b found without FLAG_NAMEDARG option
