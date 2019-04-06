@@ -5,10 +5,11 @@
 use LightnCandy\LightnCandy;
 use LightnCandy\Runtime;
 use LightnCandy\SafeString;
+use PHPUnit\Framework\TestCase;
 
 require_once(__DIR__ . '/test_util.php');
 
-class PartialTest extends PHPUnit_Framework_TestCase
+class PartialTest extends TestCase
 {
     /**
      * @covers LightnCandy\Partial::prePartial

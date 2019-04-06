@@ -12,7 +12,7 @@
  </filter>
 
  <logging>
-  <log type="coverage-html" target="build/result/coverage" title="lightncandy" charset="UTF-8" />
+  <log type="coverage-html" target="build/result/coverage" />
   <log type="coverage-text" target="php://stdout" />
  </logging>
 

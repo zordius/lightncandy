@@ -1,9 +1,11 @@
 <?php
 
 use LightnCandy\LightnCandy;
+use PHPUnit\Framework\TestCase;
+
 require_once('tests/helpers_for_test.php');
 
-class usageTest extends PHPUnit_Framework_TestCase
+class usageTest extends TestCase
 {
     /**
      * @dataProvider compileProvider

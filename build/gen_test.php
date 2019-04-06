@@ -28,10 +28,11 @@ function genTestForClass($classname) {
 use LightnCandy\\LightnCandy;
 use LightnCandy\\Runtime;
 use LightnCandy\\SafeString;
+use PHPUnit\\Framework\\TestCase;
 
 require_once(__DIR__ . '/test_util.php');
 
-class {$classname}Test extends PHPUnit_Framework_TestCase
+class {$classname}Test extends TestCase
 {
 
 VAR

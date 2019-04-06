@@ -2,6 +2,7 @@
 
 use LightnCandy\LightnCandy;
 use LightnCandy\Runtime;
+use PHPUnit\Framework\TestCase;
 
 $tmpdir = sys_get_temp_dir();
 $hb_test_flag = LightnCandy::FLAG_HANDLEBARSJS_FULL | LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_EXTHELPER;
@@ -62,7 +63,7 @@ class Utils {
     }
 }
 
-class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
+class HandlebarsSpecTest extends TestCase
 {
     /**
      * @dataProvider jsonSpecProvider
@@ -280,6 +281,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
             } catch (Exception $e) {
                 // Exception as expected, pass!
                 if (isset($spec['exception'])) {
+                    $this->assertEquals(true, true);
                     continue;
                 }
 
@@ -289,6 +291,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
             $renderer = LightnCandy::prepare($php, null, false);
             if ($spec['description'] === 'Tokenizer') {
                 // no compile error means passed
+                $this->assertEquals(true, true);
                 continue;
             }
 
@@ -301,6 +304,7 @@ class HandlebarsSpecTest extends PHPUnit_Framework_TestCase
             } catch (Exception $e) {
                 if (!isset($spec['expected'])) {
                     // expected error and catched here, so passed
+                    $this->assertEquals(true, true);
                     continue;
                 }
                 $this->fail("Rendering Error in {$spec['file']}#{$spec['description']}]#{$spec['no']}:{$spec['it']} PHP CODE: $php\nPARSED: $parsed\n" . $e->getMessage());
