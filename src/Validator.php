@@ -475,12 +475,13 @@ class Validator {
      * @return boolean Return true
      */
     protected static function blockEnd(&$context, &$vars, $match = null) {
-        $context['level']--;
         $c = count($context['stack']) - 2;
         $pop = ($c >= 0) ? $context['stack'][$c + 1] : '';
         if (($match !== null) && ($match !== $pop)) {
             return;
         }
+        // if we didn't match our $pop, we didn't actually do a level, so only subtract a level here
+        $context['level']--;
         $pop2 = ($c >= 0) ? $context['stack'][$c]: '';
         switch ($context['currentToken'][Token::POS_INNERTAG]) {
             case 'with':
@@ -498,6 +499,7 @@ class Validator {
             case '^':
                 $elsechain = array_shift($context['elselvl']);
                 if (isset($elsechain[0])) {
+                    // we need to repeat a level due to else chains: {{else if}}
                     $context['level']++;
                     $context['currentToken'][Token::POS_RSPACE] = $context['currentToken'][Token::POS_BACKFILL] = '{{/' . implode('}}{{/', $elsechain) . '}}' . Token::toString($context['currentToken']) . $context['currentToken'][Token::POS_RSPACE];
                     return Token::POS_BACKFILL;
@@ -750,12 +752,12 @@ class Validator {
 
         if ($checkSubexp) {
             switch ($vars[0][0]) {
-            case 'if':
-            case 'unless':
-            case 'with':
-            case 'each':
-            case 'lookup':
-                return $context['flags']['nohbh'] ? false : true;
+                case 'if':
+                case 'unless':
+                case 'with':
+                case 'each':
+                case 'lookup':
+                    return $context['flags']['nohbh'] ? false : true;
             }
         }
 
@@ -852,7 +854,7 @@ class Validator {
             }
         }
         if (!$context['flags']['runpart']) {
-        $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;
+            $named = count(array_diff_key($vars, array_keys(array_keys($vars)))) > 0;
             if ($named || (count($vars) > 1)) {
                 $context['error'][] = "Do not support {{>{$context['currentToken'][Token::POS_INNERTAG]}}}, you should do compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag";
             }
@@ -898,9 +900,9 @@ class Validator {
             $st = false;
         }
         if ($st && (($lsp && $rsp) // both side cr
-            || ($rsp && !$token[Token::POS_LOTHER]) // first line without left
-            || ($lsp && !$token[Token::POS_ROTHER]) // final line
-           )) {
+                || ($rsp && !$token[Token::POS_LOTHER]) // first line without left
+                || ($lsp && !$token[Token::POS_ROTHER]) // final line
+            )) {
             // handle partial
             if ($token[Token::POS_OP] === '>') {
                 if (!$context['flags']['noind']) {
