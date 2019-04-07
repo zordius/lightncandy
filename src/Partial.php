@@ -32,7 +32,8 @@ class Partial
     /**
      * Include all partials when using dynamic partials
      */
-    public static function handleDynamic(&$context) {
+    public static function handleDynamic(&$context)
+    {
         if ($context['usedFeature']['dynpartial'] == 0) {
             return;
         }
@@ -50,7 +51,8 @@ class Partial
      *
      * @return string|null $code compiled PHP code when success
      */
-    public static function read(&$context, $name) {
+    public static function read(&$context, $name)
+    {
         $isPB = ($name === '@partial-block');
         $context['usedFeature']['partial']++;
 
@@ -82,7 +84,8 @@ class Partial
      * @expect 'hey' when input Array('prepartial' => false), 'hey', 'haha'
      * @expect 'haha-hoho' when input Array('prepartial' => function ($cx, $tmpl, $name) {return "$name-$tmpl";}), 'hoho', 'haha'
      */
-    protected static function prePartial(&$context, $tmpl, &$name) {
+    protected static function prePartial(&$context, $tmpl, &$name)
+    {
         return $context['prepartial'] ? $context['prepartial']($context, $tmpl, $name) : $tmpl;
     }
 
@@ -94,7 +97,8 @@ class Partial
      *
      * @return string|null $content partial content
      */
-    public static function resolve(&$context, &$name) {
+    public static function resolve(&$context, &$name)
+    {
         if ($name === '@partial-block') {
             $name = "@partial-block{$context['usedFeature']['pblock']}";
         }
@@ -113,7 +117,8 @@ class Partial
      *
      * @return string|null $content partial content
      */
-    public static function resolver(&$context, &$name) {
+    public static function resolver(&$context, &$name)
+    {
         if ($context['partialresolver']) {
             $cnt = $context['partialresolver']($context, $name);
             return static::prePartial($context, $cnt, $name);
@@ -128,7 +133,8 @@ class Partial
      *
      * @return string|null $code PHP code string
      */
-    public static function compileStatic(&$context, $name) {
+    public static function compileStatic(&$context, $name)
+    {
         // Check for recursive partial
         if (!$context['flags']['runpart']) {
             $context['partialStack'][] = $name;
@@ -155,7 +161,8 @@ class Partial
      *
      * @return string|null $code compiled PHP code when success
      */
-    public static function compileDynamic(&$context, $name) {
+    public static function compileDynamic(&$context, $name)
+    {
         if (!$context['flags']['runpart']) {
             return;
         }
@@ -178,7 +185,8 @@ class Partial
      *
      * @return string $code compiled PHP code
      */
-    public static function compile(&$context, $template, $name = 0) {
+    public static function compile(&$context, $template, $name = 0)
+    {
         if ((end($context['partialStack']) === $name) && (substr($name, 0, 14) === '@partial-block')) {
             return;
         }
@@ -206,4 +214,3 @@ class Partial
         return "function (\$cx, \$in{$sp}) {{$context['ops']['array_check']}{$context['ops']['op_start']}'$code'{$context['ops']['op_end']}}";
     }
 }
-

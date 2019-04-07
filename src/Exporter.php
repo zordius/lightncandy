@@ -35,7 +35,8 @@ class Exporter
      * @expect 'function($a) {return;}' when input array('flags' => array('standalone' => 0)),  function ($a) {return;}
      * @expect 'function($a) {return;}' when input array('flags' => array('standalone' => 0)),   function ($a) {return;}
      */
-    protected static function closure($context, $closure) {
+    protected static function closure($context, $closure)
+    {
         if (is_string($closure) && preg_match('/(.+)::(.+)/', $closure, $matched)) {
             $ref = new \ReflectionMethod($matched[1], $matched[2]);
         } else {
@@ -53,7 +54,8 @@ class Exporter
      *
      * @return string
      */
-    public static function helpers($context) {
+    public static function helpers($context)
+    {
         $ret = '';
         foreach ($context['helpers'] as $name => $func) {
             if (!isset($context['usedCount']['helpers'][$name])) {
@@ -77,7 +79,8 @@ class Exporter
      *
      * @return string
      */
-    protected static function replaceSafeString($context, $str) {
+    protected static function replaceSafeString($context, $str)
+    {
         return $context['flags']['standalone'] ? str_replace($context['safestring'], $context['safestringalias'], $str) : $str;
     }
 
@@ -89,7 +92,8 @@ class Exporter
      *
      * @return array
      */
-    public static function getClassMethods($context, $class) {
+    public static function getClassMethods($context, $class)
+    {
         $methods = array();
 
         foreach ($class->getMethods() as $method) {
@@ -107,7 +111,8 @@ class Exporter
      *
      * @return string
      */
-    public static function getClassStatics($class) {
+    public static function getClassStatics($class)
+    {
         $ret = '';
 
         foreach ($class->getStaticProperties() as $name => $value) {
@@ -128,7 +133,8 @@ class Exporter
      *
      * @return array
      */
-    public static function getMeta($refobj) {
+    public static function getMeta($refobj)
+    {
         $fname = $refobj->getFileName();
         $lines = file_get_contents($fname);
         $file = new \SplFileObject($fname);
@@ -150,7 +156,8 @@ class Exporter
      *
      * @return string
      */
-    public static function safestring($context) {
+    public static function safestring($context)
+    {
         $class = new \ReflectionClass($context['safestring']);
 
         return array_reduce(static::getClassMethods($context, $class), function ($in, $cur) {
@@ -165,14 +172,15 @@ class Exporter
      *
      * @return string
      */
-    public static function stringobject($context) {
-      if ($context['flags']['standalone'] == 0) {
-        return 'use \\LightnCandy\\StringObject as StringObject;';
-      }
-      $class = new \ReflectionClass('\\LightnCandy\\StringObject');
-      $meta = static::getMeta($class);
-      $methods = array();
-      return "if (!class_exists(\"StringObject\")) {\n{$meta['code']}}\n";
+    public static function stringobject($context)
+    {
+        if ($context['flags']['standalone'] == 0) {
+            return 'use \\LightnCandy\\StringObject as StringObject;';
+        }
+        $class = new \ReflectionClass('\\LightnCandy\\StringObject');
+        $meta = static::getMeta($class);
+        $methods = array();
+        return "if (!class_exists(\"StringObject\")) {\n{$meta['code']}}\n";
     }
 
     /**
@@ -182,7 +190,8 @@ class Exporter
      *
      * @return string
      */
-    public static function runtime($context) {
+    public static function runtime($context)
+    {
         $class = new \ReflectionClass($context['runtime']);
         $ret = '';
         $methods = static::getClassMethods($context, $class);
@@ -194,8 +203,8 @@ class Exporter
                 $n = 0;
                 foreach ($methods[$name][1] as $child => $count) {
                     if (!in_array($child, $exports)) {
-                       $exports[] = $child;
-                       $n++;
+                        $exports[] = $child;
+                        $n++;
                     }
                 }
                 return $n;
@@ -218,7 +227,8 @@ class Exporter
      *
      * @return string
      */
-    public static function constants($context) {
+    public static function constants($context)
+    {
         if ($context['flags']['standalone'] == 0) {
             return 'array()';
         }
@@ -226,8 +236,8 @@ class Exporter
         $class = new \ReflectionClass($context['runtime']);
         $constants = $class->getConstants();
         $ret = " array(\n";
-        foreach($constants as $name => $value) {
-            $ret .= "            '$name' => ".  (is_string($value) ? "'$value'" : $value ) . ",\n";
+        foreach ($constants as $name => $value) {
+            $ret .= "            '$name' => ".  (is_string($value) ? "'$value'" : $value) . ",\n";
         }
         $ret .= "        )";
         return $ret;
@@ -242,7 +252,8 @@ class Exporter
      *
      * @return array<string|array> list of converted code and children array
      */
-    protected static function scanDependency($context, $code, $ocode) {
+    protected static function scanDependency($context, $code, $ocode)
+    {
         $child = array();
 
         $code = preg_replace_callback('/static::(\w+?)\s*\(/', function ($matches) use ($context, &$child) {
@@ -263,4 +274,3 @@ class Exporter
         return array(static::replaceSafeString($context, $code), $child, $ocode);
     }
 }
-

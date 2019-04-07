@@ -49,7 +49,8 @@ class Token
      * @param string|null $left left string of a token
      * @param string|null $right right string of a token
      */
-    public static function setDelimiter(&$context, $left = null, $right = null) {
+    public static function setDelimiter(&$context, $left = null, $right = null)
+    {
         if ($left === null) {
             $left = $context['delimiters'][0];
         }
@@ -83,11 +84,11 @@ class Token
      * @expect 'cd' when input array(0, 'a', 'b', 'c', 'd', 'e', 'f')
      * @expect 'qd' when input array(0, 'a', 'b', 'c', 'd', 'e', 'f'), array(3 => 'q')
      */
-    public static function toString($token, $merge = null) {
+    public static function toString($token, $merge = null)
+    {
         if (is_array($merge)) {
             $token = array_replace($token, $merge);
         }
         return implode('', array_slice($token, 3, -2));
     }
 }
-

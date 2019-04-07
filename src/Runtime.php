@@ -18,6 +18,7 @@ Origin: https://github.com/zordius/lightncandy
  */
 
 namespace LightnCandy;
+
 use \LightnCandy\Encoder;
 
 /**
@@ -27,11 +28,13 @@ class StringObject
 {
     protected $string;
 
-    public function __construct($string) {
+    public function __construct($string)
+    {
         $this->string = $string;
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         return strval($this->string);
     }
 }
@@ -57,7 +60,8 @@ class Runtime extends Encoder
      * @expect '{{123}}' when input '123', 'miss', array('flags' => array('debug' => Runtime::DEBUG_TAGS), 'runtime' => 'LightnCandy\\Runtime'), ''
      * @expect '<!--MISSED((-->{{#123}}<!--))--><!--SKIPPED--><!--MISSED((-->{{/123}}<!--))-->' when input '123', 'wi', array('flags' => array('debug' => Runtime::DEBUG_TAGS_HTML), 'runtime' => 'LightnCandy\\Runtime'), false, null, false, function () {return 'A';}
      */
-    public static function debug($v, $f, $cx) {
+    public static function debug($v, $f, $cx)
+    {
         // Build array of reference for call_user_func_array
         $P = func_get_args();
         $params = array();
@@ -101,7 +105,8 @@ class Runtime extends Encoder
      *
      * @throws \Exception
      */
-    public static function err($cx, $err) {
+    public static function err($cx, $err)
+    {
         if ($cx['flags']['debug'] & static::DEBUG_ERROR_LOG) {
             error_log($err);
             return;
@@ -117,7 +122,8 @@ class Runtime extends Encoder
      * @param array<string,array|string|integer> $cx render time context for lightncandy
      * @param string $v expression
      */
-    public static function miss($cx, $v) {
+    public static function miss($cx, $v)
+    {
         static::err($cx, "Runtime: $v does not exist");
     }
 
@@ -127,7 +133,8 @@ class Runtime extends Encoder
      * @param array<string,array|string|integer> $cx render time context for lightncandy
      * @param string $v expression
      */
-    public static function lo($cx, $v) {
+    public static function lo($cx, $v)
+    {
         error_log(var_export($v[0], true));
         return '';
     }
@@ -148,7 +155,8 @@ class Runtime extends Encoder
      * @expect null when input array('scopes' => array(), 'flags' => array('prop' => 0, 'method' => 0, 'mustlok' => 0)), null, (Object) array('a' => array('b' => 3)), array('a', 'b')
      * @expect 3 when input array('scopes' => array(), 'flags' => array('prop' => 1, 'method' => 0, 'mustlok' => 0)), null, (Object) array('a' => array('b' => 3)), array('a', 'b')
      */
-    public static function v($cx, $in, $base, $path, $args = null) {
+    public static function v($cx, $in, $base, $path, $args = null)
+    {
         $count = count($cx['scopes']);
         $plen = count($path);
         while ($base) {
@@ -229,7 +237,8 @@ class Runtime extends Encoder
      * @expect true when input array(), array(''), false
      * @expect true when input array(), array(0), false
      */
-    public static function ifvar($cx, $v, $zero) {
+    public static function ifvar($cx, $v, $zero)
+    {
         return ($v !== null) && ($v !== false) && ($zero || ($v !== 0) && ($v !== 0.0)) && ($v !== '') && (is_array($v) ? (count($v) > 0) : true);
     }
 
@@ -248,7 +257,8 @@ class Runtime extends Encoder
      * @expect true when input array(), array()
      * @expect false when input array(), array('1')
      */
-    public static function isec($cx, $v) {
+    public static function isec($cx, $v)
+    {
         return ($v === null) || ($v === false) || (is_array($v) && (count($v) === 0));
     }
 
@@ -265,7 +275,8 @@ class Runtime extends Encoder
      * @expect 'a&#039;b' when input array('flags' => array('mustlam' => 0, 'lambda' => 0)), 'a\'b'
      * @expect 'a&b' when input null, new \LightnCandy\SafeString('a&b')
      */
-    public static function enc($cx, $var) {
+    public static function enc($cx, $var)
+    {
         if ($var instanceof \LightnCandy\SafeString) {
             return (string)$var;
         }
@@ -286,7 +297,8 @@ class Runtime extends Encoder
      * @expect 'a&#x27;b' when input array('flags' => array('mustlam' => 0, 'lambda' => 0)), 'a\'b'
      * @expect '&#x60;a&#x27;b' when input array('flags' => array('mustlam' => 0, 'lambda' => 0)), '`a\'b'
      */
-    public static function encq($cx, $var) {
+    public static function encq($cx, $var)
+    {
         if ($var instanceof \LightnCandy\SafeString) {
             return (string)$var;
         }
@@ -332,7 +344,8 @@ class Runtime extends Encoder
      * @expect '268' when input array('scopes' => array(), 'flags' => array('spvar' => 1, 'mustlam' => 0, 'lambda' => 0), 'sp_vars'=>array('root' => 0)), array(1,3,4), null, 0, false, function ($c, $i) {return $i * 2;}
      * @expect '038' when input array('scopes' => array(), 'flags' => array('spvar' => 1, 'mustlam' => 0, 'lambda' => 0), 'sp_vars'=>array('root' => 0)), array(1,3,'a'=>4), null, 0, true, function ($c, $i) {return $i * $c['sp_vars']['index'];}
      */
-    public static function sec($cx, $v, $bp, $in, $each, $cb, $else = null) {
+    public static function sec($cx, $v, $bp, $in, $each, $cb, $else = null)
+    {
         $push = ($in !== $v) || $each;
 
         $isAry = is_array($v) || ($v instanceof \ArrayObject);
@@ -462,7 +475,8 @@ class Runtime extends Encoder
      * @expect '{"a":"b"}' when input array(), array('a'=>'b'), null, array('a'=>'c'), function ($c, $i) {return json_encode($i);}
      * @expect '-b=' when input array(), 'b', null, array('a'=>'b'), function ($c, $i) {return "-$i=";}
      */
-    public static function wi($cx, $v, $bp, $in, $cb, $else = null) {
+    public static function wi($cx, $v, $bp, $in, $cb, $else = null)
+    {
         if (isset($bp[0])) {
             $v = static::m($cx, $v, array($bp[0] => $v));
         }
@@ -489,13 +503,14 @@ class Runtime extends Encoder
      * @return array<array|string|integer>|string|integer the merged context object
      *
      */
-    public static function m($cx, $a, $b) {
+    public static function m($cx, $a, $b)
+    {
         if (is_array($b)) {
             if ($a === null) {
                 return $b;
-            } else if (is_array($a)) {
+            } elseif (is_array($a)) {
                 return array_merge($a, $b);
-            } else if ($cx['flags']['method'] || $cx['flags']['prop']) {
+            } elseif ($cx['flags']['method'] || $cx['flags']['prop']) {
                 if (!is_object($a)) {
                     $a = new StringObject($a);
                 }
@@ -517,7 +532,8 @@ class Runtime extends Encoder
      * @return string The rendered string of the partial
      *
      */
-    public static function p($cx, $p, $v, $pid, $sp = '') {
+    public static function p($cx, $p, $v, $pid, $sp = '')
+    {
         $pp = ($p === '@partial-block') ? "$p" . ($pid > 0 ? $pid : $cx['partialid']) : $p;
 
         if (!isset($cx['partials'][$pp])) {
@@ -538,7 +554,8 @@ class Runtime extends Encoder
      * @param Closure $code the compiled partial code
      *
      */
-    public static function in(&$cx, $p, $code) {
+    public static function in(&$cx, $p, $code)
+    {
         $cx['partials'][$p] = $code;
     }
 
@@ -552,7 +569,8 @@ class Runtime extends Encoder
      *
      * @return string The rendered string of the token
      */
-    public static function hbch($cx, $ch, $vars, $op, &$_this) {
+    public static function hbch($cx, $ch, $vars, $op, &$_this)
+    {
         if (isset($cx['blparam'][0][$ch])) {
             return $cx['blparam'][0][$ch];
         }
@@ -585,7 +603,8 @@ class Runtime extends Encoder
      *
      * @return string The rendered string of the token
      */
-    public static function hbbch($cx, $ch, $vars, &$_this, $inverted, $cb, $else = null) {
+    public static function hbbch($cx, $ch, $vars, &$_this, $inverted, $cb, $else = null)
+    {
         $options = array(
             'name' => $ch,
             'hash' => $vars[1],
@@ -621,7 +640,7 @@ class Runtime extends Encoder
             if (isset($data['blockParams']) && isset($vars[2])) {
                 $ex = array_combine($vars[2], array_slice($data['blockParams'], 0, count($vars[2])));
                 array_unshift($cx['blparam'], $ex);
-            } else if (isset($cx['blparam'][0])) {
+            } elseif (isset($cx['blparam'][0])) {
                 $ex = $cx['blparam'][0];
             }
             if (($context === '_NO_INPUT_HERE_') || ($context === $_this)) {
@@ -670,7 +689,8 @@ class Runtime extends Encoder
      *
      * @return string The rendered string of the token
      */
-    public static function exch($cx, $ch, $vars, &$options) {
+    public static function exch($cx, $ch, $vars, &$options)
+    {
         $args = $vars[0];
         $args[] = $options;
         $e = null;
@@ -682,7 +702,7 @@ class Runtime extends Encoder
             $e = "Runtime: call custom helper '$ch' error: " . $E->getMessage();
         }
 
-        if($e !== null) {
+        if ($e !== null) {
             static::err($cx, $e);
         }
 

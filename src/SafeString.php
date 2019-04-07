@@ -45,11 +45,13 @@ class SafeString extends Encoder
      * @param string $str input string
      * @param bool|string $escape false to not escape, true to escape, 'encq' to escape as handlebars.js
      */
-    public function __construct($str, $escape = false) {
+    public function __construct($str, $escape = false)
+    {
         $this->string = $escape ? (($escape === 'encq') ? static::encq(static::$jsContext, $str) : static::enc(static::$jsContext, $str)) : $str;
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         return $this->string;
     }
 
@@ -64,7 +66,8 @@ class SafeString extends Encoder
      * @expect 'abc{{!}}cde' when input 'abc{{!}}cde'
      * @expect 'abc{{! }}cde' when input 'abc{{!----}}cde'
      */
-    public static function stripExtendedComments($template) {
+    public static function stripExtendedComments($template)
+    {
         return preg_replace(static::EXTENDED_COMMENT_SEARCH, '{{! }}', $template);
     }
 
@@ -79,8 +82,8 @@ class SafeString extends Encoder
      * @expect 'a\\\\bc' when input 'a\bc'
      * @expect 'a\\\'bc' when input 'a\'bc'
      */
-    public static function escapeTemplate($template) {
+    public static function escapeTemplate($template)
+    {
         return addcslashes(addcslashes($template, '\\'), "'");
     }
 }
-

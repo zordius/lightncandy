@@ -33,7 +33,8 @@ class Context extends Flags
      *
      * @return array<string,array|string|integer> Context from options
      */
-    public static function create($options) {
+    public static function create($options)
+    {
         if (!is_array($options)) {
             $options = array();
         }
@@ -194,7 +195,8 @@ class Context extends Flags
      * @expect array('flags' => array('exhlp' => 1), 'helpers' => array('\\LightnCandy\\Runtime::raw' => '\\LightnCandy\\Runtime::raw')) when input array('flags' => array('exhlp' => 1), 'helpers' => array()), array('helpers' => array('\\LightnCandy\\Runtime::raw'))
      * @expect array('flags' => array('exhlp' => 1), 'helpers' => array('test' => '\\LightnCandy\\Runtime::raw')) when input array('flags' => array('exhlp' => 1), 'helpers' => array()), array('helpers' => array('test' => '\\LightnCandy\\Runtime::raw'))
      */
-    protected static function updateHelperTable(&$context, $options, $tname = 'helpers') {
+    protected static function updateHelperTable(&$context, $options, $tname = 'helpers')
+    {
         if (isset($options[$tname]) && is_array($options[$tname])) {
             foreach ($options[$tname] as $name => $func) {
                 $tn = is_int($name) ? $func : $name;
@@ -223,7 +225,8 @@ class Context extends Flags
      * @param array<string,array|string|integer> $context master context
      * @param array<string,array|string|integer> $tmp another context will be overwrited into master context
      */
-    public static function merge(&$context, $tmp) {
+    public static function merge(&$context, $tmp)
+    {
         $context['error'] = $tmp['error'];
         $context['helpers'] = $tmp['helpers'];
         $context['partials'] = $tmp['partials'];
@@ -234,4 +237,3 @@ class Context extends Flags
         $context['usedPartial'] = $tmp['usedPartial'];
     }
 }
-

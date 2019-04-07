@@ -18,6 +18,7 @@ Origin: https://github.com/zordius/lightncandy
  */
 
 namespace LightnCandy;
+
 use \LightnCandy\Token;
 use \LightnCandy\Parser;
 use \LightnCandy\Partial;
@@ -27,14 +28,16 @@ use \LightnCandy\SafeString;
 /**
  * LightnCandy Validator
  */
-class Validator {
+class Validator
+{
     /**
      * Verify template
      *
      * @param array<string,array|string|integer> $context Current context
      * @param string $template handlebars template
      */
-    public static function verify(&$context, $template) {
+    public static function verify(&$context, $template)
+    {
         $template = SafeString::stripExtendedComments($template);
         $context['level'] = 0;
         Parser::setDelimiter($context);
@@ -68,7 +71,7 @@ class Validator {
             array_pop($context['stack']);
             array_pop($context['stack']);
             $token = array_pop($context['stack']);
-            $context['error'][] = 'Unclosed token ' . ($context['rawblock'] ? "{{{{{$token}}}}}" : ( $context['partialblock'] ? "{{#>{$token}}}" : "{{#{$token}}}")) . ' !!';
+            $context['error'][] = 'Unclosed token ' . ($context['rawblock'] ? "{{{{{$token}}}}}" : ($context['partialblock'] ? "{{#>{$token}}}" : "{{#{$token}}}")) . ' !!';
         }
     }
 
@@ -77,7 +80,8 @@ class Validator {
      *
      * @param array<string,array|string|integer> $context Current context
      */
-    protected static function pushLeft(&$context) {
+    protected static function pushLeft(&$context)
+    {
         $L = $context['currentToken'][Token::POS_LOTHER] . $context['currentToken'][Token::POS_LSPACE];
 
         if ($context['currentToken'][Token::POS_OP] === '!') {
@@ -102,7 +106,8 @@ class Validator {
      * @param array<string,array|string|integer> $context Current context
      * @param string|array $token a parsed token or a string
      */
-    protected static function pushToken(&$context, $token) {
+    protected static function pushToken(&$context, $token)
+    {
         if ($token === '') {
             return;
         }
@@ -122,7 +127,8 @@ class Validator {
      * @param string $operation operation string
      * @param array<boolean|integer|string|array> $vars parsed arguments list
      */
-    protected static function pushStack(&$context, $operation, $vars) {
+    protected static function pushStack(&$context, $operation, $vars)
+    {
         list($levels, $spvar, $var) = Expression::analyze($context, $vars[0]);
         $context['stack'][] = $context['currentToken'][Token::POS_INNERTAG];
         $context['stack'][] = Expression::toString($levels, $spvar, $var);
@@ -142,7 +148,8 @@ class Validator {
      * @expect null when input array(0, 0, 0, 0, 0, '{{', '#', '...', '}}'), array()
      * @expect true when input array(0, 0, 0, 0, 0, '{', '#', '...', '}'), array()
      */
-    protected static function delimiter($token, &$context) {
+    protected static function delimiter($token, &$context)
+    {
         // {{ }}} or {{{ }} are invalid
         if (strlen($token[Token::POS_BEGINRAW]) !== strlen($token[Token::POS_ENDRAW])) {
             $context['error'][] = 'Bad token ' . Token::toString($token) . ' ! Do you mean ' . Token::toString($token, array(Token::POS_BEGINRAW => '', Token::POS_ENDRAW => '')) . ' or ' . Token::toString($token, array(Token::POS_BEGINRAW => '{', Token::POS_ENDRAW => '}')) . '?';
@@ -176,7 +183,8 @@ class Validator {
      * @expect 11 when input '#', array('helpers' => array('abc' => ''), 'usedFeature' => array('helper' => 10), 'level' => 0, 'currentToken' => array(0,0,0,0,0,0,0,0), 'flags' => array('spvar' => 0), 'elsechain' => false, 'elselvl' => array()), array(array('abc'))
      * @expect true when input '>', array('partialresolver' => false, 'usedFeature' => array('partial' => 7), 'level' => 0, 'flags' => array('skippartial' => 0, 'runpart' => 0, 'spvar' => 0), 'currentToken' => array(0,0,0,0,0,0,0,0), 'elsechain' => false, 'elselvl' => array()), array('test')
      */
-    protected static function operator($operator, &$context, &$vars) {
+    protected static function operator($operator, &$context, &$vars)
+    {
         switch ($operator) {
             case '#*':
                 if (!$context['compile']) {
@@ -249,7 +257,8 @@ class Validator {
      *
      * @return boolean|null Return true when inline partial ends
      */
-    protected static function inlinePartial(&$context, $vars) {
+    protected static function inlinePartial(&$context, $vars)
+    {
         if (count($context['inlinepartial']) > 0) {
             $ended = false;
             $append = $context['currentToken'][Token::POS_LOTHER] . $context['currentToken'][Token::POS_LSPACE];
@@ -286,7 +295,8 @@ class Validator {
      *
      * @return boolean|null Return true when partial block ends
      */
-    protected static function partialBlock(&$context, $vars) {
+    protected static function partialBlock(&$context, $vars)
+    {
         if (count($context['partialblock']) > 0) {
             $ended = false;
             $append = $context['currentToken'][Token::POS_LOTHER] . $context['currentToken'][Token::POS_LSPACE];
@@ -326,7 +336,8 @@ class Validator {
      *
      * @param array<string,array|string|integer> $context current compile context
      */
-    protected static function doElseChain(&$context) {
+    protected static function doElseChain(&$context)
+    {
         if ($context['elsechain']) {
             $context['elsechain'] = false;
         } else {
@@ -342,7 +353,8 @@ class Validator {
      *
      * @return boolean Return true always
      */
-    protected static function blockBegin(&$context, $vars) {
+    protected static function blockBegin(&$context, $vars)
+    {
         switch ((isset($vars[0][0]) && is_string($vars[0][0])) ? $vars[0][0] : null) {
             case 'with':
                 return static::with($context, $vars);
@@ -363,7 +375,8 @@ class Validator {
      * @param array<string,array|string|integer> $context current compile context
      * @param array<boolean|integer|string|array> $vars parsed arguments list
      */
-    protected static function builtin(&$context, $vars) {
+    protected static function builtin(&$context, $vars)
+    {
         if ($context['flags']['nohbh']) {
             if (isset($vars[1][0])) {
                 $context['error'][] = "Do not support {{#{$vars[0][0]} var}} because you compile with LightnCandy::FLAG_NOHBHELPERS flag";
@@ -385,7 +398,8 @@ class Validator {
      *
      * @return boolean Return true always
      */
-    protected static function section(&$context, $vars, $isEach = false) {
+    protected static function section(&$context, $vars, $isEach = false)
+    {
         if ($isEach) {
             static::builtin($context, $vars);
         } else {
@@ -405,7 +419,8 @@ class Validator {
      *
      * @return boolean Return true always
      */
-    protected static function with(&$context, $vars) {
+    protected static function with(&$context, $vars)
+    {
         static::builtin($context, $vars);
         return true;
     }
@@ -418,7 +433,8 @@ class Validator {
      *
      * @return boolean Return true always
      */
-    protected static function unless(&$context, $vars) {
+    protected static function unless(&$context, $vars)
+    {
         static::builtin($context, $vars);
         return true;
     }
@@ -431,7 +447,8 @@ class Validator {
      *
      * @return boolean Return true always
      */
-    protected static function doIf(&$context, $vars) {
+    protected static function doIf(&$context, $vars)
+    {
         static::builtin($context, $vars);
         return true;
     }
@@ -445,7 +462,8 @@ class Validator {
      *
      * @return integer|null Return number of used custom helpers
      */
-    protected static function blockCustomHelper(&$context, $vars, $inverted = false) {
+    protected static function blockCustomHelper(&$context, $vars, $inverted = false)
+    {
         if (is_string($vars[0][0])) {
             if (static::resolveHelper($context, $vars)) {
                 return ++$context['usedFeature']['helper'];
@@ -461,7 +479,8 @@ class Validator {
      *
      * @return integer Return number of inverted sections
      */
-    protected static function invertedSection(&$context, $vars) {
+    protected static function invertedSection(&$context, $vars)
+    {
         return ++$context['usedFeature']['isec'];
     }
 
@@ -474,7 +493,8 @@ class Validator {
      *
      * @return boolean Return true
      */
-    protected static function blockEnd(&$context, &$vars, $match = null) {
+    protected static function blockEnd(&$context, &$vars, $match = null)
+    {
         $c = count($context['stack']) - 2;
         $pop = ($c >= 0) ? $context['stack'][$c + 1] : '';
         if (($match !== null) && ($match !== $pop)) {
@@ -494,7 +514,7 @@ class Validator {
                 return true;
         }
 
-        switch($pop) {
+        switch ($pop) {
             case '#':
             case '^':
                 $elsechain = array_shift($context['elselvl']);
@@ -504,6 +524,7 @@ class Validator {
                     $context['currentToken'][Token::POS_RSPACE] = $context['currentToken'][Token::POS_BACKFILL] = '{{/' . implode('}}{{/', $elsechain) . '}}' . Token::toString($context['currentToken']) . $context['currentToken'][Token::POS_RSPACE];
                     return Token::POS_BACKFILL;
                 }
+                // no break
             case '#>':
             case '#*':
                 list($levels, $spvar, $var) = Expression::analyze($context, $vars[0]);
@@ -526,7 +547,8 @@ class Validator {
      *
      * @return boolean|null Return true when delimiter changed
      */
-    protected static function isDelimiter(&$context) {
+    protected static function isDelimiter(&$context)
+    {
         if (preg_match('/^=\s*([^ ]+)\s+([^ ]+)\s*=$/', $context['currentToken'][Token::POS_INNERTAG], $matched)) {
             $context['usedFeature']['delimiter']++;
             Parser::setDelimiter($context, $matched[1], $matched[2]);
@@ -542,7 +564,8 @@ class Validator {
      *
      * @return boolean|null Return true when in rawblock mode
      */
-    protected static function rawblock(&$token, &$context) {
+    protected static function rawblock(&$token, &$context)
+    {
         $inner = $token[Token::POS_INNERTAG];
         trim($inner);
 
@@ -581,7 +604,8 @@ class Validator {
      *
      * @return boolean|null Return true when is comment
      */
-    protected static function comment(&$token, &$context) {
+    protected static function comment(&$token, &$context)
+    {
         if ($token[Token::POS_OP] === '!') {
             $context['usedFeature']['comment']++;
             return true;
@@ -594,7 +618,8 @@ class Validator {
      * @param string[] $token detected handlebars {{ }} token
      * @param array<string,array|string|integer> $context current compile context
      */
-    protected static function token(&$token, &$context) {
+    protected static function token(&$token, &$context)
+    {
         $context['currentToken'] = &$token;
 
         if (static::rawblock($token, $context)) {
@@ -678,7 +703,8 @@ class Validator {
      *
      * @return integer Return 1 or larger number when else token detected
      */
-    protected static function doElse(&$context, $vars) {
+    protected static function doElse(&$context, $vars)
+    {
         if ($context['level'] == 0) {
             $context['error'][] = '{{else}} only valid in if, unless, each, and #section context';
         }
@@ -701,7 +727,8 @@ class Validator {
      *
      * @return boolean|null Return true when it is custom helper
      */
-    public static function log(&$context, $vars) {
+    public static function log(&$context, $vars)
+    {
         if (isset($vars[0][0]) && ($vars[0][0] === 'log')) {
             if (!$context['flags']['nohbh']) {
                 if (count($vars) < 2) {
@@ -721,12 +748,13 @@ class Validator {
      *
      * @return boolean|null Return true when it is custom helper
      */
-    public static function lookup(&$context, $vars) {
+    public static function lookup(&$context, $vars)
+    {
         if (isset($vars[0][0]) && ($vars[0][0] === 'lookup')) {
             if (!$context['flags']['nohbh']) {
                 if (count($vars) < 2) {
                     $context['error'][] = "No argument after {{lookup}} !";
-                } else if (count($vars) < 3) {
+                } elseif (count($vars) < 3) {
                     $context['error'][] = "{{lookup}} requires 2 arguments !";
                 }
                 $context['usedFeature']['lookup']++;
@@ -744,7 +772,8 @@ class Validator {
      *
      * @return boolean Return true when it is custom helper
      */
-    public static function helper(&$context, $vars, $checkSubexp = false) {
+    public static function helper(&$context, $vars, $checkSubexp = false)
+    {
         if (static::resolveHelper($context, $vars)) {
             $context['usedFeature']['helper']++;
             return true;
@@ -772,7 +801,8 @@ class Validator {
      *
      * @return boolean $found helper exists or not
      */
-    public static function resolveHelper(&$context, &$vars) {
+    public static function resolveHelper(&$context, &$vars)
+    {
         if (count($vars[0]) !== 1) {
             return false;
         }
@@ -799,7 +829,8 @@ class Validator {
      *
      * @return boolean|null Return true when this token is block custom helper
      */
-    protected static function isBlockHelper($context, $vars) {
+    protected static function isBlockHelper($context, $vars)
+    {
         if (!isset($vars[0][0])) {
             return;
         }
@@ -819,7 +850,8 @@ class Validator {
      *
      * @return boolean Return true always
      */
-    protected static function inline(&$context, $vars) {
+    protected static function inline(&$context, $vars)
+    {
         if (!$context['flags']['runpart']) {
             $context['error'][] = "Do not support {{#*{$context['currentToken'][Token::POS_INNERTAG]}}}, you should do compile with LightnCandy::FLAG_RUNTIMEPARTIAL flag";
         }
@@ -840,7 +872,8 @@ class Validator {
      *
      * @return integer|boolean Return 1 or larger number for runtime partial, return true for other case
      */
-    protected static function partial(&$context, $vars) {
+    protected static function partial(&$context, $vars)
+    {
         if (Parser::isSubExp($vars[0])) {
             if ($context['flags']['runpart']) {
                 return $context['usedFeature']['dynpartial']++;
@@ -872,7 +905,8 @@ class Validator {
      *
      * @return string|null Return compiled code segment for the token
      */
-    protected static function spacing(&$token, &$context, $nost = false) {
+    protected static function spacing(&$token, &$context, $nost = false)
+    {
         // left line change detection
         $lsp = preg_match('/^(.*)(\\r?\\n)([ \\t]*?)$/s', $token[Token::POS_LSPACE], $lmatch);
         $ind = $lsp ? $lmatch[3] : $token[Token::POS_LSPACE];
@@ -899,7 +933,8 @@ class Validator {
         if ($token[Token::POS_ROTHER] && !$token[Token::POS_RSPACE]) {
             $st = false;
         }
-        if ($st && (($lsp && $rsp) // both side cr
+        if ($st && (
+            ($lsp && $rsp) // both side cr
                 || ($rsp && !$token[Token::POS_LOTHER]) // first line without left
                 || ($lsp && !$token[Token::POS_ROTHER]) // final line
             )) {
@@ -924,4 +959,3 @@ class Validator {
         }
     }
 }
-
