@@ -1554,6 +1554,18 @@ VAREND
             ),
 
             Array(
+                'id' => 305,
+                'template' => '{{#foo}}<b>{{foo}}</b>{{/foo}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_ERROR_EXCEPTION | LightnCandy::FLAG_MUSTACHELOOKUP,
+                ),
+                'data' => Array(
+                    'foo' => '0',
+                ),
+                'expected' => '<b>0</b>'
+            ),
+
+            Array(
                 'template' => '{{#each . as |v k|}}#{{k}}{{/each}}',
                 'data' => Array('a' => Array(), 'c' => Array()),
                 'options' => Array(

@@ -151,7 +151,7 @@ class Runtime extends Encoder
     public static function v($cx, $in, $base, $path, $args = null) {
         $count = count($cx['scopes']);
         $plen = count($path);
-        while ($base) {
+        while ($base !== null) {
             $v = $base;
             foreach ($path as $i => $name) {
                 if (is_array($v)) {
