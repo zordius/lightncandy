@@ -491,7 +491,7 @@ class Validator
      * @param array<boolean|integer|string|array> $vars parsed arguments list
      * @param string|null $match should also match to this operator
      *
-     * @return boolean Return true
+     * @return boolean|integer Return true when block ended, or Token::POS_BACKFILL when backfill happened.
      */
     protected static function blockEnd(&$context, &$vars, $match = null)
     {
