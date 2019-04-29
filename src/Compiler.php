@@ -31,6 +31,8 @@ class Compiler extends Validator
 {
     public static $lastParsed;
 
+    protected static $templateCache = [];
+
     /**
      * Compile template into PHP code
      *
@@ -40,6 +42,12 @@ class Compiler extends Validator
      * @return string|null generated PHP code
      */
     public static function compileTemplate(&$context, $template) {
+        $hash = md5($template);
+
+        if ( isset(self::$templateCache[$hash]) ) {
+            return self::$templateCache[$hash];
+        }
+
         array_unshift($context['parsed'], array());
         Validator::verify($context, $template);
         static::$lastParsed = $context['parsed'];
@@ -67,6 +75,8 @@ class Compiler extends Validator
         }
 
         array_shift($context['parsed']);
+
+        self::$templateCache[$hash] = $code;
 
         return $code;
     }
