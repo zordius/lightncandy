@@ -42,7 +42,7 @@ class Compiler extends Validator
      * @return string|null generated PHP code
      */
     public static function compileTemplate(&$context, $template) {
-        $hash = md5($template);
+        $hash = md5(json_encode($context).$template);
 
         if ( isset(self::$templateCache[$hash]) ) {
             return self::$templateCache[$hash];
