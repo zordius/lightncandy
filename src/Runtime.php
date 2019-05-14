@@ -169,8 +169,16 @@ class Runtime extends Encoder
                         continue;
                     }
                     if ($cx['flags']['method'] && is_callable(array($v, $name))) {
-                        $v = $v->$name();
-                        continue;
+                        try {
+                            $v = $v->$name();
+                            continue;
+                        } catch (\BadMethodCallException $e) {}
+                    }
+                    if ($v instanceof \ArrayAccess) {
+                        if (isset($v[$name])) {
+                            $v = $v[$name];
+                            continue;
+                        }
                     }
                 }
                 if ($cx['flags']['mustlok']) {
