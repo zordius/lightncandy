@@ -1,6 +1,15 @@
 #!/bin/sh
 echo "DEBUG ENV: ${TRAVIS_JOB_NUMBER} , ${TRAVIS_BUILD_NUMBER} , ${TRAVIS_PULL_REQUEST} ..."
 
+if [ "${TRAVIS_BUILD_NUMBER}.1" != "${TRAVIS_JOB_NUMBER}" ]; then
+  composer self-update
+  composer --prefer-source install
+  build/runphp build/gen_test.php
+  vendor/bin/phpunit --coverage-clover=coverage.clover
+else
+  echo "No test, just push document here."
+fi
+
 if [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then
   echo "This is a PR, skip push."
   exit 0

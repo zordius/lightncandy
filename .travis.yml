@@ -6,14 +6,8 @@ php:
   - 7.1
   - 7.2
 
-before_script:
-  - composer self-update || true
-  - composer --prefer-source install
-
 script:
-  - build/runphp build/gen_test.php
-  - vendor/bin/phpunit --coverage-clover=coverage.clover
-  - build/travis_push
+  - build/travis
 
 env:
   global:
