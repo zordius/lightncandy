@@ -15,14 +15,16 @@ if [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then
   exit 0
 fi
 
+# Push coverage report
+if [ "${TRAVIS_BUILD_NUMBER}.3" = "${TRAVIS_JOB_NUMBER}" ]; then
+  wget https://scrutinizer-ci.com/ocular.phar
+  php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+fi
+
 if [ "${TRAVIS_BUILD_NUMBER}.1" != "${TRAVIS_JOB_NUMBER}" ]; then
   echo "Only push documents 1 time... quit."
   exit 0
 fi
-
-# Push coverage report
-wget https://scrutinizer-ci.com/ocular.phar
-php ocular.phar code-coverage:upload --format=php-clover coverage.clover
 
 # Set for all push in this script.
 git config --global user.name "Travis-CI"
@@ -57,4 +59,5 @@ else
 fi
 git add docs
 git commit -m "Auto generated documents from branch ${TRAVIS_BRANCH} @${TRAVIS_COMMIT} [ci skip]"
+git --no-pager log -n 3
 git push --quiet "https://${GHTK}@github.com/zordius/lightncandy.git" master > /dev/null 2>&1
