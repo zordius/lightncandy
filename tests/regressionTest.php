@@ -1554,6 +1554,15 @@ VAREND
             ),
 
             Array(
+                'id' => 303,
+                'template' => '{{#*inline "t1"}} {{#if url}} <a /> {{else if imageUrl}} <img /> {{else}} <span /> {{/if}} {{/inline}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_RUNTIMEPARTIAL,
+                ),
+                'expected' => ''
+            ),
+
+            Array(
                 'template' => '{{#each . as |v k|}}#{{k}}{{/each}}',
                 'data' => Array('a' => Array(), 'c' => Array()),
                 'options' => Array(
