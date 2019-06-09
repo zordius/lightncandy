@@ -1,9 +1,13 @@
 HISTORY
 =======
 
-1.2.4 current master, not released
+1.2.5 current master, not released
+   * align with handlebars.js 4.1.1
+
+1.2.4 https://github.com/zordius/lightncandy/tree/v1.2.4
    * align with handlebars.js 4.1.1
    * 67b91587f8 fix {{#if}} {{else}} {{/if}} bug when them are inside {{#*inline}}...{{/inline}}
+   * e232e13e12 fix {{else}} compile bug when them are inside {{#*inline}}...{{/inline}}
 
 1.2.3 https://github.com/zordius/lightncandy/tree/v1.2.3
    * align with handlebars.js 4.0.11
