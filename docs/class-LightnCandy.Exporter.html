@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+
+	<title>Class LightnCandy\Exporter</title>
+
+	<link rel="stylesheet" href="resources/style.css?e99947befd7bf673c6b43ff75e9e0f170c88a60e">
+
+</head>
+
+<body>
+<div id="left">
+	<div id="menu">
+		<a href="index.html" title="Overview"><span>Overview</span></a>
+
+
+		<div id="groups">
+				<h3>Namespaces</h3>
+			<ul>
+				<li class="active">
+					<a href="namespace-LightnCandy.html">
+						LightnCandy					</a>
+
+						</li>
+			</ul>
+		</div>
+
+		<hr>
+
+
+		<div id="elements">
+			<h3>Classes</h3>
+			<ul>
+				<li><a href="class-LightnCandy.Compiler.html">Compiler</a></li>
+				<li><a href="class-LightnCandy.Context.html">Context</a></li>
+				<li><a href="class-LightnCandy.Encoder.html">Encoder</a></li>
+				<li class="active"><a href="class-LightnCandy.Exporter.html">Exporter</a></li>
+				<li><a href="class-LightnCandy.Expression.html">Expression</a></li>
+				<li><a href="class-LightnCandy.Flags.html">Flags</a></li>
+				<li><a href="class-LightnCandy.LightnCandy.html">LightnCandy</a></li>
+				<li><a href="class-LightnCandy.Parser.html">Parser</a></li>
+				<li><a href="class-LightnCandy.Partial.html">Partial</a></li>
+				<li><a href="class-LightnCandy.Runtime.html">Runtime</a></li>
+				<li><a href="class-LightnCandy.SafeString.html">SafeString</a></li>
+				<li><a href="class-LightnCandy.StringObject.html">StringObject</a></li>
+				<li><a href="class-LightnCandy.Token.html">Token</a></li>
+				<li><a href="class-LightnCandy.Validator.html">Validator</a></li>
+			</ul>
+
+
+
+
+
+		</div>
+	</div>
+</div>
+
+<div id="splitter"></div>
+
+<div id="right">
+<div id="rightInner">
+	<form id="search">
+		<input type="hidden" name="cx" value="">
+		<input type="hidden" name="ie" value="UTF-8">
+		<input type="text" name="q" class="text" placeholder="Search">
+	</form>
+
+	<div id="navigation">
+		<ul>
+			<li>
+				<a href="index.html" title="Overview"><span>Overview</span></a>
+			</li>
+			<li>
+				<a href="namespace-LightnCandy.html" title="Summary of LightnCandy"><span>Namespace</span></a>
+			</li>
+			<li class="active">
+<span>Class</span>			</li>
+		</ul>
+		<ul>
+		</ul>
+		<ul>
+		</ul>
+	</div>
+
+<div id="content" class="class">
+	<h1>Class Exporter</h1>
+
+
+	<div class="description">
+	<p>LightnCandy major static class</p>
+	</div>
+
+
+
+
+
+
+
+
+
+	<div class="info">
+		
+		
+		<b>Namespace:</b> <a href="namespace-LightnCandy.html">LightnCandy</a><br>
+		
+
+			<b>Located at</b> <a href="source-class-LightnCandy.Exporter.html#22-276" title="Go to source code">Exporter.php</a>
+		<br>
+	</div>
+
+
+
+	<table class="summary methods" id="methods">
+	<caption>Methods summary</caption>
+	<tr data-order="closure" id="_closure">
+
+		<td class="attributes"><code>
+			 protected static
+
+			string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_closure">#</a>
+		<code><a href="source-class-LightnCandy.Exporter.html#27-48" title="Go to source code">closure</a>( <span>array&lt;string,array|string|integer&gt; <var>$context</var></span>, <span>object <var>$closure</var></span> )</code>
+
+		<div class="description short">
+			<p>Get PHP code string from a closure of function as string</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Get PHP code string from a closure of function as string</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$context</var></dt>
+					<dd>current compile context</dd>
+					<dt><var>$closure</var></dt>
+					<dd>Closure object</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					string
+				</div>
+
+
+				<h4>Expect</h4>
+				<div class="list">
+						'function($a) {return;}' when input array('flags' => array('standalone' => 0)),  function ($a) {return;}<br>
+						'function($a) {return;}' when input array('flags' => array('standalone' => 0)),   function ($a) {return;}<br>
+				</div>
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="helpers" id="_helpers">
+
+		<td class="attributes"><code>
+			 public static
+
+			string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_helpers">#</a>
+		<code><a href="source-class-LightnCandy.Exporter.html#50-72" title="Go to source code">helpers</a>( <span>array&lt;string,array|string|integer&gt; <var>$context</var></span> )</code>
+
+		<div class="description short">
+			<p>Export required custom helper functions</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Export required custom helper functions</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$context</var></dt>
+					<dd>current compile context</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					string
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="replaceSafeString" id="_replaceSafeString">
+
+		<td class="attributes"><code>
+			 protected static
+
+			string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_replaceSafeString">#</a>
+		<code><a href="source-class-LightnCandy.Exporter.html#74-85" title="Go to source code">replaceSafeString</a>( <span>array&lt;string,array|string|integer&gt; <var>$context</var></span>, <span>string <var>$str</var></span> )</code>
+
+		<div class="description short">
+			<p>Replace SafeString class with alias class name</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Replace SafeString class with alias class name</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$context</var></dt>
+					<dd>current compile context</dd>
+					<dt><var>$str</var></dt>
+					<dd>the PHP code to be replaced</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					string
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getClassMethods" id="_getClassMethods">
+
+		<td class="attributes"><code>
+			 public static
+
+			array
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getClassMethods">#</a>
+		<code><a href="source-class-LightnCandy.Exporter.html#87-105" title="Go to source code">getClassMethods</a>( <span>array&lt;string,array|string|integer&gt; <var>$context</var></span>, <span>ReflectionClass <var>$class</var></span> )</code>
+
+		<div class="description short">
+			<p>Get methods from ReflectionClass</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Get methods from ReflectionClass</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$context</var></dt>
+					<dd>current compile context</dd>
+					<dt><var>$class</var></dt>
+					<dd>instance of the ReflectionClass</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					array
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getClassStatics" id="_getClassStatics">
+
+		<td class="attributes"><code>
+			 public static
+
+			string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getClassStatics">#</a>
+		<code><a href="source-class-LightnCandy.Exporter.html#107-123" title="Go to source code">getClassStatics</a>( <span>ReflectionClass <var>$class</var></span> )</code>
+
+		<div class="description short">
+			<p>Get statics code from ReflectionClass</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Get statics code from ReflectionClass</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$class</var></dt>
+					<dd>instance of the ReflectionClass</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					string
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getMeta" id="_getMeta">
+
+		<td class="attributes"><code>
+			 public static
+
+			array
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getMeta">#</a>
+		<code><a href="source-class-LightnCandy.Exporter.html#129-150" title="Go to source code">getMeta</a>( <span>object <var>$refobj</var></span> )</code>
+
+		<div class="description short">
+			<p>Get metadata from ReflectionObject</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Get metadata from ReflectionObject</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$refobj</var></dt>
+					<dd>instance of the ReflectionObject</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					array
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="safestring" id="_safestring">
+
+		<td class="attributes"><code>
+			 public static
+
+			string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_safestring">#</a>
+		<code><a href="source-class-LightnCandy.Exporter.html#152-166" title="Go to source code">safestring</a>( <span>array&lt;string,array|string|integer&gt; <var>$context</var></span> )</code>
+
+		<div class="description short">
+			<p>Export SafeString class as string</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Export SafeString class as string</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$context</var></dt>
+					<dd>current compile context</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					string
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="stringobject" id="_stringobject">
+
+		<td class="attributes"><code>
+			 public static
+
+			string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_stringobject">#</a>
+		<code><a href="source-class-LightnCandy.Exporter.html#168-184" title="Go to source code">stringobject</a>( <span>array&lt;string,array|string|integer&gt; <var>$context</var></span> )</code>
+
+		<div class="description short">
+			<p>Export StringObject class as string</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Export StringObject class as string</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$context</var></dt>
+					<dd>current compile context</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					string
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="runtime" id="_runtime">
+
+		<td class="attributes"><code>
+			 public static
+
+			string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_runtime">#</a>
+		<code><a href="source-class-LightnCandy.Exporter.html#186-221" title="Go to source code">runtime</a>( <span>array&lt;string,array|string|integer&gt; <var>$context</var></span> )</code>
+
+		<div class="description short">
+			<p>Export required standalone Runtime methods</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Export required standalone Runtime methods</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$context</var></dt>
+					<dd>current compile context</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					string
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="constants" id="_constants">
+
+		<td class="attributes"><code>
+			 public static
+
+			string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_constants">#</a>
+		<code><a href="source-class-LightnCandy.Exporter.html#223-244" title="Go to source code">constants</a>( <span>array&lt;string,array|string|integer&gt; <var>$context</var></span> )</code>
+
+		<div class="description short">
+			<p>Export Runtime constants</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Export Runtime constants</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$context</var></dt>
+					<dd>current compile context</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					string
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="scanDependency" id="_scanDependency">
+
+		<td class="attributes"><code>
+			 protected static
+
+			array&lt;string|array&gt;
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_scanDependency">#</a>
+		<code><a href="source-class-LightnCandy.Exporter.html#246-275" title="Go to source code">scanDependency</a>( <span>array&lt;string,array|string|integer&gt; <var>$context</var></span>, <span>string <var>$code</var></span>, <span>string <var>$ocode</var></span> )</code>
+
+		<div class="description short">
+			<p>Scan for required standalone functions</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Scan for required standalone functions</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$context</var></dt>
+					<dd>current compile context</dd>
+					<dt><var>$code</var></dt>
+					<dd>patched PHP code string of the method</dd>
+					<dt><var>$ocode</var></dt>
+					<dd>original PHP code string of the method</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					array&lt;string|array&gt;<br>list of converted code and children array
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+	<div id="footer">
+		 API documentation generated by <a href="http://apigen.org">ApiGen</a>
+	</div>
+</div>
+</div>
+<script src="resources/combined.js"></script>
+<script src="elementlist.js"></script>
+</body>
+</html>
