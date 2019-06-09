@@ -38,7 +38,6 @@ git add example_debug.png
 
 # Push new tests back to this branch
 git commit -a -m "Auto generated tests from Travis [ci skip]"
-git push "https://${GHTK}@github.com/zordius/lightncandy.git" HEAD:${TRAVIS_BRANCH} > /dev/null 2>&1
 
 # Update hash in HandlebarsTest and push back, trigger new tests there.
 git clone https://github.com/zordius/HandlebarsTest
@@ -60,4 +59,4 @@ fi
 git add docs
 git commit -m "Auto generated documents from branch ${TRAVIS_BRANCH} @${TRAVIS_COMMIT} [ci skip]"
 git --no-pager log -n 3
-git push --quiet "https://${GHTK}@github.com/zordius/lightncandy.git" master > /dev/null 2>&1
+git push --quiet "https://${GHTK}@github.com/zordius/lightncandy.git" HEAD:${TRAVIS_BRANCH} > /dev/null 2>&1
