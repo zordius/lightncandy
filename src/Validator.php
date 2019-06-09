@@ -202,14 +202,14 @@ class Validator
         switch ($operator) {
             case '#*':
                 if (!$context['compile']) {
-                    $context['stack'][] = count($context['parsed'][0]);
+                    $context['stack'][] = count($context['parsed'][0]) + ($context['currentToken'][Token::POS_LOTHER] . $context['currentToken'][Token::POS_LSPACE] === '' ? 0 : 1);
                     static::pushStack($context, '#*', $vars);
                 }
                 return static::inline($context, $vars);
 
             case '#>':
                 if (!$context['compile']) {
-                    $context['stack'][] = count($context['parsed'][0]);
+                    $context['stack'][] = count($context['parsed'][0]) + ($context['currentToken'][Token::POS_LOTHER] . $context['currentToken'][Token::POS_LSPACE] === '' ? 0 : 1);
                     $vars[Parser::PARTIALBLOCK] = ++$context['usedFeature']['pblock'];
                     static::pushStack($context, '#>', $vars);
                 }
@@ -272,7 +272,7 @@ class Validator
         if ($context['currentToken'][Token::POS_OP] === '/') {
             if (static::blockEnd($context, $vars, '#*') !== null) {
                 $context['usedFeature']['inlpartial']++;
-                $tmpl = array_shift($context['inlinepartial']) .  $context['currentToken'][Token::POS_LOTHER] . $context['currentToken'][Token::POS_LSPACE];
+                $tmpl = array_shift($context['inlinepartial']) . $context['currentToken'][Token::POS_LOTHER] . $context['currentToken'][Token::POS_LSPACE];
                 $c = $context['stack'][count($context['stack']) - 4];
                 $context['parsed'][0] = array_slice($context['parsed'][0], 0, $c + 1);
                 $P = &$context['parsed'][0][$c];
@@ -300,6 +300,7 @@ class Validator
         if ($context['currentToken'][Token::POS_OP] === '/') {
             if (static::blockEnd($context, $vars, '#>') !== null) {
                 $c = $context['stack'][count($context['stack']) - 4];
+                $context['parsed'][0] = array_slice($context['parsed'][0], 0, $c + 1);
                 $found = Partial::resolve($context, $vars[0][0]) !== null;
                 $v = $found ? "@partial-block{$context['parsed'][0][$c][1][Parser::PARTIALBLOCK]}" : "{$vars[0][0]}";
                 if (count($context['partialblock']) == 1) {
@@ -314,7 +315,6 @@ class Validator
                     }
                 }
                 array_shift($context['partialblock']);
-                $context['parsed'][0] = array_slice($context['parsed'][0], 0, $c + 1);
                 $ended = true;
             }
         }
