@@ -34,10 +34,10 @@ git config --global user.email "zordius@users.noreply.gihub.com"
 git clone https://github.com/fcambus/ansilove
 php tests/example_debug.php > example_debug
 php ansilove/ansilove example_debug
-git add example_debug.png
+#git add example_debug.png
 
 # Push new tests back to this branch
-git commit -a -m "Auto generated tests from Travis [ci skip]"
+#git commit -a -m "Auto generated tests from Travis [ci skip]"
 
 # Update hash in HandlebarsTest and push back, trigger new tests there.
 git clone https://github.com/zordius/HandlebarsTest
