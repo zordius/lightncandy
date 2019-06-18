@@ -693,17 +693,12 @@ class Runtime extends Encoder
     {
         $args = $vars[0];
         $args[] = $options;
-        $e = null;
         $r = true;
 
         try {
             $r = call_user_func_array($cx['helpers'][$ch], $args);
         } catch (\Exception $E) {
-            $e = "Runtime: call custom helper '$ch' error: " . $E->getMessage();
-        }
-
-        if ($e !== null) {
-            static::err($cx, $e);
+            static::err($cx, "Runtime: call custom helper '$ch' error: " . $E->getMessage());
         }
 
         return $r;
