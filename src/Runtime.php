@@ -577,7 +577,7 @@ class Runtime extends Encoder
      *
      * @return string The rendered string of the token
      */
-    public static function hbch($cx, $ch, $vars, $op, &$_this)
+    public static function hbch(&$cx, $ch, $vars, $op, &$_this)
     {
         if (isset($cx['blparam'][0][$ch])) {
             return $cx['blparam'][0][$ch];
@@ -592,7 +592,7 @@ class Runtime extends Encoder
         );
 
         if ($cx['flags']['spvar']) {
-            $options['data'] = $cx['sp_vars'];
+            $options['data'] = &$cx['sp_vars'];
         }
 
         return static::exch($cx, $ch, $vars, $options);
@@ -611,7 +611,7 @@ class Runtime extends Encoder
      *
      * @return string The rendered string of the token
      */
-    public static function hbbch($cx, $ch, $vars, &$_this, $inverted, $cb, $else = null)
+    public static function hbbch(&$cx, $ch, $vars, &$_this, $inverted, $cb, $else = null)
     {
         $options = array(
             'name' => $ch,
@@ -622,7 +622,7 @@ class Runtime extends Encoder
         );
 
         if ($cx['flags']['spvar']) {
-            $options['data'] = $cx['sp_vars'];
+            $options['data'] = &$cx['sp_vars'];
         }
 
         if (isset($vars[2])) {
@@ -700,7 +700,7 @@ class Runtime extends Encoder
     public static function exch($cx, $ch, $vars, &$options)
     {
         $args = $vars[0];
-        $args[] = $options;
+        $args[] = &$options;
         $r = true;
 
         try {

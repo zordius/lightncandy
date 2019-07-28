@@ -1572,6 +1572,28 @@ VAREND
             ),
 
             Array(
+                'id' => 315,
+                'template' => '{{#each foo}}#{{@key}}({{@index}})={{.}}-{{moo}}-{{@irr}}{{/each}}',
+                'options' => Array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARS | LightnCandy::FLAG_ERROR_EXCEPTION,
+                    'helpers' => Array(
+                        'moo' => function($opts) {
+                            $opts['data']['irr'] = '123';
+                            return '321';
+                        }
+                    )
+                ),
+                'data' => Array(
+                    'foo' => array(
+                        'a' => 'b',
+                        'c' => 'd',
+                        'e' => 'f',
+                    )
+                ),
+                'expected' => '#a(0)=b-321-123#c(1)=d-321-123#e(2)=f-321-123'
+            ),
+
+            Array(
                 'template' => '{{#each . as |v k|}}#{{k}}{{/each}}',
                 'data' => Array('a' => Array(), 'c' => Array()),
                 'options' => Array(
