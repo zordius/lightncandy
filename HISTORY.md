@@ -2,7 +2,7 @@ HISTORY
 =======
 
 1.2.5 current master, not released
-   * align with handlebars.js 4.1.1
+   * align with handlebars.js 4.1.2
 
 1.2.4 https://github.com/zordius/lightncandy/tree/v1.2.4
    * align with handlebars.js 4.1.1
