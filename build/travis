@@ -4,10 +4,10 @@ echo "DEBUG ENV: ${TRAVIS_JOB_NUMBER} , ${TRAVIS_BUILD_NUMBER} , ${TRAVIS_PULL_R
 JOBSEQ=".1"
 
 if [ "${TRAVIS_BUILD_NUMBER}${JOBSEQ}" != "${TRAVIS_JOB_NUMBER}" ]; then
-  build/runphp build/gen_test.php
-  vendor/bin/phpunit --coverage-clover=coverage.clover
   composer self-update
   composer --prefer-source install
+  build/runphp build/gen_test.php
+  vendor/bin/phpunit --coverage-clover=coverage.clover
 else
   echo "No test, just push document here."
 fi
@@ -34,8 +34,6 @@ git config --global user.email "zordius@users.noreply.gihub.com"
 
 # Generate ANSI sample
 git clone https://github.com/fcambus/ansilove
-echo debug
-ls -al vendor
 php tests/example_debug.php > example_debug
 php ansilove/ansilove example_debug
 git add example_debug.png
