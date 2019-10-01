@@ -303,7 +303,7 @@ VAREND
             }
             $A = $args ? ",$args[0]" : '';
             $E = $args ? ' ' . implode(' ', $args[1]) : '';
-            return array(static::getFuncName($context, 'v', $exp) . "\$cx, \$in, isset($base) ? $base : null, array(" . implode($L, ',') . ")$A)", $lookup ? "lookup $exp $lookup[1]" : "$exp$E");
+            return array(static::getFuncName($context, 'v', $exp) . "\$cx, \$in, isset($base) ? $base : null, array(" . implode(',', $L) . ")$A)", $lookup ? "lookup $exp $lookup[1]" : "$exp$E");
         }
 
         $n = Expression::arrayString($var);
