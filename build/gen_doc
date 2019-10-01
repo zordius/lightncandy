@@ -2,8 +2,10 @@
 curl -O -L http://apigen.org/apigen.phar
 chmod 755 apigen.phar
 if [ "${TRAVIS_BRANCH}" != "master" ]; then
+  rm -rf docs/${TRAVIS_BRANCH}/*
   ./apigen.phar generate --source src/ --destination docs/${TRAVIS_BRANCH}
 else
   rm docs/*
+  rm -rf docs/*
   ./apigen.phar generate --source src/ --destination docs/
 fi
