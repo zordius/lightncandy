@@ -1,9 +1,12 @@
 #!/bin/sh
 echo "DEBUG ENV: ${TRAVIS_JOB_NUMBER} , ${TRAVIS_BUILD_NUMBER} , ${TRAVIS_PULL_REQUEST} ..."
 
-if [ "${TRAVIS_BUILD_NUMBER}.1" != "${TRAVIS_JOB_NUMBER}" ]; then
-  composer self-update
-  composer --prefer-source install
+JOBSEQ=".1"
+
+composer self-update
+composer --prefer-source install
+
+if [ "${TRAVIS_BUILD_NUMBER}${JOBSEQ}" != "${TRAVIS_JOB_NUMBER}" ]; then
   build/runphp build/gen_test.php
   vendor/bin/phpunit --coverage-clover=coverage.clover
 else
@@ -21,7 +24,7 @@ if [ "${TRAVIS_BUILD_NUMBER}.3" = "${TRAVIS_JOB_NUMBER}" ]; then
   php ocular.phar code-coverage:upload --format=php-clover coverage.clover
 fi
 
-if [ "${TRAVIS_BUILD_NUMBER}.1" != "${TRAVIS_JOB_NUMBER}" ]; then
+if [ "${TRAVIS_BUILD_NUMBER}${JOBSEQ}" != "${TRAVIS_JOB_NUMBER}" ]; then
   echo "Only push documents 1 time... quit."
   exit 0
 fi
