@@ -6,6 +6,7 @@ composer.json export-ignore
 example_debug.png export-ignore
 phpunit.xml export-ignore
 build/ export-ignore
+docs/ export-ignore
 scripts/ export-ignore
 tests/ export-ignore
 .github/ export-ignore
