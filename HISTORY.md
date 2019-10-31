@@ -4,29 +4,29 @@ HISTORY
 1.2.5 current master, not released
    * align with handlebars.js 4.1.2
 
-1.2.4 https://github.com/zordius/lightncandy/tree/v1.2.4
+1.2.4 https://github.com/zordius/lightncandy/releases/v1.2.4
    * align with handlebars.js 4.1.1
    * 67b91587f8 fix {{#if}} {{else}} {{/if}} bug when them are inside {{#*inline}}...{{/inline}}
    * e232e13e12 fix {{else}} compile bug when them are inside {{#*inline}}...{{/inline}}
 
-1.2.3 https://github.com/zordius/lightncandy/tree/v1.2.3
+1.2.3 https://github.com/zordius/lightncandy/releases/v1.2.3
    * align with handlebars.js 4.0.11
    * f429712406 fix partial block standalone tag detection issue
    * 4f1ca85a08 fix for {{#each foo as |bar|}} when the value is not an array
    * ca892c4514 fix for PHP 7.2 count(null) issue and StringObject not found issue
 
-1.2.2 https://github.com/zordius/lightncandy/tree/v1.2.2
+1.2.2 https://github.com/zordius/lightncandy/releases/v1.2.2
    * align with handlebars.js 4.0.11
    * 6ef2efd8d9 fix LightnCandy::compilePartial() error when there is `'` in the partial
    * 658244f864 better error message when a=b found without FLAG_NAMEDARG option
    * a752abd855 **BREAK CHANGE** remove FLAG_SPACECTL option because it always enabled and useless
    * 9615b44920 fix partial block stand alone detection issue
 
-1.2.1 https://github.com/zordius/lightncandy/tree/v1.2.1
+1.2.1 https://github.com/zordius/lightncandy/releases/v1.2.1
    * align with handlebars.js 4.0.10
    * 15201d7300 fix `{{foo (bar "moo (1 2)")}}` parsing issue
 
-1.2.0 https://github.com/zordius/lightncandy/tree/v1.2.0
+1.2.0 https://github.com/zordius/lightncandy/releases/v1.2.0
    * align with handlebars.js 4.0.10
    * 046de72460 reduce is_array() check when context is not changed
    * d217900d5b **BREAK CHANGE**
@@ -34,28 +34,28 @@ HISTORY
       * new `FLAG_MUSTACHESECTION` to align {{#sec}} context switch behavior with mustache.js
       * now `FLAG_MUSTACHE` includes `FLAG_MUSTACHESECTION`
 
-1.1.0 https://github.com/zordius/lightncandy/tree/v1.1.0
+1.1.0 https://github.com/zordius/lightncandy/releases/v1.1.0
    * align with handlebars.js 4.0.6
    * 0557429c07 fix {{lookup . "foo"}} parsing issue
    * 6939eebef8 fix {{foo a=(foo a=(bar))}} parsing issue
    * 59eba28d8a fix error message when compile {{each foo as |bar|}}
    * 3164c82047 **BREAK CHANGE** block custom helper is compiled as `hbbch()` now
 
-1.0.3 https://github.com/zordius/lightncandy/tree/v1.0.3
+1.0.3 https://github.com/zordius/lightncandy/releases/v1.0.3
    * align with handlebars.js 4.0.6
    * b25ea6b1de support FLAG_JSLENGTH when FLAG_METHOD
 
-1.0.2 https://github.com/zordius/lightncandy/tree/v1.0.2
+1.0.2 https://github.com/zordius/lightncandy/releases/v1.0.2
    * align with handlebars.js 4.0.6
    * e9108cdb52 {{#if}}{{else if}}{{/if}} will not cause next {{else}} validation error now
 
-1.0.1 https://github.com/zordius/lightncandy/tree/v1.0.1
+1.0.1 https://github.com/zordius/lightncandy/releases/v1.0.1
    * align with handlebars.js 4.0.6
    * cb94f98149 fix helpers in partial are not collected bug
    * bcbadd785d lookup inside subexpression returns untouched value now
    * 18e114a683 {{foo.bar}} will never be resolved as custom helper now
 
-1.0.0 https://github.com/zordius/lightncandy/tree/v1.0.0
+1.0.0 https://github.com/zordius/lightncandy/releases/v1.0.0
    * align with handlebars.js 4.0.6
    * b2d9eab03a fix generated PHP code error when FLAG_RUNTIMEPARTIAL is on
    * 510b4611bb fix `{{lookup . foo}}` issue
@@ -66,13 +66,13 @@ HISTORY
    * 1f10501c01 fix {{#with .}} context behavior
    * 426291d7ad support recursive {{@partial-block}}
 
-v0.95 https://github.com/zordius/lightncandy/tree/v0.95
+v0.95 https://github.com/zordius/lightncandy/releases/v0.95
    * align with handlebars.js 4.0.5
    * 71abc9853e fix `{{> (lookup foo bar)}}` issue (allow builtin helpers in subexpression)
    * c321e477b2 fix comment inside partial block issue
    * 6e98a13a55 fix `@partial-block` id generation issue
 
-v0.94 https://github.com/zordius/lightncandy/tree/v0.94
+v0.94 https://github.com/zordius/lightncandy/releases/v0.94
    * align with handlebars.js 4.0.5
    * 7082bd3276 refine helper function exporter
    * dcda1202cf now can compile custom helpers without implementation when FLAG_EXTHELPER is on
@@ -80,7 +80,7 @@ v0.94 https://github.com/zordius/lightncandy/tree/v0.94
    * cd8d96befa fix {{foo.bar}} lookup PHP warning
    * 0effc46896 fix compile bug when override built-in helpers
 
-v0.93 https://github.com/zordius/lightncandy/tree/v0.93
+v0.93 https://github.com/zordius/lightncandy/releases/v0.93
    * align with handlebars.js 4.0.5
    * a9fb08c3e8 speed up `{{@var}}` lookup, check parent type when `{{../var}}`
    * c7040ecc76 **BREAK CHANGE**
@@ -92,14 +92,14 @@ v0.93 https://github.com/zordius/lightncandy/tree/v0.93
    * 45e0b600f7 refine unclosed partial block error message
    * 73ac95e882 allow spacing between `{{` and `#` now
 
-v0.92 https://github.com/zordius/lightncandy/tree/v0.92
+v0.92 https://github.com/zordius/lightncandy/releases/v0.92
    * align with handlebars.js 4.0.5
    * c9811d9c3a Detect `{{..foo}}` syntax error
    * 2e77514841 fix `[fo o]="1 2 3"` parsing bug
    * 52b072e246 fix compiler error when a block customhelper inside `{{else if}}`
    * e30edc4302 fix `{{#with .}}` logic when input is an empty array
 
-v0.91 https://github.com/zordius/lightncandy/tree/v0.91
+v0.91 https://github.com/zordius/lightncandy/releases/v0.91
    * align with handlebars.js 4.0.5
    * 93323508ce now FLAG_BESTPERFORMANCE also includes FLAG_STANDALONEPHP.
    * 4deffaf89d prevent warning message when FLAG_ERROR_SKIPPARTIAL used.
@@ -112,7 +112,7 @@ v0.91 https://github.com/zordius/lightncandy/tree/v0.91
    * 993e65ef8e fix @partial-block duplication bug
    * 2c9044e1d7 new `helperresolver` option.
 
-v0.90 https://github.com/zordius/lightncandy/tree/v0.90
+v0.90 https://github.com/zordius/lightncandy/releases/v0.90
    * align with handlebars.js 4.0.4
    * 47e1b28847 performance improvement: now `{{ ... }}` escaping only takes 70% time.
    * ff776f1dff add new options `delimiters` to change default delimiters.
@@ -124,7 +124,7 @@ v0.90 https://github.com/zordius/lightncandy/tree/v0.90
    * dab79506cc **BREAK CHANGE** rename option: hbhelpers into helpers.
    * a1f699efa7 support render time partial function.
 
-v0.89 https://github.com/zordius/lightncandy/tree/v0.89
+v0.89 https://github.com/zordius/lightncandy/releases/v0.89
    * align with handlebars.js 4.0.4
    * use newer handlebars spec: https://github.com/jbboehr/handlebars-spec
    * 50028d36a7 **BREAK CHANGE** remove FLAG_MUSTACHESP
@@ -169,7 +169,7 @@ v0.89 https://github.com/zordius/lightncandy/tree/v0.89
    * f4df6d722f support inline partial: {{#*inline "partial_name"}}...{{/inline}}
    * 71130e69e0 fix partial block + inline partial parsing bugs
 
-v0.23 https://github.com/zordius/lightncandy/tree/v0.23
+v0.23 https://github.com/zordius/lightncandy/releases/v0.23
    * align with handlebars.js 3.0.3
    * b194f37430 support `{{{{rawblock}}}} ... {{{{/rawblock}}}}` when FLAG_RAWBLOCK enabled
    * 927741a07c add `prePartial()` static method and `prepartial` compile option for extendibility
@@ -177,13 +177,13 @@ v0.23 https://github.com/zordius/lightncandy/tree/v0.23
    * 850dcd7082 fix `{{!-- --}}` bug when it inside a partial
    * edb486ac87 fix support for nested raw block
 
-v0.22 https://github.com/zordius/lightncandy/tree/v0.22
+v0.22 https://github.com/zordius/lightncandy/releases/v0.22
    * align with handlebars.js 3.0.3
    * 1d1e8829cb fix `{{foo bar=(tee_taa "hoo")}}` parsing issue
    * 9bd994ee94 fix JavaScript function in runtime partial be changed bug
    * a514e4652e fix `{{#foo}}` issue when foo is an empty ArrayObject
 
-v0.21 https://github.com/zordius/lightncandy/tree/v0.21
+v0.21 https://github.com/zordius/lightncandy/releases/v0.21
    * align with handlebars.js 3.0.3
    * 9f24268d57 support FLAG_BARE to remove PHP start/end tags
    * 60d5a46c55 handle object/propery merge when deal with partial
@@ -196,14 +196,14 @@ v0.21 https://github.com/zordius/lightncandy/tree/v0.21
    * 1867f1cc37 now count subexpression usage correctly
    * 78ef9b8a89 new syntax validator on handlebars variable name
 
-v0.20 https://github.com/zordius/lightncandy/tree/v0.20
+v0.20 https://github.com/zordius/lightncandy/releases/v0.20
    * align with handlebars.js 3.0.0
    * 3d9a557af9 fix `{{foo (bar ../abc)}}` compile bug
    * 7dc16ac255 refine custom helper error detection logic
    * 72d32dc299 fix subexpression parsing bug inside `{{#each}}`
    * d1f1b93130 support context access inside a hbhelper by `$options['_this']`
 
-v0.19 https://github.com/zordius/lightncandy/tree/v0.19
+v0.19 https://github.com/zordius/lightncandy/releases/v0.19
    * align with handlebars.js 3.0.0
    * 5703851e49 fix `{{foo bar=['abc=123']}}` parsing bug
    * 7b4e36a1e3 fix `{{foo bar=["abc=123"]}}` parsing bug
@@ -221,7 +221,7 @@ v0.19 https://github.com/zordius/lightncandy/tree/v0.19
    * 9d55f12c5a fix subexpression parsing bug when line change inside it
    * fe1cb4987a **BREAK CHANGE** remove FLAG_MUSTACHESEC
 
-v0.18 https://github.com/zordius/lightncandy/tree/v0.18
+v0.18 https://github.com/zordius/lightncandy/releases/v0.18
    * align with handlebars.js 2.0.0
    * 7bcce4c1a7 support `{{@last}}` for `{{#each}}` on both object and array
    * b0c44c3b40 remove ending \n in lightncandy.php
@@ -232,7 +232,7 @@ v0.18 https://github.com/zordius/lightncandy/tree/v0.18
    * 2f16c0c393 now really autoload when installed with composer
    * c4da1f576c supports `{{^myHelper}}`
 
-v0.17 https://github.com/zordius/lightncandy/tree/v0.17
+v0.17 https://github.com/zordius/lightncandy/releases/v0.17
    * align with handlebars.js 2.0.0
    * 3b48a0acf7 fix parsing bug when FLAG_NOESCAPE enabled
    * 5c774b1b08 fix hbhelpers response error with options['fn'] when FLAG_BESTPERFORMANCE enabled
@@ -240,7 +240,7 @@ v0.17 https://github.com/zordius/lightncandy/tree/v0.17
    * e19b3e3426 provide options['root'] and options['_parent'] to hbhelpers
    * d8a288e83b refine variable parsing logic to support `{{@../index}}`, `{{@../key}}`, etc.
 
-v0.16 https://github.com/zordius/lightncandy/tree/v0.16
+v0.16 https://github.com/zordius/lightncandy/releases/v0.16
    * align with handlebars.js 2.0.0
    * 4f036aff62 better error message for named arguments
    * 0b462a387b support `{{#with var}}` ... `{{else}}` ... `{{/with}}`
@@ -253,7 +253,7 @@ v0.16 https://github.com/zordius/lightncandy/tree/v0.16
    * 655a2485be fix bug for `{{helper "==="}}`
    * bb58669162 support FLAG_NOESCAPE
 
-v0.15 https://github.com/zordius/lightncandy/tree/v0.15
+v0.15 https://github.com/zordius/lightncandy/releases/v0.15
    * align with handlebars.js 2.0.0
    * 4c750806e8 fix for `\` in template
    * 12ab6626d6 support escape. `\{{foo}}` will be rendered as is. ( handlebars spec , require FLAG_SLASH )
@@ -275,7 +275,7 @@ v0.15 https://github.com/zordius/lightncandy/tree/v0.15
    * 80eaf8e007 use static::method not self::method for subclass
    * 0bad5c8f20 fix usedFeature generation bugs
 
-v0.14 https://github.com/zordius/lightncandy/tree/v0.14
+v0.14 https://github.com/zordius/lightncandy/releases/v0.14
    * align with handlebars.js 2.0.0-alpha.4
    * fa6225f278 support boolen value in named arguments for cusotm helper
    * 160743e1c8 better error message when unmatch `{{/foo}}` tag detected
@@ -291,7 +291,7 @@ v0.14 https://github.com/zordius/lightncandy/tree/v0.14
    * 5184d41be6 support runtime/recursive partial ( require FLAG_RUNTIMEPARTIAL )
    * 6408917f76 support partial indent ( mustache spec , require FLAG_MUSTACHEPAIN )
 
-v0.13 https://github.com/zordius/lightncandy/tree/v0.13
+v0.13 https://github.com/zordius/lightncandy/releases/v0.13
    * align with handlebars.js 2.0.0-alpha.4
    * e5a8fe3833 fix issue #46 ( error with `{{this.foo.bar}}` )
    * ea131512f9 fix issue #44 ( error with some helper inline function PHP code syntax )
@@ -300,7 +300,7 @@ v0.13 https://github.com/zordius/lightncandy/tree/v0.13
    * 0f4c0daa4b stop simulate Javascript output for array when pass input to custom helpers
    * 22d07e5f0f **BREAK CHANGE** BIG CHANGE of custom helper interface
 
-v0.12 https://github.com/zordius/lightncandy/tree/v0.12
+v0.12 https://github.com/zordius/lightncandy/releases/v0.12
    * align with handlebars.js 2.0.0-alpha.2
    * 64db34cf65 support `{{@first}}` and `{{@last}}`
    * bfa1fbef97 add new flag FLAG_SPVARS
@@ -311,7 +311,7 @@ v0.12 https://github.com/zordius/lightncandy/tree/v0.12
    * 80dbeab63d fix php warning when compile with custom helper or block custom helper
    * 8ce6268b64 support Handlebars.js style custom helper
 
-v0.11 https://github.com/zordius/lightncandy/tree/v0.11
+v0.11 https://github.com/zordius/lightncandy/releases/v0.11
    * align with handlebars.js 2.0.0-alpha.2
    * a275d52c97 use php array, remove val()
    * 8834914c2a only export used custom helper into render function now
@@ -325,7 +325,7 @@ v0.11 https://github.com/zordius/lightncandy/tree/v0.11
    * e142b6e116 support `{{@root}}` or `{{@root.foo.bar}}` now
    * 58c8d84aa2 custom helper can return extra flag to change html encoded behavior now
 
-v0.10 https://github.com/zordius/lightncandy/tree/v0.10
+v0.10 https://github.com/zordius/lightncandy/releases/v0.10
    * align with handlebars.js 2.0.0-alpha.1
    * 4c9f681080 file name changed: lightncandy.inc => lightncandy.php
    * e3de01081c some minor fix for json schema
@@ -339,7 +339,7 @@ v0.10 https://github.com/zordius/lightncandy/tree/v0.10
    * 6a91ab93d2 fix for default options and php warnings
    * fc157fde62 fix for doblue quoted arguments (issue #15)
 
-v0.9 https://github.com/zordius/lightncandy/tree/v0.9
+v0.9 https://github.com/zordius/lightncandy/releases/v0.9
    * align with handlebars.js 1.3
    * **STOP PHP 5.3.x testing and support**
    * a55f2dd067 support both `{{@index}}` and `{{@key}}` when `{{#each an_object}}`
@@ -358,7 +358,7 @@ v0.9 https://github.com/zordius/lightncandy/tree/v0.9
    * ccd1d3ddc2 **BREAK CHANGE** migrate to Scrutinizer, change file name LightnCandy.inc to LightnCandy.php
    * 5ac8ad8d04 now is a Composer package
 
-v0.8 https://github.com/zordius/lightncandy/tree/v0.8
+v0.8 https://github.com/zordius/lightncandy/releases/v0.8
    * align with handlebars.js 1.0.12
    * aaec049 fix partial in partial not works bug
    * 52706cc fix for `{{#var}}` and `{{^var}}` , now when var === 0 means true
@@ -373,7 +373,7 @@ v0.8 https://github.com/zordius/lightncandy/tree/v0.8
    * e82c324 fix for ifv and ifvar logic difference
    * 1e38e47 better logic on var name checking. now support `{{0}}` in the loop, but it is not handlebars.js standard
 
-v0.7 https://github.com/zordius/lightncandy/tree/v0.7
+v0.7 https://github.com/zordius/lightncandy/releases/v0.7
    * align with handlebarsjs 1.0.11
    * add HISTORY.md
    * 777304c change compile format to include in val, isec, ifvar
@@ -388,7 +388,7 @@ v0.7 https://github.com/zordius/lightncandy/tree/v0.7
    * 67ac5ff support `{{>partial}}`
    * 98c7bb1 detect unclosed token now
 
-v0.6 https://github.com/zordius/lightncandy/tree/v0.6
+v0.6 https://github.com/zordius/lightncandy/releases/v0.6
    * align with handlebarsjs 1.0.11
    * 45ac3b6 fix #with bug when var is false
    * 1a46c2c minor #with logic fix. update document
@@ -399,6 +399,6 @@ v0.6 https://github.com/zordius/lightncandy/tree/v0.6
    * d6ae2e6 fix `{{#with path.val}}` when input value is null
    * 71cf074 fix for 020-hb-doteach testcase
 
-v0.5 https://github.com/zordius/lightncandy/tree/v0.5
+v0.5 https://github.com/zordius/lightncandy/releases/v0.5
    * align with handlebarsjs 1.0.7
    * 955aadf fix #each bug when input is a hash
