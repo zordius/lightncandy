@@ -133,7 +133,7 @@ class LightnCandy extends Flags
      * @param string|null $tmpDir Optional, change temp directory for php include file saved by prepare() when cannot include PHP code with data:// format.
      * @param boolean     $delete Optional, delete temp php file when set to tru. Default is true, set it to false for debug propose
      *
-     * @return callable|false result of include()
+     * @return callable|bool result of include()
      */
     public static function prepare($php, $tmpDir = null, $delete = true)
     {
