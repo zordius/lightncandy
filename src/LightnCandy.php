@@ -19,11 +19,6 @@ Origin: https://github.com/zordius/lightncandy
 
 namespace LightnCandy;
 
-use \LightnCandy\Context;
-use \LightnCandy\Compiler;
-use \LightnCandy\Partial;
-use \LightnCandy\Exporter;
-
 /**
  * LightnCandy major static class
  */
@@ -35,10 +30,11 @@ class LightnCandy extends Flags
     /**
      * Compile handlebars template into PHP code.
      *
-     * @param string $template handlebars template string
-     * @param array<string,array|string|integer> $options LightnCandy compile time and run time options, default is array('flags' => LightnCandy::FLAG_BESTPERFORMANCE)
+     * @param string                             $template handlebars template string
+     * @param array<string,array|string|integer> $options  LightnCandy compile time and run time options, default is array('flags' => LightnCandy::FLAG_BESTPERFORMANCE)
      *
      * @return string|false Compiled PHP code when successed. If error happened and compile failed, return false.
+     * @throws \Exception
      */
     public static function compile($template, $options = array('flags' => self::FLAG_BESTPERFORMANCE))
     {
@@ -69,6 +65,9 @@ class LightnCandy extends Flags
      * @return string|false Compiled PHP code when successed. If error happened and compile failed, return false.
      *
      * @expect false when input '{{"}}', array('flags' => LightnCandy::FLAG_HANDLEBARS)
+     *
+     * @return bool|string
+     * @throws \Exception
      */
     public static function compilePartial($template, $options = array('flags' => self::FLAG_BESTPERFORMANCE))
     {
@@ -134,9 +133,7 @@ class LightnCandy extends Flags
      * @param string|null $tmpDir Optional, change temp directory for php include file saved by prepare() when cannot include PHP code with data:// format.
      * @param boolean     $delete Optional, delete temp php file when set to tru. Default is true, set it to false for debug propose
      *
-     * @return Closure|false result of include()
-     *
-     * @deprecated
+     * @return callable|false result of include()
      */
     public static function prepare($php, $tmpDir = null, $delete = true)
     {
