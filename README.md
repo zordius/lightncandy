@@ -327,12 +327,15 @@ section Value: {{.}}
 ";
 
 // compile to debug version
-$php = LightnCandy::compile($template, Array(
+$phpStr = LightnCandy::compile($template, Array(
     'flags' => LightnCandy::FLAG_RENDER_DEBUG | LightnCandy::FLAG_HANDLEBARSJS
 ));
 
-// Get the render function
-$renderer = LightnCandy::prepare($php);
+// Save the compiled PHP code into a php file
+file_put_contents('render.php', '<?php ' . $phpStr . '?>');
+
+// Get the render function from the php file
+$renderer = include('render.php');
 
 // error_log() when missing data:
 //   LightnCandy\Runtime: [gender] is not exist
