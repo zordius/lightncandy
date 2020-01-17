@@ -19,8 +19,6 @@ Origin: https://github.com/zordius/lightncandy
 
 namespace LightnCandy;
 
-use \LightnCandy\Encoder;
-
 /**
  * LightnCandy SafeString class
  */

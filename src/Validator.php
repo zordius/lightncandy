@@ -19,12 +19,6 @@ Origin: https://github.com/zordius/lightncandy
 
 namespace LightnCandy;
 
-use \LightnCandy\Token;
-use \LightnCandy\Parser;
-use \LightnCandy\Partial;
-use \LightnCandy\Expression;
-use \LightnCandy\SafeString;
-
 /**
  * LightnCandy Validator
  */

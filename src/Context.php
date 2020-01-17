@@ -19,8 +19,6 @@ Origin: https://github.com/zordius/lightncandy
 
 namespace LightnCandy;
 
-use \LightnCandy\Flags;
-
 /**
  * LightnCandy class to handle Context
  */

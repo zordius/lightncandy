@@ -19,9 +19,6 @@ Origin: https://github.com/zordius/lightncandy
 
 namespace LightnCandy;
 
-use \LightnCandy\Token;
-use \LightnCandy\SafeString;
-
 /**
  * LightnCandy Parser
  */
