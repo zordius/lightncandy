@@ -48,4 +48,3 @@ echo "\nOutput:\n";
 echo $renderer($data);
 echo "\n";
 
-?>

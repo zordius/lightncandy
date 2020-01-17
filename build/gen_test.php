@@ -81,4 +81,4 @@ VAR
         die("Can not generate tests into file $fn !!\n");
     }
 }
-?>
+

@@ -313,5 +313,3 @@ class usageTest extends TestCase
     }
 }
 
-
-?>

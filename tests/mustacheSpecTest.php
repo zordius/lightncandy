@@ -68,5 +68,3 @@ class MustacheSpecTest extends TestCase
     }
 }
 
-
-?>

@@ -6,4 +6,4 @@ function array_by_ref($array) {
     }
     return $ret;
 }
-?>
+

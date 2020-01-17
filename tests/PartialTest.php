@@ -25,4 +25,4 @@ class PartialTest extends TestCase
         ))));
     }
 }
-?>
+

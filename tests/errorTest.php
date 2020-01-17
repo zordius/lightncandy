@@ -657,5 +657,3 @@ class errorTest extends TestCase
     }
 }
 
-
-?>
