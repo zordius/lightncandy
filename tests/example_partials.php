@@ -4,7 +4,7 @@ use LightnCandy\LightnCandy;
 
 $template = '{{> (partial_name_helper type)}}';
 
-$data = Array(
+$data = array(
     'type' => 'dog',
     'name' => 'Lucky',
     'age' => 5
@@ -23,12 +23,12 @@ function partial_name_helper ($type) {
     }
 }
 
-$php = LightnCandy::compile($template, Array(
+$php = LightnCandy::compile($template, array(
     'flags' => LightnCandy::FLAG_HANDLEBARSJS | LightnCandy::FLAG_RUNTIMEPARTIAL | LightnCandy::FLAG_ERROR_EXCEPTION,
-    'helpers' => Array(
+    'helpers' => array(
         'partial_name_helper'
     ),
-    'partials' => Array(
+    'partials' => array(
         'people' => 'This is {{name}}, he is {{age}} years old.',
         'animal' => 'This is {{name}}, it is {{age}} years old.',
         'default' => 'This is {{name}}.',

@@ -72,7 +72,7 @@ class twoDimensionIterator implements Iterator {
 function helper1($arg) {
     $arg = is_array($arg) ? 'Array' : $arg;
     return "-$arg-";
-}                                                                                                                                          
+}
 function alink($u, $t) {
     $u = is_array($u) ? 'Array' : $u;
     $t = is_array($t) ? 'Array' : $t;
@@ -137,7 +137,7 @@ function my_private_each ($context, $options) {
     $out = '';
     foreach ($context as $idx => $cx) {
         $data['index'] = $idx;
-        $out .= $options['fn']($cx, Array('data' => $data));
+        $out .= $options['fn']($cx, array('data' => $data));
     }
     return $out;
 }

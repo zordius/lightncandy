@@ -17,13 +17,13 @@ function helper2 ($args, $named) {
     return "<a href=\"{$u}\">{$t}</a>({$x})";
 }
 
-// Block Custom Helper Interface ... 
+// Block Custom Helper Interface ...
 // Template: {{helper3 articles}}
 function helper3 ($cx, $args, $named) {
-    return Array('test1', 'test2', 'test3');
+    return array('test1', 'test2', 'test3');
 }
 
-// Block Custom Helper Interface ... 
+// Block Custom Helper Interface ...
 // Template: {{helper3 val=values odd=enable_odd}}
 function helper4 ($cx, $args, $named) {
     if (isset($named['val']) && is_array($cx)) {
@@ -31,7 +31,7 @@ function helper4 ($cx, $args, $named) {
         return $cx;
     }
     if (isset($named['odd'])) {
-        return Array(1,3,5,7,9);
+        return array(1,3,5,7,9);
     }
 }
 

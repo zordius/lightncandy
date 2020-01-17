@@ -36,10 +36,10 @@ class MustacheSpecTest extends TestCase
             $spec['data']['lambda'] = getFunctionCode('function ($text = null) {' . $spec['data']['lambda']['php'] . '}');
         }
 
-        foreach (Array($flag, $flag | LightnCandy::FLAG_STANDALONEPHP) as $f) {
+        foreach (array($flag, $flag | LightnCandy::FLAG_STANDALONEPHP) as $f) {
             global $calls;
             $calls = 0;
-            $php = LightnCandy::compile($spec['template'], Array(
+            $php = LightnCandy::compile($spec['template'], array(
                 'flags' => $f,
                 'partials' => isset($spec['partials']) ? $spec['partials'] : null,
                 'basedir' => $tmpdir,
@@ -52,7 +52,7 @@ class MustacheSpecTest extends TestCase
 
     public function jsonSpecProvider()
     {
-        $ret = Array();
+        $ret = array();
 
         foreach (glob('specs/mustache/specs/*.json') as $file) {
             $i=0;
@@ -60,7 +60,7 @@ class MustacheSpecTest extends TestCase
             $ret = array_merge($ret, array_map(function ($d) use ($file, &$i) {
                 $d['file'] = $file;
                 $d['no'] = ++$i;
-                return Array($d);
+                return array($d);
             }, $json['tests']));
         }
 
