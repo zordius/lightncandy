@@ -549,7 +549,7 @@ VAREND
         if ($isEach) {
             $bp = Parser::getBlockParams($vars);
             $bs = $bp ? ('array(' . Expression::listString($bp) . ')') : 'null';
-            $be = $bp ? (' as |' . implode($bp, ' ') . '|') : '';
+            $be = $bp ? (' as |' . implode(' ', $bp) . '|') : '';
             array_shift($vars);
         }
         if ($context['flags']['lambda'] && !$isEach) {
