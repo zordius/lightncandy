@@ -364,8 +364,7 @@ class Runtime extends Encoder
         $isObj = false;
 
         if ($isAry && $else !== null && count($v) === 0) {
-            $ret = $else($cx, $in);
-            return $ret;
+            return $else($cx, $in);
         }
 
         // #var, detect input type is object or not
