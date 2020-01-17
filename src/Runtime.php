@@ -198,7 +198,7 @@ class Runtime extends Encoder
                     if ($cx['flags']['mustlam'] || $cx['flags']['lambda']) {
                         if (!$cx['flags']['knohlp'] && ($args || ($args === 0))) {
                             $A = $args ? $args[0] : array();
-                            $A[] = array('hash' => $args[1], '_this' => $in);
+                            $A[] = array('hash' => is_array( $args ) ? $args[1] : null, '_this' => $in);
                         } else {
                             $A = array($in);
                         }
