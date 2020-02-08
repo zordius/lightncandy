@@ -526,7 +526,7 @@ Go http://handlebarsjs.com/ to see more feature description about handlebars.js.
 Developer Notes
 ---------------
 
-Please read <a href=".github/CONTRIBUTING.md">CONTRIBUTING.md</a> for develop environment setup.
+Please read <a href=".github/CONTRIBUTING.md">CONTRIBUTING.md</a> for development environment setup.
 
 Framework Integration
 ---------------------
