@@ -19,7 +19,7 @@ class usageTest extends TestCase
 
     public function compileProvider()
     {
-        $default = Array(
+        $default = array(
             'rootthis' => 0,
             'enc' => 0,
             'raw' => 0,
@@ -45,163 +45,163 @@ class usageTest extends TestCase
             'log' => 0,
         );
 
-        $compileCases = Array(
-             Array(
+        $compileCases = array(
+             array(
                  'template' => 'abc',
              ),
 
-             Array(
+             array(
                  'template' => 'abc{{def',
              ),
 
-             Array(
+             array(
                  'template' => 'abc{{def}}',
-                 'expected' => Array(
+                 'expected' => array(
                      'enc' => 1
                  ),
              ),
 
-             Array(
+             array(
                  'template' => 'abc{{{def}}}',
-                 'expected' => Array(
+                 'expected' => array(
                      'raw' => 1
                  ),
              ),
 
-             Array(
+             array(
                  'template' => 'abc{{&def}}',
-                 'expected' => Array(
+                 'expected' => array(
                      'raw' => 1
                  ),
              ),
 
-             Array(
+             array(
                  'template' => 'abc{{this}}',
-                 'expected' => Array(
+                 'expected' => array(
                      'enc' => 1
                  ),
              ),
 
-             Array(
+             array(
                  'template' => 'abc{{this}}',
-                 'options' => Array('flags' => LightnCandy::FLAG_THIS),
-                 'expected' => Array(
+                 'options' => array('flags' => LightnCandy::FLAG_THIS),
+                 'expected' => array(
                      'enc' => 1,
                      'this' => 1,
                      'rootthis' => 1,
                  ),
              ),
 
-             Array(
+             array(
                  'template' => '{{#if abc}}OK!{{/if}}',
-                 'expected' => Array(
+                 'expected' => array(
                      'if' => 1
                  ),
              ),
 
-             Array(
+             array(
                  'template' => '{{#unless abc}}OK!{{/unless}}',
-                 'expected' => Array(
+                 'expected' => array(
                      'unless' => 1
                  ),
              ),
 
-             Array(
+             array(
                  'template' => '{{#with abc}}OK!{{/with}}',
-                 'expected' => Array(
+                 'expected' => array(
                      'with' => 1
                  ),
              ),
 
-             Array(
+             array(
                  'template' => '{{#abc}}OK!{{/abc}}',
-                 'expected' => Array(
+                 'expected' => array(
                      'sec' => 1
                  ),
              ),
 
-             Array(
+             array(
                  'template' => '{{^abc}}OK!{{/abc}}',
-                 'expected' => Array(
+                 'expected' => array(
                      'isec' => 1
                  ),
              ),
 
-             Array(
+             array(
                  'template' => '{{#each abc}}OK!{{/each}}',
-                 'expected' => Array(
+                 'expected' => array(
                      'each' => 1
                  ),
              ),
 
-             Array(
+             array(
                  'template' => '{{! test}}OK!{{! done}}',
-                 'expected' => Array(
+                 'expected' => array(
                      'comment' => 2
                  ),
              ),
 
-             Array(
+             array(
                  'template' => '{{../OK}}',
-                 'expected' => Array(
+                 'expected' => array(
                      'parent' => 1,
                      'enc' => 1,
                  ),
              ),
 
-             Array(
+             array(
                  'template' => '{{&../../OK}}',
-                 'expected' => Array(
+                 'expected' => array(
                      'parent' => 1,
                      'raw' => 1,
                  ),
              ),
 
-             Array(
+             array(
                  'template' => '{{&../../../OK}} {{../OK}}',
-                 'options' => Array(
+                 'options' => array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'helpers' => Array(
+                    'helpers' => array(
                         'mytest' => function ($context) {
                             return $context;
                         }
                     )
                 ),
-                 'expected' => Array(
+                 'expected' => array(
                      'parent' => 2,
                      'enc' => 1,
                      'raw' => 1,
                  ),
              ),
 
-             Array(
+             array(
                  'template' => '{{mytest ../../../OK}} {{../OK}}',
-                 'options' => Array(
+                 'options' => array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'helpers' => Array(
+                    'helpers' => array(
                         'mytest' => function ($context) {
                             return $context;
                         }
                     )
                 ),
-                 'expected' => Array(
+                 'expected' => array(
                      'parent' => 2,
                      'enc' => 2,
                      'helper' => 1,
                  ),
              ),
 
-             Array(
+             array(
                  'template' => '{{mytest . .}}',
-                 'options' => Array(
+                 'options' => array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'helpers' => Array(
+                    'helpers' => array(
                         'mytest' => function ($a, $b) {
                             return '';
                         }
                     )
                 ),
-                 'expected' => Array(
+                 'expected' => array(
                      'rootthis' => 2,
                      'this' => 2,
                      'enc' => 1,
@@ -209,17 +209,17 @@ class usageTest extends TestCase
                  ),
              ),
 
-             Array(
+             array(
                  'template' => '{{mytest (mytest ..)}}',
-                 'options' => Array(
+                 'options' => array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'helpers' => Array(
+                    'helpers' => array(
                         'mytest' => function ($context) {
                             return $context;
                         }
                     )
                 ),
-                 'expected' => Array(
+                 'expected' => array(
                      'parent' => 1,
                      'enc' => 1,
                      'helper' => 2,
@@ -227,17 +227,17 @@ class usageTest extends TestCase
                  ),
              ),
 
-             Array(
+             array(
                  'template' => '{{mytest (mytest ..) .}}',
-                 'options' => Array(
+                 'options' => array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'helpers' => Array(
+                    'helpers' => array(
                         'mytest' => function ($context) {
                             return $context;
                         }
                     )
                 ),
-                 'expected' => Array(
+                 'expected' => array(
                      'parent' => 1,
                      'rootthis' => 1,
                      'this' => 1,
@@ -247,17 +247,17 @@ class usageTest extends TestCase
                  ),
              ),
 
-             Array(
+             array(
                  'template' => '{{mytest (mytest (mytest ..)) .}}',
-                 'options' => Array(
+                 'options' => array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'helpers' => Array(
+                    'helpers' => array(
                         'mytest' => function ($context) {
                             return $context;
                         }
                     )
                 ),
-                 'expected' => Array(
+                 'expected' => array(
                      'parent' => 1,
                      'rootthis' => 1,
                      'this' => 1,
@@ -267,18 +267,18 @@ class usageTest extends TestCase
                  ),
              ),
 
-             Array(
+             array(
                  'id' => '134',
                  'template' => '{{#if 1}}{{keys (keys ../names)}}{{/if}}',
-                 'options' => Array(
+                 'options' => array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
-                    'helpers' => Array(
+                    'helpers' => array(
                         'keys' => function ($context) {
                             return $context;
                         }
                     )
                 ),
-                 'expected' => Array(
+                 'expected' => array(
                      'parent' => 1,
                      'enc' => 1,
                      'if' => 1,
@@ -287,13 +287,13 @@ class usageTest extends TestCase
                  ),
              ),
 
-             Array(
+             array(
                  'id' => '196',
                  'template' => '{{log "this is a test"}}',
-                 'options' => Array(
+                 'options' => array(
                     'flags' => LightnCandy::FLAG_HANDLEBARSJS,
                 ),
-                 'expected' => Array(
+                 'expected' => array(
                      'log' => 1,
                      'enc' => 1,
                  ),
@@ -302,13 +302,13 @@ class usageTest extends TestCase
 
         return array_map(function($i) use ($default) {
             if (!isset($i['options'])) {
-                $i['options'] = Array('flags' => 0);
+                $i['options'] = array('flags' => 0);
             }
             if (!isset($i['options']['flags'])) {
                 $i['options']['flags'] = 0;
             }
             $i['expected'] = array_merge($default, isset($i['expected']) ? $i['expected'] : array());
-            return Array($i);
+            return array($i);
         }, $compileCases);
     }
 }
