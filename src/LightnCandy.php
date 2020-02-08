@@ -19,11 +19,6 @@ Origin: https://github.com/zordius/lightncandy
 
 namespace LightnCandy;
 
-use \LightnCandy\Context;
-use \LightnCandy\Compiler;
-use \LightnCandy\Partial;
-use \LightnCandy\Exporter;
-
 /**
  * LightnCandy major static class
  */

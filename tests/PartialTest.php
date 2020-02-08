@@ -18,11 +18,10 @@ class PartialTest extends TestCase
         $method = new \ReflectionMethod('LightnCandy\Partial', 'prePartial');
         $method->setAccessible(true);
         $this->assertEquals('hey', $method->invokeArgs(null, array_by_ref(array(
-            Array('prepartial' => false), 'hey', 'haha'
+            array('prepartial' => false), 'hey', 'haha'
         ))));
         $this->assertEquals('haha-hoho', $method->invokeArgs(null, array_by_ref(array(
-            Array('prepartial' => function ($cx, $tmpl, $name) {return "$name-$tmpl";}), 'hoho', 'haha'
+            array('prepartial' => function ($cx, $tmpl, $name) {return "$name-$tmpl";}), 'hoho', 'haha'
         ))));
     }
 }
-

@@ -205,7 +205,7 @@ class HandlebarsSpecTest extends TestCase
         foreach ($test_flags as $f) {
             // setup helpers
             $tested++;
-            $helpers = Array();
+            $helpers = array();
             $helpersList = '';
             foreach (array_merge((isset($spec['globalHelpers']) && is_array($spec['globalHelpers'])) ? $spec['globalHelpers'] : array(), (isset($spec['helpers']) && is_array($spec['helpers'])) ? $spec['helpers'] : array()) as $name => $func) {
                 if (!isset($func['php'])) {
@@ -270,7 +270,7 @@ class HandlebarsSpecTest extends TestCase
                     }
                 }
 
-                $php = LightnCandy::compile($spec['template'], Array(
+                $php = LightnCandy::compile($spec['template'], array(
                     'flags' => $f,
                     'helpers' => $helpers,
                     'basedir' => $tmpdir,
@@ -320,7 +320,7 @@ class HandlebarsSpecTest extends TestCase
 
     public function jsonSpecProvider()
     {
-        $ret = Array();
+        $ret = array();
 
         foreach (glob('specs/handlebars/spec/*.json') as $file) {
            if ($file === 'specs/handlebars/spec/tokenizer.json') {
@@ -340,7 +340,7 @@ class HandlebarsSpecTest extends TestCase
                if (!isset($d['data'])) {
                    $d['data'] = null;
                }
-               return Array($d);
+               return array($d);
            }, $json));
         }
 

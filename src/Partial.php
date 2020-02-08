@@ -18,10 +18,6 @@ Origin: https://github.com/zordius/lightncandy
 
 namespace LightnCandy;
 
-use \LightnCandy\Compiler;
-use \LightnCandy\SafeString;
-use \LightnCandy\Context;
-
 /**
  * LightnCandy Partial handler
  */
@@ -81,8 +77,8 @@ class Partial
      *
      * @return string|null $content processed partial template
      *
-     * @expect 'hey' when input Array('prepartial' => false), 'hey', 'haha'
-     * @expect 'haha-hoho' when input Array('prepartial' => function ($cx, $tmpl, $name) {return "$name-$tmpl";}), 'hoho', 'haha'
+     * @expect 'hey' when input array('prepartial' => false), 'hey', 'haha'
+     * @expect 'haha-hoho' when input array('prepartial' => function ($cx, $tmpl, $name) {return "$name-$tmpl";}), 'hoho', 'haha'
      */
     protected static function prePartial(&$context, $tmpl, &$name)
     {

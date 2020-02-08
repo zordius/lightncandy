@@ -22,11 +22,10 @@ section Value: {{.}}
 {{#unless .}}Unless not OK!{{/unless}}
 ";
 
-$php = LightnCandy::compile($template, Array(
+$php = LightnCandy::compile($template, array(
     'flags' => LightnCandy::FLAG_RENDER_DEBUG | LightnCandy::FLAG_HANDLEBARSJS
 ));
 
 $renderer = LightnCandy::prepare($php);
 error_reporting(0);
-echo $renderer(Array('name' => 'John'), array('debug' => Runtime::DEBUG_TAGS_ANSI));
-
+echo $renderer(array('name' => 'John'), array('debug' => Runtime::DEBUG_TAGS_ANSI));
