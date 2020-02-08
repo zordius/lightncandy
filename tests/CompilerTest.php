@@ -127,4 +127,3 @@ class CompilerTest extends TestCase
         ))));
     }
 }
-?>

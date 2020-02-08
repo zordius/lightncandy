@@ -90,4 +90,4 @@ class EncoderTest extends TestCase
         ))));
     }
 }
-?>
+

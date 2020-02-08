@@ -25,4 +25,4 @@ class ExporterTest extends TestCase
         ))));
     }
 }
-?>
+

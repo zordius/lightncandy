@@ -55,4 +55,3 @@ function jsraw ($i) {
     return $i;
 }
 
-?>

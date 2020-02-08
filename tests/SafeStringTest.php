@@ -42,4 +42,4 @@ class SafeStringTest extends TestCase
         ))));
     }
 }
-?>
+

@@ -347,4 +347,4 @@ class HandlebarsSpecTest extends TestCase
         return $ret;
     }
 }
-?>
+

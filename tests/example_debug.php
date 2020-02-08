@@ -29,4 +29,3 @@ $php = LightnCandy::compile($template, array(
 $renderer = LightnCandy::prepare($php);
 error_reporting(0);
 echo $renderer(array('name' => 'John'), array('debug' => Runtime::DEBUG_TAGS_ANSI));
-?>
