@@ -18,10 +18,6 @@ Origin: https://github.com/zordius/lightncandy
 
 namespace LightnCandy;
 
-use \LightnCandy\Compiler;
-use \LightnCandy\SafeString;
-use \LightnCandy\Context;
-
 /**
  * LightnCandy Partial handler
  */
