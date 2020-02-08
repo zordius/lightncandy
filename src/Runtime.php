@@ -283,7 +283,7 @@ class Runtime extends Encoder
      */
     public static function enc($cx, $var)
     {
-        if ($var instanceof \LightnCandy\SafeString) {
+        if ($var instanceof SafeString) {
             return (string)$var;
         }
 
@@ -305,7 +305,7 @@ class Runtime extends Encoder
      */
     public static function encq($cx, $var)
     {
-        if ($var instanceof \LightnCandy\SafeString) {
+        if ($var instanceof SafeString) {
             return (string)$var;
         }
 
