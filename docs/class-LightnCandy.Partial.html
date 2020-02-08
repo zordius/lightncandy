@@ -105,7 +105,7 @@
 		<b>Namespace:</b> <a href="namespace-LightnCandy.html">LightnCandy</a><br>
 		
 
-			<b>Located at</b> <a href="source-class-LightnCandy.Partial.html#25-216" title="Go to source code">Partial.php</a>
+			<b>Located at</b> <a href="source-class-LightnCandy.Partial.html#21-212" title="Go to source code">Partial.php</a>
 		<br>
 	</div>
 
@@ -125,7 +125,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_handleDynamic">#</a>
-		<code><a href="source-class-LightnCandy.Partial.html#32-44" title="Go to source code">handleDynamic</a>( <span> <var>&amp; $context</var></span> )</code>
+		<code><a href="source-class-LightnCandy.Partial.html#28-40" title="Go to source code">handleDynamic</a>( <span> <var>&amp; $context</var></span> )</code>
 
 		<div class="description short">
 			<p>Include all partials when using dynamic partials</p>
@@ -155,7 +155,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_read">#</a>
-		<code><a href="source-class-LightnCandy.Partial.html#46-73" title="Go to source code">read</a>( <span>array&lt;string,array|string|integer&gt; <var>&amp; $context</var></span>, <span>string <var>$name</var></span> )</code>
+		<code><a href="source-class-LightnCandy.Partial.html#42-69" title="Go to source code">read</a>( <span>array&lt;string,array|string|integer&gt; <var>&amp; $context</var></span>, <span>string <var>$name</var></span> )</code>
 
 		<div class="description short">
 			<p>Read partial file content as string and store in context</p>
@@ -196,7 +196,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_prePartial">#</a>
-		<code><a href="source-class-LightnCandy.Partial.html#75-90" title="Go to source code">prePartial</a>( <span>array&lt;string,array|string|integer&gt; <var>&amp; $context</var></span>, <span>string <var>$tmpl</var></span>, <span>string <var>&amp; $name</var></span> )</code>
+		<code><a href="source-class-LightnCandy.Partial.html#71-86" title="Go to source code">prePartial</a>( <span>array&lt;string,array|string|integer&gt; <var>&amp; $context</var></span>, <span>string <var>$tmpl</var></span>, <span>string <var>&amp; $name</var></span> )</code>
 
 		<div class="description short">
 			<p>preprocess partial template before it be stored into context</p>
@@ -224,8 +224,8 @@
 
 				<h4>Expect</h4>
 				<div class="list">
-						'hey' when input Array('prepartial' => false), 'hey', 'haha'<br>
-						'haha-hoho' when input Array('prepartial' => function ($cx, $tmpl, $name) {return "$name-$tmpl";}), 'hoho', 'haha'<br>
+						'hey' when input array('prepartial' => false), 'hey', 'haha'<br>
+						'haha-hoho' when input array('prepartial' => function ($cx, $tmpl, $name) {return "$name-$tmpl";}), 'hoho', 'haha'<br>
 				</div>
 
 
@@ -244,7 +244,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_resolve">#</a>
-		<code><a href="source-class-LightnCandy.Partial.html#92-110" title="Go to source code">resolve</a>( <span>array&lt;string,array|string|integer&gt; <var>&amp; $context</var></span>, <span>string <var>&amp; $name</var></span> )</code>
+		<code><a href="source-class-LightnCandy.Partial.html#88-106" title="Go to source code">resolve</a>( <span>array&lt;string,array|string|integer&gt; <var>&amp; $context</var></span>, <span>string <var>&amp; $name</var></span> )</code>
 
 		<div class="description short">
 			<p>resolve partial, return the partial content</p>
@@ -285,7 +285,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_resolver">#</a>
-		<code><a href="source-class-LightnCandy.Partial.html#112-126" title="Go to source code">resolver</a>( <span>array&lt;string,array|string|integer&gt; <var>&amp; $context</var></span>, <span>string <var>&amp; $name</var></span> )</code>
+		<code><a href="source-class-LightnCandy.Partial.html#108-122" title="Go to source code">resolver</a>( <span>array&lt;string,array|string|integer&gt; <var>&amp; $context</var></span>, <span>string <var>&amp; $name</var></span> )</code>
 
 		<div class="description short">
 			<p>use partialresolver to resolve partial, return the partial content</p>
@@ -326,7 +326,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_compileStatic">#</a>
-		<code><a href="source-class-LightnCandy.Partial.html#128-154" title="Go to source code">compileStatic</a>( <span>array&lt;string,array|string|integer&gt; <var>&amp; $context</var></span>, <span>string <var>$name</var></span> )</code>
+		<code><a href="source-class-LightnCandy.Partial.html#124-150" title="Go to source code">compileStatic</a>( <span>array&lt;string,array|string|integer&gt; <var>&amp; $context</var></span>, <span>string <var>$name</var></span> )</code>
 
 		<div class="description short">
 			<p>compile a partial to static embed PHP code</p>
@@ -367,7 +367,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_compileDynamic">#</a>
-		<code><a href="source-class-LightnCandy.Partial.html#156-177" title="Go to source code">compileDynamic</a>( <span>array&lt;string,array|string|integer&gt; <var>&amp; $context</var></span>, <span>string <var>$name</var></span> )</code>
+		<code><a href="source-class-LightnCandy.Partial.html#152-173" title="Go to source code">compileDynamic</a>( <span>array&lt;string,array|string|integer&gt; <var>&amp; $context</var></span>, <span>string <var>$name</var></span> )</code>
 
 		<div class="description short">
 			<p>compile partial as closure, stored in context</p>
@@ -408,7 +408,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_compile">#</a>
-		<code><a href="source-class-LightnCandy.Partial.html#179-215" title="Go to source code">compile</a>( <span>array&lt;string,array|string|integer&gt; <var>&amp; $context</var></span>, <span>string <var>$template</var></span>, <span>string|integer <var>$name</var> = <span class="php-num">0</span></span> )</code>
+		<code><a href="source-class-LightnCandy.Partial.html#175-211" title="Go to source code">compile</a>( <span>array&lt;string,array|string|integer&gt; <var>&amp; $context</var></span>, <span>string <var>$template</var></span>, <span>string|integer <var>$name</var> = <span class="php-num">0</span></span> )</code>
 
 		<div class="description short">
 			<p>compile a template into a closure function</p>
@@ -461,7 +461,7 @@
 		</code></td>
 
 		<td class="name">
-				<a href="source-class-LightnCandy.Partial.html#30" title="Go to source code"><var>$TMP_JS_FUNCTION_STR</var></a>
+				<a href="source-class-LightnCandy.Partial.html#26" title="Go to source code"><var>$TMP_JS_FUNCTION_STR</var></a>
 
 			<div class="description short">
 				
