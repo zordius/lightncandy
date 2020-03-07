@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 echo "DEBUG ENV: ${TRAVIS_JOB_NUMBER} , ${TRAVIS_BUILD_NUMBER} , ${TRAVIS_PULL_REQUEST} ..."
 
 JOBSEQ=".1"
@@ -55,7 +55,7 @@ build/gen_doc
 
 if [ "${TRAVIS_BRANCH}" != "master" ]; then
   echo "Document will be pushed here: http://zordius.github.io/lightncandy/${TRAVIS_BRANCH}/"
-else  
+else
   echo "Document will be pushed here: http://zordius.github.io/lightncandy/"
 fi
 git add docs
