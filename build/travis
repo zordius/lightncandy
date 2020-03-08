@@ -9,7 +9,7 @@ if [ "${TRAVIS_BUILD_NUMBER}${JOBSEQ}" != "${TRAVIS_JOB_NUMBER}" ]; then
   build/runphp build/gen_test.php
   vendor/bin/phpunit --coverage-clover=coverage.clover
 else
-  echo "Use PHP 7.0 only for document generation, no testing here."
+  echo "This build is only for document generation, no testing here."
 fi
 
 if [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then
