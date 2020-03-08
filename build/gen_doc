@@ -1,12 +1,10 @@
 #!/bin/sh
-composer require roave/better-reflection:dev-master#c87d856 --dev
-composer require apigen/apigen:dev-master --dev
-
+APIGEN="docker run --rm vfac/apigen"
 if [ "${TRAVIS_BRANCH}" != "master" ]; then
   rm -rf docs/${TRAVIS_BRANCH}/*
-  vendor/apigen/apigen/bin/apigen generate src/ --destination docs/${TRAVIS_BRANCH}
+  $APIGEN generate src/ --destination docs/${TRAVIS_BRANCH}
 else
   rm docs/*
   rm -rf docs/*
-  vendor/apigen/apigen/bin/apigen generate src/ --destination docs/
+  $APIGEN generate src/ --destination docs/
 fi
