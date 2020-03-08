@@ -1,6 +1,8 @@
 #!/bin/sh
 curl -O -L http://apigen.org/apigen.phar
 chmod 755 apigen.phar
+phpenv global 5.4
+
 if [ "${TRAVIS_BRANCH}" != "master" ]; then
   rm -rf docs/${TRAVIS_BRANCH}/*
   ./apigen.phar generate --source src/ --destination docs/${TRAVIS_BRANCH}
