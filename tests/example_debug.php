@@ -1,6 +1,6 @@
 <?php
 
-require __DIR__ . '/../vendor/autoload.php';
+require $_ENV['TRAVIS_BUILD_DIR'] . '/vendor/autoload.php';
 
 use LightnCandy\LightnCandy;
 use LightnCandy\Runtime;
