@@ -1,6 +1,7 @@
 #!/bin/sh
 BUILDPATH="/tmp/build"
-APIGEN="docker run -v $BUILDPATH:$BUILDPATH --rm vfac/apigen"
+APIGEN="docker run -v $BUILDPATH:$BUILDPATH vfac/apigen"
+
 mkdir $BUILDPATH
 cp -R src $BUILDPATH
 
