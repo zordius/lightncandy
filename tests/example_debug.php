@@ -1,6 +1,5 @@
 <?php
-
-require realpath(__DIR__ . '/../vendor/autoload.php');
+require dirname(__DIR__, 1) . '/vendor/autoload.php';
 
 use LightnCandy\LightnCandy;
 use LightnCandy\Runtime;
