@@ -14,8 +14,6 @@
         "php": ">=7.1.0"
     },
     "require-dev": {
-        "apigen/apigen": "dev-master",
-        "roave/better-reflection": "dev-master#c87d856",
         "phpunit/phpunit": "^7"
     },
     "autoload": {

@@ -3,10 +3,14 @@ JOBSEQ=".1"
 
 echo "DEBUG ENV: ${TRAVIS_JOB_NUMBER} , ${TRAVIS_BUILD_NUMBER} , ${TRAVIS_PULL_REQUEST} , ${TRAVIS_BUILD_NUMBER}${JOBSEQ} ..."
 
-composer self-update
-composer --prefer-source install
-build/runphp build/gen_test.php
-vendor/bin/phpunit --coverage-clover=coverage.clover
+if [ "${TRAVIS_BUILD_NUMBER}${JOBSEQ}" != "${TRAVIS_JOB_NUMBER}" ]; then
+  composer self-update
+  composer --prefer-source install
+  build/runphp build/gen_test.php
+  vendor/bin/phpunit --coverage-clover=coverage.clover
+else
+  echo PHP 7.1 is only for document generation due to apigen issue...
+fi
 
 if [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then
   echo "This is a PR, skip push."

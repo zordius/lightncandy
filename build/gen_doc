@@ -1,4 +1,7 @@
 #!/bin/sh
+composer require roave/better-reflection:dev-master#c87d856 --dev
+composer require apigen/apigen:dev-master --dev
+
 if [ "${TRAVIS_BRANCH}" != "master" ]; then
   rm -rf docs/${TRAVIS_BRANCH}/*
   vendor/apigen/apigen/bin/apigen generate src/ --destination docs/${TRAVIS_BRANCH}
