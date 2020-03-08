@@ -1,9 +1,9 @@
 #!/bin/sh
 if [ "${TRAVIS_BRANCH}" != "master" ]; then
   rm -rf docs/${TRAVIS_BRANCH}/*
-  vendor/apigen/apigen/bin/apigen generate --source src/ --destination docs/${TRAVIS_BRANCH}
+  vendor/apigen/apigen/bin/apigen generate src/ --destination docs/${TRAVIS_BRANCH}
 else
   rm docs/*
   rm -rf docs/*
-  vendor/apigen/apigen/bin/apigen generate --source src/ --destination docs/
+  vendor/apigen/apigen/bin/apigen generate src/ --destination docs/
 fi
