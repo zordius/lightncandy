@@ -109,7 +109,6 @@ class Validator
         }
         if (is_string($token)) {
             static::pushPartial($context, $token);
-            $append = $token;
             if (is_string(end($context['parsed'][0]))) {
                 $context['parsed'][0][key($context['parsed'][0])] .= $token;
                 return;
