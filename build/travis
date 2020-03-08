@@ -3,10 +3,14 @@ echo "DEBUG ENV: ${TRAVIS_JOB_NUMBER} , ${TRAVIS_BUILD_NUMBER} , ${TRAVIS_PULL_R
 
 JOBSEQ=".1"
 
-composer self-update
-composer --prefer-source install
-build/runphp build/gen_test.php
-vendor/bin/phpunit --coverage-clover=coverage.clover
+if [ "${TRAVIS_BUILD_NUMBER}${JOBSEQ}" != "${TRAVIS_JOB_NUMBER}" ]; then
+  composer self-update
+  composer --prefer-source install
+  build/runphp build/gen_test.php
+  vendor/bin/phpunit --coverage-clover=coverage.clover
+else
+  echo "Use PHP 7.1 only for document generation, no testing here."
+fi
 
 if [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then
   echo "This is a PR, skip push."
