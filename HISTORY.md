@@ -3,6 +3,11 @@ HISTORY
 
 1.2.5 current master, not released
    * align with handlebars.js 4.1.2
+   * 0ae02b0131 support ArrayAccess and __call()
+   * ade2d444c7 fix for PHP 7.4 implode() warning
+   * c9f02aa6e4 fix for PHP 7.4 implode() warning
+   * 096bf4c2ae remove PHP 7.1 tests (stop supporting/verifying)
+   * c77aaa7a27 fix for PHP 7.4 warning access int as array
 
 1.2.4 https://github.com/zordius/lightncandy/releases/v1.2.4
    * align with handlebars.js 4.1.1
