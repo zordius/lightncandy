@@ -1,8 +1,8 @@
 #!/bin/sh
 BUILDPATH="/tmp/build"
-APIGEN="docker run -v buildv:$BUILDPATH --rm vfac/apigen"
-mkdir buildv
-cp -R src buildv
+APIGEN="docker run -v $BUILDPATH:$BUILDPATH --rm vfac/apigen"
+mkdir $BUILDPATH
+cp -R src $BUILDPATH
 
 if [ "${TRAVIS_BRANCH}" != "master" ]; then
   rm -rf docs/${TRAVIS_BRANCH}/*
@@ -13,4 +13,4 @@ else
   $APIGEN generate $BUILDPATH/src/ --destination $BUILDPATH/docs/
 fi
 
-cp -R buildv/docs/* docs
+cp -R $BUILDPATH/docs/* docs
