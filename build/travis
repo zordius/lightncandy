@@ -1,7 +1,7 @@
 #!/bin/sh -e
-echo "DEBUG ENV: ${TRAVIS_JOB_NUMBER} , ${TRAVIS_BUILD_NUMBER} , ${TRAVIS_PULL_REQUEST} , ${TRAVIS_BUILD_NUMBER}${JOBSEQ} ..."
+JOBSEQ=".1"
 
-export JOBSEQ=".1"
+echo "DEBUG ENV: ${TRAVIS_JOB_NUMBER} , ${TRAVIS_BUILD_NUMBER} , ${TRAVIS_PULL_REQUEST} , ${TRAVIS_BUILD_NUMBER}${JOBSEQ} ..."
 
 composer self-update
 composer --prefer-source install
