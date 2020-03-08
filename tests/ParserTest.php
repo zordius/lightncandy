@@ -282,4 +282,3 @@ class ParserTest extends TestCase
         ))));
     }
 }
-

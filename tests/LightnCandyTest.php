@@ -34,4 +34,3 @@ class LightnCandyTest extends TestCase
         ))));
     }
 }
-

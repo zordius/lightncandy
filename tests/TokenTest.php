@@ -27,4 +27,3 @@ class TokenTest extends TestCase
         ))));
     }
 }
-

@@ -74,7 +74,7 @@ VAR
             echo "    }\n";
         }
     }
-    echo "}\n?>";
+    echo "}\n";
 
     $fn = "tests/{$classname}Test.php";
     if (!file_put_contents($fn, ob_get_clean())) {
