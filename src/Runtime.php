@@ -283,7 +283,8 @@ class Runtime extends Encoder
      */
     public static function enc($cx, $var)
     {
-        if ($var instanceof SafeString) {
+        // Use full namespace classname for more specific code export/match in Exporter.php replaceSafeString.
+        if ($var instanceof \LightnCandy\SafeString) {
             return (string)$var;
         }
 
@@ -305,7 +306,8 @@ class Runtime extends Encoder
      */
     public static function encq($cx, $var)
     {
-        if ($var instanceof SafeString) {
+        // Use full namespace classname for more specific code export/match in Exporter.php replaceSafeString.
+        if ($var instanceof \LightnCandy\SafeString) {
             return (string)$var;
         }
 
