@@ -46,6 +46,9 @@ git commit -a -m "Auto test on zordius/lightncandy@${TRAVIS_COMMIT}"
 git push "https://${GHTK}@github.com/zordius/HandlebarsTest.git" > /dev/null 2>&1
 cd ..
 
+echo Tmp skip document generation, will fix this later after apigen is stable.
+exit 0
+
 # Generate documents for this branch
 build/gen_doc
 
