@@ -179,7 +179,6 @@ class Exporter
         }
         $class = new \ReflectionClass('\\LightnCandy\\StringObject');
         $meta = static::getMeta($class);
-        $methods = array();
         return "if (!class_exists(\"StringObject\")) {\n{$meta['code']}}\n";
     }
 
