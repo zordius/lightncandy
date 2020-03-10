@@ -21,7 +21,7 @@ Features
    * Runs 2~7 times faster than <a href="https://github.com/dingram/mustache-php">mustache-php</a> (Dave Ingram implementation).
    * Runs 10~50 times faster than <a href="https://github.com/XaminProject/handlebars.php">handlebars.php</a>.
    * Detail performance test reports can be found <a href="https://github.com/zordius/HandlebarsTest">here</a>, go http://zordius.github.io/HandlebarsTest/ to see charts.
-* **SMALL!** all PHP files in 188K
+* **SMALL!** all PHP files in 189K
 * **ROBUST!**
    * 100% supports <a href="https://github.com/mustache/spec">mustache spec v1.1.3</a>. For the optional lambda module, supports 4 of 10 specs.
    * Supports almost all <a href="https://github.com/jbboehr/handlebars-spec">handlebars.js spec</a>
