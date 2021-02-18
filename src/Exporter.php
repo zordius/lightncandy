@@ -138,11 +138,21 @@ class Exporter
         $fname = $refobj->getFileName();
         $lines = file_get_contents($fname);
         $file = new \SplFileObject($fname);
-        $file->seek($refobj->getStartLine() - 2);
+
+        $start = $refobj->getStartLine() - 2;
+        $end = $refobj->getEndLine() - 1;
+
+        if (version_compare(\PHP_VERSION, '8.0.0') >= 0) {
+            $start++;
+            $end++;
+        }
+
+        $file->seek($start);
         $spos = $file->ftell();
-        $file->seek($refobj->getEndLine() - 1);
+        $file->seek($end);
         $epos = $file->ftell();
         unset($file);
+
         return array(
             'name' => $refobj->getName(),
             'code' => substr($lines, $spos, $epos - $spos)
