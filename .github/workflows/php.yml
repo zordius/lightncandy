@@ -47,4 +47,6 @@ jobs:
       run: composer run-script test
     - name: Push coverage, documents for php 7.4 only
       if: ${{ matrix.php-versions == '7.4' }}
+      env:
+        GHTK: ${{ secrets.GHTK }}
       run: build/github-action-push
