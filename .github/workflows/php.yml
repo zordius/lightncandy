@@ -18,6 +18,9 @@ jobs:
         - operating-system: 'ubuntu-latest'
           php-versions: '7.2'
           phpunit-versions: '8.5.13'
+        - operating-system: 'ubuntu-latest'
+          php-versions: '7.1'
+          phpunit-versions: '7.5.20'
     steps:
     - uses: actions/checkout@v2
     - name: Setup PHP
