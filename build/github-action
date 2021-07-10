@@ -20,6 +20,10 @@ else
   exit 0
 fi
 
+# Set for all push in this script.
+git config --global user.name "GithubAction"
+git config --global user.email "zordius@users.noreply.gihub.com"
+
 # Generate ANSI sample
 git clone https://github.com/fcambus/ansilove
 build/runphp tests/example_debug.php > example_debug
