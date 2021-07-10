@@ -1,10 +1,6 @@
 #!/bin/sh -e
-JOBSEQ=".1"
-
 echo "DEBUG ENV: ${PHPVERSION} ..."
 
-composer self-update
-composer --prefer-source install
 build/runphp build/gen_test.php
 vendor/bin/phpunit --coverage-clover=coverage.clover
 
