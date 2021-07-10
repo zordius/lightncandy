@@ -1,32 +1,26 @@
 #!/bin/sh -e
 JOBSEQ=".1"
 
-echo "DEBUG ENV: ${TRAVIS_JOB_NUMBER} , ${TRAVIS_BUILD_NUMBER} , ${TRAVIS_PULL_REQUEST} , ${TRAVIS_BUILD_NUMBER}${JOBSEQ} ..."
+echo "DEBUG ENV: ${PHPVERSION} ..."
 
 composer self-update
 composer --prefer-source install
 build/runphp build/gen_test.php
 vendor/bin/phpunit --coverage-clover=coverage.clover
 
-if [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then
-  echo "This is a PR, skip push."
+if [ ! -z "${GITHUB_HEAD_REF}" ]; then
+  echo "This is a PR for branch ${GITHUB_HEAD_REF}, skip push."
   exit 0
 fi
 
 # Push coverage report
-if [ "${TRAVIS_BUILD_NUMBER}.3" = "${TRAVIS_JOB_NUMBER}" ]; then
+if [ "${PHPVERSION}" = "7.5" ]; then
   wget https://scrutinizer-ci.com/ocular.phar
   php ocular.phar code-coverage:upload --format=php-clover coverage.clover
-fi
-
-if [ "${TRAVIS_BUILD_NUMBER}${JOBSEQ}" != "${TRAVIS_JOB_NUMBER}" ]; then
-  echo "Only push documents 1 time... quit."
+else
+  echo "Only push documents for PHP 7.5 ... quit."
   exit 0
 fi
-
-# Set for all push in this script.
-git config --global user.name "Travis-CI"
-git config --global user.email "zordius@users.noreply.gihub.com"
 
 # Generate ANSI sample
 git clone https://github.com/fcambus/ansilove
@@ -35,14 +29,14 @@ php ansilove/ansilove example_debug
 git add example_debug.png
 
 # Push new tests back to this branch
-git commit -a -m "Auto generated tests from Travis [ci skip]"
+git commit -a -m "chore: auto generated tests by github actions [ci skip]"
 
 # Update hash in HandlebarsTest and push back, trigger new tests there.
 git clone https://github.com/zordius/HandlebarsTest
 cd HandlebarsTest
-echo ${TRAVIS_COMMIT} > lightncandy
+echo ${GITHUB_SHA} > lightncandy
 git add lightncandy
-git commit -a -m "Auto test on zordius/lightncandy@${TRAVIS_COMMIT}"
+git commit -a -m "chore: auto test on zordius/lightncandy@${GITHUB_SHA}"
 git push "https://${GHTK}@github.com/zordius/HandlebarsTest.git" > /dev/null 2>&1
 cd ..
 
@@ -52,12 +46,12 @@ exit 0
 # Generate documents for this branch
 build/gen_doc
 
-if [ "${TRAVIS_BRANCH}" != "master" ]; then
-  echo "Document will be pushed here: http://zordius.github.io/lightncandy/${TRAVIS_BRANCH}/"
+if [ ! -z "${GITHUB_HEAD_REF}" ]; then
+  echo "Document will be pushed here: http://zordius.github.io/lightncandy/${GITHUB_HEAD_REF}/"
 else
   echo "Document will be pushed here: http://zordius.github.io/lightncandy/"
 fi
 git add docs
-git commit -m "Auto generated documents from branch ${TRAVIS_BRANCH} @${TRAVIS_COMMIT} [ci skip]"
+git commit -m "chore: auto generated documents from branch ${GITHUB_REF} @${GITHUB_SHA} [ci skip]"
 git --no-pager log -n 3
-git push --quiet "https://${GHTK}@github.com/zordius/lightncandy.git" HEAD:${TRAVIS_BRANCH} > /dev/null 2>&1
+git push --quiet "https://${GHTK}@github.com/zordius/lightncandy.git" HEAD:${GITHUB_REF} > /dev/null 2>&1

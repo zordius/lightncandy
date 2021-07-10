@@ -27,6 +27,6 @@
         }
     },
     "scripts": {
-        "test": "build/travis"
+        "test": "build/github-action"
     }
 }
