@@ -4,7 +4,7 @@ HISTORY
 1.2.6 current master, not released
    * align with handlebars.js 4.1.2
 
-1.2.55555 https://github.com/zordius/lightncandy/releases/v1.2.5
+1.2.5 https://github.com/zordius/lightncandy/releases/v1.2.5
    * align with handlebars.js 4.1.2
    * 0ae02b0131 support ArrayAccess and __call()
    * ade2d444c7 fix for PHP 7.4 implode() warning
