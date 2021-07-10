@@ -45,5 +45,6 @@ jobs:
       run: composer install --prefer-dist --no-progress
     - name: Run test suite
       run: composer run-script test
-      env:
-        PHPVERSION: ${{matrix.php-versions}}
+    - name: Push coverage, documents
+      if: ${{ matrix.php-versions == '7.4' }}
+      run: build/github-action-push

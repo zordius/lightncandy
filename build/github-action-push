@@ -1,24 +1,6 @@
 #!/bin/sh -e
-PUSH_TARGET=7.4
-echo "DEBUG ENV: ${PHPVERSION} ..."
-
-build/runphp build/gen_test.php
-vendor/bin/phpunit --coverage-clover=coverage.clover
-
-if [ ! -z "${GITHUB_HEAD_REF}" ]; then
-  echo "This is a PR for branch ${GITHUB_HEAD_REF}, skip push."
-  exit 0
-fi
-
-# Push coverage report
-if [ $PHPVERSION = $PUSH_TARGET ]; then
-  echo "Upload coverage to scrutinizer-ci ..."
-  wget https://scrutinizer-ci.com/ocular.phar
-  php ocular.phar code-coverage:upload --format=php-clover coverage.clover
-else
-  echo "Only build/push documents for PHP ${PUSH_TARGET} ... we can quit safely now."
-  exit 0
-fi
+wget https://scrutinizer-ci.com/ocular.phar
+php ocular.phar code-coverage:upload --format=php-clover coverage.clover
 
 # Set for all push in this script.
 git config --global user.name "GithubAction"

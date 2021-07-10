@@ -27,6 +27,9 @@
         }
     },
     "scripts": {
-        "test": "build/github-action"
+        "test": [
+            "build/runphp build/gen_test.php",
+            "vendor/bin/phpunit --coverage-clover=coverage.clover"
+        ]
     }
 }
