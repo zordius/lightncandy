@@ -11,10 +11,11 @@ fi
 
 # Push coverage report
 if [ "${PHPVERSION}" = "7.5" ]; then
+  echo "Upload coverage to scrutinizer-ci ..."
   wget https://scrutinizer-ci.com/ocular.phar
   php ocular.phar code-coverage:upload --format=php-clover coverage.clover
 else
-  echo "Only push documents for PHP 7.5 ... quit."
+  echo "Only build/push documents for PHP 7.5 ... we can quit safely now."
   exit 0
 fi
 
