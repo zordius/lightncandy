@@ -1,12 +1,11 @@
 #!/bin/sh
-BUILDPATH="/tmp/build"
-APIGEN="docker run  --rm -v $(pwd):/code azuka/apigen generate /code/src --destination"
+wget https://github.com/phpDocumentor/phpDocumentor/releases/download/v3.1.0/phpDocumentor.phar
 
-if [ "${TRAVIS_BRANCH}" != "master" ]; then
-  rm -rf docs/${TRAVIS_BRANCH}/*
-  $APIGEN /code/docs/${TRAVIS_BRANCH}
+if [ "${BRANCH}" != "master" ]; then
+  rm -rf docs/${BRANCH}/*
+  php phpDocumentor.phar -d src -t docs/$BRANCH
 else
   rm docs/*
   rm -rf docs/*
-  $APIGEN /code/docs/
+  php phpDocumentor.phar -d src -t docs
 fi

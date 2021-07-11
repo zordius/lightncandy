@@ -24,18 +24,16 @@ git commit -a -m "chore: auto test on zordius/lightncandy@${GITHUB_SHA}"
 git push "https://${GHTK}@github.com/zordius/HandlebarsTest.git" > /dev/null 2>&1
 cd ..
 
-echo Tmp skip document generation, will fix this later after apigen is stable.
-exit 0
-
 # Generate documents for this branch
 build/gen_doc
 
-if [ ! -z "${GITHUB_HEAD_REF}" ]; then
-  echo "Document will be pushed here: http://zordius.github.io/lightncandy/${GITHUB_HEAD_REF}/"
-else
+if [ -z "${GITHUB_HEAD_REF}" ]; then
   echo "Document will be pushed here: http://zordius.github.io/lightncandy/"
+else
+  echo "Document will be pushed here: http://zordius.github.io/lightncandy/${BRANCH}/"
 fi
+
 git add docs
-git commit -m "chore: auto generated documents from branch ${GITHUB_REF} @${GITHUB_SHA} [ci skip]"
+git commit -m "chore: auto generated documents from branch ${BRANCH} @${GITHUB_SHA} [ci skip]"
 git --no-pager log -n 3
-git push --quiet "https://${GHTK}@github.com/zordius/lightncandy.git" HEAD:${GITHUB_REF} > /dev/null 2>&1
+git push --quiet "https://${GHTK}@github.com/zordius/lightncandy.git" HEAD:${BRANCH} > /dev/null 2>&1

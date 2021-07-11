@@ -45,8 +45,13 @@ jobs:
       run: composer install --prefer-dist --no-progress
     - name: Run test suite
       run: composer run-script test
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch
     - name: Push coverage, documents for php 7.4 only
       if: ${{ matrix.php-versions == '7.4' }}
       env:
+        BRANCH: ${{steps.extract_branch.outputs.branch}}
         GHTK: ${{ secrets.GHTK }}
       run: build/github-action-push
