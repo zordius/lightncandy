@@ -1,8 +1,12 @@
 HISTORY
 =======
 
-1.2.6 current master, not released
+1.2.7 current master, not released
    * align with handlebars.js 4.1.2
+
+1.2.6 https://github.com/zordius/lightncandy/releases/v1.2.6
+   * align with handlebars.js 4.1.2
+   * 207d424c4c fix for PHP 8.0 code generator issue
 
 1.2.5 https://github.com/zordius/lightncandy/releases/v1.2.5
    * align with handlebars.js 4.1.2
