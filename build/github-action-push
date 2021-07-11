@@ -13,7 +13,7 @@ php ansilove/ansilove example_debug
 git add example_debug.png
 
 # Push new tests back to this branch
-git commit -a -m "chore: auto generated tests / example png by github actions [ci skip]"
+git commit -a -m "chore: auto generated tests / example png by github actions [ci skip]" || echo nothing to commit
 
 # Update hash in HandlebarsTest and push back, trigger new tests there.
 git clone https://github.com/zordius/HandlebarsTest
