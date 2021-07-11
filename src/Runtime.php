@@ -704,7 +704,7 @@ class Runtime extends Encoder
 
         try {
             $r = call_user_func_array($cx['helpers'][$ch], $args);
-        } catch (\Exception $E) {
+        } catch (\Throwable $E) {
             static::err($cx, "Runtime: call custom helper '$ch' error: " . $E->getMessage());
         }
 
