@@ -1,6 +1,5 @@
 #!/bin/sh -e
-wget https://scrutinizer-ci.com/ocular.phar
-php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+COVERALLS_REPO_TOKEN=${GHTK} vendor/bin/php-coveralls --coverage_clover=coverage.clover
 
 # Set for all push in this script.
 git config --global user.name "GithubAction"
