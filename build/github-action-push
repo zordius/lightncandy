@@ -1,4 +1,6 @@
 #!/bin/sh -e
+COVERALLS_REPO_TOKEN=${GHTK} vendor/bin/php-coveralls --coverage_clover=coverage.clover -o build/result/coveralls-upload.json -v
+
 # Set for all push in this script.
 git config --global user.name "GithubAction"
 git config --global user.email "zordius@users.noreply.gihub.com"
