@@ -3,7 +3,7 @@ LightnCandy
 
 ⚡🍭 An extremely fast PHP implementation of handlebars ( http://handlebarsjs.com/ ) and mustache ( http://mustache.github.io/ ).
 
-CI status: [![Unit testing](https://github.com//zordius/lightncandy/actions/workflows/php.yml/badge.svg?branch=master)](https://travis-ci.org/zordius/lightncandy) [![Regression testing](https://travis-ci.org/zordius/HandlebarsTest.svg?branch=master)](https://travis-ci.org/zordius/HandlebarsTest)
+CI status: [![Unit testing](https://github.com//zordius/lightncandy/actions/workflows/php.yml/badge.svg?branch=master)](https://github.com/zordius/lightncandy/actions/workflows/php.yml) [![Regression testing](https://github.com//zordius/HandlebarsTest/actions/workflows/php.yml/badge.svg?branch=master)](https://github.com/zordius/HandlebarsTest/actions/workflows/php.yml)
 
 Scrutinizer CI status: [![Code Coverage](https://img.shields.io/scrutinizer/coverage/g/zordius/lightncandy.svg)](https://scrutinizer-ci.com/g/zordius/lightncandy/)
 
