@@ -1,11 +1,12 @@
 #!/bin/sh
-wget https://github.com/phpDocumentor/phpDocumentor/releases/download/v3.1.0/phpDocumentor.phar
-
-if [ "${BRANCH}" != "master" ]; then
-  rm -rf docs/${BRANCH}/*
-  php phpDocumentor.phar -d src -t docs/$BRANCH
-else
-  rm docs/*
-  rm -rf docs/*
-  php phpDocumentor.phar -d src -t docs
+if [ ! -f "phpDocumentor.phar" ];then
+  wget https://github.com/phpDocumentor/phpDocumentor/releases/download/v3.1.0/phpDocumentor.phar
 fi
+if [ "${BRANCH}" = "master" ]; then
+  TARGET=
+else
+  TARGET=${BRANCH}/
+fi
+
+rm -rf docs/${TARGET}*
+php phpDocumentor.phar -d src -t docs/$TARGET
