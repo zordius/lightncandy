@@ -21,7 +21,7 @@ class regressionTest extends TestCase
         $context = LightnCandy::getContext();
         $parsed = print_r(LightnCandy::$lastParsed, true);
         if (count($context['error'])) {
-            $this->fail('Compile failed due to:' . print_r($context['error'], true) . "\nPARSED: $parsed");
+            $this->fail('Compile failed due to: ' . print_r($context['error'], true) . "\nPARSED: $parsed");
         }
         $renderer = LightnCandy::prepare($php);
 

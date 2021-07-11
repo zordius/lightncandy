@@ -13,7 +13,7 @@ class myClass {
         return 'testMethod OK!';
     }
 
-    function helper2($arg) {
+    static function helper2($arg) {
         return is_array($arg) ? '=Array=' : "=$arg=";
     }
 
@@ -25,7 +25,7 @@ class myClass {
 class foo {
     public $prop = 'Yes!';
 
-    function bar() {
+    static function bar() {
         return 'OK!';
     }
 }
