@@ -36,4 +36,4 @@ fi
 git add docs
 git commit -m "chore: auto generated documents from branch ${BRANCH} @${GITHUB_SHA} [ci skip]"
 git --no-pager log -n 3
-git push --quiet "https://${GHTK}@github.com/zordius/lightncandy.git" HEAD:${BRANCH} > /dev/null 2>&1
+git push --quiet "https://${GHTK}@github.com/zordius/lightncandy.git" HEAD:${BRANCH} > /dev/null 2>&1 || echo nothing new been pushed.
