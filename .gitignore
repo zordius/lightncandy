@@ -4,4 +4,5 @@ composer.lock
 .phpdoc
 vendor/
 build/result/
+build/logs/
 phpDocumentor.phar

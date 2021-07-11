@@ -1,4 +1,5 @@
 #!/bin/sh -e
+mkdir build/logs
 COVERALLS_REPO_TOKEN=${GHTK} vendor/bin/php-coveralls --coverage_clover=coverage.clover
 
 # Set for all push in this script.
