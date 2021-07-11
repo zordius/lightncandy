@@ -23,6 +23,9 @@ jobs:
           phpunit-versions: '7.5.20'
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '14'
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
@@ -49,7 +52,11 @@ jobs:
       shell: bash
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
       id: extract_branch
-    - name: Push coverage, documents for php 7.4 only
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GHTK }}
+    - name: Push documents for php 7.4 only
       if: ${{ matrix.php-versions == '7.4' }}
       env:
         BRANCH: ${{steps.extract_branch.outputs.branch}}
