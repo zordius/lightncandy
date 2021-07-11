@@ -54,5 +54,5 @@ jobs:
       env:
         BRANCH: ${{steps.extract_branch.outputs.branch}}
         GHTK: ${{ secrets.GHTK }}
-        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS }}
+        COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: build/github-action-push
