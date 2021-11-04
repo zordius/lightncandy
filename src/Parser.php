@@ -492,7 +492,17 @@ class Parser extends Token
                 // continue from previous match when expect something
                 if ($expect) {
                     $prev .= "{$matchedall[1][$index]}$t";
-                    if (($quote === 0) && ($stack > 0) && preg_match('/(.+=)*(\\(+)/', $t, $m)) {
+                    if (
+                        ($quote === 0) && 
+                        ($stack > 0) && 
+                        preg_match('/(.+=)*(\\(+)/', $t, $m) &&
+                        // match should not be surrounded by quotes
+                        !preg_match(
+                            '/.*".*' . preg_quote($m[0]) . '.*".*|' .
+                            '.*\'.*' . preg_quote($m[0]) . '.*\'.*/', 
+                            $t
+                        )
+                    ) {
                         $stack += strlen($m[2]);
                     }
                     // end an argument when end with expected charactor
