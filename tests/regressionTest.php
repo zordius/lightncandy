@@ -1608,6 +1608,20 @@ VAREND
             ),
 
             array(
+                'id' => 357,
+                'template' => '{{echo (echo "foobar(moo)." (echo "moobar(foo)"))}}',
+                'options' => array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARS,
+                    'helpers' => array(
+                        'echo' => function($arg1) {
+                            return "ECHO: $arg1";
+                        }
+                    )
+                ),
+                'expected' => 'ECHO: ECHO: foobar(moo).'
+            ),
+
+            array(
                 'template' => '{{#each . as |v k|}}#{{k}}{{/each}}',
                 'data' => array('a' => array(), 'c' => array()),
                 'options' => array(
