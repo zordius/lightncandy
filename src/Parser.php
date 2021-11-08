@@ -470,7 +470,7 @@ class Parser extends Token
     {
         $count = $context['flags']['advar'] ?
         // Do not break quoted strings. Also, allow escaped quotes inside them.
-        preg_match_all('/(\s*)("(\\\\\\\\.|[^"])*"|\'(\\\\\\\\.|[^\'])*\'|\S+)/', $token, $matchedall) :
+        preg_match_all('/(\s*)([^"\s]*"(\\\\\\\\.|[^"])*"|[^\'\s]*\'(\\\\\\\\.|[^\'])*\'|\S+)/', $token, $matchedall) :
         preg_match_all('/(\s*)([^\s]+)/', $token, $matchedall);
 
         // Parse arguments and deal with "..." or [...] or (...) or \'...\' or |...|

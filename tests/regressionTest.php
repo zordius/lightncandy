@@ -1554,6 +1554,20 @@ VAREND
             ),
 
             array(
+                'id' => 297,
+                'template' => '{{test "foo" prop="\" "}}',
+                'options' => array(
+                    'flags' => LightnCandy::FLAG_HANDLEBARS,
+                    'helpers' => array(
+                        'test' => function($arg1, $options) {
+                            return $arg1 . " " . $options['hash']['prop'];
+                        }
+                    )
+                ),
+                'expected' => 'foo &quot; '
+            ),
+
+            array(
                 'id' => 302,
                 'template' => "{{#*inline \"t1\"}}{{#if imageUrl}}<span />{{else}}<div />{{/if}}{{/inline}}{{#*inline \"t2\"}}{{#if imageUrl}}<span />{{else}}<div />{{/if}}{{/inline}}{{#*inline \"t3\"}}{{#if imageUrl}}<span />{{else}}<div />{{/if}}{{/inline}}",
                 'options' => array(
