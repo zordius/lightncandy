@@ -3,7 +3,7 @@ LightnCandy
 
 ⚡🍭 An extremely fast PHP implementation of handlebars ( http://handlebarsjs.com/ ) and mustache ( http://mustache.github.io/ ).
 
-CI status: [![Unit testing](https://github.com//zordius/lightncandy/actions/workflows/php.yml/badge.svg?branch=master)](https://github.com/zordius/lightncandy/actions/workflows/php.yml) [![Regression testing](https://github.com//zordius/HandlebarsTest/actions/workflows/php.yml/badge.svg?branch=master)](https://github.com/zordius/HandlebarsTest/actions/workflows/php.yml) tested PHP: 5.3, 5.4, 5.5, 5.6, 7.0, 7.1, 7.2, 7.3, 7.4, 8.0 [![Coverage Status](https://coveralls.io/repos/github/zordius/lightncandy/badge.svg?branch=master)](https://coveralls.io/github/zordius/lightncandy?branch=master)
+CI status: [![Unit testing](https://github.com//zordius/lightncandy/actions/workflows/php.yml/badge.svg?branch=master)](https://github.com/zordius/lightncandy/actions/workflows/php.yml) [![Regression testing](https://github.com//zordius/HandlebarsTest/actions/workflows/php.yml/badge.svg?branch=master)](https://github.com/zordius/HandlebarsTest/actions/workflows/php.yml) tested PHP: 7.1, 7.2, 7.3, 7.4, 8.0, 8.1 [![Coverage Status](https://coveralls.io/repos/github/zordius/lightncandy/badge.svg?branch=master)](https://coveralls.io/github/zordius/lightncandy?branch=master)
 
 Package on packagist: [![Latest Stable Version](https://poser.pugx.org/zordius/lightncandy/v/stable.svg)](https://packagist.org/packages/zordius/lightncandy) [![License](https://poser.pugx.org/zordius/lightncandy/license.svg)](https://github.com/zordius/lightncandy/blob/master/LICENSE.md) [![Total Downloads](https://poser.pugx.org/zordius/lightncandy/downloads)](https://packagist.org/packages/zordius/lightncandy)
 
