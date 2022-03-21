@@ -23,8 +23,6 @@ jobs:
           phpunit-versions: '7.5.20'
     steps:
     - uses: actions/checkout@v3
-      with:
-        submodules: true
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
@@ -58,3 +56,8 @@ jobs:
         GHTK: ${{ secrets.GHTK }}
         COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: build/github-action-push
+    - name: deply Github Pages
+      if: ${{ matrix.php-versions == '7.4' }}
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        publish_dir: ./docs
