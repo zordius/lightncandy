@@ -60,4 +60,6 @@ jobs:
       if: ${{ matrix.php-versions == '7.4' }}
       uses: peaceiris/actions-gh-pages@v3
       with:
+        deploy_key: ${{ secrets.ACT_DEPLOY }}
+        personal_token: ${{ secrets.GHTK }}
         publish_dir: ./docs
