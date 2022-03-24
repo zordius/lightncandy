@@ -468,7 +468,11 @@ class Parser extends Token
      */
     protected static function analyze($token, &$context)
     {
-        $count = preg_match_all('/(\s*)([^\s]+)/', $token, $matchedall);
+        $count = $context['flags']['advar'] ?
+        // Do not break quoted strings. Also, allow escaped quotes inside them.
+        preg_match_all('/(\s*)([^"\s]*"(\\\\\\\\.|[^"])*"|[^\'\s]*\'(\\\\\\\\.|[^\'])*\'|\S+)/', $token, $matchedall) :
+        preg_match_all('/(\s*)([^\s]+)/', $token, $matchedall);
+
         // Parse arguments and deal with "..." or [...] or (...) or \'...\' or |...|
         if (($count > 0) && $context['flags']['advar']) {
             $vars = array();
@@ -488,16 +492,18 @@ class Parser extends Token
                         $quote = 0;
                     }
                 }
+                // if we are inside quotes, we should later skip stack changes
+                $quotes = preg_match("/^\".*\"$|^\'.*\'$/", $t);
 
                 // continue from previous match when expect something
                 if ($expect) {
                     $prev .= "{$matchedall[1][$index]}$t";
-                    if (($quote === 0) && ($stack > 0) && preg_match('/(.+=)*(\\(+)/', $t, $m)) {
+                    if (($quote === 0) && ($stack > 0) && preg_match('/(.+=)*(\\(+)/', $t, $m) && !$quotes) {
                         $stack += strlen($m[2]);
                     }
                     // end an argument when end with expected charactor
                     if (substr($t, -1, 1) === $expect) {
-                        if ($stack > 0) {
+                        if ($stack > 0 && !$quotes) {
                             preg_match('/(\\)+)$/', $t, $matchedq);
                             $stack -= isset($matchedq[0]) ? strlen($matchedq[0]) : 1;
                             if ($stack > 0) {
