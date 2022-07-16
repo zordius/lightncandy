@@ -30,6 +30,7 @@ class Context extends Flags
      * @param array<string,array|string|integer> $options input options
      *
      * @return array<string,array|string|integer> Context from options
+     * @throws \Exception
      */
     public static function create($options)
     {
@@ -140,7 +141,7 @@ class Context extends Flags
             'safestring' => '\\LightnCandy\\SafeString',
             'safestringalias' => isset($options['safestring']) ? $options['safestring'] : 'LS',
             'rawblock' => false,
-            'funcprefix' => uniqid('lcr'),
+            'funcprefix' => 'lcr'.bin2hex(random_bytes(20)),
         );
 
         $context['ops'] = $context['flags']['echo'] ? array(
