@@ -37,7 +37,7 @@ class LightnCandy extends Flags
      */
     public static function compile($template, $options = array('flags' => self::FLAG_BESTPERFORMANCE))
     {
-        $context = Context::create($options);
+        $context = Context::create($options, $template);
 
         if (static::handleError($context)) {
             return false;
@@ -67,7 +67,7 @@ class LightnCandy extends Flags
      */
     public static function compilePartial($template, $options = array('flags' => self::FLAG_BESTPERFORMANCE))
     {
-        $context = Context::create($options);
+        $context = Context::create($options, $template);
 
         if (static::handleError($context)) {
             return false;

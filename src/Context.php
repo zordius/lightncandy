@@ -31,7 +31,7 @@ class Context extends Flags
      *
      * @return array<string,array|string|integer> Context from options
      */
-    public static function create($options)
+    public static function create($options, $template)
     {
         if (!is_array($options)) {
             $options = array();
@@ -140,7 +140,7 @@ class Context extends Flags
             'safestring' => '\\LightnCandy\\SafeString',
             'safestringalias' => isset($options['safestring']) ? $options['safestring'] : 'LS',
             'rawblock' => false,
-            'funcprefix' => uniqid('lcr'),
+            'funcprefix' => isset($options['funcprefix']) && is_callable($options['funcprefix']) ? $options['funcprefix']( $options, $template ) : uniqid('lcr')
         );
 
         $context['ops'] = $context['flags']['echo'] ? array(
