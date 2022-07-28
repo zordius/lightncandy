@@ -140,7 +140,7 @@ class Context extends Flags
             'safestring' => '\\LightnCandy\\SafeString',
             'safestringalias' => isset($options['safestring']) ? $options['safestring'] : 'LS',
             'rawblock' => false,
-            'funcprefix' => 'lcr' . md5( $template ),
+            'funcprefix' => isset($options['funcprefix']) && is_callable($options['funcprefix']) ? $options['funcprefix']( $options, $template ) : uniqid('lcr')
         );
 
         $context['ops'] = $context['flags']['echo'] ? array(
