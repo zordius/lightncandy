@@ -214,6 +214,9 @@ class RuntimeTest extends TestCase
         $this->assertEquals('038', $method->invokeArgs(null, array_by_ref(array(
             array('scopes' => array(), 'flags' => array('spvar' => 1, 'mustlam' => 0, 'lambda' => 0), 'sp_vars'=>array('root' => 0)), array(1,3,'a'=>4), null, 0, true, function ($c, $i) {return $i * $c['sp_vars']['index'];}
         ))));
+        $this->assertEquals('inv', $method->invokeArgs(null, array_by_ref(array(
+            array('flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), null, null, array('foo' => 'inv'), true, function ($c, $i) {return 'cb';}, function ($c, $i) {return $i['foo'];}
+        ))));
     }
     /**
      * @covers LightnCandy\Runtime::wi
