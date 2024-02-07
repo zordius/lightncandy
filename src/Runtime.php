@@ -351,6 +351,7 @@ class Runtime extends Encoder
      * @expect 'cb' when input array('flags' => array('spvar' => 0, 'mustlam' => 0, 'mustsec' => 0, 'lambda' => 0)), new stdClass, null, 0, false, function ($c, $i) {return 'cb';}, function ($c, $i) {return 'inv';}
      * @expect '268' when input array('scopes' => array(), 'flags' => array('spvar' => 1, 'mustlam' => 0, 'lambda' => 0), 'sp_vars'=>array('root' => 0)), array(1,3,4), null, 0, false, function ($c, $i) {return $i * 2;}
      * @expect '038' when input array('scopes' => array(), 'flags' => array('spvar' => 1, 'mustlam' => 0, 'lambda' => 0), 'sp_vars'=>array('root' => 0)), array(1,3,'a'=>4), null, 0, true, function ($c, $i) {return $i * $c['sp_vars']['index'];}
+     * @expect 'inv' when input array('flags' => array('spvar' => 0, 'mustlam' => 0, 'lambda' => 0)), null, null, array('foo' => 'inv'), true, function ($c, $i) {return 'cb';}, function ($c, $i) {return $i['foo'];}
      */
     public static function sec($cx, $v, $bp, $in, $each, $cb, $else = null)
     {
@@ -429,7 +430,7 @@ class Runtime extends Encoder
         }
         if ($each) {
             if ($else !== null) {
-                $ret = $else($cx, $v);
+                $ret = $else($cx, $in);
                 return $ret;
             }
             return '';
